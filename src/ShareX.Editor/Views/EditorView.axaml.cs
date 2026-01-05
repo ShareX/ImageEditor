@@ -36,6 +36,7 @@ using Avalonia.VisualTree;
 using SkiaSharp;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Helpers;
+using ShareX.Editor.Services;
 using ShareX.Editor.ViewModels;
 using System.ComponentModel;
 
@@ -737,7 +738,15 @@ namespace ShareX.Editor.Views
             {
                 // Convert Avalonia Bitmap directly to SKBitmap for platform clipboard
                 using var skBitmap = BitmapConversionHelpers.ToSKBitmap(image);
-                ShareX.Ava.Platform.Abstractions.PlatformServices.Clipboard.SetImage(skBitmap);
+                
+                if (EditorServices.Clipboard != null)
+                {
+                    EditorServices.Clipboard.SetImage(skBitmap);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Clipboard service not configured. Host application must set EditorServices.Clipboard.");
+                }
             }
             catch (Exception ex)
             {

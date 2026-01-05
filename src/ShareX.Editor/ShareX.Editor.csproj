@@ -14,10 +14,6 @@
     <PackageReference Include="SkiaSharp" Version="3.119.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\ShareX.Avalonia\src\ShareX.Avalonia.Common\ShareX.Avalonia.Common.csproj" />
-    <ProjectReference Include="..\..\..\ShareX.Avalonia\src\ShareX.Avalonia.Platform.Abstractions\ShareX.Avalonia.Platform.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\ShareX.Avalonia\src\ShareX.Avalonia.Core\ShareX.Avalonia.Core.csproj" />
-  </ItemGroup>
+
 
 </Project>

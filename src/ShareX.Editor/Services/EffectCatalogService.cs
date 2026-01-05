@@ -1,4 +1,4 @@
-using ShareX.Ava.Common;
+using ShareX.Editor.Helpers;
 using ShareX.Editor.ImageEffects;
 using ShareX.Editor.ViewModels;
 using System;

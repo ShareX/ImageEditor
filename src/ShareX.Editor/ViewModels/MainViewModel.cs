@@ -1,7 +1,7 @@
 #region License Information (GPL v3)
 
 /*
-    ShareX.Ava - The Avalonia UI implementation of ShareX
+    ShareX.Editor - The UI-agnostic Editor library for ShareX
     Copyright (c) 2007-2025 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -29,8 +29,7 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.Editor.Annotations;
-using ShareX.Ava.Core;
-using ShareX.Ava.Core.Tasks;
+using ShareX.Editor.Helpers;
 using System.Collections.ObjectModel;
 
 namespace ShareX.Editor.ViewModels
@@ -56,9 +55,6 @@ namespace ShareX.Editor.ViewModels
         public event EventHandler? RedoRequested;
         public event EventHandler? DeleteRequested;
         public event EventHandler? ClearAnnotationsRequested;
-
-        [ObservableProperty]
-        private ObservableCollection<WorkerTask> _tasks;
 
         [ObservableProperty]
         private Bitmap? _previewImage;
@@ -234,7 +230,6 @@ namespace ShareX.Editor.ViewModels
         public MainViewModel()
         {
             Current = this;
-            _tasks = new ObservableCollection<WorkerTask>();
             GradientPresets = BuildGradientPresets();
             _canvasBackground = CopyBrush(GradientPresets[1].Brush);
 
@@ -385,19 +380,19 @@ namespace ShareX.Editor.ViewModels
                     return;
                 }
 
-                // Perform the crop on the original image
-                var cropped = ShareX.Ava.Common.ImageHelpers.Crop(_originalSourceImage, cropX, cropY, cropWidth, cropHeight);
+                // Perform the crop on the original image using internal ImageHelpers
+                var cropped = ImageHelpers.Crop(_originalSourceImage, cropX, cropY, cropWidth, cropHeight);
 
                 // Update preview with cropped image
                 _currentSourceImage = cropped;
-                PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(cropped);
+                PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(cropped);
                 ImageDimensions = $"{cropped.Width} x {cropped.Height}";
                 StatusText = $"Smart Padding: Cropped to {cropWidth}x{cropHeight}";
             }
             catch (Exception ex)
             {
                 StatusText = $"Smart Padding error: {ex.Message}";
-                ShareX.Ava.Common.DebugHelper.WriteLine($"Smart padding crop failed: {ex.Message}");
+                DebugHelper.WriteLine($"Smart padding crop failed: {ex.Message}");
             }
             finally
             {
@@ -567,30 +562,6 @@ namespace ShareX.Editor.ViewModels
             StatusText = $"Zoom {clamped:P0}";
         }
 
-        [RelayCommand]
-        private async Task CaptureFullscreen()
-        {
-            await ExecuteCapture(HotkeyType.PrintScreen);
-        }
-
-        [RelayCommand]
-        private async Task CaptureRegion()
-        {
-            await ExecuteCapture(HotkeyType.RectangleRegion);
-        }
-
-        [RelayCommand]
-        private async Task CaptureWindow()
-        {
-            await ExecuteCapture(HotkeyType.ActiveWindow);
-        }
-
-        [RelayCommand]
-        private async Task CaptureAndUpload()
-        {
-            await ExecuteCapture(HotkeyType.RectangleRegion, AfterCaptureTasks.UploadImageToHost);
-        }
-
         // Static color palette for annotation toolbar
         public static string[] ColorPalette => new[]
         {
@@ -694,13 +665,13 @@ namespace ShareX.Editor.ViewModels
                 StatusText = $"Applying {EffectsPanel.SelectedEffect.Name}...";
 
                 // Convert Avalonia Bitmap to SKBitmap
-                using var skBitmap = Helpers.BitmapConversionHelpers.ToSKBitmap(PreviewImage);
+                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(PreviewImage);
 
                 // Apply effect
                 using var resultBitmap = EffectsPanel.SelectedEffect.Apply(skBitmap);
 
                 // Convert back to Avalonia Bitmap
-                PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(resultBitmap);
+                PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(resultBitmap);
 
                 StatusText = $"Applied {EffectsPanel.SelectedEffect.Name}";
             }
@@ -758,13 +729,13 @@ namespace ShareX.Editor.ViewModels
                         ? "Image with annotations copied to clipboard"
                         : "Image copied to clipboard";
                     ExportState = "Copied";
-                    ShareX.Ava.Common.DebugHelper.WriteLine("Clipboard copy: Image copied to clipboard.");
+                    DebugHelper.WriteLine("Clipboard copy: Image copied to clipboard.");
                 }
                 catch (Exception ex)
                 {
                     var errorMessage = $"Failed to copy image to clipboard.\n\nError: {ex.Message}";
                     StatusText = $"Copy failed: {ex.Message}";
-                    ShareX.Ava.Common.DebugHelper.WriteLine($"Clipboard copy failed: {ex.Message}");
+                    DebugHelper.WriteLine($"Clipboard copy failed: {ex.Message}");
 
                     // Show error dialog
                     if (ShowErrorDialog != null)
@@ -806,17 +777,17 @@ namespace ShareX.Editor.ViewModels
                 }
                 else if (_currentSourceImage != null)
                 {
-                    ShareX.Ava.Common.ImageHelpers.SaveBitmap(_currentSourceImage, path);
+                    ImageHelpers.SaveBitmap(_currentSourceImage, path);
                 }
 
                 StatusText = $"Saved to {filename}";
                 ExportState = "Saved";
-                ShareX.Ava.Common.DebugHelper.WriteLine($"File saved: {path}");
+                DebugHelper.WriteLine($"File saved: {path}");
             }
             catch (Exception ex)
             {
                 StatusText = $"Save failed: {ex.Message}";
-                ShareX.Ava.Common.DebugHelper.WriteLine($"File save failed: {ex.Message}");
+                DebugHelper.WriteLine($"File save failed: {ex.Message}");
             }
             await Task.CompletedTask;
         }
@@ -863,33 +834,12 @@ namespace ShareX.Editor.ViewModels
                 StatusText = $"Saved to {filename}";
                 ExportState = "Saved";
                 LastSavedPath = path;
-                ShareX.Ava.Common.DebugHelper.WriteLine($"File saved (Save As): {path}");
+                DebugHelper.WriteLine($"File saved (Save As): {path}");
             }
             catch (Exception ex)
             {
                 StatusText = $"Save failed: {ex.Message}";
-                ShareX.Ava.Common.DebugHelper.WriteLine($"File save failed (Save As): {ex.Message}");
-            }
-        }
-
-        private async Task ExecuteCapture(HotkeyType jobType, AfterCaptureTasks afterCapture = AfterCaptureTasks.SaveImageToFile)
-        {
-            // Clone default settings to use user's config (paths, patterns, etc.)
-            var defaultSettings = SettingManager.Settings.DefaultTaskSettings;
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(defaultSettings);
-            var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskSettings>(json)!;
-
-            settings.Job = jobType;
-            settings.AfterCaptureJob = afterCapture;
-
-            var task = WorkerTask.Create(settings);
-            Tasks.Add(task);
-            await task.StartAsync();
-
-            // Update preview if capture succeeded
-            if (task.Info?.Metadata?.Image != null)
-            {
-                UpdatePreview(task.Info.Metadata.Image);
+                DebugHelper.WriteLine($"File save failed (Save As): {ex.Message}");
             }
         }
 
@@ -909,7 +859,7 @@ namespace ShareX.Editor.ViewModels
             }
 
             // Convert SKBitmap to Avalonia Bitmap
-            PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(image);
+            PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(image);
             ImageDimensions = $"{image.Width} x {image.Height}";
             StatusText = $"Image: {image.Width} × {image.Height}";
 
@@ -931,7 +881,7 @@ namespace ShareX.Editor.ViewModels
 
             if (rect.Width <= 0 || rect.Height <= 0) return;
 
-            var cropped = ShareX.Ava.Common.ImageHelpers.Crop(_currentSourceImage, rect.Left, rect.Top, rect.Width, rect.Height);
+            var cropped = ImageHelpers.Crop(_currentSourceImage, rect.Left, rect.Top, rect.Width, rect.Height);
             UpdatePreview(cropped);
         }
     }

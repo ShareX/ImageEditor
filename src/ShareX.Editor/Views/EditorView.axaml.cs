@@ -26,18 +26,17 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
-using Path = Avalonia.Controls.Shapes.Path;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using SkiaSharp;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Helpers;
 using ShareX.Editor.Services;
 using ShareX.Editor.ViewModels;
+using SkiaSharp;
 using System.ComponentModel;
 
 namespace ShareX.Editor.Views
@@ -70,13 +69,13 @@ namespace ShareX.Editor.Views
 
         // Store arrow/line endpoints for editing
         private Dictionary<Control, (Point Start, Point End)> _shapeEndpoints = new();
-        
+
         // Cached SKBitmap for effect updates (avoid repeated conversions)
         private SkiaSharp.SKBitmap? _cachedSkBitmap;
-        
+
         // Track if we're in the middle of creating an effect shape
         private bool _isCreatingEffect;
-        
+
         // Track cut-out direction (null = not determined yet, true = vertical, false = horizontal)
         private bool? _cutOutDirection;
 
@@ -112,9 +111,9 @@ namespace ShareX.Editor.Views
 
                 // Render the container (image + annotations) to a bitmap
                 var rtb = new global::Avalonia.Media.Imaging.RenderTargetBitmap(
-                    new PixelSize((int)container.Width, (int)container.Height), 
+                    new PixelSize((int)container.Width, (int)container.Height),
                     new Vector(96, 96));
-                
+
                 rtb.Render(container);
 
                 // Convert to SKBitmap for pixel access
@@ -136,11 +135,11 @@ namespace ShareX.Editor.Views
 
                 // Get pixel color from rendered output
                 var skColor = skBitmap.GetPixel(x, y);
-                
+
                 // Convert to hex string
                 var colorHex = $"#{skColor.Red:X2}{skColor.Green:X2}{skColor.Blue:X2}";
                 System.Diagnostics.Debug.WriteLine($"GetPixelColorFromRenderedCanvas: Sampled color {colorHex} at ({x}, {y})");
-                
+
                 return colorHex;
             }
             catch (Exception ex)
@@ -193,11 +192,11 @@ namespace ShareX.Editor.Views
                 {
                     // Get pixel color
                     var skColor = skBitmap.GetPixel(x, y);
-                    
+
                     // Convert to hex string
                     var colorHex = $"#{skColor.Red:X2}{skColor.Green:X2}{skColor.Blue:X2}";
                     System.Diagnostics.Debug.WriteLine($"GetPixelColor: Sampled color {colorHex} at ({x}, {y})");
-                    
+
                     return colorHex;
                 }
                 finally
@@ -234,9 +233,9 @@ namespace ShareX.Editor.Views
                     offsetBefore = offsetBefore.WithX(0);
                 if (scrollViewer.Extent.Height <= scrollViewer.Viewport.Height)
                     offsetBefore = offsetBefore.WithY(0);
-                 var logicalPoint = new Vector(
-                    (offsetBefore.X + pointerPosition.X) / oldZoom,
-                    (offsetBefore.Y + pointerPosition.Y) / oldZoom);
+                var logicalPoint = new Vector(
+                   (offsetBefore.X + pointerPosition.X) / oldZoom,
+                   (offsetBefore.Y + pointerPosition.Y) / oldZoom);
 
                 _isPointerZooming = true;
                 _lastZoom = oldZoom;
@@ -284,9 +283,9 @@ namespace ShareX.Editor.Views
                 offsetBefore = offsetBefore.WithX(0);
             if (scrollViewer.Extent.Height <= scrollViewer.Viewport.Height)
                 offsetBefore = offsetBefore.WithY(0);
-             var logicalPoint = new Vector(
-                 (offsetBefore.X + anchor.X) / oldZoom,
-                 (offsetBefore.Y + anchor.Y) / oldZoom);
+            var logicalPoint = new Vector(
+                (offsetBefore.X + anchor.X) / oldZoom,
+                (offsetBefore.Y + anchor.Y) / oldZoom);
 
             Dispatcher.UIThread.Post(() =>
             {
@@ -523,7 +522,7 @@ namespace ShareX.Editor.Views
             {
                 return;
             }
-            
+
             // Skip handles for SpotlightControl - it's a full-canvas overlay that shouldn't be resized via handles
             if (_selectedShape is ShareX.Editor.Controls.SpotlightControl)
             {
@@ -751,7 +750,7 @@ namespace ShareX.Editor.Views
             {
                 // Convert Avalonia Bitmap directly to SKBitmap for platform clipboard
                 using var skBitmap = BitmapConversionHelpers.ToSKBitmap(image);
-                
+
                 if (EditorServices.Clipboard != null)
                 {
                     EditorServices.Clipboard.SetImage(skBitmap);
@@ -897,7 +896,7 @@ namespace ShareX.Editor.Views
 
             _undoStack.Clear();
             _redoStack.Clear();
-            
+
             // Clean up cached bitmap
             _cachedSkBitmap?.Dispose();
             _cachedSkBitmap = null;
@@ -1015,7 +1014,7 @@ namespace ShareX.Editor.Views
                 if (hitTarget != null && hitTarget.Name != "CropOverlay")
                 {
                     canvas.Children.Remove(hitTarget);
-                    
+
                     // Remove from undo stack if present
                     if (_undoStack.Contains(hitTarget))
                     {
@@ -1166,23 +1165,23 @@ namespace ShareX.Editor.Views
             {
                 // Reset cut direction when starting a new cut
                 _cutOutDirection = null;
-                
+
                 // Create a rectangle to show the area that will be cut out (darkened overlay)
                 var cutOutOverlay = new global::Avalonia.Controls.Shapes.Rectangle
                 {
-                    Fill = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0)), // Semi-transparent red
-                    Stroke = Brushes.Red,
-                    StrokeThickness = 2,
+                    Fill = new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), // Semi-transparent black (dimming effect)
+                    Stroke = Brushes.White,
+                    StrokeThickness = 1,
                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 5, 3 },
                     Name = "CutOutOverlay",
                     IsVisible = false // Hidden until direction is determined
                 };
-                
+
                 Canvas.SetLeft(cutOutOverlay, _startPoint.X);
                 Canvas.SetTop(cutOutOverlay, _startPoint.Y);
                 cutOutOverlay.Width = 0;
                 cutOutOverlay.Height = 0;
-                
+
                 canvas.Children.Add(cutOutOverlay);
                 _currentShape = cutOutOverlay;
                 return;
@@ -1331,16 +1330,16 @@ namespace ShareX.Editor.Views
                 case EditorTool.Spotlight:
                     // Create a spotlight control that will render the darkening effect
                     var spotlightAnnotation = new SpotlightAnnotation();
-                    
+
                     // Set canvas size for the darkening overlay
                     spotlightAnnotation.CanvasSize = ToSKSize(new Size(canvas.Bounds.Width, canvas.Bounds.Height));
-                    
+
                     var spotlightControl = new ShareX.Editor.Controls.SpotlightControl
                     {
                         Annotation = spotlightAnnotation,
                         IsHitTestVisible = true
                     };
-                    
+
                     _currentShape = spotlightControl;
                     break;
 
@@ -1411,9 +1410,9 @@ namespace ShareX.Editor.Views
                     {
                         // Sample pixel color from rendered canvas (including annotations)
                         var sampledColor = await GetPixelColorFromRenderedCanvas(_startPoint);
-                        
+
                         freehand = new SmartEraserAnnotation();
-                        
+
                         // If we got a valid color, use it as solid color; otherwise fall back to semi-transparent red
                         if (!string.IsNullOrEmpty(sampledColor))
                         {
@@ -1685,16 +1684,16 @@ namespace ShareX.Editor.Views
             {
                 // Special handling for CutOut tool - show darkened area that will be cut
                 if (DataContext is not MainViewModel vm) return;
-                
+
                 var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");
                 if (parentCanvas == null) return;
-                
+
                 var deltaX = Math.Abs(currentPoint.X - _startPoint.X);
                 var deltaY = Math.Abs(currentPoint.Y - _startPoint.Y);
-                
+
                 // Threshold for determining direction (in pixels)
                 const double directionThreshold = 15;
-                
+
                 // Reset direction if user moves back close to start point
                 if (deltaX < directionThreshold && deltaY < directionThreshold)
                 {
@@ -1702,27 +1701,27 @@ namespace ShareX.Editor.Views
                     cutOutRect.IsVisible = false;
                     return;
                 }
-                
+
                 // Determine direction based on current movement
                 bool currentIsVertical = deltaX > deltaY;
-                
+
                 // Update direction (can change if user changes drag direction)
                 if (deltaX > directionThreshold || deltaY > directionThreshold)
                 {
                     _cutOutDirection = currentIsVertical;
                 }
-                
+
                 // Show and position the cut-out overlay rectangle
                 if (_cutOutDirection.HasValue)
                 {
                     cutOutRect.IsVisible = true;
-                    
+
                     if (_cutOutDirection.Value)
                     {
                         // Vertical cut - show full-height rectangle between start and current X
                         var left = Math.Min(_startPoint.X, currentPoint.X);
                         var width = Math.Abs(currentPoint.X - _startPoint.X);
-                        
+
                         Canvas.SetLeft(cutOutRect, left);
                         Canvas.SetTop(cutOutRect, 0); // Full height from top
                         cutOutRect.Width = width;
@@ -1733,7 +1732,7 @@ namespace ShareX.Editor.Views
                         // Horizontal cut - show full-width rectangle between start and current Y
                         var top = Math.Min(_startPoint.Y, currentPoint.Y);
                         var height = Math.Abs(currentPoint.Y - _startPoint.Y);
-                        
+
                         Canvas.SetLeft(cutOutRect, 0); // Full width from left
                         Canvas.SetTop(cutOutRect, top);
                         cutOutRect.Width = parentCanvas.Bounds.Width; // Full canvas width
@@ -1774,14 +1773,14 @@ namespace ShareX.Editor.Views
                     // Update spotlight annotation bounds
                     spotlight.StartPoint = ToSKPoint(_startPoint);
                     spotlight.EndPoint = ToSKPoint(currentPoint);
-                    
+
                     // Update canvas size for the entire image (needed for darkening overlay)
                     var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");
                     if (parentCanvas != null)
                     {
                         spotlight.CanvasSize = ToSKSize(new Size(parentCanvas.Bounds.Width, parentCanvas.Bounds.Height));
                     }
-                    
+
                     spotlightControl.InvalidateVisual();
                 }
             }
@@ -1810,25 +1809,25 @@ namespace ShareX.Editor.Views
                 if (_currentShape != null)
                 {
                     var createdShape = _currentShape;
-                    
+
                     // Special handling for crop tool - execute crop immediately on mouse release
                     if (DataContext is MainViewModel vm && vm.ActiveTool == EditorTool.Crop && createdShape.Name == "CropOverlay")
                     {
                         // Execute the crop operation
                         PerformCrop();
-                        
+
                         // Clear the current shape and don't add to undo stack
                         _currentShape = null;
                         e.Pointer.Capture(null);
                         return;
                     }
-                    
+
                     // Special handling for cut-out tool - execute cutout immediately on mouse release
                     if (DataContext is MainViewModel vm2 && vm2.ActiveTool == EditorTool.CutOut && createdShape is global::Avalonia.Controls.Shapes.Rectangle cutOutRect && cutOutRect.Name == "CutOutOverlay")
                     {
                         // Execute the cut-out operation
                         PerformCutOut(cutOutRect);
-                        
+
                         // Remove the visual overlay and don't add to undo stack
                         var canvas = this.FindControl<Canvas>("AnnotationCanvas");
                         canvas?.Children.Remove(cutOutRect);
@@ -1836,7 +1835,7 @@ namespace ShareX.Editor.Views
                         e.Pointer.Capture(null);
                         return;
                     }
-                    
+
                     _undoStack.Push(createdShape);
 
                     // Auto-select newly created shape so resize handles appear immediately,
@@ -1849,7 +1848,7 @@ namespace ShareX.Editor.Views
                         {
                             UpdateEffectVisual(createdShape);
                         }
-                        
+
                         _selectedShape = createdShape;
                         UpdateSelectionHandles();
                     }
@@ -1905,10 +1904,10 @@ namespace ShareX.Editor.Views
                 // Vertical cut - use the rectangle's left and right edges
                 var left = Canvas.GetLeft(cutOutRect);
                 var width = cutOutRect.Width;
-                
+
                 int startX = (int)(left * scaling);
                 int endX = (int)((left + width) * scaling);
-                
+
                 vm.CutOutImage(startX, endX, true);
             }
             else
@@ -1916,10 +1915,10 @@ namespace ShareX.Editor.Views
                 // Horizontal cut - use the rectangle's top and bottom edges
                 var top = Canvas.GetTop(cutOutRect);
                 var height = cutOutRect.Height;
-                
+
                 int startY = (int)(top * scaling);
                 int endY = (int)((top + height) * scaling);
-                
+
                 vm.CutOutImage(startY, endY, false);
             }
         }
@@ -1941,16 +1940,16 @@ namespace ShareX.Editor.Views
             // OPTIMIZATION: Skip expensive effect processing during drag
             // Only show a simple preview rectangle while dragging
             // Full effect is applied on mouse release
-            
+
             if (shape.Tag is not BaseEffectAnnotation annotation) return;
-            
+
             // During dragging, just show the preview fill color (no expensive processing)
             if (_isDrawing)
             {
                 // Shape already has preview fill set, no need to update
                 return;
             }
-            
+
             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
 
             try

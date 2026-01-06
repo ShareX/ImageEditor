@@ -2294,10 +2294,10 @@ namespace ShareX.Editor.Views
                     var perpX = -uy;
                     var perpY = ux;
 
-                    // IMPROVED ARROW WITH TAPERED SHAFT AND LARGER ARROWHEAD:
-                    // 1. Bigger arrowhead (1.5x larger) to balance the thicker shaft
+                    // IMPROVED ARROW WITH SEAMLESS TAPERED SHAFT AND FLAT-BACK ARROWHEAD:
+                    // 1. Bigger arrowhead (1.5x larger) with STRAIGHT horizontal back
                     // 2. Wider angle (35 degrees) for more prominent cap
-                    // 3. Tapered shaft that starts thin and widens toward the arrowhead
+                    // 3. Single continuous path from sharp point through arrowhead (no gaps!)
 
                     // Make the arrowhead 1.5x larger to balance the thicker shaft
                     var enlargedHeadSize = headSize * 1.5;
@@ -2310,51 +2310,40 @@ namespace ShareX.Editor.Views
                         end.X - enlargedHeadSize * ux,
                         end.Y - enlargedHeadSize * uy);
 
-                    // Calculate the two wing points of the arrowhead triangle
-                    var p1 = new Point(
-                        end.X - enlargedHeadSize * Math.Cos(headAngle - arrowAngle),
-                        end.Y - enlargedHeadSize * Math.Sin(headAngle - arrowAngle));
+                    // Calculate arrowhead width at the base (perpendicular to arrow direction)
+                    var arrowheadBaseWidth = enlargedHeadSize * Math.Tan(arrowAngle);
 
-                    var p2 = new Point(
-                        end.X - enlargedHeadSize * Math.Cos(headAngle + arrowAngle),
-                        end.Y - enlargedHeadSize * Math.Sin(headAngle + arrowAngle));
+                    // Calculate the two BASE points of the arrowhead (straight horizontal line)
+                    // These form a perpendicular line at the arrowhead base
+                    var arrowBaseLeft = new Point(
+                        arrowBase.X + perpX * arrowheadBaseWidth,
+                        arrowBase.Y + perpY * arrowheadBaseWidth);
 
-                    // TAPERED SHAFT: Draw a filled trapezoid that widens toward the arrowhead
-                    // The shaft width at the start (thin end) is 20% of the full stroke thickness
-                    // The shaft width at the base (thick end) matches the arrowhead base width
-                    var strokeThickness = DataContext is MainViewModel vm ? vm.StrokeWidth : 4;
-                    var shaftStartWidth = strokeThickness * 0.3; // Thin back (30% of stroke)
-                    var shaftEndWidth = enlargedHeadSize * 0.42; // Wider front to match larger arrowhead
+                    var arrowBaseRight = new Point(
+                        arrowBase.X - perpX * arrowheadBaseWidth,
+                        arrowBase.Y - perpY * arrowheadBaseWidth);
 
-                    // Calculate the four corners of the tapered shaft trapezoid
-                    var shaftStartLeft = new Point(
-                        start.X + perpX * shaftStartWidth,
-                        start.Y + perpY * shaftStartWidth);
+                    // Calculate shaft front width (30% of arrowhead for clean connection)
+                    var shaftEndWidth = enlargedHeadSize * 0.30;
 
-                    var shaftStartRight = new Point(
-                        start.X - perpX * shaftStartWidth,
-                        start.Y - perpY * shaftStartWidth);
-
+                    // Calculate the two side points at the front of the shaft (at arrowhead base)
                     var shaftEndLeft = new Point(
                         arrowBase.X + perpX * shaftEndWidth,
                         arrowBase.Y + perpY * shaftEndWidth);
-
+                    
                     var shaftEndRight = new Point(
                         arrowBase.X - perpX * shaftEndWidth,
                         arrowBase.Y - perpY * shaftEndWidth);
 
-                    // Draw the filled tapered shaft as a trapezoid
-                    ctx.BeginFigure(shaftStartLeft, true);
-                    ctx.LineTo(shaftEndLeft);
-                    ctx.LineTo(shaftEndRight);
-                    ctx.LineTo(shaftStartRight);
-                    ctx.EndFigure(true);
-
-                    // Draw filled arrowhead triangle (now 1.5x larger and wider)
-                    ctx.BeginFigure(end, true);
-                    ctx.LineTo(p1);
-                    ctx.LineTo(p2);
-                    ctx.EndFigure(true);
+                    // SEAMLESS SINGLE PATH: Draw complete arrow as one continuous filled shape
+                    // Arrow path: start ? shaft edges ? arrowhead base (straight) ? tip ? back
+                    ctx.BeginFigure(start, true);      // Start at sharp point
+                    ctx.LineTo(shaftEndLeft);          // Left edge of shaft to base
+                    ctx.LineTo(arrowBaseLeft);         // Connect to left arrowhead base corner
+                    ctx.LineTo(end);                   // Go to arrow tip
+                    ctx.LineTo(arrowBaseRight);        // Come back to right arrowhead base corner
+                    ctx.LineTo(shaftEndRight);         // Right edge of shaft from base
+                    ctx.EndFigure(true);               // Close back to start (complete continuous path)
                 }
                 else
                 {

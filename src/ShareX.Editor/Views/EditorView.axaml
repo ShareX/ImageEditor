@@ -44,6 +44,31 @@
         <x:String x:Key="IconZoomOut">&#xf010;</x:String>
     </UserControl.Resources>
 
+    <UserControl.Styles>
+        <!-- Style for Output Ratio buttons -->
+        <Style Selector="Button.ratio-button">
+            <Setter Property="Background" Value="#2D2D3F"/>
+            <Setter Property="BorderBrush" Value="#3B3B52"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style Selector="Button.ratio-button.active">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Color="#8B5CF6" Offset="0"/>
+                        <GradientStop Color="#9333EA" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </UserControl.Styles>
+
     <Grid RowDefinitions="Auto,*,Auto">
         <!-- Row 0: Annotation Toolbar (always visible) -->
         <Border Grid.Row="0" 
@@ -398,45 +423,65 @@
                         <!-- Output Ratio -->
                         <StackPanel Spacing="8">
                             <TextBlock Text="Output Ratio" Foreground="#9CA3AF"/>
-                            <UniformGrid Columns="3" Rows="3" HorizontalAlignment="Stretch">
-                                <Button Content="Auto"
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*">
+                                <Grid.Styles>
+                                    <Style Selector="Button">
+                                        <Setter Property="Margin" Value="2"/>
+                                    </Style>
+                                </Grid.Styles>
+                                
+                                <!-- Row 0 -->
+                                <Button Grid.Row="0" Grid.Column="0" Content="Auto"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="Auto"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=Auto}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="1:1"
+                                <Button Grid.Row="0" Grid.Column="1" Content="1:1"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="1:1"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=1:1}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="4:3"
+                                <Button Grid.Row="0" Grid.Column="2" Content="4:3"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="4:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=4:3}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="3:2"
+                                
+                                <!-- Row 1 -->
+                                <Button Grid.Row="1" Grid.Column="0" Content="3:2"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="3:2"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:2}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="16:9"
+                                <Button Grid.Row="1" Grid.Column="1" Content="16:9"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="16:9"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=16:9}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="5:3"
+                                <Button Grid.Row="1" Grid.Column="2" Content="5:3"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="5:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=5:3}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="9:16"
+                                
+                                <!-- Row 2 -->
+                                <Button Grid.Row="2" Grid.Column="0" Content="9:16"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="9:16"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=9:16}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="3:4"
+                                <Button Grid.Row="2" Grid.Column="1" Content="3:4"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="3:4"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:4}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                <Button Content="2:3"
+                                <Button Grid.Row="2" Grid.Column="2" Content="2:3"
+                                        Classes="ratio-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="2:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=2:3}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                 </UniformGrid>
-                             </StackPanel>
+                            </Grid>
+                        </StackPanel>
 
                         <!-- Background -->
                         <StackPanel Spacing="8">

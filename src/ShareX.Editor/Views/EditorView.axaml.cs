@@ -1475,16 +1475,23 @@ namespace ShareX.Editor.Views
                 case EditorTool.Spotlight:
                     // Create a spotlight control that will render the darkening effect
                     var spotlightAnnotation = new SpotlightAnnotation();
-
-                    // Set canvas size for the darkening overlay
-                    spotlightAnnotation.CanvasSize = ToSKSize(new Size(canvas.Bounds.Width, canvas.Bounds.Height));
-
+                    
+                    // Set canvas size for the darkening overlay (convert from Avalonia.Size to SKSize)
+                    spotlightAnnotation.CanvasSize = new SkiaSharp.SKSize((float)canvas.Bounds.Width, (float)canvas.Bounds.Height);
+                    
                     var spotlightControl = new ShareX.Editor.Controls.SpotlightControl
                     {
                         Annotation = spotlightAnnotation,
-                        IsHitTestVisible = true
+                        IsHitTestVisible = true,
+                        // CRITICAL FIX: Make the control cover the entire canvas
+                        Width = canvas.Bounds.Width,
+                        Height = canvas.Bounds.Height
                     };
-
+                    
+                    // Position at canvas origin (0, 0) - not at click point!
+                    Canvas.SetLeft(spotlightControl, 0);
+                    Canvas.SetTop(spotlightControl, 0);
+                    
                     _currentShape = spotlightControl;
                     break;
 
@@ -2014,17 +2021,21 @@ namespace ShareX.Editor.Views
                 }
                 else if (_currentShape is ShareX.Editor.Controls.SpotlightControl spotlightControl && spotlightControl.Annotation is SpotlightAnnotation spotlight)
                 {
-                    // Update spotlight annotation bounds
-                    spotlight.StartPoint = ToSKPoint(_startPoint);
-                    spotlight.EndPoint = ToSKPoint(_startPoint);
-
-                    // Update canvas size for the entire image (needed for darkening overlay)
+                    // Update spotlight annotation bounds (the highlighted area) - convert Avalonia.Point to SKPoint
+                    spotlight.StartPoint = new SkiaSharp.SKPoint((float)_startPoint.X, (float)_startPoint.Y);
+                    spotlight.EndPoint = new SkiaSharp.SKPoint((float)currentPoint.X, (float)currentPoint.Y);
+                    
+                    // Ensure canvas size is always up to date
                     var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");
                     if (parentCanvas != null)
                     {
-                        spotlight.CanvasSize = ToSKSize(new Size(parentCanvas.Bounds.Width, parentCanvas.Bounds.Height));
+                        spotlight.CanvasSize = new SkiaSharp.SKSize((float)parentCanvas.Bounds.Width, (float)parentCanvas.Bounds.Height);
+                        
+                        // CRITICAL FIX: Ensure control always covers full canvas
+                        spotlightControl.Width = parentCanvas.Bounds.Width;
+                        spotlightControl.Height = parentCanvas.Bounds.Height;
                     }
-
+                    
                     spotlightControl.InvalidateVisual();
                 }
                 else if (_currentShape is SpeechBalloonControl createBalloonControl && createBalloonControl.Annotation is SpeechBalloonAnnotation createBalloon)

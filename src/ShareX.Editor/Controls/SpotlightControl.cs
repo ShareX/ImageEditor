@@ -37,32 +37,32 @@ namespace ShareX.Editor.Controls
             base.Render(context);
 
             var annotation = Annotation;
-            if (annotation != null)
+            if (annotation != null && annotation.CanvasSize.Width > 0 && annotation.CanvasSize.Height > 0)
             {
-                // Create the hole geometry
-                // Use Annotation.CanvasSize for the outer bounds to ensure full coverage
-                // regardless of the control's actual bounds (which might be 0 in Canvas)
+                // CRITICAL FIX: Always render at full canvas size, regardless of control's actual measured bounds
                 var canvasW = (double)annotation.CanvasSize.Width;
                 var canvasH = (double)annotation.CanvasSize.Height;
-                var bounds = new Rect(0, 0, canvasW, canvasH);
+                var fullCanvasBounds = new Rect(0, 0, canvasW, canvasH);
                 
                 var annotatedBounds = annotation.GetBounds();
                 var spotlightRect = new Rect(annotatedBounds.Left, annotatedBounds.Top, annotatedBounds.Width, annotatedBounds.Height);
 
-                var geometry = new PathGeometry();
-                var figure = new PathFigure { StartPoint = bounds.TopLeft, IsClosed = true };
-                figure.Segments?.Add(new LineSegment { Point = bounds.TopRight });
-                figure.Segments?.Add(new LineSegment { Point = bounds.BottomRight });
-                figure.Segments?.Add(new LineSegment { Point = bounds.BottomLeft });
-                geometry.Figures?.Add(figure);
+                // Create path geometry with EvenOdd fill rule to punch a hole
+                var geometry = new PathGeometry { FillRule = FillRule.EvenOdd };
+                
+                // Outer rectangle - full canvas (darkened area)
+                var outerFigure = new PathFigure { StartPoint = fullCanvasBounds.TopLeft, IsClosed = true };
+                outerFigure.Segments?.Add(new LineSegment { Point = fullCanvasBounds.TopRight });
+                outerFigure.Segments?.Add(new LineSegment { Point = fullCanvasBounds.BottomRight });
+                outerFigure.Segments?.Add(new LineSegment { Point = fullCanvasBounds.BottomLeft });
+                geometry.Figures?.Add(outerFigure);
 
+                // Inner rectangle - spotlight area (hole - not darkened)
                 var holeFigure = new PathFigure { StartPoint = spotlightRect.TopLeft, IsClosed = true };
                 holeFigure.Segments?.Add(new LineSegment { Point = spotlightRect.TopRight });
                 holeFigure.Segments?.Add(new LineSegment { Point = spotlightRect.BottomRight });
                 holeFigure.Segments?.Add(new LineSegment { Point = spotlightRect.BottomLeft });
                 geometry.Figures?.Add(holeFigure);
-
-                geometry.FillRule = FillRule.EvenOdd;
 
                 // Create brush from DarkenOpacity (byte)
                 var color = Color.FromUInt32((uint)((annotation.DarkenOpacity << 24) | 0x000000));

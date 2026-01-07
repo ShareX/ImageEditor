@@ -248,87 +248,11 @@
         </Border>
 
         <!-- Row 1: Main Content Area with Preview and Sidebar -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
 
-            <!-- Central Preview Canvas -->
-            <Grid Grid.Column="0" Margin="20">
-                <ScrollViewer Name="CanvasScrollViewer"
-                              Background="Transparent"
-                              HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollBarVisibility="Auto"
-                              PointerPressed="OnScrollViewerPointerPressed"
-                              PointerMoved="OnScrollViewerPointerMoved"
-                              PointerReleased="OnScrollViewerPointerReleased">
-                    <LayoutTransformControl>
-                        <LayoutTransformControl.LayoutTransform>
-                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
-                        </LayoutTransformControl.LayoutTransform>
-                        <Border x:Name="PreviewFrame"
-                                IsVisible="{Binding HasPreviewImage}"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"
-                                 Background="{Binding CanvasBackground}"
-                                 Padding="{Binding CanvasPadding}">
-                            <!-- Outer Border: Shadow effect -->
-                            <Border BoxShadow="{Binding CanvasShadow}"
-                                   CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
-                                <!-- Padding Border: Uses top-left pixel color -->
-                                <Border Background="{Binding SmartPaddingColor}"
-                                        Padding="{Binding SmartPaddingThickness}"
-                                        CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
-                                        ClipToBounds="True">
-                                    <!-- Inner Border: White background only -->
-                                    <Border Background="#FFFFFF">
-                                        <Grid Name="CanvasContainer"
-                                              Width="{Binding ImageWidth}"
-                                              Height="{Binding ImageHeight}">
-
-                                            <!-- Image Layer -->
-                                            <Image Name="PreviewImageControl"
-                                                   Source="{Binding PreviewImage}"
-                                                   Stretch="Uniform"
-                                                   HorizontalAlignment="Stretch"
-                                                   VerticalAlignment="Stretch"/>
-
-                                            <!-- Annotation Layer (Saved content) -->
-                                            <Canvas Name="AnnotationCanvas"
-                                                    Background="Transparent"
-                                                    IsVisible="{Binding HasPreviewImage}"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"
-                                                    Cursor="Cross"
-                                                    PointerPressed="OnCanvasPointerPressed"
-                                                    PointerMoved="OnCanvasPointerMoved"
-                                                    PointerReleased="OnCanvasPointerReleased">
-                                            </Canvas>
-
-                                            <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
-                                            <Canvas Name="OverlayCanvas"
-                                                    IsHitTestVisible="True"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"
-                                                    PointerPressed="OnCanvasPointerPressed"
-                                                    PointerMoved="OnCanvasPointerMoved"
-                                                    PointerReleased="OnCanvasPointerReleased">
-                                                <Rectangle Name="CropOverlay"
-                                                           IsVisible="False"
-                                                           Stroke="White"
-                                                           StrokeThickness="2"
-                                                           StrokeDashArray="4,2"
-                                                           Fill="#80000000" />
-                                            </Canvas>
-                                        </Grid>
-                                    </Border>
-                                </Border>
-                            </Border>
-                        </Border>
-                    </LayoutTransformControl>
-                </ScrollViewer>
-            </Grid>
-
-            <!-- Right Sidebar (Settings Panel) -->
-            <Border Grid.Column="1" Padding="20" Width="300" IsVisible="{Binding IsSettingsPanelOpen}">
-                <ScrollViewer Padding="0,0,40,0"
+            <!-- Left Sidebar (Settings Panel) -->
+            <Border Grid.Column="0" Padding="16" Width="260" IsVisible="{Binding IsSettingsPanelOpen}">
+                <ScrollViewer Padding="0"
                               HorizontalScrollBarVisibility="Disabled"
                               VerticalScrollBarVisibility="Auto">
                     <StackPanel Spacing="0">
@@ -474,10 +398,87 @@
                     </StackPanel>
                 </ScrollViewer>
             </Border>
+
+            <!-- Central Preview Canvas -->
+            <Grid Grid.Column="1" Margin="8">
+                <ScrollViewer Name="CanvasScrollViewer"
+                              Background="Transparent"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto"
+                              PointerPressed="OnScrollViewerPointerPressed"
+                              PointerMoved="OnScrollViewerPointerMoved"
+                              PointerReleased="OnScrollViewerPointerReleased">
+                    <LayoutTransformControl>
+                        <LayoutTransformControl.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+                        </LayoutTransformControl.LayoutTransform>
+                        <Border x:Name="PreviewFrame"
+                                IsVisible="{Binding HasPreviewImage}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Background="{Binding CanvasBackground}"
+                                 Padding="{Binding CanvasPadding}">
+                            <!-- Outer Border: Shadow effect -->
+                            <Border BoxShadow="{Binding CanvasShadow}"
+                                   CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
+                                <!-- Padding Border: Uses top-left pixel color -->
+                                <Border Background="{Binding SmartPaddingColor}"
+                                        Padding="{Binding SmartPaddingThickness}"
+                                        CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
+                                        ClipToBounds="True">
+                                    <!-- Inner Border: White background only -->
+                                    <Border Background="#FFFFFF">
+                                        <Grid Name="CanvasContainer"
+                                              Width="{Binding ImageWidth}"
+                                              Height="{Binding ImageHeight}">
+
+                                            <!-- Image Layer -->
+                                            <Image Name="PreviewImageControl"
+                                                   Source="{Binding PreviewImage}"
+                                                   Stretch="Uniform"
+                                                   HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch"/>
+
+                                            <!-- Annotation Layer (Saved content) -->
+                                            <Canvas Name="AnnotationCanvas"
+                                                    Background="Transparent"
+                                                    IsVisible="{Binding HasPreviewImage}"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    Cursor="Cross"
+                                                    PointerPressed="OnCanvasPointerPressed"
+                                                    PointerMoved="OnCanvasPointerMoved"
+                                                    PointerReleased="OnCanvasPointerReleased">
+                                            </Canvas>
+
+                                            <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
+                                            <Canvas Name="OverlayCanvas"
+                                                    IsHitTestVisible="True"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    PointerPressed="OnCanvasPointerPressed"
+                                                    PointerMoved="OnCanvasPointerMoved"
+                                                    PointerReleased="OnCanvasPointerReleased">
+                                                <Rectangle Name="CropOverlay"
+                                                           IsVisible="False"
+                                                           Stroke="White"
+                                                           StrokeThickness="2"
+                                                           StrokeDashArray="4,2"
+                                                           Fill="#80000000" />
+                                            </Canvas>
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                            </Border>
+                        </Border>
+                    </LayoutTransformControl>
+                </ScrollViewer>
+            </Grid>
+
         </Grid>
 
         <!-- Row 2: Combined Bottom Bar (Export + Zoom Controls) -->
-        <Border Grid.Row="2" Padding="8,8,8,8" Background="#222222">
+        <Border Grid.Row="2" Padding="8" Background="#222222">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <!-- Left: Export Actions -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">

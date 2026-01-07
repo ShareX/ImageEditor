@@ -194,13 +194,15 @@
                     <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
                         SelectedColor="{Binding SelectedColorBrush}"
                         ColorChanged="OnColorChanged"
-                        Height="40"/>
+                        Height="40"
+                        ToolTip.Tip="Color"/>
                     
                     <!-- Width Picker Dropdown -->
                     <controls:WidthPickerDropdown
                         SelectedWidth="{Binding StrokeWidth}"
                         WidthChanged="OnWidthChanged"
-                        Height="40"/>
+                        Height="40"
+                        ToolTip.Tip="Width"/>
                     
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#3B3B52" Margin="4,0"/>

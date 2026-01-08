@@ -255,7 +255,7 @@
                     BorderBrush="#1F1F1F" BorderThickness="0,0,1,0">
                 <ScrollViewer x:Name="SidebarScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               ScrollChanged="OnSidebarScrollChanged">
-                    <StackPanel Width="260" Spacing="0" Margin="16">
+                    <StackPanel Width="220" Spacing="0" Margin="16">
 
                         <!-- Margin Slider -->
                         <StackPanel Spacing="0">

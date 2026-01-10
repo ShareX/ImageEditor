@@ -157,70 +157,7 @@ namespace ShareX.Editor.Views
             }
         }
 
-        /// <summary>
-        /// Sample pixel color from the preview image at the specified canvas coordinates
-        /// </summary>
-        private string? GetPixelColor(Point canvasPoint)
-        {
-            if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return null;
 
-            try
-            {
-                // Canvas point is already in image coordinates (no zoom adjustment needed here
-                // because GetCanvasPosition gets position relative to the canvas which is already scaled)
-                int x = (int)Math.Round(canvasPoint.X);
-                int y = (int)Math.Round(canvasPoint.Y);
-
-                System.Diagnostics.Debug.WriteLine($"GetPixelColor: Canvas point ({canvasPoint.X:F2}, {canvasPoint.Y:F2}) -> Pixel ({x}, {y})");
-                System.Diagnostics.Debug.WriteLine($"GetPixelColor: Image size ({vm.PreviewImage.Size.Width}, {vm.PreviewImage.Size.Height}), Zoom: {vm.Zoom}");
-
-                // Valid ate bounds
-                if (x < 0 || y < 0 || x >= vm.PreviewImage.Size.Width || y >= vm.PreviewImage.Size.Height)
-                {
-                    System.Diagnostics.Debug.WriteLine($"GetPixelColor: Out of bounds!");
-                    return null;
-                }
-
-                // IMPORTANT: We sample from the BASE image (vm.PreviewImage), not from the rendered canvas
-                // This means we get the original pixel color, ignoring any annotations drawn on top.
-                // This is the correct behavior for Smart Eraser - it should match the background,
-                // not other annotations.
-
-                // Use cached SKBitmap if available, otherwise create one
-                SkiaSharp.SKBitmap? skBitmap = _cachedSkBitmap;
-                bool shouldDispose = false;
-
-                if (skBitmap == null)
-                {
-                    skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                    shouldDispose = true;
-                }
-
-                try
-                {
-                    // Get pixel color
-                    var skColor = skBitmap.GetPixel(x, y);
-
-                    // Convert to hex string
-                    var colorHex = $"#{skColor.Red:X2}{skColor.Green:X2}{skColor.Blue:X2}";
-                    System.Diagnostics.Debug.WriteLine($"GetPixelColor: Sampled color {colorHex} at ({x}, {y})");
-
-                    return colorHex;
-                }
-                finally
-                {
-                    if (shouldDispose)
-                    {
-                        skBitmap?.Dispose();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"GetPixelColor failed: {ex.Message}");
-                return null;
-            }
-        }
 
         private void OnPreviewPointerWheelChanged(object? sender, PointerWheelEventArgs e)
         {
@@ -2306,17 +2243,7 @@ namespace ShareX.Editor.Views
             }
         }
 
-        private BaseEffectAnnotation? CreateEffectAnnotation(EditorTool tool)
-        {
-            return tool switch
-            {
-                EditorTool.Blur => new BlurAnnotation(),
-                EditorTool.Pixelate => new PixelateAnnotation(),
-                EditorTool.Magnify => new MagnifyAnnotation(),
-                EditorTool.Highlighter => new HighlightAnnotation(),
-                _ => null
-            };
-        }
+
 
         private void UpdateEffectVisual(Control shape)
         {

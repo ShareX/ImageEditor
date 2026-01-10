@@ -11,6 +11,9 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
+    <Content Include="Assets\Sample.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

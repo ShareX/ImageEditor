@@ -15,10 +15,17 @@ public class EditorZoomController
     private bool _isPanning;
     private Point _panStart;
     private Vector _panOrigin;
+    
+    // Throttle zoom changes to prevent rapid consecutive events
+    private DateTime _lastZoomChangeTime = DateTime.MinValue;
+    private const int ZoomThrottleMilliseconds = 150; // Minimum time between zoom changes
 
     private const double MinZoom = 0.25;
     private const double MaxZoom = 4.0;
     private const double ZoomStep = 0.1;
+
+    // Predefined zoom levels matching the dropdown
+    private static readonly double[] ZoomLevels = { 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0 };
 
     public EditorZoomController(EditorView view)
     {
@@ -35,10 +42,37 @@ public class EditorZoomController
         if (_view.DataContext is not MainViewModel vm) return;
         if (!e.KeyModifiers.HasFlag(KeyModifiers.Control)) return;
 
+        // Throttle: Ignore events that come too quickly after the last zoom change
+        var now = DateTime.UtcNow;
+        if ((now - _lastZoomChangeTime).TotalMilliseconds < ZoomThrottleMilliseconds)
+        {
+            e.Handled = true;
+            return;
+        }
+
         var oldZoom = vm.Zoom;
-        var direction = e.Delta.Y > 0 ? 1 : -1;
-        var newZoom = Math.Clamp(Math.Round((oldZoom + direction * ZoomStep) * 100) / 100, MinZoom, MaxZoom);
+        
+        // Use Sign to get only the direction (1 or -1), ignoring the magnitude
+        // This ensures we only move one zoom level at a time regardless of scroll speed settings
+        var direction = Math.Sign(e.Delta.Y);
+        
+        // If delta is 0, do nothing
+        if (direction == 0) return;
+        
+        // Find the current zoom level index or nearest one
+        int currentIndex = FindNearestZoomLevelIndex(oldZoom);
+        
+        // Move to next or previous zoom level (only by 1)
+        int newIndex = Math.Clamp(currentIndex + direction, 0, ZoomLevels.Length - 1);
+        
+        // If we're already at the min/max, don't do anything
+        if (newIndex == currentIndex) return;
+        
+        var newZoom = ZoomLevels[newIndex];
         if (Math.Abs(newZoom - oldZoom) < 0.0001) return;
+
+        // Update the last zoom change time
+        _lastZoomChangeTime = now;
 
         var scrollViewer = _view.FindControl<ScrollViewer>("CanvasScrollViewer");
         if (scrollViewer != null)
@@ -85,6 +119,25 @@ public class EditorZoomController
         _isPointerZooming = false;
         _lastZoom = vm.Zoom;
         e.Handled = true;
+    }
+
+    private static int FindNearestZoomLevelIndex(double currentZoom)
+    {
+        // Find the index of the zoom level closest to the current zoom
+        int nearestIndex = 0;
+        double minDifference = Math.Abs(ZoomLevels[0] - currentZoom);
+        
+        for (int i = 1; i < ZoomLevels.Length; i++)
+        {
+            double difference = Math.Abs(ZoomLevels[i] - currentZoom);
+            if (difference < minDifference)
+            {
+                minDifference = difference;
+                nearestIndex = i;
+            }
+        }
+        
+        return nearestIndex;
     }
 
     public void AdjustZoomToAnchor(double oldZoom, double newZoom, Point anchor)

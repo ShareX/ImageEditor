@@ -58,6 +58,9 @@ namespace ShareX.Editor.Views
 
             // Subscribe to selection controller events
             _selectionController.RequestUpdateEffect += OnRequestUpdateEffect;
+            
+            // Capture wheel events in tunneling phase so ScrollViewer doesn't scroll when using Ctrl+wheel zoom.
+            AddHandler(PointerWheelChangedEvent, OnPreviewPointerWheelChanged, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         }
 
         protected override void OnLoaded(RoutedEventArgs e)

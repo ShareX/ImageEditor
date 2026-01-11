@@ -236,12 +236,22 @@ public class EditorInputController
                     Points = new Points { _startPoint }
                 };
                 polyline.SetValue(Panel.ZIndexProperty, 1);
-                
+
                 if (vm.ActiveTool == EditorTool.SmartEraser)
                 {
+                    // Restored from ref\EditorView_master.axaml.cs lines 1658-1669
+                    // Sample pixel color from rendered canvas (including annotations)
                     var sampledColor = await _view.GetPixelColorFromRenderedCanvas(_startPoint);
+
                     var smartEraser = new SmartEraserAnnotation { StrokeColor = sampledColor ?? "#FFFFFFFF", StrokeWidth = 10, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
                     polyline.Tag = smartEraser;
+
+                    // If we got a valid color, use it as solid color; otherwise fall back to semi-transparent red
+                    if (!string.IsNullOrEmpty(sampledColor))
+                    {
+                        // Update polyline to use solid sampled color
+                        polyline.Stroke = new SolidColorBrush(Color.Parse(sampledColor));
+                    }
                 }
                 else
                 {
@@ -306,34 +316,56 @@ public class EditorInputController
 
          if (_currentShape.Name == "CutOutOverlay")
          {
-             if (_cutOutDirection == null)
+             // Restored from ref\EditorView_master.axaml.cs lines 2024-2075
+             // Calculate deltas from start point
+             var deltaX = Math.Abs(currentPoint.X - _startPoint.X);
+             var deltaY = Math.Abs(currentPoint.Y - _startPoint.Y);
+
+             const double directionThreshold = 15;
+
+             // Reset direction if user moves back close to start point
+             if (deltaX < directionThreshold && deltaY < directionThreshold)
              {
-                 // Dragging horizontally = Vertical Cut (Remove width) -> True
-                 if (Math.Abs(currentPoint.X - _startPoint.X) > 15) _cutOutDirection = true; 
-                 // Dragging vertically = Horizontal Cut (Remove height) -> False
-                 else if (Math.Abs(currentPoint.Y - _startPoint.Y) > 15) _cutOutDirection = false; 
-                 
-                 if (_cutOutDirection != null) _currentShape.IsVisible = true;
+                 _cutOutDirection = null;
+                 _currentShape.IsVisible = false;
+                 return;
              }
-             else
+
+             // Determine direction based on current movement
+             bool currentIsVertical = deltaX > deltaY;
+
+             // Update direction (can change if user changes drag direction)
+             if (deltaX > directionThreshold || deltaY > directionThreshold)
              {
-                 if (_cutOutDirection == true) // Vertical Cut (Show Vertical Strip)
+                 _cutOutDirection = currentIsVertical;
+             }
+
+             // Show and position the cut-out overlay rectangle
+             if (_cutOutDirection.HasValue)
+             {
+                 _currentShape.IsVisible = true;
+
+                 if (_cutOutDirection.Value)
                  {
-                     double cutLeft = Math.Min(_startPoint.X, currentPoint.X);
-                     double cutWidth = Math.Abs(currentPoint.X - _startPoint.X);
+                     // Vertical cut - show full-height rectangle between start and current X
+                     var cutLeft = Math.Min(_startPoint.X, currentPoint.X);
+                     var cutWidth = Math.Abs(currentPoint.X - _startPoint.X);
+
                      Canvas.SetLeft(_currentShape, cutLeft);
+                     Canvas.SetTop(_currentShape, 0); // Full height from top
                      _currentShape.Width = cutWidth;
-                     Canvas.SetTop(_currentShape, 0);
-                     _currentShape.Height = canvas.Bounds.Height;
+                     _currentShape.Height = canvas.Bounds.Height; // Full canvas height
                  }
-                 else // Horizontal Cut (Show Horizontal Strip)
+                 else
                  {
-                     double cutTop = Math.Min(_startPoint.Y, currentPoint.Y);
-                     double cutHeight = Math.Abs(currentPoint.Y - _startPoint.Y);
+                     // Horizontal cut - show full-width rectangle between start and current Y
+                     var cutTop = Math.Min(_startPoint.Y, currentPoint.Y);
+                     var cutHeight = Math.Abs(currentPoint.Y - _startPoint.Y);
+
+                     Canvas.SetLeft(_currentShape, 0); // Full width from left
                      Canvas.SetTop(_currentShape, cutTop);
+                     _currentShape.Width = canvas.Bounds.Width; // Full canvas width
                      _currentShape.Height = cutHeight;
-                     Canvas.SetLeft(_currentShape, 0);
-                     _currentShape.Width = canvas.Bounds.Width;
                  }
              }
              return;
@@ -429,23 +461,23 @@ public class EditorInputController
                 }
                 else if (_currentShape != null)
                 {
+                     // Restored from ref\EditorView_master.axaml.cs lines 2211-2238
+                     // Auto-select newly created shape so resize handles appear immediately,
+                     // but skip selection for freehand pen/eraser strokes (Polyline) which
+                     // are not resizable with our current handle logic.
+                     if (_currentShape is not Polyline)
+                     {
+                         // Apply final effect for effect tools
+                         if (_currentShape.Tag is BaseEffectAnnotation)
+                         {
+                             UpdateEffectVisual(_currentShape,
+                                 Canvas.GetLeft(_currentShape),
+                                 Canvas.GetTop(_currentShape),
+                                 _currentShape.Width,
+                                 _currentShape.Height);
+                         }
 
-                     var shapeToSelect = _currentShape;
-                     // Use Dispatcher to let the visual tree update (layout pass) before creating handles
-                     Dispatcher.UIThread.Post(() => 
-                     {
-                         _selectionController.SetSelectedShape(shapeToSelect);
-                     });
-                     
-                     // Auto-switch to Select tool for standard shapes
-                     if (vm.ActiveTool != EditorTool.Pen && 
-                         vm.ActiveTool != EditorTool.SmartEraser && 
-                         vm.ActiveTool != EditorTool.Highlighter &&
-                         vm.ActiveTool != EditorTool.Blur &&
-                         vm.ActiveTool != EditorTool.Pixelate &&
-                         vm.ActiveTool != EditorTool.Magnify)
-                     {
-                         vm.ActiveTool = EditorTool.Select;
+                         _selectionController.SetSelectedShape(_currentShape);
                      }
                 }
             }

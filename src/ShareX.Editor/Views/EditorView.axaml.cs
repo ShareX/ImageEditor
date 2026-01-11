@@ -106,7 +106,15 @@ namespace ShareX.Editor.Views
         {
             if (sender is MainViewModel vm)
             {
-                if (e.PropertyName == nameof(MainViewModel.PreviewImage))
+                if (e.PropertyName == nameof(MainViewModel.SelectedColor))
+                {
+                    ApplySelectedColor(vm.SelectedColor);
+                }
+                else if (e.PropertyName == nameof(MainViewModel.StrokeWidth))
+                {
+                    ApplySelectedStrokeWidth(vm.StrokeWidth);
+                }
+                else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
                     _zoomController.ResetScrollViewerOffset();
                 }
@@ -447,6 +455,79 @@ namespace ShareX.Editor.Views
         private void OnToolbarScrollChanged(object? sender, ScrollChangedEventArgs e)
         {
             // TODO: Restore toolbar scrollbar overlay logic
+        }
+
+        // --- Restored from ref\3babd33_EditorView.axaml.cs lines 767-829 ---
+
+        private void ApplySelectedColor(string colorHex)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected == null) return;
+
+            var brush = new SolidColorBrush(Color.Parse(colorHex));
+
+            switch (selected)
+            {
+                case Shape shape:
+                    if (shape.Tag is HighlightAnnotation)
+                    {
+                        var highlightColor = Color.Parse(colorHex);
+                        shape.Stroke = Brushes.Transparent;
+                        shape.Fill = new SolidColorBrush(ApplyHighlightAlpha(highlightColor));
+                        break;
+                    }
+
+                    shape.Stroke = brush;
+
+                    if (shape is global::Avalonia.Controls.Shapes.Path path)
+                    {
+                        path.Fill = brush;
+                    }
+                    break;
+                case TextBox textBox:
+                    textBox.Foreground = brush;
+                    break;
+                case Grid grid:
+                    foreach (var child in grid.Children)
+                    {
+                        if (child is Ellipse ellipse)
+                        {
+                            ellipse.Fill = brush;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private void ApplySelectedStrokeWidth(int width)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected == null) return;
+
+            switch (selected)
+            {
+                case Shape shape:
+                    shape.StrokeThickness = width;
+                    break;
+                case TextBox textBox:
+                    textBox.FontSize = Math.Max(12, width * 4);
+                    textBox.BorderThickness = new Thickness(Math.Max(1, width / 2));
+                    break;
+                case Grid grid:
+                    foreach (var child in grid.Children)
+                    {
+                        if (child is Ellipse ellipse)
+                        {
+                            ellipse.StrokeThickness = Math.Max(1, width);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private static Color ApplyHighlightAlpha(Color baseColor)
+        {
+            return Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
         }
     }
 }

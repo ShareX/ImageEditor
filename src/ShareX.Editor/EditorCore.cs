@@ -34,13 +34,13 @@ namespace ShareX.Editor;
 /// - Mouse/pointer input processing
 /// - Undo/redo operations
 /// - Rendering to SKCanvas
-/// 
+///
 /// Platform hosts (Avalonia, WinForms) provide:
 /// - SKCanvas surface for rendering
 /// - Forward input events to this core
 /// - Display rendered results
 /// </summary>
-public class EditorCore
+public class EditorCore : IDisposable
 {
     #region Events
 
@@ -100,8 +100,7 @@ public class EditorCore
     #region Annotations
 
     private readonly List<Annotation> _annotations = new();
-    private readonly Stack<Annotation> _undoStack = new();
-    private readonly Stack<Annotation> _redoStack = new();
+    private EditorHistory _history;
 
     private Annotation? _currentAnnotation;
     private Annotation? _selectedAnnotation;
@@ -129,6 +128,14 @@ public class EditorCore
     #endregion
 
     #region Initialization
+
+    /// <summary>
+    /// Initialize the editor core
+    /// </summary>
+    public EditorCore()
+    {
+        _history = new EditorHistory(this);
+    }
 
     /// <summary>
     /// Load an image into the editor
@@ -160,8 +167,8 @@ public class EditorCore
     public void ClearAll()
     {
         _annotations.Clear();
-        _undoStack.Clear();
-        _redoStack.Clear();
+        _history?.Dispose();
+        _history = new EditorHistory(this);
         _currentAnnotation = null;
         _selectedAnnotation = null;
         _isDrawing = false;
@@ -196,7 +203,6 @@ public class EditorCore
         }
 
         _startPoint = point;
-        _redoStack.Clear();
 
         string? sampledSmartEraserColor = null;
 
@@ -349,6 +355,17 @@ public class EditorCore
         {
             freehandDraw.Points.Add(point);
         }
+        else if (_currentAnnotation is CutOutAnnotation cutOut)
+        {
+            // Determine direction based on drag distance
+            var deltaX = Math.Abs(point.X - _startPoint.X);
+            var deltaY = Math.Abs(point.Y - _startPoint.Y);
+
+            // Vertical cut if horizontal drag is greater
+            cutOut.IsVertical = deltaX > deltaY;
+
+            _currentAnnotation.EndPoint = point;
+        }
         else
         {
             _currentAnnotation.EndPoint = point;
@@ -397,8 +414,16 @@ public class EditorCore
             return;
         }
 
-        // Add to undo stack
-        _undoStack.Push(_currentAnnotation);
+        // CutOut executes immediately
+        if (_currentAnnotation is CutOutAnnotation)
+        {
+            PerformCutOut();
+            _currentAnnotation = null;
+            return;
+        }
+
+        // Create annotation memento for undo/redo
+        _history.CreateAnnotationsMemento();
 
         // Request edit for text/speech annotations
         if (_currentAnnotation is TextAnnotation || _currentAnnotation is SpeechBalloonAnnotation)
@@ -613,31 +638,51 @@ public class EditorCore
 
     #region Undo/Redo
 
-    public bool CanUndo => _undoStack.Count > 0;
-    public bool CanRedo => _redoStack.Count > 0;
+    public bool CanUndo => _history?.CanUndo ?? false;
+    public bool CanRedo => _history?.CanRedo ?? false;
 
     public void Undo()
     {
-        if (_undoStack.Count > 0)
-        {
-            var annotation = _undoStack.Pop();
-            _annotations.Remove(annotation);
-            _redoStack.Push(annotation);
-            if (_selectedAnnotation == annotation)
-                _selectedAnnotation = null;
-            InvalidateRequested?.Invoke();
-        }
+        _history?.Undo();
     }
 
     public void Redo()
     {
-        if (_redoStack.Count > 0)
+        _history?.Redo();
+    }
+
+    /// <summary>
+    /// Get a snapshot of current annotations (shallow copy for memento)
+    /// </summary>
+    internal List<Annotation> GetAnnotationsSnapshot()
+    {
+        return new List<Annotation>(_annotations);
+    }
+
+    /// <summary>
+    /// Restore editor state from a memento
+    /// </summary>
+    internal void RestoreState(EditorMemento memento)
+    {
+        // Clear current annotations
+        _annotations.Clear();
+
+        // Restore annotation list
+        _annotations.AddRange(memento.Annotations);
+
+        // If memento has a canvas bitmap, restore it (for crop/cutout undo)
+        if (memento.Canvas != null)
         {
-            var annotation = _redoStack.Pop();
-            _annotations.Add(annotation);
-            _undoStack.Push(annotation);
-            InvalidateRequested?.Invoke();
+            SourceImage?.Dispose();
+            SourceImage = memento.Canvas.Copy();
+            CanvasSize = memento.CanvasSize;
         }
+
+        // Clear current selection as it may no longer be valid
+        _selectedAnnotation = null;
+
+        // Trigger redraw
+        InvalidateRequested?.Invoke();
     }
 
     #endregion
@@ -780,6 +825,7 @@ public class EditorCore
             EditorTool.Magnify => new MagnifyAnnotation(),
             EditorTool.SpeechBalloon => new SpeechBalloonAnnotation(),
             EditorTool.Crop => new CropAnnotation(),
+            EditorTool.CutOut => new CutOutAnnotation(),
             _ => null
         };
     }
@@ -804,6 +850,9 @@ public class EditorCore
 
         if (width <= 0 || height <= 0) return;
 
+        // Create canvas memento before destructive crop operation
+        _history.CreateCanvasMemento();
+
         var croppedBitmap = new SKBitmap(width, height);
         SourceImage.ExtractSubset(croppedBitmap, new SKRectI(x, y, x + width, y + height));
 
@@ -818,6 +867,149 @@ public class EditorCore
         StatusTextChanged?.Invoke("Image cropped");
         ImageChanged?.Invoke();
         InvalidateRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Perform cut out operation using the current cut out annotation
+    /// </summary>
+    public void PerformCutOut()
+    {
+        var cutOutAnnotation = _annotations.OfType<CutOutAnnotation>().FirstOrDefault();
+        if (cutOutAnnotation == null || SourceImage == null) return;
+
+        var bounds = cutOutAnnotation.GetBounds();
+
+        // Create canvas memento before destructive cutout operation
+        _history.CreateCanvasMemento();
+
+        if (cutOutAnnotation.IsVertical)
+        {
+            // Vertical cut: remove a vertical strip and join left and right parts
+            int cutX = (int)bounds.MidX;
+            int cutWidth = (int)Math.Max(1, bounds.Width);
+
+            // Clamp to image bounds
+            cutX = Math.Max(0, Math.Min(SourceImage.Width - 1, cutX));
+            cutWidth = Math.Min(cutWidth, SourceImage.Width - cutX);
+
+            if (cutWidth <= 0 || cutX + cutWidth > SourceImage.Width)
+            {
+                StatusTextChanged?.Invoke("Invalid cut area");
+                return;
+            }
+
+            int newWidth = SourceImage.Width - cutWidth;
+            if (newWidth <= 0)
+            {
+                StatusTextChanged?.Invoke("Cannot cut entire image");
+                return;
+            }
+
+            var resultBitmap = new SKBitmap(newWidth, SourceImage.Height);
+
+            // Copy left part
+            if (cutX > 0)
+            {
+                for (int y = 0; y < SourceImage.Height; y++)
+                {
+                    for (int x = 0; x < cutX; x++)
+                    {
+                        resultBitmap.SetPixel(x, y, SourceImage.GetPixel(x, y));
+                    }
+                }
+            }
+
+            // Copy right part
+            int rightStart = cutX + cutWidth;
+            if (rightStart < SourceImage.Width)
+            {
+                for (int y = 0; y < SourceImage.Height; y++)
+                {
+                    for (int x = rightStart; x < SourceImage.Width; x++)
+                    {
+                        resultBitmap.SetPixel(x - cutWidth, y, SourceImage.GetPixel(x, y));
+                    }
+                }
+            }
+
+            SourceImage.Dispose();
+            SourceImage = resultBitmap;
+            CanvasSize = new SKSize(newWidth, SourceImage.Height);
+        }
+        else
+        {
+            // Horizontal cut: remove a horizontal strip and join top and bottom parts
+            int cutY = (int)bounds.MidY;
+            int cutHeight = (int)Math.Max(1, bounds.Height);
+
+            // Clamp to image bounds
+            cutY = Math.Max(0, Math.Min(SourceImage.Height - 1, cutY));
+            cutHeight = Math.Min(cutHeight, SourceImage.Height - cutY);
+
+            if (cutHeight <= 0 || cutY + cutHeight > SourceImage.Height)
+            {
+                StatusTextChanged?.Invoke("Invalid cut area");
+                return;
+            }
+
+            int newHeight = SourceImage.Height - cutHeight;
+            if (newHeight <= 0)
+            {
+                StatusTextChanged?.Invoke("Cannot cut entire image");
+                return;
+            }
+
+            var resultBitmap = new SKBitmap(SourceImage.Width, newHeight);
+
+            // Copy top part
+            if (cutY > 0)
+            {
+                for (int y = 0; y < cutY; y++)
+                {
+                    for (int x = 0; x < SourceImage.Width; x++)
+                    {
+                        resultBitmap.SetPixel(x, y, SourceImage.GetPixel(x, y));
+                    }
+                }
+            }
+
+            // Copy bottom part
+            int bottomStart = cutY + cutHeight;
+            if (bottomStart < SourceImage.Height)
+            {
+                for (int y = bottomStart; y < SourceImage.Height; y++)
+                {
+                    for (int x = 0; x < SourceImage.Width; x++)
+                    {
+                        resultBitmap.SetPixel(x, y - cutHeight, SourceImage.GetPixel(x, y));
+                    }
+                }
+            }
+
+            SourceImage.Dispose();
+            SourceImage = resultBitmap;
+            CanvasSize = new SKSize(SourceImage.Width, newHeight);
+        }
+
+        // Remove cutout annotation
+        _annotations.Remove(cutOutAnnotation);
+
+        StatusTextChanged?.Invoke("Image cut out");
+        ImageChanged?.Invoke();
+        InvalidateRequested?.Invoke();
+    }
+
+    #endregion
+
+    #region IDisposable
+
+    /// <summary>
+    /// Dispose editor resources
+    /// </summary>
+    public void Dispose()
+    {
+        _history?.Dispose();
+        SourceImage?.Dispose();
     }
 
     #endregion

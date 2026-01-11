@@ -254,7 +254,14 @@ public class EditorInputController
 
         if (_currentShape != null)
         {
-            if (Canvas.GetLeft(_currentShape) == 0 && Canvas.GetTop(_currentShape) == 0 && vm.ActiveTool != EditorTool.Spotlight && vm.ActiveTool != EditorTool.SpeechBalloon)
+            if (Canvas.GetLeft(_currentShape) == 0 && Canvas.GetTop(_currentShape) == 0 
+                && vm.ActiveTool != EditorTool.Spotlight 
+                && vm.ActiveTool != EditorTool.SpeechBalloon
+                && vm.ActiveTool != EditorTool.Line
+                && vm.ActiveTool != EditorTool.Arrow
+                && vm.ActiveTool != EditorTool.Pen
+                && vm.ActiveTool != EditorTool.SmartEraser
+                && vm.ActiveTool != EditorTool.Number)
             {
                 Canvas.SetLeft(_currentShape, _startPoint.X);
                 Canvas.SetTop(_currentShape, _startPoint.Y);
@@ -301,23 +308,16 @@ public class EditorInputController
          {
              if (_cutOutDirection == null)
              {
-                 if (Math.Abs(currentPoint.X - _startPoint.X) > 5) _cutOutDirection = false; // Horizontal
-                 else if (Math.Abs(currentPoint.Y - _startPoint.Y) > 5) _cutOutDirection = true; // Vertical
+                 // Dragging horizontally = Vertical Cut (Remove width) -> True
+                 if (Math.Abs(currentPoint.X - _startPoint.X) > 15) _cutOutDirection = true; 
+                 // Dragging vertically = Horizontal Cut (Remove height) -> False
+                 else if (Math.Abs(currentPoint.Y - _startPoint.Y) > 15) _cutOutDirection = false; 
                  
                  if (_cutOutDirection != null) _currentShape.IsVisible = true;
              }
              else
              {
-                 if (_cutOutDirection == true) // Vertical
-                 {
-                     double cutTop = Math.Min(_startPoint.Y, currentPoint.Y);
-                     double cutHeight = Math.Abs(currentPoint.Y - _startPoint.Y);
-                     Canvas.SetTop(_currentShape, cutTop);
-                     _currentShape.Height = cutHeight;
-                     Canvas.SetLeft(_currentShape, 0);
-                     _currentShape.Width = canvas.Bounds.Width;
-                 }
-                 else // Horizontal
+                 if (_cutOutDirection == true) // Vertical Cut (Show Vertical Strip)
                  {
                      double cutLeft = Math.Min(_startPoint.X, currentPoint.X);
                      double cutWidth = Math.Abs(currentPoint.X - _startPoint.X);
@@ -325,6 +325,15 @@ public class EditorInputController
                      _currentShape.Width = cutWidth;
                      Canvas.SetTop(_currentShape, 0);
                      _currentShape.Height = canvas.Bounds.Height;
+                 }
+                 else // Horizontal Cut (Show Horizontal Strip)
+                 {
+                     double cutTop = Math.Min(_startPoint.Y, currentPoint.Y);
+                     double cutHeight = Math.Abs(currentPoint.Y - _startPoint.Y);
+                     Canvas.SetTop(_currentShape, cutTop);
+                     _currentShape.Height = cutHeight;
+                     Canvas.SetLeft(_currentShape, 0);
+                     _currentShape.Width = canvas.Bounds.Width;
                  }
              }
              return;
@@ -428,7 +437,16 @@ public class EditorInputController
                          _selectionController.SetSelectedShape(shapeToSelect);
                      });
                      
-                     // Auto-switch to Select tool removed to restore legacy continuous drawing.
+                     // Auto-switch to Select tool for standard shapes
+                     if (vm.ActiveTool != EditorTool.Pen && 
+                         vm.ActiveTool != EditorTool.SmartEraser && 
+                         vm.ActiveTool != EditorTool.Highlighter &&
+                         vm.ActiveTool != EditorTool.Blur &&
+                         vm.ActiveTool != EditorTool.Pixelate &&
+                         vm.ActiveTool != EditorTool.Magnify)
+                     {
+                         vm.ActiveTool = EditorTool.Select;
+                     }
                 }
             }
             

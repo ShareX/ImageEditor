@@ -489,30 +489,34 @@ public class EditorInputController
     
     private void PerformCrop()
     {
-        if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle cropOverlay && ViewModel != null)
+        var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
+        if (cropOverlay == null || !cropOverlay.IsVisible || ViewModel == null) return;
+
+        var x = Canvas.GetLeft(cropOverlay);
+        var y = Canvas.GetTop(cropOverlay);
+        var w = cropOverlay.Width;
+        var h = cropOverlay.Height;
+
+        if (w <= 0 || h <= 0)
         {
-             var rect = new SKRect(
-                 (float)Canvas.GetLeft(cropOverlay),
-                 (float)Canvas.GetTop(cropOverlay),
-                 (float)(Canvas.GetLeft(cropOverlay) + cropOverlay.Width),
-                 (float)(Canvas.GetTop(cropOverlay) + cropOverlay.Height));
-                 
-             if (rect.Width > 0 && rect.Height > 0)
-             {
-                 var scaling = 1.0;
-                 var topLevel = TopLevel.GetTopLevel(_view);
-                 if (topLevel != null) scaling = topLevel.RenderScaling;
-
-                 var physX = (int)(rect.Left * scaling);
-                 var physY = (int)(rect.Top * scaling);
-                 var physW = (int)(rect.Width * scaling);
-                 var physH = (int)(rect.Height * scaling);
-
-                 ViewModel.CropImage(physX, physY, physW, physH);
-                 ViewModel.StatusText = "Image cropped";
-             }
-             cropOverlay.IsVisible = false;
+            cropOverlay.IsVisible = false;
+            return;
         }
+
+        var scaling = 1.0;
+        var topLevel = TopLevel.GetTopLevel(_view);
+        if (topLevel != null) scaling = topLevel.RenderScaling;
+
+        var physX = (int)(x * scaling);
+        var physY = (int)(y * scaling);
+        var physW = (int)(w * scaling);
+        var physH = (int)(h * scaling);
+
+        ViewModel.CropImage(physX, physY, physW, physH);
+        ViewModel.StatusText = "Image cropped";
+
+        cropOverlay.IsVisible = false;
+        _currentShape = null; // Ensure we clear current shape
     }
 
     private void PerformCutOut(Canvas canvas)

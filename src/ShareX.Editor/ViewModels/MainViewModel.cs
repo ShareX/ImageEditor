@@ -627,6 +627,23 @@ namespace ShareX.Editor.ViewModels
         [RelayCommand]
         private void Undo()
         {
+            // First check if we have image-level undo (crop/cutout operations)
+            if (_imageUndoStack.Count > 0)
+            {
+                // Save current image to redo stack
+                if (_currentSourceImage != null)
+                {
+                    _imageRedoStack.Push(_currentSourceImage.Copy());
+                }
+
+                // Restore previous image state
+                var previousImage = _imageUndoStack.Pop();
+                UpdatePreview(previousImage, clearAnnotations: false);
+                StatusText = "Undid image operation";
+                return;
+            }
+
+            // Otherwise delegate to annotation undo
             UndoRequested?.Invoke(this, EventArgs.Empty);
             StatusText = "Undo requested";
         }
@@ -634,6 +651,23 @@ namespace ShareX.Editor.ViewModels
         [RelayCommand]
         private void Redo()
         {
+            // First check if we have image-level redo (crop/cutout operations)
+            if (_imageRedoStack.Count > 0)
+            {
+                // Save current image to undo stack
+                if (_currentSourceImage != null)
+                {
+                    _imageUndoStack.Push(_currentSourceImage.Copy());
+                }
+
+                // Restore next image state
+                var nextImage = _imageRedoStack.Pop();
+                UpdatePreview(nextImage, clearAnnotations: false);
+                StatusText = "Redid image operation";
+                return;
+            }
+
+            // Otherwise delegate to annotation redo
             RedoRequested?.Invoke(this, EventArgs.Empty);
             StatusText = "Redo requested";
         }
@@ -888,7 +922,11 @@ namespace ShareX.Editor.ViewModels
         private SkiaSharp.SKBitmap? _currentSourceImage;
         private SkiaSharp.SKBitmap? _originalSourceImage; // Backup for smart padding restore
 
-        public void UpdatePreview(SkiaSharp.SKBitmap image)
+        // Image undo/redo stacks for crop/cutout operations
+        private readonly Stack<SkiaSharp.SKBitmap> _imageUndoStack = new();
+        private readonly Stack<SkiaSharp.SKBitmap> _imageRedoStack = new();
+
+        public void UpdatePreview(SkiaSharp.SKBitmap image, bool clearAnnotations = true)
         {
             // Store source image for operations like Crop
             _currentSourceImage = image;
@@ -907,7 +945,10 @@ namespace ShareX.Editor.ViewModels
 
             // Reset view state for the new image
             Zoom = 1.0;
-            ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
+            if (clearAnnotations)
+            {
+                ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
+            }
             ResetNumberCounter();
         }
 
@@ -923,8 +964,12 @@ namespace ShareX.Editor.ViewModels
 
             if (rect.Width <= 0 || rect.Height <= 0) return;
 
+            // Save current image state for undo before cropping
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
             var cropped = ImageHelpers.Crop(_currentSourceImage, rect.Left, rect.Top, rect.Width, rect.Height);
-            UpdatePreview(cropped);
+            UpdatePreview(cropped, clearAnnotations: true);
         }
 
         public void CutOutImage(int startPos, int endPos, bool isVertical)
@@ -943,8 +988,12 @@ namespace ShareX.Editor.ViewModels
                     return;
             }
 
+            // Save current image state for undo before cutting out
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
             var result = ImageHelpers.CutOut(_currentSourceImage, startPos, endPos, isVertical);
-            UpdatePreview(result);
+            UpdatePreview(result, clearAnnotations: true);
 
             StatusText = isVertical
                 ? $"Cut out vertical section ({endPos - startPos}px wide)"

@@ -885,14 +885,18 @@ public class EditorCore : IDisposable
         if (cutOutAnnotation.IsVertical)
         {
             // Vertical cut: remove a vertical strip and join left and right parts
-            int cutX = (int)bounds.MidX;
-            int cutWidth = (int)Math.Max(1, bounds.Width);
+            int cutX = (int)Math.Round(bounds.MidX);
+            int cutWidth = (int)Math.Max(1, Math.Round(bounds.Width));
 
             // Clamp to image bounds
-            cutX = Math.Max(0, Math.Min(SourceImage.Width - 1, cutX));
-            cutWidth = Math.Min(cutWidth, SourceImage.Width - cutX);
+            if (cutX < 0) cutX = 0;
+            if (cutX >= SourceImage.Width) cutX = SourceImage.Width - 1;
 
-            if (cutWidth <= 0 || cutX + cutWidth > SourceImage.Width)
+            // Ensure we don't cut past the end of the image
+            int maxCutWidth = SourceImage.Width - cutX;
+            if (cutWidth > maxCutWidth) cutWidth = maxCutWidth;
+
+            if (cutWidth <= 0)
             {
                 StatusTextChanged?.Invoke("Invalid cut area");
                 return;
@@ -906,29 +910,23 @@ public class EditorCore : IDisposable
             }
 
             var resultBitmap = new SKBitmap(newWidth, SourceImage.Height);
-
-            // Copy left part
-            if (cutX > 0)
+            using (var canvas = new SKCanvas(resultBitmap))
             {
-                for (int y = 0; y < SourceImage.Height; y++)
+                // Draw left part
+                if (cutX > 0)
                 {
-                    for (int x = 0; x < cutX; x++)
-                    {
-                        resultBitmap.SetPixel(x, y, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(0, 0, cutX, SourceImage.Height);
+                    var destRect = new SKRect(0, 0, cutX, SourceImage.Height);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
-            }
 
-            // Copy right part
-            int rightStart = cutX + cutWidth;
-            if (rightStart < SourceImage.Width)
-            {
-                for (int y = 0; y < SourceImage.Height; y++)
+                // Draw right part
+                int rightStart = cutX + cutWidth;
+                if (rightStart < SourceImage.Width)
                 {
-                    for (int x = rightStart; x < SourceImage.Width; x++)
-                    {
-                        resultBitmap.SetPixel(x - cutWidth, y, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(rightStart, 0, SourceImage.Width, SourceImage.Height);
+                    var destRect = new SKRect(cutX, 0, newWidth, SourceImage.Height);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
             }
 
@@ -939,14 +937,18 @@ public class EditorCore : IDisposable
         else
         {
             // Horizontal cut: remove a horizontal strip and join top and bottom parts
-            int cutY = (int)bounds.MidY;
-            int cutHeight = (int)Math.Max(1, bounds.Height);
+            int cutY = (int)Math.Round(bounds.MidY);
+            int cutHeight = (int)Math.Max(1, Math.Round(bounds.Height));
 
             // Clamp to image bounds
-            cutY = Math.Max(0, Math.Min(SourceImage.Height - 1, cutY));
-            cutHeight = Math.Min(cutHeight, SourceImage.Height - cutY);
+            if (cutY < 0) cutY = 0;
+            if (cutY >= SourceImage.Height) cutY = SourceImage.Height - 1;
 
-            if (cutHeight <= 0 || cutY + cutHeight > SourceImage.Height)
+            // Ensure we don't cut past the end of the image
+            int maxCutHeight = SourceImage.Height - cutY;
+            if (cutHeight > maxCutHeight) cutHeight = maxCutHeight;
+
+            if (cutHeight <= 0)
             {
                 StatusTextChanged?.Invoke("Invalid cut area");
                 return;
@@ -960,29 +962,23 @@ public class EditorCore : IDisposable
             }
 
             var resultBitmap = new SKBitmap(SourceImage.Width, newHeight);
-
-            // Copy top part
-            if (cutY > 0)
+            using (var canvas = new SKCanvas(resultBitmap))
             {
-                for (int y = 0; y < cutY; y++)
+                // Draw top part
+                if (cutY > 0)
                 {
-                    for (int x = 0; x < SourceImage.Width; x++)
-                    {
-                        resultBitmap.SetPixel(x, y, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(0, 0, SourceImage.Width, cutY);
+                    var destRect = new SKRect(0, 0, SourceImage.Width, cutY);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
-            }
 
-            // Copy bottom part
-            int bottomStart = cutY + cutHeight;
-            if (bottomStart < SourceImage.Height)
-            {
-                for (int y = bottomStart; y < SourceImage.Height; y++)
+                // Draw bottom part
+                int bottomStart = cutY + cutHeight;
+                if (bottomStart < SourceImage.Height)
                 {
-                    for (int x = 0; x < SourceImage.Width; x++)
-                    {
-                        resultBitmap.SetPixel(x, y - cutHeight, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(0, bottomStart, SourceImage.Width, SourceImage.Height);
+                    var destRect = new SKRect(0, cutY, SourceImage.Width, newHeight);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
             }
 

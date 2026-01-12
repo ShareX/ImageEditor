@@ -168,4 +168,216 @@ public static class ImageHelpers
             _ => SKEncodedImageFormat.Png
         };
     }
+
+    /// <summary>
+    /// Resize a bitmap to the specified dimensions with optional aspect ratio preservation
+    /// </summary>
+    /// <param name="source">Source bitmap to resize</param>
+    /// <param name="width">Target width</param>
+    /// <param name="height">Target height</param>
+    /// <param name="maintainAspectRatio">If true, scales proportionally to fit within width/height</param>
+    /// <param name="quality">Filter quality for scaling</param>
+    /// <returns>New resized bitmap</returns>
+    public static SKBitmap Resize(SKBitmap source, int width, int height, bool maintainAspectRatio = false, SKFilterQuality quality = SKFilterQuality.High)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+        if (width <= 0) throw new ArgumentException("Width must be greater than 0", nameof(width));
+        if (height <= 0) throw new ArgumentException("Height must be greater than 0", nameof(height));
+
+        int targetWidth = width;
+        int targetHeight = height;
+
+        if (maintainAspectRatio)
+        {
+            double sourceAspect = (double)source.Width / source.Height;
+            double targetAspect = (double)width / height;
+
+            if (sourceAspect > targetAspect)
+            {
+                // Source is wider, fit to width
+                targetHeight = (int)Math.Round(width / sourceAspect);
+            }
+            else
+            {
+                // Source is taller, fit to height
+                targetWidth = (int)Math.Round(height * sourceAspect);
+            }
+        }
+
+        SKImageInfo info = new SKImageInfo(targetWidth, targetHeight, source.ColorType, source.AlphaType, source.ColorSpace);
+        return source.Resize(info, quality);
+    }
+
+    /// <summary>
+    /// Rotate bitmap 90 degrees clockwise
+    /// </summary>
+    public static SKBitmap Rotate90Clockwise(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        SKBitmap result = new SKBitmap(source.Height, source.Width, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
+        {
+            canvas.Clear(SKColors.Transparent);
+            canvas.Translate(result.Width, 0);
+            canvas.RotateDegrees(90);
+            canvas.DrawBitmap(source, 0, 0);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Rotate bitmap 90 degrees counter-clockwise
+    /// </summary>
+    public static SKBitmap Rotate90CounterClockwise(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        SKBitmap result = new SKBitmap(source.Height, source.Width, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
+        {
+            canvas.Clear(SKColors.Transparent);
+            canvas.Translate(0, result.Height);
+            canvas.RotateDegrees(-90);
+            canvas.DrawBitmap(source, 0, 0);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Rotate bitmap 180 degrees
+    /// </summary>
+    public static SKBitmap Rotate180(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
+        {
+            canvas.Clear(SKColors.Transparent);
+            canvas.Translate(result.Width, result.Height);
+            canvas.RotateDegrees(180);
+            canvas.DrawBitmap(source, 0, 0);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Flip bitmap horizontally (mirror left-to-right)
+    /// </summary>
+    public static SKBitmap FlipHorizontal(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
+        {
+            canvas.Clear(SKColors.Transparent);
+            canvas.Scale(-1, 1, source.Width / 2f, source.Height / 2f);
+            canvas.DrawBitmap(source, 0, 0);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Flip bitmap vertically (mirror top-to-bottom)
+    /// </summary>
+    public static SKBitmap FlipVertical(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
+        {
+            canvas.Clear(SKColors.Transparent);
+            canvas.Scale(1, -1, source.Width / 2f, source.Height / 2f);
+            canvas.DrawBitmap(source, 0, 0);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Resize canvas by adding padding around the image
+    /// </summary>
+    /// <param name="source">Source bitmap</param>
+    /// <param name="left">Left padding in pixels</param>
+    /// <param name="top">Top padding in pixels</param>
+    /// <param name="right">Right padding in pixels</param>
+    /// <param name="bottom">Bottom padding in pixels</param>
+    /// <param name="backgroundColor">Background color for the padding</param>
+    /// <returns>New bitmap with padding</returns>
+    public static SKBitmap ResizeCanvas(SKBitmap source, int left, int top, int right, int bottom, SKColor backgroundColor)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        int newWidth = source.Width + left + right;
+        int newHeight = source.Height + top + bottom;
+
+        if (newWidth <= 0 || newHeight <= 0)
+        {
+            throw new ArgumentException("Canvas size after padding must be greater than 0");
+        }
+
+        SKBitmap result = new SKBitmap(newWidth, newHeight, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
+        {
+            canvas.Clear(backgroundColor);
+            canvas.DrawBitmap(source, left, top);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Auto-crops the image by removing edges that match the specified color within tolerance
+    /// </summary>
+    /// <param name="source">Source bitmap</param>
+    /// <param name="color">Color to match for cropping</param>
+    /// <param name="tolerance">Color tolerance (0-255)</param>
+    /// <returns>Cropped bitmap</returns>
+    public static SKBitmap AutoCrop(SKBitmap source, SKColor color, int tolerance = 0)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        int width = source.Width;
+        int height = source.Height;
+
+        int minX = width, minY = height, maxX = 0, maxY = 0;
+        bool hasContent = false;
+
+        // Scan all pixels to find content bounds
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                SKColor pixel = source.GetPixel(x, y);
+                if (!ColorsMatch(pixel, color, tolerance))
+                {
+                    hasContent = true;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (!hasContent)
+        {
+            // No content found, return 1x1 transparent bitmap
+            return new SKBitmap(1, 1, source.ColorType, source.AlphaType);
+        }
+
+        int cropWidth = maxX - minX + 1;
+        int cropHeight = maxY - minY + 1;
+
+        return Crop(source, minX, minY, cropWidth, cropHeight);
+    }
+
+    private static bool ColorsMatch(SKColor c1, SKColor c2, int tolerance)
+    {
+        return Math.Abs(c1.Red - c2.Red) <= tolerance &&
+               Math.Abs(c1.Green - c2.Green) <= tolerance &&
+               Math.Abs(c1.Blue - c2.Blue) <= tolerance &&
+               Math.Abs(c1.Alpha - c2.Alpha) <= tolerance;
+    }
 }

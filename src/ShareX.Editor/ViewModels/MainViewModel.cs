@@ -1048,7 +1048,7 @@ namespace ShareX.Editor.ViewModels
             _imageUndoStack.Push(_currentSourceImage.Copy());
             _imageRedoStack.Clear();
 
-            var rotated = ImageEffects.ImageEffectsProcessing.Rotate(_currentSourceImage, 90);
+            var rotated = ImageHelpers.Rotate90Clockwise(_currentSourceImage);
             UpdatePreview(rotated, clearAnnotations: true);
             UpdateUndoRedoProperties();
             StatusText = "Rotated 90° clockwise";
@@ -1062,7 +1062,7 @@ namespace ShareX.Editor.ViewModels
             _imageUndoStack.Push(_currentSourceImage.Copy());
             _imageRedoStack.Clear();
 
-            var rotated = ImageEffects.ImageEffectsProcessing.Rotate(_currentSourceImage, -90);
+            var rotated = ImageHelpers.Rotate90CounterClockwise(_currentSourceImage);
             UpdatePreview(rotated, clearAnnotations: true);
             UpdateUndoRedoProperties();
             StatusText = "Rotated 90° counter-clockwise";
@@ -1076,7 +1076,7 @@ namespace ShareX.Editor.ViewModels
             _imageUndoStack.Push(_currentSourceImage.Copy());
             _imageRedoStack.Clear();
 
-            var rotated = ImageEffects.ImageEffectsProcessing.Rotate(_currentSourceImage, 180);
+            var rotated = ImageHelpers.Rotate180(_currentSourceImage);
             UpdatePreview(rotated, clearAnnotations: true);
             UpdateUndoRedoProperties();
             StatusText = "Rotated 180°";
@@ -1090,7 +1090,7 @@ namespace ShareX.Editor.ViewModels
             _imageUndoStack.Push(_currentSourceImage.Copy());
             _imageRedoStack.Clear();
 
-            var flipped = ImageEffects.ImageEffectsProcessing.Flip(_currentSourceImage, true, false);
+            var flipped = ImageHelpers.FlipHorizontal(_currentSourceImage);
             UpdatePreview(flipped, clearAnnotations: true);
             UpdateUndoRedoProperties();
             StatusText = "Flipped horizontally";
@@ -1104,7 +1104,7 @@ namespace ShareX.Editor.ViewModels
             _imageUndoStack.Push(_currentSourceImage.Copy());
             _imageRedoStack.Clear();
 
-            var flipped = ImageEffects.ImageEffectsProcessing.Flip(_currentSourceImage, false, true);
+            var flipped = ImageHelpers.FlipVertical(_currentSourceImage);
             UpdatePreview(flipped, clearAnnotations: true);
             UpdateUndoRedoProperties();
             StatusText = "Flipped vertically";
@@ -1117,7 +1117,7 @@ namespace ShareX.Editor.ViewModels
 
             var topLeftColor = _currentSourceImage.GetPixel(0, 0);
 
-            var cropped = ImageEffects.ImageEffectsProcessing.AutoCrop(_currentSourceImage, topLeftColor, tolerance: 10);
+            var cropped = ImageHelpers.AutoCrop(_currentSourceImage, topLeftColor, tolerance: 10);
 
             if (cropped != null && cropped.Width > 0 && cropped.Height > 0 &&
                 (cropped.Width != _currentSourceImage.Width || cropped.Height != _currentSourceImage.Height))
@@ -1146,7 +1146,7 @@ namespace ShareX.Editor.ViewModels
             _imageUndoStack.Push(_currentSourceImage.Copy());
             _imageRedoStack.Clear();
 
-            var resized = _currentSourceImage.Resize(new SkiaSharp.SKImageInfo(newWidth, newHeight), quality);
+            var resized = ImageHelpers.Resize(_currentSourceImage, newWidth, newHeight, maintainAspectRatio: false, quality);
             if (resized != null)
             {
                 UpdatePreview(resized, clearAnnotations: true);
@@ -1165,7 +1165,7 @@ namespace ShareX.Editor.ViewModels
             _imageUndoStack.Push(_currentSourceImage.Copy());
             _imageRedoStack.Clear();
 
-            var resized = ImageEffects.ImageEffectsProcessing.ResizeCanvas(_currentSourceImage, left, top, right, bottom, backgroundColor);
+            var resized = ImageHelpers.ResizeCanvas(_currentSourceImage, left, top, right, bottom, backgroundColor);
             UpdatePreview(resized, clearAnnotations: true);
             UpdateUndoRedoProperties();
 

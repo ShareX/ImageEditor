@@ -25,6 +25,8 @@
             <Setter Property="Increment" Value="10"/>
             <Setter Property="FormatString" Value="0"/>
             <Setter Property="Value" Value="0"/>
+            <Setter Property="Width" Value="130"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.primary">
             <Setter Property="Background" Value="{StaticResource AccentColor}"/>
@@ -61,20 +63,20 @@
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                             Spacing="4" HorizontalAlignment="Center" Margin="0,0,0,8">
                     <TextBlock Classes="label" Text="Top" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="TopInput" Width="100"
+                    <NumericUpDown x:Name="TopInput"
                                    Value="{Binding TopPadding, ElementName=ResizeCanvasDialogRoot}"/>
                 </StackPanel>
 
                 <!-- Left and Right -->
                 <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="0,0,8,8">
                     <TextBlock Classes="label" Text="Left" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="LeftInput" Width="100"
+                    <NumericUpDown x:Name="LeftInput"
                                    Value="{Binding LeftPadding, ElementName=ResizeCanvasDialogRoot}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4" Margin="8,0,0,8">
                     <TextBlock Classes="label" Text="Right" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="RightInput" Width="100"
+                    <NumericUpDown x:Name="RightInput"
                                    Value="{Binding RightPadding, ElementName=ResizeCanvasDialogRoot}"/>
                 </StackPanel>
 
@@ -82,7 +84,7 @@
                 <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
                             Spacing="4" HorizontalAlignment="Center">
                     <TextBlock Classes="label" Text="Bottom" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="BottomInput" Width="100"
+                    <NumericUpDown x:Name="BottomInput"
                                    Value="{Binding BottomPadding, ElementName=ResizeCanvasDialogRoot}"/>
                 </StackPanel>
             </Grid>

@@ -29,6 +29,7 @@
             <Setter Property="Padding" Value="12,8"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.menu-item:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#3E3E3E"/>
@@ -67,7 +68,7 @@
                 Classes="editor-button"
                 Click="OnDropdownButtonClick"
                 Height="40"
-                MinWidth="70"
+                MinWidth="60"
                 HorizontalContentAlignment="Stretch">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <!-- Edit Icon -->
@@ -79,14 +80,8 @@
                            VerticalAlignment="Center"
                            Margin="4,0,0,0"/>
 
-                <!-- Text -->
-                <TextBlock Grid.Column="1"
-                           Text="Edit"
-                           FontSize="12"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Margin="4,0,0,0"/>
+                <!-- Spacer -->
+                <Border Grid.Column="1"/>
 
                 <!-- Chevron Icon -->
                 <TextBlock Grid.Column="2"

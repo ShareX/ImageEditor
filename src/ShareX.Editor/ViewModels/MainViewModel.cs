@@ -1037,6 +1037,142 @@ namespace ShareX.Editor.ViewModels
                 ? $"Cut out vertical section ({endPos - startPos}px wide)"
                 : $"Cut out horizontal section ({endPos - startPos}px tall)";
         }
+
+        // --- Edit Menu Commands ---
+
+        [RelayCommand]
+        private void Rotate90Clockwise()
+        {
+            if (_currentSourceImage == null) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var rotated = ImageEffects.ImageEffectsProcessing.Rotate(_currentSourceImage, 90);
+            UpdatePreview(rotated, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = "Rotated 90° clockwise";
+        }
+
+        [RelayCommand]
+        private void Rotate90CounterClockwise()
+        {
+            if (_currentSourceImage == null) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var rotated = ImageEffects.ImageEffectsProcessing.Rotate(_currentSourceImage, -90);
+            UpdatePreview(rotated, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = "Rotated 90° counter-clockwise";
+        }
+
+        [RelayCommand]
+        private void Rotate180()
+        {
+            if (_currentSourceImage == null) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var rotated = ImageEffects.ImageEffectsProcessing.Rotate(_currentSourceImage, 180);
+            UpdatePreview(rotated, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = "Rotated 180°";
+        }
+
+        [RelayCommand]
+        private void FlipHorizontal()
+        {
+            if (_currentSourceImage == null) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var flipped = ImageEffects.ImageEffectsProcessing.Flip(_currentSourceImage, true, false);
+            UpdatePreview(flipped, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = "Flipped horizontally";
+        }
+
+        [RelayCommand]
+        private void FlipVertical()
+        {
+            if (_currentSourceImage == null) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var flipped = ImageEffects.ImageEffectsProcessing.Flip(_currentSourceImage, false, true);
+            UpdatePreview(flipped, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = "Flipped vertically";
+        }
+
+        [RelayCommand]
+        private void AutoCropImage()
+        {
+            if (_currentSourceImage == null) return;
+
+            var topLeftColor = _currentSourceImage.GetPixel(0, 0);
+
+            var cropped = ImageEffects.ImageEffectsProcessing.AutoCrop(_currentSourceImage, topLeftColor, tolerance: 10);
+
+            if (cropped != null && cropped.Width > 0 && cropped.Height > 0 &&
+                (cropped.Width != _currentSourceImage.Width || cropped.Height != _currentSourceImage.Height))
+            {
+                _imageUndoStack.Push(_currentSourceImage.Copy());
+                _imageRedoStack.Clear();
+
+                UpdatePreview(cropped, clearAnnotations: true);
+                UpdateUndoRedoProperties();
+                StatusText = $"Auto-cropped to {cropped.Width}x{cropped.Height}";
+            }
+            else
+            {
+                StatusText = "Nothing to auto-crop";
+            }
+        }
+
+        /// <summary>
+        /// Resize the image to new dimensions with specified quality.
+        /// </summary>
+        public void ResizeImage(int newWidth, int newHeight, SkiaSharp.SKFilterQuality quality = SkiaSharp.SKFilterQuality.High)
+        {
+            if (_currentSourceImage == null) return;
+            if (newWidth <= 0 || newHeight <= 0) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var resized = _currentSourceImage.Resize(new SkiaSharp.SKImageInfo(newWidth, newHeight), quality);
+            if (resized != null)
+            {
+                UpdatePreview(resized, clearAnnotations: true);
+                UpdateUndoRedoProperties();
+                StatusText = $"Resized to {newWidth}x{newHeight}";
+            }
+        }
+
+        /// <summary>
+        /// Resize the canvas by adding padding around the image.
+        /// </summary>
+        public void ResizeCanvas(int top, int right, int bottom, int left, SkiaSharp.SKColor backgroundColor)
+        {
+            if (_currentSourceImage == null) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var resized = ImageEffects.ImageEffectsProcessing.ResizeCanvas(_currentSourceImage, left, top, right, bottom, backgroundColor);
+            UpdatePreview(resized, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+
+            int newWidth = _currentSourceImage.Width + left + right;
+            int newHeight = _currentSourceImage.Height + top + bottom;
+            StatusText = $"Canvas resized to {newWidth}x{newHeight}";
+        }
     }
 }
 

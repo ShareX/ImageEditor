@@ -39,6 +39,7 @@ using ShareX.Editor.Views.Controllers;
 using SkiaSharp;
 using System.ComponentModel;
 using System.Linq; // Added for Enumerable.Select
+using ShareX.Editor.Views.Dialogs;
 
 namespace ShareX.Editor.Views
 {
@@ -783,6 +784,146 @@ namespace ShareX.Editor.Views
         private static Color ApplyHighlightAlpha(Color baseColor)
         {
             return Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
+        }
+
+        // --- Edit Menu Event Handlers ---
+
+        private void OnResizeImageRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
+            {
+                var dialog = new ResizeImageDialog();
+                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
+                
+                dialog.ApplyRequested += (s, args) =>
+                {
+                    vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
+                    vm.CloseModalCommand.Execute(null);
+                };
+                
+                dialog.CancelRequested += (s, args) =>
+                {
+                    vm.CloseModalCommand.Execute(null);
+                };
+                
+                vm.ModalContent = dialog;
+                vm.IsModalOpen = true;
+            }
+        }
+
+        private void OnResizeCanvasRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
+            {
+                var dialog = new ResizeCanvasDialog();
+                // Get edge color from image for "Match image edge" option
+                SKColor? edgeColor = null;
+                try
+                {
+                    using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+                    if (skBitmap != null)
+                    {
+                        edgeColor = skBitmap.GetPixel(0, 0);
+                    }
+                }
+                catch { }
+                
+                dialog.Initialize(edgeColor);
+                
+                dialog.ApplyRequested += (s, args) =>
+                {
+                    vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
+                    vm.CloseModalCommand.Execute(null);
+                };
+                
+                dialog.CancelRequested += (s, args) =>
+                {
+                    vm.CloseModalCommand.Execute(null);
+                };
+                
+                vm.ModalContent = dialog;
+                vm.IsModalOpen = true;
+            }
+        }
+
+        private void OnCropImageRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
+            {
+                var dialog = new CropImageDialog();
+                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
+                
+                dialog.ApplyRequested += (s, args) =>
+                {
+                    vm.CropImage(args.X, args.Y, args.Width, args.Height);
+                    vm.CloseModalCommand.Execute(null);
+                };
+                
+                dialog.CancelRequested += (s, args) =>
+                {
+                    vm.CloseModalCommand.Execute(null);
+                };
+                
+                vm.ModalContent = dialog;
+                vm.IsModalOpen = true;
+            }
+        }
+
+        private void OnAutoCropImageRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.AutoCropImageCommand.Execute(null);
+            }
+        }
+
+        private void OnRotate90CWRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.Rotate90ClockwiseCommand.Execute(null);
+            }
+        }
+
+        private void OnRotate90CCWRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.Rotate90CounterClockwiseCommand.Execute(null);
+            }
+        }
+
+        private void OnRotate180Requested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.Rotate180Command.Execute(null);
+            }
+        }
+
+        private void OnFlipHorizontalRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.FlipHorizontalCommand.Execute(null);
+            }
+        }
+
+        private void OnFlipVerticalRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.FlipVerticalCommand.Execute(null);
+            }
+        }
+
+        private void OnModalBackgroundPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            // Only close if clicking on the background, not the dialog content
+            if (e.Source == sender && DataContext is MainViewModel vm)
+            {
+                vm.CloseModalCommand.Execute(null);
+            }
         }
     }
 }

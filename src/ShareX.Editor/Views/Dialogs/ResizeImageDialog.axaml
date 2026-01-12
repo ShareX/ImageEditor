@@ -1,0 +1,96 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+             x:Class="ShareX.Editor.Views.Dialogs.ResizeImageDialog"
+             x:Name="ResizeImageDialogRoot">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
+        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
+        <SolidColorBrush x:Key="LabelColor">#9CA3AF</SolidColorBrush>
+        <FontFamily x:Key="FontAwesome">avares://ShareX.Editor/Assets#Font Awesome 7 Free</FontFamily>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="Foreground" Value="{StaticResource LabelColor}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style Selector="NumericUpDown">
+            <Setter Property="Minimum" Value="1"/>
+            <Setter Property="Maximum" Value="10000"/>
+            <Setter Property="Increment" Value="1"/>
+            <Setter Property="FormatString" Value="0"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="#3E3E3E"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
+        <StackPanel Spacing="16">
+            <!-- Header -->
+            <TextBlock Text="Resize Image" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource TextColor}"/>
+
+            <!-- Width Input -->
+            <StackPanel Spacing="4">
+                <TextBlock Classes="label" Text="Width (px)"/>
+                <NumericUpDown x:Name="WidthInput" 
+                               Value="{Binding Width, ElementName=ResizeImageDialogRoot}"
+                               ValueChanged="OnWidthChanged"/>
+            </StackPanel>
+
+            <!-- Height Input -->
+            <StackPanel Spacing="4">
+                <TextBlock Classes="label" Text="Height (px)"/>
+                <NumericUpDown x:Name="HeightInput" 
+                               Value="{Binding Height, ElementName=ResizeImageDialogRoot}"
+                               ValueChanged="OnHeightChanged"/>
+            </StackPanel>
+
+            <!-- Maintain Aspect Ratio -->
+            <CheckBox x:Name="MaintainAspectRatioCheckbox"
+                      IsChecked="{Binding MaintainAspectRatio, ElementName=ResizeImageDialogRoot}"
+                      Foreground="{StaticResource LabelColor}"
+                      Content="Maintain aspect ratio"/>
+
+            <!-- Resample Mode -->
+            <StackPanel Spacing="4">
+                <TextBlock Classes="label" Text="Resample Mode"/>
+                <ComboBox x:Name="ResampleModeCombo" 
+                          SelectedIndex="2"
+                          HorizontalAlignment="Stretch">
+                    <ComboBoxItem Content="Nearest Neighbor (Fast)"/>
+                    <ComboBoxItem Content="Bilinear"/>
+                    <ComboBoxItem Content="Bicubic"/>
+                    <ComboBoxItem Content="High Quality (Lanczos)"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Buttons -->
+            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
+                    <Button Classes="primary" Content="Apply" Click="OnApplyClick"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

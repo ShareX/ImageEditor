@@ -245,6 +245,20 @@
                             ToolTip.Tip="Background"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBackground}"/>
 
+                    <!-- Edit Menu Dropdown -->
+                    <controls:EditMenuDropdown x:Name="EditMenuDropdown"
+                        Height="40"
+                        ToolTip.Tip="Edit"
+                        ResizeImageRequested="OnResizeImageRequested"
+                        ResizeCanvasRequested="OnResizeCanvasRequested"
+                        CropImageRequested="OnCropImageRequested"
+                        AutoCropImageRequested="OnAutoCropImageRequested"
+                        Rotate90CWRequested="OnRotate90CWRequested"
+                        Rotate90CCWRequested="OnRotate90CCWRequested"
+                        Rotate180Requested="OnRotate180Requested"
+                        FlipHorizontalRequested="OnFlipHorizontalRequested"
+                        FlipVerticalRequested="OnFlipVerticalRequested"/>
+
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
 
@@ -572,6 +586,23 @@
                         Height="40"
                         ToolTip.Tip="Zoom (Ctrl + Wheel)"/>
                 </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Modal Overlay -->
+        <Border Grid.Row="0" Grid.RowSpan="3"
+                IsVisible="{Binding IsModalOpen}"
+                Background="#80000000"
+                IsHitTestVisible="True">
+            <Grid>
+                <!-- Click outside to close -->
+                <Border Background="Transparent" 
+                        PointerPressed="OnModalBackgroundPressed"/>
+                
+                <!-- Modal Content -->
+                <ContentControl Content="{Binding ModalContent}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
             </Grid>
         </Border>
     </Grid>

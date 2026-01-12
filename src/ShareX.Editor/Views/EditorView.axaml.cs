@@ -29,13 +29,16 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout; // Added for HorizontalAlignment/VerticalAlignment
 using Avalonia.Media;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Helpers;
 using ShareX.Editor.ViewModels;
+using ShareX.Editor.Controls;
 using ShareX.Editor.Views.Controllers;
 using SkiaSharp;
 using System.ComponentModel;
+using System.Linq; // Added for Enumerable.Select
 
 namespace ShareX.Editor.Views
 {
@@ -45,12 +48,16 @@ namespace ShareX.Editor.Views
         private readonly EditorSelectionController _selectionController;
         private readonly EditorInputController _inputController;
 
-        private Stack<Control> _undoStack = new();
-        private Stack<Control> _redoStack = new();
+        internal EditorCore EditorCore => _editorCore;
+        // SIP0018: Hybrid Rendering
+        private SKCanvasControl? _canvasControl;
+        private readonly EditorCore _editorCore;
 
         public EditorView()
         {
             InitializeComponent();
+
+            _editorCore = new EditorCore();
 
             _zoomController = new EditorZoomController(this);
             _selectionController = new EditorSelectionController(this);
@@ -58,9 +65,40 @@ namespace ShareX.Editor.Views
 
             // Subscribe to selection controller events
             _selectionController.RequestUpdateEffect += OnRequestUpdateEffect;
-            
+
+            // SIP0018: Subscribe to Core events
+            _editorCore.InvalidateRequested += () => Avalonia.Threading.Dispatcher.UIThread.Post(RenderCore);
+            _editorCore.ImageChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+                if (_canvasControl != null)
+                {
+                    _canvasControl.Initialize((int)_editorCore.CanvasSize.Width, (int)_editorCore.CanvasSize.Height);
+                    RenderCore();
+                    if (DataContext is MainViewModel vm)
+                    {
+                        UpdateViewModelHistoryState(vm);
+                        UpdateViewModelMetadata(vm);
+                    }
+                }
+            });
+            _editorCore.AnnotationsRestored += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationsRestored);
+            _editorCore.HistoryChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+                if (DataContext is MainViewModel vm) UpdateViewModelHistoryState(vm);
+            });
+
             // Capture wheel events in tunneling phase so ScrollViewer doesn't scroll when using Ctrl+wheel zoom.
             AddHandler(PointerWheelChangedEvent, OnPreviewPointerWheelChanged, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        }
+        
+        private void UpdateViewModelHistoryState(MainViewModel vm)
+        {
+            vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
+        }
+        
+
+        private void UpdateViewModelMetadata(MainViewModel vm)
+        {
+            // Initial sync of metadata if needed
+            UpdateViewModelHistoryState(vm);
         }
 
         protected override void OnLoaded(RoutedEventArgs e)
@@ -84,6 +122,12 @@ namespace ShareX.Editor.Views
 
                 // Initialize zoom
                 _zoomController.InitLastZoom(vm.Zoom);
+                
+                // Initial load
+                if (vm.PreviewImage != null)
+                {
+                    LoadImageFromViewModel(vm);
+                }
             }
         }
 
@@ -114,6 +158,7 @@ namespace ShareX.Editor.Views
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
                     _zoomController.ResetScrollViewerOffset();
+                    LoadImageFromViewModel(vm);
                 }
                 else if (e.PropertyName == nameof(MainViewModel.Zoom))
                 {
@@ -130,12 +175,43 @@ namespace ShareX.Editor.Views
 
         internal void PushUndo(Control shape)
         {
-            _undoStack.Push(shape);
+            // Legacy support: Handled by EditorCore history
         }
 
         internal void ClearRedoStack()
         {
-            _redoStack.Clear();
+            // Legacy support: Handled by EditorCore history
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            _canvasControl = this.FindControl<SKCanvasControl>("CanvasControl");
+        }
+
+        private void LoadImageFromViewModel(MainViewModel vm)
+        {
+            if (vm.PreviewImage == null || _canvasControl == null) return;
+
+            // One-time conversion from Avalonia Bitmap to SKBitmap for the Core
+            // In a full refactor, VM would hold SKBitmap source of truth
+            using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+            if (skBitmap != null)
+            {
+                // We must copy because ToSKBitmap might return a disposable wrapper or we need ownership
+                _editorCore.LoadImage(skBitmap.Copy());
+                
+                _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
+                RenderCore();
+            }
+        }
+
+        private void RenderCore()
+        {
+            if (_canvasControl == null) return;
+            // Hybrid rendering: Render only background + raster effects from Core
+            // Vector annotations are handled by Avalonia Canvas
+            _canvasControl.Draw(canvas => _editorCore.Render(canvas, false));
         }
 
         /// <summary>
@@ -267,31 +343,226 @@ namespace ShareX.Editor.Views
 
         private void PerformUndo()
         {
-            if (_undoStack.Count > 0)
+            if (_editorCore.CanUndo)
             {
-                var shape = _undoStack.Pop();
-                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                if (canvas != null && canvas.Children.Contains(shape))
-                {
-                    canvas.Children.Remove(shape);
-                    _redoStack.Push(shape);
-                    _selectionController.ClearSelection();
-                }
+                _editorCore.Undo();
+                // AnnotationsRestored event will handle UI sync
             }
         }
 
         private void PerformRedo()
         {
-            if (_redoStack.Count > 0)
+            if (_editorCore.CanRedo)
             {
-                var shape = _redoStack.Pop();
-                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                if (canvas != null)
+                _editorCore.Redo();
+            }
+        }
+
+        private void OnAnnotationsRestored()
+        {
+            // Fully rebuild annotation layer from Core state
+            // 1. Clear current UI annotations
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null) return;
+            
+            canvas.Children.Clear();
+            _selectionController.ClearSelection();
+
+            // 2. Re-create UI for all vector annotations in Core
+            foreach (var annotation in _editorCore.Annotations)
+            {
+                // Only create UI for vector annotations (Hybrid model)
+                Control? shape = CreateControlForAnnotation(annotation);
+                if (shape != null)
                 {
                     canvas.Children.Add(shape);
-                    _undoStack.Push(shape);
                 }
             }
+            
+            RenderCore();
+        }
+
+        private Control? CreateControlForAnnotation(Annotation annotation)
+        {
+             // Factory for restoring vector visuals
+             if (annotation is RectangleAnnotation rect) {
+                var r = new global::Avalonia.Controls.Shapes.Rectangle { 
+                    Stroke = new SolidColorBrush(Color.Parse(rect.StrokeColor)),
+                    StrokeThickness = rect.StrokeWidth,
+                    Tag = rect
+                };
+                Canvas.SetLeft(r, rect.GetBounds().Left);
+                Canvas.SetTop(r, rect.GetBounds().Top);
+                r.Width = rect.GetBounds().Width;
+                r.Height = rect.GetBounds().Height;
+                return r;
+             }
+             else if (annotation is EllipseAnnotation ellipse) {
+                var e = new global::Avalonia.Controls.Shapes.Ellipse {
+                    Stroke = new SolidColorBrush(Color.Parse(ellipse.StrokeColor)),
+                    StrokeThickness = ellipse.StrokeWidth,
+                    Tag = ellipse
+                };
+                Canvas.SetLeft(e, ellipse.GetBounds().Left);
+                Canvas.SetTop(e, ellipse.GetBounds().Top);
+                e.Width = ellipse.GetBounds().Width;
+                e.Height = ellipse.GetBounds().Height;
+                return e;
+             }
+             else if (annotation is LineAnnotation line) {
+                var l = new global::Avalonia.Controls.Shapes.Line {
+                    StartPoint = new Point(line.StartPoint.X, line.StartPoint.Y),
+                    EndPoint = new Point(line.EndPoint.X, line.EndPoint.Y),
+                    Stroke = new SolidColorBrush(Color.Parse(line.StrokeColor)),
+                    StrokeThickness = line.StrokeWidth,
+                    Tag = line
+                };
+                return l;
+             }
+             else if (annotation is ArrowAnnotation arrow) {
+                var path = new global::Avalonia.Controls.Shapes.Path {
+                    Fill = new SolidColorBrush(Color.Parse(arrow.StrokeColor)),
+                    Stroke = new SolidColorBrush(Color.Parse(arrow.StrokeColor)),
+                    StrokeThickness = 1, // Arrow handles thickness in geometry
+                    Tag = arrow
+                };
+                path.Data = arrow.CreateArrowGeometry(new Point(arrow.StartPoint.X, arrow.StartPoint.Y), new Point(arrow.EndPoint.X, arrow.EndPoint.Y), arrow.StrokeWidth * 3);
+                return path;
+             }
+             else if (annotation is TextAnnotation text) {
+                // For text, we might need a TextBox with IsReadOnly or similar
+                // For now, restoring as a TextBox
+                var tb = new TextBox {
+                    Text = text.Text,
+                    Foreground = new SolidColorBrush(Color.Parse(text.StrokeColor)),
+                    Background = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    FontSize = Math.Max(12, text.StrokeWidth * 4),
+                    Padding = new Thickness(4),
+                    Tag = text
+                };
+                Canvas.SetLeft(tb, text.StartPoint.X);
+                Canvas.SetTop(tb, text.StartPoint.Y);
+                return tb;
+             }
+             else if (annotation is SpotlightAnnotation spotlight) {
+                var s = new SpotlightControl { Annotation = spotlight, Tag = spotlight };
+                Canvas.SetLeft(s, 0);
+                Canvas.SetTop(s, 0);
+                s.Width = spotlight.CanvasSize.Width;
+                s.Height = spotlight.CanvasSize.Height;
+                return s;
+             }
+             // Effect annotations (Blur, Pixelate, Magnify, Highlight)
+             else if (annotation is BaseEffectAnnotation effect) {
+                 Control factorControl = null;
+                 if (annotation is BlurAnnotation blur) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = blur };
+                 else if (annotation is PixelateAnnotation pix) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = pix };
+                 else if (annotation is MagnifyAnnotation mag) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = mag };
+                 else if (annotation is HighlightAnnotation high) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = high };
+                 
+                 if (factorControl is Shape s) {
+                    s.Stroke = new SolidColorBrush(Color.Parse(annotation.StrokeColor));
+                    s.StrokeThickness = annotation.StrokeWidth;
+                    
+                    if (annotation is HighlightAnnotation) {
+                        s.Stroke = Brushes.Transparent;
+                        // Fill will be handled by UpdateEffectVisual or similar
+                        // Note: Effect creation usually requires calling logic to render effect from bitmap
+                        // We might need to trigger OnRequestUpdateEffect here
+                        // For now we create the control, and expect UpdateEffect to run if we call it
+                    }
+                 }
+                 
+                 if (factorControl != null) {
+                    Canvas.SetLeft(factorControl, effect.GetBounds().Left);
+                    Canvas.SetTop(factorControl, effect.GetBounds().Top);
+                    factorControl.Width = effect.GetBounds().Width;
+                    factorControl.Height = effect.GetBounds().Height;
+                    
+                    // Trigger visual update
+                    // We can defer this or call explicit update
+                    OnRequestUpdateEffect(factorControl);
+                    return factorControl;
+                 }
+             }
+             else if (annotation is SpeechBalloonAnnotation balloon) {
+                var b = new SpeechBalloonControl { Annotation = balloon, Tag = balloon };
+                Canvas.SetLeft(b, balloon.GetBounds().Left);
+                Canvas.SetTop(b, balloon.GetBounds().Top);
+                b.Width = balloon.GetBounds().Width;
+                b.Height = balloon.GetBounds().Height;
+                return b;
+             }
+             else if (annotation is NumberAnnotation number) {
+                var brush = new SolidColorBrush(Color.Parse(number.StrokeColor));
+                var grid = new Grid
+                {
+                    Width = number.Radius * 2,
+                    Height = number.Radius * 2,
+                    Tag = number
+                };
+
+                var bg = new Avalonia.Controls.Shapes.Ellipse
+                {
+                    Fill = brush,
+                    Stroke = Brushes.White,
+                    StrokeThickness = 2
+                };
+
+                var numText = new TextBlock
+                {
+                    Text = number.Number.ToString(),
+                    Foreground = Brushes.White,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontWeight = FontWeight.Bold,
+                    FontSize = number.FontSize / 2
+                };
+
+                grid.Children.Add(bg);
+                grid.Children.Add(numText);
+
+                Canvas.SetLeft(grid, number.StartPoint.X - 15);
+                Canvas.SetTop(grid, number.StartPoint.Y - 15);
+                return grid;
+             }
+             else if (annotation is ImageAnnotation imgAnn) {
+                 var img = new Image { Tag = imgAnn };
+                 if (imgAnn.ImageBitmap != null) {
+                    img.Source = BitmapConversionHelpers.ToAvaloniBitmap(imgAnn.ImageBitmap);
+                    img.Width = imgAnn.ImageBitmap.Width;
+                    img.Height = imgAnn.ImageBitmap.Height;
+                 }
+                 Canvas.SetLeft(img, imgAnn.StartPoint.X);
+                 Canvas.SetTop(img, imgAnn.StartPoint.Y);
+                 return img;
+             }
+             else if (annotation is FreehandAnnotation freehand) {
+                 var polyline = new Polyline {
+                    Stroke = new SolidColorBrush(Color.Parse(freehand.StrokeColor)),
+                    StrokeThickness = freehand.StrokeWidth,
+                    Points = new Points(freehand.Points.Select(p => new Point(p.X, p.Y))),
+                    Tag = freehand
+                 };
+                 return polyline;
+             }
+             else if (annotation is SmartEraserAnnotation eraser) {
+                 var polyline = new Polyline {
+                    Stroke = new SolidColorBrush(Color.Parse(eraser.StrokeColor)),
+                    StrokeThickness = 10, // hardcoded in input logic
+                    Points = new Points(eraser.Points.Select(p => new Point(p.X, p.Y))),
+                    Tag = eraser
+                 };
+                 return polyline;
+             }
+             
+             return null; 
+        }
+
+        private Color SKColorToAvalonia(SKColor color)
+        {
+            return Color.FromUInt32((uint)color);
         }
 
         private void PerformDelete()
@@ -304,21 +575,8 @@ namespace ShareX.Editor.Views
                 {
                     canvas.Children.Remove(selected);
 
-                    // Push to Redo stack to allow undoing the delete?
-                    // Actually standard undo logic implies we should be able to Undo a delete.
-                    // This means "Undo" should restore the deleted item.
-                    // So we must push the deleted item to the UNDO stack (as a "Delete Action"?)
-                    // The current implementation of Undo/Redo is simple: stack of created shapes.
-                    // If we delete, we are removing it.
-                    // If we want Undo to restore it, we need an action history.
-                    // But adhering to "NO NEW LOGIC" rule:
-                    // Original PerformDelete logic:
-                    // Looked like it just removed it.
-                    // Step 88 snippet: "Use ViewFile to get its content if not shown".
-                    // I didn't see the body of PerformDelete in original code.
-                    // I'll assume basic behavior: Delete removes it. Undo might not restore it unless implemented.
-                    // I will stick to removing it.
-
+                    // Remove from view - Undo not fully supported for delete in view layer for now
+                    // as it requires recreating the proper shape from history which is handled by core sync
                     _selectionController.ClearSelection();
                 }
             }
@@ -330,9 +588,9 @@ namespace ShareX.Editor.Views
             if (canvas != null)
             {
                 canvas.Children.Clear();
-                _undoStack.Clear();
-                _redoStack.Clear();
                 _selectionController.ClearSelection();
+                _editorCore.ClearAll();
+                RenderCore();
             }
         }
 

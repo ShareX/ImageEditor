@@ -56,6 +56,16 @@ public class EditorCore : IDisposable
     public event Action? ImageChanged;
     public event Action<Annotation>? EditAnnotationRequested;
 
+    /// <summary>
+    /// Raised when annotations are restored from history and the UI needs to fully sync
+    /// </summary>
+    public event Action? AnnotationsRestored;
+
+    /// <summary>
+    /// Raised when undo/redo history state changes
+    /// </summary>
+    public event Action? HistoryChanged;
+
     #endregion
 
     #region State
@@ -174,6 +184,7 @@ public class EditorCore : IDisposable
         _isDrawing = false;
         NumberCounter = 1;
         InvalidateRequested?.Invoke();
+        HistoryChanged?.Invoke();
     }
 
     #endregion
@@ -411,6 +422,7 @@ public class EditorCore : IDisposable
         {
             PerformCrop();
             _currentAnnotation = null;
+            HistoryChanged?.Invoke(); 
             return;
         }
 
@@ -419,11 +431,14 @@ public class EditorCore : IDisposable
         {
             PerformCutOut();
             _currentAnnotation = null;
+            HistoryChanged?.Invoke();
             return;
         }
 
         // Create annotation memento for undo/redo
-        _history.CreateAnnotationsMemento();
+        // We exclude the current annotation because the undo stack must contain the state BEFORE this addition
+        _history.CreateAnnotationsMemento(excludeAnnotation: _currentAnnotation);
+        HistoryChanged?.Invoke();
 
         // Request edit for text/speech annotations
         if (_currentAnnotation is TextAnnotation || _currentAnnotation is SpeechBalloonAnnotation)
@@ -634,6 +649,23 @@ public class EditorCore : IDisposable
         }
     }
 
+    /// <summary>
+    /// Add an annotation from an external controller (e.g. InputController)
+    /// This captures the history state BEFORE adding the annotation.
+    /// </summary>
+    public void AddAnnotation(Annotation annotation)
+    {
+        // Capture state BEFORE adding the new annotation (Undo will revert to this state)
+        _history.CreateAnnotationsMemento();
+        
+        _annotations.Add(annotation);
+        
+        HistoryChanged?.Invoke();
+        // We don't necessarily need to render if the view already added the control,
+        // but this ensures raster effects are updated if needed.
+        InvalidateRequested?.Invoke();
+    }
+
     #endregion
 
     #region Undo/Redo
@@ -644,18 +676,25 @@ public class EditorCore : IDisposable
     public void Undo()
     {
         _history?.Undo();
+        HistoryChanged?.Invoke();
     }
 
     public void Redo()
     {
         _history?.Redo();
+        HistoryChanged?.Invoke();
     }
 
     /// <summary>
     /// Get a snapshot of current annotations (shallow copy for memento)
     /// </summary>
-    internal List<Annotation> GetAnnotationsSnapshot()
+    /// <param name="excludeAnnotation">Optional annotation to exclude from the snapshot (e.g. current one being drawn)</param>
+    internal List<Annotation> GetAnnotationsSnapshot(Annotation? excludeAnnotation = null)
     {
+        if (excludeAnnotation != null)
+        {
+            return _annotations.Where(a => a != excludeAnnotation).ToList();
+        }
         return new List<Annotation>(_annotations);
     }
 
@@ -683,6 +722,7 @@ public class EditorCore : IDisposable
 
         // Trigger redraw
         InvalidateRequested?.Invoke();
+        AnnotationsRestored?.Invoke();
     }
 
     #endregion
@@ -692,7 +732,9 @@ public class EditorCore : IDisposable
     /// <summary>
     /// Render the entire editor canvas to an SKCanvas
     /// </summary>
-    public void Render(SKCanvas canvas)
+    /// <param name="canvas">Target canvas</param>
+    /// <param name="renderVectorAnnotations">If true, renders all annotations. If false, skips vector annotations (for hybrid rendering).</param>
+    public void Render(SKCanvas canvas, bool renderVectorAnnotations = true)
     {
         canvas.Clear(SKColors.Transparent);
 
@@ -702,17 +744,36 @@ public class EditorCore : IDisposable
             canvas.DrawBitmap(SourceImage, 0, 0);
         }
 
-        // Draw all annotations
+        // Draw annotations
         foreach (var annotation in _annotations)
         {
+            // In hybrid mode, we skip vector annotations as they are handled by Avalonia
+            if (!renderVectorAnnotations && IsVectorAnnotation(annotation))
+            {
+                continue;
+            }
+
             annotation.Render(canvas);
         }
 
-        // Draw selection handles for selected annotation
-        if (_selectedAnnotation != null)
+        // Draw selection handles only if we are rendering everything (or strictly debugging)
+        // Usually handles are vectors in the hybrid view
+        if (renderVectorAnnotations && _selectedAnnotation != null)
         {
             DrawSelectionHandles(canvas, _selectedAnnotation);
         }
+    }
+
+    private bool IsVectorAnnotation(Annotation annotation)
+    {
+        // Define what counts as a 'Vector' annotation that Avalonia handles
+        return annotation is RectangleAnnotation ||
+               annotation is EllipseAnnotation ||
+               annotation is LineAnnotation ||
+               annotation is ArrowAnnotation ||
+               annotation is TextAnnotation ||
+               annotation is SpeechBalloonAnnotation ||
+               annotation is NumberAnnotation;
     }
 
     /// <summary>
@@ -885,14 +946,18 @@ public class EditorCore : IDisposable
         if (cutOutAnnotation.IsVertical)
         {
             // Vertical cut: remove a vertical strip and join left and right parts
-            int cutX = (int)bounds.MidX;
-            int cutWidth = (int)Math.Max(1, bounds.Width);
+            int cutX = (int)Math.Round(bounds.MidX);
+            int cutWidth = (int)Math.Max(1, Math.Round(bounds.Width));
 
             // Clamp to image bounds
-            cutX = Math.Max(0, Math.Min(SourceImage.Width - 1, cutX));
-            cutWidth = Math.Min(cutWidth, SourceImage.Width - cutX);
+            if (cutX < 0) cutX = 0;
+            if (cutX >= SourceImage.Width) cutX = SourceImage.Width - 1;
 
-            if (cutWidth <= 0 || cutX + cutWidth > SourceImage.Width)
+            // Ensure we don't cut past the end of the image
+            int maxCutWidth = SourceImage.Width - cutX;
+            if (cutWidth > maxCutWidth) cutWidth = maxCutWidth;
+
+            if (cutWidth <= 0)
             {
                 StatusTextChanged?.Invoke("Invalid cut area");
                 return;
@@ -906,29 +971,23 @@ public class EditorCore : IDisposable
             }
 
             var resultBitmap = new SKBitmap(newWidth, SourceImage.Height);
-
-            // Copy left part
-            if (cutX > 0)
+            using (var canvas = new SKCanvas(resultBitmap))
             {
-                for (int y = 0; y < SourceImage.Height; y++)
+                // Draw left part
+                if (cutX > 0)
                 {
-                    for (int x = 0; x < cutX; x++)
-                    {
-                        resultBitmap.SetPixel(x, y, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(0, 0, cutX, SourceImage.Height);
+                    var destRect = new SKRect(0, 0, cutX, SourceImage.Height);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
-            }
 
-            // Copy right part
-            int rightStart = cutX + cutWidth;
-            if (rightStart < SourceImage.Width)
-            {
-                for (int y = 0; y < SourceImage.Height; y++)
+                // Draw right part
+                int rightStart = cutX + cutWidth;
+                if (rightStart < SourceImage.Width)
                 {
-                    for (int x = rightStart; x < SourceImage.Width; x++)
-                    {
-                        resultBitmap.SetPixel(x - cutWidth, y, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(rightStart, 0, SourceImage.Width, SourceImage.Height);
+                    var destRect = new SKRect(cutX, 0, newWidth, SourceImage.Height);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
             }
 
@@ -939,14 +998,18 @@ public class EditorCore : IDisposable
         else
         {
             // Horizontal cut: remove a horizontal strip and join top and bottom parts
-            int cutY = (int)bounds.MidY;
-            int cutHeight = (int)Math.Max(1, bounds.Height);
+            int cutY = (int)Math.Round(bounds.MidY);
+            int cutHeight = (int)Math.Max(1, Math.Round(bounds.Height));
 
             // Clamp to image bounds
-            cutY = Math.Max(0, Math.Min(SourceImage.Height - 1, cutY));
-            cutHeight = Math.Min(cutHeight, SourceImage.Height - cutY);
+            if (cutY < 0) cutY = 0;
+            if (cutY >= SourceImage.Height) cutY = SourceImage.Height - 1;
 
-            if (cutHeight <= 0 || cutY + cutHeight > SourceImage.Height)
+            // Ensure we don't cut past the end of the image
+            int maxCutHeight = SourceImage.Height - cutY;
+            if (cutHeight > maxCutHeight) cutHeight = maxCutHeight;
+
+            if (cutHeight <= 0)
             {
                 StatusTextChanged?.Invoke("Invalid cut area");
                 return;
@@ -960,29 +1023,23 @@ public class EditorCore : IDisposable
             }
 
             var resultBitmap = new SKBitmap(SourceImage.Width, newHeight);
-
-            // Copy top part
-            if (cutY > 0)
+            using (var canvas = new SKCanvas(resultBitmap))
             {
-                for (int y = 0; y < cutY; y++)
+                // Draw top part
+                if (cutY > 0)
                 {
-                    for (int x = 0; x < SourceImage.Width; x++)
-                    {
-                        resultBitmap.SetPixel(x, y, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(0, 0, SourceImage.Width, cutY);
+                    var destRect = new SKRect(0, 0, SourceImage.Width, cutY);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
-            }
 
-            // Copy bottom part
-            int bottomStart = cutY + cutHeight;
-            if (bottomStart < SourceImage.Height)
-            {
-                for (int y = bottomStart; y < SourceImage.Height; y++)
+                // Draw bottom part
+                int bottomStart = cutY + cutHeight;
+                if (bottomStart < SourceImage.Height)
                 {
-                    for (int x = 0; x < SourceImage.Width; x++)
-                    {
-                        resultBitmap.SetPixel(x, y - cutHeight, SourceImage.GetPixel(x, y));
-                    }
+                    var sourceRect = new SKRect(0, bottomStart, SourceImage.Width, SourceImage.Height);
+                    var destRect = new SKRect(0, cutY, SourceImage.Width, newHeight);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
                 }
             }
 

@@ -75,9 +75,9 @@ internal class EditorHistory : IDisposable
     /// <summary>
     /// Create a memento with only annotations (for non-destructive annotation operations)
     /// </summary>
-    private EditorMemento GetMementoFromAnnotations()
+    private EditorMemento GetMementoFromAnnotations(Annotation? excludeAnnotation = null)
     {
-        List<Annotation> annotations = _editorCore.GetAnnotationsSnapshot();
+        List<Annotation> annotations = _editorCore.GetAnnotationsSnapshot(excludeAnnotation);
         return new EditorMemento(annotations, _editorCore.CanvasSize);
     }
 
@@ -94,7 +94,8 @@ internal class EditorHistory : IDisposable
     /// Create an annotations-only memento for non-destructive operations.
     /// Excludes region tools (crop, cutout, spotlight) from memento creation.
     /// </summary>
-    public void CreateAnnotationsMemento()
+    /// <param name="excludeAnnotation">Optional annotation to exclude from the memento (to capture state before it was added)</param>
+    public void CreateAnnotationsMemento(Annotation? excludeAnnotation = null)
     {
         // Skip memento creation for region tools (crop, cutout, spotlight)
         // These tools execute immediately and don't need annotation history
@@ -104,7 +105,7 @@ internal class EditorHistory : IDisposable
             return;
         }
 
-        EditorMemento memento = GetMementoFromAnnotations();
+        EditorMemento memento = GetMementoFromAnnotations(excludeAnnotation);
         AddMemento(memento);
     }
 

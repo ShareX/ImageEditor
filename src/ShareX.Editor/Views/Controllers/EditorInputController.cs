@@ -479,6 +479,12 @@ public class EditorInputController
 
                          _selectionController.SetSelectedShape(_currentShape);
                      }
+
+                     // Ensure annotation is added to Core history
+                     if (_currentShape.Tag is Annotation annotation && vm.ActiveTool != EditorTool.Crop && vm.ActiveTool != EditorTool.CutOut)
+                     {
+                         _view.EditorCore.AddAnnotation(annotation);
+                     }
                 }
             }
             
@@ -626,6 +632,9 @@ public class EditorInputController
                 
                 canvas.Children.Add(imageControl);
                 _view.PushUndo(imageControl);
+                
+                // Add to Core history
+                _view.EditorCore.AddAnnotation(annotation);
                 
                 _selectionController.SetSelectedShape(imageControl);
             }

@@ -15,6 +15,7 @@ namespace ShareX.Editor.Controls
         public event EventHandler? Rotate90CWRequested;
         public event EventHandler? Rotate90CCWRequested;
         public event EventHandler? Rotate180Requested;
+        public event EventHandler? RotateCustomAngleRequested;
         public event EventHandler? FlipHorizontalRequested;
         public event EventHandler? FlipVerticalRequested;
 
@@ -81,6 +82,12 @@ namespace ShareX.Editor.Controls
         {
             ClosePopup();
             Rotate180Requested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnRotateCustomAngleClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            RotateCustomAngleRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnFlipHorizontalClick(object? sender, RoutedEventArgs e)

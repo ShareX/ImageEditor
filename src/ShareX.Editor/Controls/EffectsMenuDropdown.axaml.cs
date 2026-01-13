@@ -42,6 +42,13 @@ namespace ShareX.Editor.Controls
             var header = new TextBlock { Text = headerText, Classes = { "menu-header" } };
             container.Children.Add(header);
 
+            if (category == ImageEffectCategory.Adjustments)
+            {
+                // Add Separator if needed or just mix it in?
+                // The registry items come next.
+            }
+
+
             // Add Effects
             var effects = ImageEffectRegistry.GetByCategory(category);
             
@@ -97,6 +104,8 @@ namespace ShareX.Editor.Controls
                 popup.IsOpen = !popup.IsOpen;
             }
         }
+
+
 
         private void ClosePopup()
         {

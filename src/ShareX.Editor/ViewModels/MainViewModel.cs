@@ -1409,6 +1409,88 @@ namespace ShareX.Editor.ViewModels
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
         }
+
+        // --- Rotate Custom Angle Feature ---
+
+        [ObservableProperty]
+        private double _rotateAngleDegrees;
+
+        [ObservableProperty]
+        private bool _isRotateCustomAngleDialogOpen;
+
+        private SkiaSharp.SKBitmap? _rotateCustomAngleOriginalBitmap;
+
+        [RelayCommand]
+        public void OpenRotateCustomAngleDialog()
+        {
+            if (PreviewImage == null || _currentSourceImage == null) return;
+
+             // Snapshot the CURRENT state (including any previous edits)
+             var current = _currentSourceImage;
+             if (current != null)
+             {
+                 _rotateCustomAngleOriginalBitmap = current.Copy();
+                 RotateAngleDegrees = 0;
+                 IsRotateCustomAngleDialogOpen = true;
+             }
+        }
+
+        partial void OnRotateAngleDegreesChanged(double value)
+        {
+             RotateCustomAngleLiveApply();
+        }
+
+        private void RotateCustomAngleLiveApply()
+        {
+            if (!IsRotateCustomAngleDialogOpen || _rotateCustomAngleOriginalBitmap == null) return;
+
+            float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
+            var effect = RotateImageEffect.Custom(angle);
+
+            using var result = effect.Apply(_rotateCustomAngleOriginalBitmap);
+            
+            UpdatePreview(result, clearAnnotations: false); 
+        }
+
+        [RelayCommand]
+        public void CommitRotateCustomAngle()
+        {
+            if (_rotateCustomAngleOriginalBitmap == null) return;
+
+            float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
+
+            var effect = RotateImageEffect.Custom(angle);
+            var result = effect.Apply(_rotateCustomAngleOriginalBitmap);
+            
+            ApplyEffect(result, $"Rotated {angle:0.0}°");
+
+            IsRotateCustomAngleDialogOpen = false;
+            IsModalOpen = false;
+            ModalContent = null;
+            
+            _rotateCustomAngleOriginalBitmap?.Dispose();
+            _rotateCustomAngleOriginalBitmap = null;
+        }
+
+        [RelayCommand]
+        public void CancelRotateCustomAngle()
+        {
+            if (_rotateCustomAngleOriginalBitmap != null)
+            {
+                // Restore original
+                // We just need to reload the original bitmap into the view/core.
+                // We don't push to undo stack.
+                UpdatePreview(_rotateCustomAngleOriginalBitmap, clearAnnotations: false);
+                
+                _rotateCustomAngleOriginalBitmap.Dispose();
+                _rotateCustomAngleOriginalBitmap = null;
+            }
+
+            IsRotateCustomAngleDialogOpen = false;
+            IsModalOpen = false;
+            ModalContent = null;
+        }
     }
 }
+
 

@@ -166,6 +166,15 @@ namespace ShareX.Editor.Views
                 {
                     _zoomController.HandleZoomPropertyChanged(vm);
                 }
+                else if (e.PropertyName == nameof(MainViewModel.IsRotateCustomAngleDialogOpen))
+                {
+                    if (vm.IsRotateCustomAngleDialogOpen)
+                    {
+                        var dialog = new RotateCustomAngleDialog();
+                        vm.ModalContent = dialog;
+                        vm.IsModalOpen = true;
+                    }
+                }
                 else if (e.PropertyName == nameof(MainViewModel.ActiveTool))
                 {
                     _selectionController.ClearSelection();
@@ -899,6 +908,14 @@ namespace ShareX.Editor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.Rotate180Command.Execute(null);
+            }
+        }
+
+        private void OnRotateCustomAngleRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.OpenRotateCustomAngleDialogCommand.Execute(null);
             }
         }
 

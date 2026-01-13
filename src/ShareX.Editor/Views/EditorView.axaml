@@ -258,6 +258,7 @@
                         Rotate90CWRequested="OnRotate90CWRequested"
                         Rotate90CCWRequested="OnRotate90CCWRequested"
                         Rotate180Requested="OnRotate180Requested"
+                        RotateCustomAngleRequested="OnRotateCustomAngleRequested"
                         FlipHorizontalRequested="OnFlipHorizontalRequested"
                         FlipVerticalRequested="OnFlipVerticalRequested"/>
 

@@ -19,8 +19,14 @@
         <x:String x:Key="IconSync">&#xf021;</x:String>
         <x:String x:Key="IconArrowsH">&#xf337;</x:String>
         <x:String x:Key="IconArrowsV">&#xf338;</x:String>
+        <x:String x:Key="IconRotate">&#xf2ea;</x:String>
+        <x:String x:Key="IconSliders">&#xf1de;</x:String>
         <x:String x:Key="IconChevronDown">&#xf078;</x:String>
     </UserControl.Resources>
+
+
+
+
 
     <UserControl.Styles>
         <Style Selector="Button.menu-item">
@@ -159,6 +165,13 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
                             <TextBlock Classes="menu-text" Text="Rotate 180°"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Classes="menu-item" Click="OnRotateCustomAngleClick">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="menu-icon" Text="{StaticResource IconSliders}"/>
+                            <TextBlock Classes="menu-text" Text="Rotate custom angle..."/>
                         </StackPanel>
                     </Button>
 

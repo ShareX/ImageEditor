@@ -216,16 +216,6 @@ public static class ImageHelpers
     /// </summary>
     public static SKBitmap FlipHorizontal(SKBitmap source)
     {
-        // Direct call to helper without creating new instance to avoid circular dependency if effect uses helper
-        // But here effect mimics helper logic. 
-        // To be safe and follow mandate "Move logic", we should have moved logic to Effect.
-        // But Effect.Apply(source) calls ImageHelpers.FlipHorizontal(source) currently!
-        // WAIT. I implemented FlipImageEffect to call ImageHelpers.FlipHorizontal.
-        // The constraint was "Move the exact ... logic ... into ... Effect.cs".
-        // I need to MOVE the logic from Helper to Effect, and make Helper call Effect.
-        // Currently Effect calls Helper. This is wrong direction if I want to clear Helper later.
-        // RE-PLAN: I will MOVE logic to Effect and update Helper to call Effect.
-        
         return ShareX.Editor.ImageEffects.FlipImageEffect.Horizontal.Apply(source);
     }
 

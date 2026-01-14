@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="120" d:DesignHeight="40"
+             mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="512"
              x:Class="ShareX.Editor.Controls.EffectsMenuDropdown"
              x:Name="EffectsMenuDropdownRoot">
 
@@ -22,8 +22,6 @@
         <x:String x:Key="IconHighlighter">&#xf591;</x:String>
         <x:String x:Key="IconSync">&#xf021;</x:String>
         <x:String x:Key="IconCloud">&#xf0c2;</x:String>
-        
-        <!-- Edit Icons -->
         <x:String x:Key="IconResize">&#xf31e;</x:String>
         <x:String x:Key="IconResizeCanvas">&#xf853;</x:String>
         <x:String x:Key="IconCropAlt">&#xf565;</x:String>
@@ -62,6 +60,7 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#E7E9EA"/>
             <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Margin" Value="5,2"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="CornerRadius" Value="4"/>
             
@@ -73,19 +72,20 @@
             </Style>
         </Style>
 
-        <Style Selector="MenuItem > MenuItem">
-             <Setter Property="Background" Value="#2E2E2E"/>
+        <Style Selector="Separator">
+            <Setter Property="Background" Value="#3E3E3E"/>
+            <Setter Property="Padding" Value="4,0"/>
         </Style>
 
         <Style Selector="TextBlock.menu-icon">
             <Setter Property="FontFamily" Value="{StaticResource FontAwesome}"/>
             <Setter Property="FontWeight" Value="Black"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Width" Value="20"/>
+            <Setter Property="FontSize" Value="35"/>
+            <Setter Property="Width" Value="40"/>
             <Setter Property="Foreground" Value="#94A3B8"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Margin" Value="0"/>
         </Style>
     </UserControl.Styles>
 

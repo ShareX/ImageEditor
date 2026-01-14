@@ -42,18 +42,8 @@
             <Setter Property="Foreground" Value="#E7E9EA"/>
             <Setter Property="Padding" Value="8,6"/>
             <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontSize" Value="12"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-
-        <!-- Menu Styles matching the theme -->
-        <Style Selector="ContextMenu">
-            <Setter Property="Background" Value="#2E2E2E"/>
-            <Setter Property="BorderBrush" Value="#1F1F1F"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="Padding" Value="4"/>
         </Style>
 
         <Style Selector="MenuItem">
@@ -61,7 +51,9 @@
             <Setter Property="Foreground" Value="#E7E9EA"/>
             <Setter Property="Padding" Value="8,6"/>
             <Setter Property="Margin" Value="5,2"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="CornerRadius" Value="4"/>
             
             <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
@@ -80,7 +72,7 @@
         <Style Selector="TextBlock.menu-icon">
             <Setter Property="FontFamily" Value="{StaticResource FontAwesome}"/>
             <Setter Property="FontWeight" Value="Black"/>
-            <Setter Property="FontSize" Value="35"/>
+            <Setter Property="FontSize" Value="32"/>
             <Setter Property="Width" Value="40"/>
             <Setter Property="Foreground" Value="#94A3B8"/>
             <Setter Property="VerticalAlignment" Value="Center"/>

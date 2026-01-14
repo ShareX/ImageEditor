@@ -408,7 +408,7 @@ public static class ImageHelpers
 
         // Create outline by drawing image multiple times offset in all directions
         using SKPaint outlinePaint = new SKPaint { ColorFilter = SKColorFilter.CreateBlendMode(color, SKBlendMode.SrcIn) };
-        
+
         // Draw outline copies
         for (int dx = -size; dx <= size; dx++)
         {
@@ -552,7 +552,7 @@ public static class ImageHelpers
         return result;
     }
 
-    public static SKBitmap ApplyTornEdge(SKBitmap source, int depth, int range, bool top, bool right, bool bottom, bool left, bool curved, bool random)
+    public static SKBitmap ApplyTornEdge(SKBitmap source, int depth, int range, bool top, bool right, bool bottom, bool left, bool curved)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
         if (depth < 1 || range < 1) return source.Copy();
@@ -569,9 +569,6 @@ public static class ImageHelpers
         List<SKPoint> points = new List<SKPoint>();
         Random rand = new Random(42); // Fixed seed for consistent preview
 
-        // Helper function to get depth value
-        int GetDepthValue(int index) => random ? rand.Next(0, depth + 1) : ((index / range) & 1) * depth;
-
         // Top edge
         if (top && horizontalTornCount > 1)
         {
@@ -579,7 +576,7 @@ public static class ImageHelpers
             int endX = (right && verticalTornCount > 1) ? source.Width - depth : source.Width;
             for (int x = startX; x < endX; x += range)
             {
-                int y = GetDepthValue(x);
+                int y = rand.Next(0, depth + 1);
                 points.Add(new SKPoint(x, y));
             }
         }
@@ -596,7 +593,7 @@ public static class ImageHelpers
             int endY = (bottom && horizontalTornCount > 1) ? source.Height - depth : source.Height;
             for (int y = startY; y < endY; y += range)
             {
-                int x = GetDepthValue(y);
+                int x = rand.Next(0, depth + 1);
                 points.Add(new SKPoint(source.Width - depth + x, y));
             }
         }
@@ -613,7 +610,7 @@ public static class ImageHelpers
             int endX = (left && verticalTornCount > 1) ? depth : 0;
             for (int x = startX; x >= endX; x -= range)
             {
-                int y = GetDepthValue(x);
+                int y = rand.Next(0, depth + 1);
                 points.Add(new SKPoint(x, source.Height - depth + y));
             }
         }
@@ -630,7 +627,7 @@ public static class ImageHelpers
             int endY = (top && horizontalTornCount > 1) ? depth : 0;
             for (int y = startY; y >= endY; y -= range)
             {
-                int x = GetDepthValue(y);
+                int x = rand.Next(0, depth + 1);
                 points.Add(new SKPoint(x, y));
             }
         }
@@ -640,8 +637,23 @@ public static class ImageHelpers
             points.Add(new SKPoint(0, 0));
         }
 
-        // Remove duplicate consecutive points
-        var distinctPoints = points.Distinct().ToArray();
+        // Remove duplicates and ensure clean polygon
+        var distinctPoints = new List<SKPoint>();
+        if (points.Count > 0)
+        {
+            distinctPoints.Add(points[0]);
+            for (int i = 1; i < points.Count; i++)
+            {
+                if (points[i] != points[i - 1])
+                    distinctPoints.Add(points[i]);
+            }
+            // If the last point is same as first, remove it to avoid double-closure
+            if (distinctPoints.Count > 1 && distinctPoints[^1] == distinctPoints[0])
+            {
+                distinctPoints.RemoveAt(distinctPoints.Count - 1);
+            }
+        }
+        var pts = distinctPoints.ToArray();
 
         SKBitmap result = new SKBitmap(source.Width, source.Height);
         using SKCanvas canvas = new SKCanvas(result);
@@ -656,29 +668,35 @@ public static class ImageHelpers
         };
 
         using SKPath path = new SKPath();
-        if (distinctPoints.Length > 2)
+        if (pts.Length > 2)
         {
             if (curved)
             {
-                // Create curved path using cubic bezier approximation
-                path.MoveTo(distinctPoints[0]);
-                for (int i = 1; i < distinctPoints.Length - 1; i++)
+                // Create curved path using quad bezier approximation on closed loop
+                // To avoid the "first and last connected with line" issue, we ensure full cycle
+                var lastPt = pts[^1];
+                var firstPt = pts[0];
+                var currentMid = new SKPoint((lastPt.X + firstPt.X) / 2, (lastPt.Y + firstPt.Y) / 2);
+
+                path.MoveTo(currentMid);
+
+                for (int i = 0; i < pts.Length; i++)
                 {
-                    var p0 = distinctPoints[i - 1];
-                    var p1 = distinctPoints[i];
-                    var p2 = distinctPoints[i + 1];
+                    // Use modulo to wrap around to 0
+                    var pCurrent = pts[i];
+                    var pNext = pts[(i + 1) % pts.Length];
                     
-                    var mid1 = new SKPoint((p0.X + p1.X) / 2, (p0.Y + p1.Y) / 2);
-                    var mid2 = new SKPoint((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+                    var nextMid = new SKPoint((pCurrent.X + pNext.X) / 2, (pCurrent.Y + pNext.Y) / 2);
                     
-                    path.QuadTo(p1, mid2);
+                    path.QuadTo(pCurrent, nextMid);
+                    
+                    currentMid = nextMid;
                 }
-                path.LineTo(distinctPoints[^1]);
                 path.Close();
             }
             else
             {
-                path.AddPoly(distinctPoints, true);
+                path.AddPoly(pts, true);
             }
             
             canvas.DrawPath(path, paint);
@@ -705,7 +723,7 @@ public static class ImageHelpers
         {
             int sliceHeight = rand.Next(minHeight, maxHeight + 1);
             sliceHeight = Math.Min(sliceHeight, source.Height - y);
-            
+
             int shift = rand.Next(minShift, maxShift + 1);
 
             SKRect srcRect = new SKRect(0, y, source.Width, y + sliceHeight);

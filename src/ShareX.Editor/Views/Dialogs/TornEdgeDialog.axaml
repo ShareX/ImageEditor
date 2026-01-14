@@ -63,18 +63,14 @@
                 <WrapPanel>
                     <CheckBox x:Name="TopCheckBox" Content="Top" IsChecked="True" Foreground="{StaticResource TextColor}" Margin="0,0,16,0"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
-                    <CheckBox x:Name="RightCheckBox" Content="Right" Foreground="{StaticResource TextColor}" Margin="0,0,16,0"
+                    <CheckBox x:Name="RightCheckBox" Content="Right" IsChecked="True" Foreground="{StaticResource TextColor}" Margin="0,0,16,0"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
                     <CheckBox x:Name="BottomCheckBox" Content="Bottom" IsChecked="True" Foreground="{StaticResource TextColor}" Margin="0,0,16,0"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
-                    <CheckBox x:Name="LeftCheckBox" Content="Left" Foreground="{StaticResource TextColor}"
+                    <CheckBox x:Name="LeftCheckBox" Content="Left" IsChecked="True" Foreground="{StaticResource TextColor}"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
                 </WrapPanel>
             </StackPanel>
-
-            <!-- Random -->
-            <CheckBox x:Name="RandomCheckBox" Content="Random" IsChecked="True" Foreground="{StaticResource TextColor}"
-                      Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
 
             <!-- Curved edges -->
             <CheckBox x:Name="CurvedCheckBox" Content="Curved edges" Foreground="{StaticResource TextColor}"

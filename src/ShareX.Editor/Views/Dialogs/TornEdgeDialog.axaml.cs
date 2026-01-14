@@ -22,7 +22,6 @@ public partial class TornEdgeDialog : UserControl
     private CheckBox? _bottomCheckBox;
     private CheckBox? _leftCheckBox;
     private CheckBox? _curvedCheckBox;
-    private CheckBox? _randomCheckBox;
 
     public TornEdgeDialog()
     {
@@ -36,7 +35,6 @@ public partial class TornEdgeDialog : UserControl
         _bottomCheckBox = this.FindControl<CheckBox>("BottomCheckBox");
         _leftCheckBox = this.FindControl<CheckBox>("LeftCheckBox");
         _curvedCheckBox = this.FindControl<CheckBox>("CurvedCheckBox");
-        _randomCheckBox = this.FindControl<CheckBox>("RandomCheckBox");
         
         Loaded += OnLoaded;
     }
@@ -59,7 +57,6 @@ public partial class TornEdgeDialog : UserControl
     private bool GetBottom() => _bottomCheckBox?.IsChecked ?? true;
     private bool GetLeft() => _leftCheckBox?.IsChecked ?? false;
     private bool GetCurved() => _curvedCheckBox?.IsChecked ?? false;
-    private bool GetRandom() => _randomCheckBox?.IsChecked ?? true;
 
     private void OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
@@ -74,14 +71,14 @@ public partial class TornEdgeDialog : UserControl
     private void RaisePreview()
     {
         PreviewRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyTornEdge(img, GetDepth(), GetRange(), GetTop(), GetRight(), GetBottom(), GetLeft(), GetCurved(), GetRandom()),
+            img => ImageHelpers.ApplyTornEdge(img, GetDepth(), GetRange(), GetTop(), GetRight(), GetBottom(), GetLeft(), GetCurved()),
             "Torn edge applied"));
     }
 
     private void OnApplyClick(object? sender, RoutedEventArgs e)
     {
         ApplyRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyTornEdge(img, GetDepth(), GetRange(), GetTop(), GetRight(), GetBottom(), GetLeft(), GetCurved(), GetRandom()),
+            img => ImageHelpers.ApplyTornEdge(img, GetDepth(), GetRange(), GetTop(), GetRight(), GetBottom(), GetLeft(), GetCurved()),
             "Torn edge applied"));
     }
 

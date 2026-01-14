@@ -51,6 +51,26 @@
         <x:Double x:Key="AppFontSize">14</x:Double>
         <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
         <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
+
+        <DrawingBrush x:Key="CheckeredBrush" TileMode="Tile" SourceRect="0,0,20,20" DestinationRect="0,0,20,20">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#1E1E1E">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="0,0,20,20" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="#2E2E2E">
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <RectangleGeometry Rect="0,0,10,10" />
+                                <RectangleGeometry Rect="10,10,10,10" />
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -502,63 +522,72 @@
                         <LayoutTransformControl.LayoutTransform>
                             <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
                         </LayoutTransformControl.LayoutTransform>
-                        <Border x:Name="PreviewFrame"
-                                IsVisible="{Binding HasPreviewImage}"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"
-                                 Background="{Binding CanvasBackground}"
-                                 Padding="{Binding CanvasPadding}">
-                            <!-- Outer Border: Shadow effect -->
-                            <Border BoxShadow="{Binding CanvasShadow}"
-                                   CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
-                                <!-- Padding Border: Uses top-left pixel color -->
-                                <Border Background="{Binding SmartPaddingColor}"
-                                        Padding="{Binding SmartPaddingThickness}"
-                                        CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
-                                        ClipToBounds="True">
-                                    <!-- Inner Border: White background only -->
-                                    <Border Background="#FFFFFF">
-                                        <Grid Name="CanvasContainer"
-                                              Width="{Binding ImageWidth}"
-                                              Height="{Binding ImageHeight}">
+                        <!-- Main Canvas Container with Checkered Background and Shadow -->
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                             <!-- Checkered Background (Behind transparent parts of canvas) -->
+                             <Border Background="{StaticResource CheckeredBrush}" 
+                                     CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"/>
 
-                                            <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
-                                            <controls:SKCanvasControl Name="CanvasControl"
-                                                                    HorizontalAlignment="Stretch"
-                                                                    VerticalAlignment="Stretch"/>
-
-                                            <!-- Annotation Layer (Saved content) -->
-                                            <Canvas Name="AnnotationCanvas"
-                                                    Background="Transparent"
-                                                    IsVisible="{Binding HasPreviewImage}"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"
-                                                    Cursor="Cross"
-                                                    PointerPressed="OnCanvasPointerPressed"
-                                                    PointerMoved="OnCanvasPointerMoved"
-                                                    PointerReleased="OnCanvasPointerReleased">
-                                            </Canvas>
-
-                                            <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
-                                            <Canvas Name="OverlayCanvas"
-                                                    IsHitTestVisible="True"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"
-                                                    PointerPressed="OnCanvasPointerPressed"
-                                                    PointerMoved="OnCanvasPointerMoved"
-                                                    PointerReleased="OnCanvasPointerReleased">
-                                                <Rectangle Name="CropOverlay"
-                                                           IsVisible="False"
-                                                           Stroke="White"
-                                                           StrokeThickness="2"
-                                                           StrokeDashArray="4,2"
-                                                           Fill="#80000000" />
-                                            </Canvas>
-                                        </Grid>
-                                    </Border>
-                                </Border>
-                            </Border>
-                        </Border>
+                             <!-- Actual Content -->
+                             <Border x:Name="PreviewFrame"
+                                     IsVisible="{Binding HasPreviewImage}"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Background="{Binding CanvasBackground}"
+                                      Padding="{Binding CanvasPadding}">
+                                 <!-- Outer Border: User-controlled Shadow effect -->
+                                 <Border BoxShadow="{Binding CanvasShadow}"
+                                        CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
+                                     <!-- Padding Border: Uses top-left pixel color -->
+                                     <Border Background="{Binding SmartPaddingColor}"
+                                             Padding="{Binding SmartPaddingThickness}"
+                                             CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
+                                             ClipToBounds="True">
+                                         <!-- Inner Border: White background only -->
+                                         <Border Background="Transparent">
+                                             <Grid Name="CanvasContainer"
+                                                   Background="Transparent"
+                                                   Width="{Binding ImageWidth}"
+                                                   Height="{Binding ImageHeight}">
+     
+                                                 <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
+                                                 <controls:SKCanvasControl Name="CanvasControl"
+                                                                         HorizontalAlignment="Stretch"
+                                                                         VerticalAlignment="Stretch"/>
+     
+                                                 <!-- Annotation Layer (Saved content) -->
+                                                 <Canvas Name="AnnotationCanvas"
+                                                         Background="Transparent"
+                                                         IsVisible="{Binding HasPreviewImage}"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         Cursor="Cross"
+                                                         PointerPressed="OnCanvasPointerPressed"
+                                                         PointerMoved="OnCanvasPointerMoved"
+                                                         PointerReleased="OnCanvasPointerReleased">
+                                                 </Canvas>
+     
+                                                 <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
+                                                 <Canvas Name="OverlayCanvas"
+                                                         IsHitTestVisible="True"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         PointerPressed="OnCanvasPointerPressed"
+                                                         PointerMoved="OnCanvasPointerMoved"
+                                                         PointerReleased="OnCanvasPointerReleased">
+                                                     <Rectangle Name="CropOverlay"
+                                                                IsVisible="False"
+                                                                Stroke="White"
+                                                                StrokeThickness="2"
+                                                                StrokeDashArray="4,2"
+                                                                Fill="#80000000" />
+                                                 </Canvas>
+                                             </Grid>
+                                         </Border>
+                                     </Border>
+                                 </Border>
+                             </Border>
+                        </Grid>
                     </LayoutTransformControl>
                 </ScrollViewer>
             </Grid>

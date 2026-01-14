@@ -61,7 +61,7 @@ namespace ShareX.Editor.Loader
 
             using (var canvas = new SKCanvas(skBitmap))
             {
-                canvas.Clear(SKColors.White);
+                canvas.Clear(SKColors.Transparent);
                 using (var paint = new SKPaint { Color = SKColors.LightBlue, IsAntialias = true })
                 {
                     canvas.DrawCircle(width / 2, height / 2, 100, paint);

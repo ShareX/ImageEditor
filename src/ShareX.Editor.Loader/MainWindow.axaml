@@ -3,9 +3,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:ShareX.Editor.Views;assembly=ShareX.Editor"
+        xmlns:vm="clr-namespace:ShareX.Editor.ViewModels;assembly=ShareX.Editor"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="ShareX.Editor.Loader.MainWindow"
-        Title="ShareX Editor"
+        x:DataType="vm:MainViewModel"
+        Title="{Binding WindowTitle}"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
   <views:EditorView Name="EditorView" />

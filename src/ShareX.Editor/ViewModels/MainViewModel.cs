@@ -49,6 +49,9 @@ namespace ShareX.Editor.ViewModels
         private string _exportState = "";
 
         [ObservableProperty]
+        private string _windowTitle = "ShareX - Image Editor";
+
+        [ObservableProperty]
         private bool _showCaptureToolbar = true;
 
         // Events to signal View to perform canvas operations
@@ -98,6 +101,8 @@ namespace ShareX.Editor.ViewModels
                 {
                     ApplySmartPaddingCrop();
                 }
+                
+                WindowTitle = $"ShareX - Image Editor - {ImageWidth}x{ImageHeight}";
             }
             else
             {
@@ -321,7 +326,7 @@ namespace ShareX.Editor.ViewModels
         {
             Current = this;
             GradientPresets = BuildGradientPresets();
-            _canvasBackground = CopyBrush(GradientPresets[1].Brush);
+            _canvasBackground = CopyBrush(GradientPresets[0].Brush);
 
             // Get version from assembly
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -615,6 +620,7 @@ namespace ShareX.Editor.ViewModels
 
             return new ObservableCollection<GradientPreset>
             {
+                new() { Name = "None", Brush = Brushes.Transparent },
                 new() { Name = "Sunset", Brush = Make("#F093FB", "#F5576C") },
                 new() { Name = "Ocean", Brush = Make("#667EEA", "#764BA2") },
                 new() { Name = "Forest", Brush = Make("#11998E", "#38EF7D") },

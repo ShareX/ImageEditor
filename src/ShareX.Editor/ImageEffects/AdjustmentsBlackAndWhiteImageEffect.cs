@@ -3,7 +3,7 @@ using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects;
 
-public class FiltersBlackAndWhiteImageEffect : FiltersImageEffect
+public class AdjustmentsBlackAndWhiteImageEffect : AdjustmentsImageEffect
 {
     public override string Name => "Black and White";
     public override string IconKey => "IconAdjust";

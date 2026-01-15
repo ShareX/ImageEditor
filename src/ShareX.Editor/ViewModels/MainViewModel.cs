@@ -1253,25 +1253,25 @@ namespace ShareX.Editor.ViewModels
         [RelayCommand]
         private void InvertColors()
         {
-            ApplyOneShotEffect(img => new FiltersInvertImageEffect().Apply(img), "Inverted colors");
+            ApplyOneShotEffect(img => new AdjustmentsInvertImageEffect().Apply(img), "Inverted colors");
         }
 
         [RelayCommand]
         private void BlackAndWhite()
         {
-            ApplyOneShotEffect(img => new FiltersBlackAndWhiteImageEffect().Apply(img), "Applied Black & White filter");
+            ApplyOneShotEffect(img => new AdjustmentsBlackAndWhiteImageEffect().Apply(img), "Applied Black & White filter");
         }
 
         [RelayCommand]
         private void Sepia()
         {
-            ApplyOneShotEffect(img => new FiltersSepiaImageEffect().Apply(img), "Applied Sepia filter");
+            ApplyOneShotEffect(img => new AdjustmentsSepiaImageEffect().Apply(img), "Applied Sepia filter");
         }
 
         [RelayCommand]
         private void Polaroid()
         {
-            ApplyOneShotEffect(img => new FiltersPolaroidImageEffect().Apply(img), "Applied Polaroid filter");
+            ApplyOneShotEffect(img => new AdjustmentsPolaroidImageEffect().Apply(img), "Applied Polaroid filter");
         }
 
         private void ApplyOneShotEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect, string statusMessage)

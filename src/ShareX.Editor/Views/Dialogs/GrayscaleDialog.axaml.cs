@@ -28,13 +28,13 @@ namespace ShareX.Editor.Views.Dialogs
         private void RequestPreview()
         {
             float strength = (float)(this.FindControl<Slider>("StrengthSlider")?.Value ?? 100);
-            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new FiltersGrayscaleImageEffect { Strength = strength }.Apply(img), "Grayscale"));
+            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentsGrayscaleImageEffect { Strength = strength }.Apply(img), "Grayscale"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
         {
             float strength = (float)(this.FindControl<Slider>("StrengthSlider")?.Value ?? 100);
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new FiltersGrayscaleImageEffect { Strength = strength }.Apply(img), "Applied Grayscale"));
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentsGrayscaleImageEffect { Strength = strength }.Apply(img), "Applied Grayscale"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

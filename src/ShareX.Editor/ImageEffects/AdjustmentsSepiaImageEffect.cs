@@ -3,7 +3,7 @@ using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects;
 
-public class FiltersSepiaImageEffect : FiltersImageEffect
+public class AdjustmentsSepiaImageEffect : AdjustmentsImageEffect
 {
     public override string Name => "Sepia";
     public override string IconKey => "IconCoffee";

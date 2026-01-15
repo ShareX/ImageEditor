@@ -3,7 +3,7 @@ using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects;
 
-public class FiltersGrayscaleImageEffect : FiltersImageEffect
+public class AdjustmentsGrayscaleImageEffect : AdjustmentsImageEffect
 {
     public override string Name => "Grayscale";
     public override string IconKey => "IconCloud";

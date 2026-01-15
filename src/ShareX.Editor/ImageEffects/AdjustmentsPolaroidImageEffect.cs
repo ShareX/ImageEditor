@@ -3,7 +3,7 @@ using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects;
 
-public class FiltersPolaroidImageEffect : FiltersImageEffect
+public class AdjustmentsPolaroidImageEffect : AdjustmentsImageEffect
 {
     public override string Name => "Polaroid";
     public override string IconKey => "IconCameraRetro";

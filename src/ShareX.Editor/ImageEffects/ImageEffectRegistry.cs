@@ -35,12 +35,17 @@ public static class ImageEffectRegistry
             new AdjustmentsSelectiveColorImageEffect(),
             new AdjustmentsReplaceColorImageEffect(),
             
-            // Filters
-            new FiltersInvertImageEffect(),
-            new FiltersGrayscaleImageEffect(),
-            new FiltersBlackAndWhiteImageEffect(),
-            new FiltersSepiaImageEffect(),
-            new FiltersPolaroidImageEffect()
+            // Filters (parameterless)
+            new FiltersBlurImageEffect(),
+            new FiltersPixelateImageEffect(),
+            new FiltersSharpenImageEffect(),
+            
+            // Adjustments - Color Filters
+            new AdjustmentsInvertImageEffect(),
+            new AdjustmentsGrayscaleImageEffect(),
+            new AdjustmentsBlackAndWhiteImageEffect(),
+            new AdjustmentsSepiaImageEffect(),
+            new AdjustmentsPolaroidImageEffect()
         };
 
         Effects = effects.AsReadOnly();

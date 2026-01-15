@@ -2,10 +2,10 @@ using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects;
 
-public class FiltersRoundedCornersImageEffect : FiltersImageEffect
+public class ManipulationsRoundedCornersImageEffect : ImageEffect
 {
     public override string Name => "Rounded Corners";
-    public override string IconKey => "IconSquare";
+    public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
     public override bool HasParameters => true;
     public int CornerRadius { get; set; } = 20;
 

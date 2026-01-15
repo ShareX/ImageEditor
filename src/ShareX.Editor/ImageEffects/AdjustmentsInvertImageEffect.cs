@@ -3,7 +3,7 @@ using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects;
 
-public class FiltersInvertImageEffect : FiltersImageEffect
+public class AdjustmentsInvertImageEffect : AdjustmentsImageEffect
 {
     public override string Name => "Invert";
     public override string IconKey => "IconExchangeAlt";

@@ -28,13 +28,13 @@ namespace ShareX.Editor.Views.Dialogs
         private void RequestPreview()
         {
             int radius = (int)(this.FindControl<Slider>("RadiusSlider")?.Value ?? 20);
-            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new FiltersRoundedCornersImageEffect { CornerRadius = radius }.Apply(img), "Rounded Corners"));
+            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new ManipulationsRoundedCornersImageEffect { CornerRadius = radius }.Apply(img), "Rounded Corners"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
         {
             int radius = (int)(this.FindControl<Slider>("RadiusSlider")?.Value ?? 20);
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new FiltersRoundedCornersImageEffect { CornerRadius = radius }.Apply(img), "Applied Rounded Corners"));
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new ManipulationsRoundedCornersImageEffect { CornerRadius = radius }.Apply(img), "Applied Rounded Corners"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

@@ -163,12 +163,18 @@ public class EditorSelectionController
                  if (manualHit is SpotlightControl || manualHit is TextBox)
                  {
                      hitTarget = manualHit;
-                     manualHit = null;
                  }
 
-                 if (vm.ActiveTool == EditorTool.Spotlight && !(hitTarget is SpotlightControl))
+                 // Integrity Check: Ensure we didn't mistakenly hit the Spotlight overlay (visual pass-through)
+                 if (hitTarget is SpotlightControl sc && manualHit != sc)
                  {
-                     hitTarget = null;
+                      hitTarget = null;
+                 }
+
+                 if (vm.ActiveTool == EditorTool.Spotlight)
+                 {
+                      if (!(hitTarget is SpotlightControl)) hitTarget = null;
+                      if (!(manualHit is SpotlightControl)) manualHit = null;
                  }
 
                  if (hitTarget != null)

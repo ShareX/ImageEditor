@@ -57,7 +57,7 @@ public class SpotlightAnnotation : Annotation
         return new SpotlightControl
         {
             Annotation = this,
-            IsHitTestVisible = true,
+            IsHitTestVisible = false,
             Tag = this
         };
     }

@@ -778,7 +778,8 @@ public class EditorCore : IDisposable
                annotation is BaseEffectAnnotation ||
                annotation is FreehandAnnotation ||
                annotation is SmartEraserAnnotation ||
-               annotation is ImageAnnotation;
+               annotation is ImageAnnotation ||
+               annotation is SpotlightAnnotation;
     }
 
     /// <summary>

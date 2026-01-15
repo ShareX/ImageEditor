@@ -522,35 +522,4 @@ public static class ImageHelpers
         return result;
     }
 
-    /// <summary>
-    /// Apply skew transformation to the image
-    /// </summary>
-    public static SKBitmap AddSkew(SKBitmap source, int horizontally, int vertically)
-    {
-        if (source is null) throw new ArgumentNullException(nameof(source));
-        if (horizontally == 0 && vertically == 0) return source.Copy();
-
-        float skewX = horizontally / 100f;
-        float skewY = vertically / 100f;
-
-        // Calculate new dimensions to fit the skewed image
-        int extraWidth = (int)(Math.Abs(skewX) * source.Height);
-        int extraHeight = (int)(Math.Abs(skewY) * source.Width);
-        int newWidth = source.Width + extraWidth;
-        int newHeight = source.Height + extraHeight;
-
-        SKBitmap result = new SKBitmap(newWidth, newHeight, source.ColorType, source.AlphaType);
-        using SKCanvas canvas = new SKCanvas(result);
-        canvas.Clear(SKColors.Transparent);
-
-        // Translate to center the skewed image
-        float offsetX = skewX < 0 ? extraWidth : 0;
-        float offsetY = skewY < 0 ? extraHeight : 0;
-        
-        canvas.Translate(offsetX, offsetY);
-        canvas.Skew(skewX, skewY);
-        canvas.DrawBitmap(source, 0, 0);
-
-        return result;
-    }
 }

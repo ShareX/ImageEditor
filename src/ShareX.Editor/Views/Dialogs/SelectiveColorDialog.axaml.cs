@@ -90,7 +90,7 @@ namespace ShareX.Editor.Views.Dialogs
         private SKBitmap ApplyAllAdjustments(SKBitmap source)
         {
             // Create the effect and apply it
-            var effect = new SelectiveColorImageEffect
+            var effect = new AdjustmentSelectiveColorImageEffect
             {
                 Adjustments = new Dictionary<SelectiveColorRange, SelectiveColorAdjustment>(_adjustments)
             };

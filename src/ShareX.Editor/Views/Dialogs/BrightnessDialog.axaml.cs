@@ -46,7 +46,7 @@ namespace ShareX.Editor.Views.Dialogs
              var slider = this.FindControl<Slider>("AmountSlider");
              float amount = (float)(slider?.Value ?? 0);
 
-             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new BrightnessImageEffect { Amount = amount }.Apply(img), $"Brightness: {amount:0}"));
+             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentBrightnessImageEffect { Amount = amount }.Apply(img), $"Brightness: {amount:0}"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
@@ -54,7 +54,7 @@ namespace ShareX.Editor.Views.Dialogs
             var slider = this.FindControl<Slider>("AmountSlider");
             float amount = (float)(slider?.Value ?? 0);
             
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new BrightnessImageEffect { Amount = amount }.Apply(img), $"Adjusted brightness by {amount:0}"));
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentBrightnessImageEffect { Amount = amount }.Apply(img), $"Adjusted brightness by {amount:0}"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

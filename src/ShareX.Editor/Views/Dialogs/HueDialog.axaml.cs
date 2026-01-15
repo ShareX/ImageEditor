@@ -32,7 +32,7 @@ namespace ShareX.Editor.Views.Dialogs
              var slider = this.FindControl<Slider>("AmountSlider");
              float amount = (float)(slider?.Value ?? 0);
 
-             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new HueImageEffect { Amount = amount }.Apply(img), $"Hue: {amount:0}°"));
+             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentHueImageEffect { Amount = amount }.Apply(img), $"Hue: {amount:0}°"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
@@ -40,7 +40,7 @@ namespace ShareX.Editor.Views.Dialogs
             var slider = this.FindControl<Slider>("AmountSlider");
             float amount = (float)(slider?.Value ?? 0);
             
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new HueImageEffect { Amount = amount }.Apply(img), $"Adjusted hue by {amount:0}°"));
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentHueImageEffect { Amount = amount }.Apply(img), $"Adjusted hue by {amount:0}°"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

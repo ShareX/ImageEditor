@@ -25,15 +25,15 @@ public static class ImageEffectRegistry
             new AutoCropImageEffect(),
             
             // Adjustments
-            new BrightnessImageEffect(),
-            new ContrastImageEffect(),
-            new HueImageEffect(),
-            new SaturationImageEffect(),
-            new GammaImageEffect(),
-            new AlphaImageEffect(),
-            new ColorizeImageEffect(),
-            new SelectiveColorImageEffect(),
-            new ReplaceColorImageEffect(),
+            new AdjustmentBrightnessImageEffect(),
+            new AdjustmentContrastImageEffect(),
+            new AdjustmentHueImageEffect(),
+            new AdjustmentSaturationImageEffect(),
+            new AdjustmentGammaImageEffect(),
+            new AdjustmentAlphaImageEffect(),
+            new AdjustmentColorizeImageEffect(),
+            new AdjustmentSelectiveColorImageEffect(),
+            new AdjustmentReplaceColorImageEffect(),
             
             // Filters
             new InvertImageEffect(),

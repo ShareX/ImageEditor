@@ -32,7 +32,7 @@ namespace ShareX.Editor.Views.Dialogs
              var slider = this.FindControl<Slider>("AmountSlider");
              float amount = (float)(slider?.Value ?? 100);
 
-             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AlphaImageEffect { Amount = amount }.Apply(img), $"Alpha: {amount:0}%"));
+             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentAlphaImageEffect { Amount = amount }.Apply(img), $"Alpha: {amount:0}%"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
@@ -40,7 +40,7 @@ namespace ShareX.Editor.Views.Dialogs
             var slider = this.FindControl<Slider>("AmountSlider");
             float amount = (float)(slider?.Value ?? 100);
             
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new AlphaImageEffect { Amount = amount }.Apply(img), $"Set alpha to {amount:0}%"));
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentAlphaImageEffect { Amount = amount }.Apply(img), $"Set alpha to {amount:0}%"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

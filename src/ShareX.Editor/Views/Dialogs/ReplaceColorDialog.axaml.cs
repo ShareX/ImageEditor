@@ -74,7 +74,7 @@ namespace ShareX.Editor.Views.Dialogs
              SKColor replace = ParseColor(this.FindControl<TextBox>("ReplaceColorHex")?.Text);
              float tolerance = (float)(this.FindControl<Slider>("ToleranceSlider")?.Value ?? 0);
 
-             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new ReplaceColorImageEffect { TargetColor = target, ReplaceColor = replace, Tolerance = tolerance }.Apply(img), $"Replace Color"));
+             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentReplaceColorImageEffect { TargetColor = target, ReplaceColor = replace, Tolerance = tolerance }.Apply(img), $"Replace Color"));
         }
         
         private SKColor ParseColor(string? hex)
@@ -97,7 +97,7 @@ namespace ShareX.Editor.Views.Dialogs
              SKColor replace = ParseColor(this.FindControl<TextBox>("ReplaceColorHex")?.Text);
              float tolerance = (float)(this.FindControl<Slider>("ToleranceSlider")?.Value ?? 0);
             
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new ReplaceColorImageEffect { TargetColor = target, ReplaceColor = replace, Tolerance = tolerance }.Apply(img), "Applied Replace Color"));
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new AdjustmentReplaceColorImageEffect { TargetColor = target, ReplaceColor = replace, Tolerance = tolerance }.Apply(img), "Applied Replace Color"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

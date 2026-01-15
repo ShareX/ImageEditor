@@ -823,6 +823,9 @@ namespace ShareX.Editor.ViewModels
         // Event for View to handle clipboard copy (requires TopLevel access)
         public event Func<Bitmap, Task>? CopyRequested;
 
+        // Event for host app to handle image upload (passes Bitmap for UploadImage)
+        public event Func<Bitmap, Task>? UploadRequested;
+
         // Event for View to show error dialog
         public event Func<string, string, Task>? ShowErrorDialog;
 
@@ -984,31 +987,25 @@ namespace ShareX.Editor.ViewModels
                 return;
             }
 
-            try
+            if (UploadRequested != null)
             {
-                StatusText = "Uploading...";
-                ExportState = "Uploading";
-
-                // TODO: Implement actual upload logic
-                // This will be integrated with the upload system later
-                // For now, just provide a placeholder that saves to temp and shows a message
-
-                var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"ShareX_Upload_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
-                imageToUpload.Save(tempPath);
-
-                StatusText = "Upload complete (placeholder - integration needed)";
-                ExportState = "Uploaded";
-                DebugHelper.WriteLine($"Upload placeholder: Image saved to {tempPath}");
-
-                // TODO: Replace with actual upload call:
-                // var uploadResult = await UploadManager.UploadImageAsync(tempPath);
-                // if (uploadResult.IsSuccess) StatusText = $"Uploaded: {uploadResult.URL}";
+                try
+                {
+                    StatusText = "Uploading...";
+                    ExportState = "Uploading";
+                    await UploadRequested.Invoke(imageToUpload);
+                    DebugHelper.WriteLine("Upload: Image passed to host for upload.");
+                }
+                catch (Exception ex)
+                {
+                    StatusText = $"Upload failed: {ex.Message}";
+                    ExportState = "";
+                    DebugHelper.WriteLine($"Upload failed: {ex.Message}");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                StatusText = $"Upload failed: {ex.Message}";
-                ExportState = "";
-                DebugHelper.WriteLine($"Upload failed: {ex.Message}");
+                StatusText = "Upload not available";
             }
         }
 

@@ -458,7 +458,7 @@ namespace ShareX.Editor.Views
 
              }
              else if (annotation is SpotlightAnnotation spotlight) {
-                var s = new SpotlightControl { Annotation = spotlight, Tag = spotlight };
+                var s = new SpotlightControl { Annotation = spotlight, Tag = spotlight, IsHitTestVisible = false };
                 Canvas.SetLeft(s, 0);
                 Canvas.SetTop(s, 0);
                 s.Width = spotlight.CanvasSize.Width;

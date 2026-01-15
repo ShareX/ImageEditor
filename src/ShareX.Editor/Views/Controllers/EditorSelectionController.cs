@@ -143,7 +143,7 @@ public class EditorSelectionController
                 }
             }
 
-            if (vm.ActiveTool == EditorTool.Select)
+            if (vm.ActiveTool == EditorTool.Select || vm.ActiveTool == EditorTool.Spotlight)
             {
                  // Hit test
                  var hitSource = e.Source as global::Avalonia.Visual;
@@ -157,6 +157,18 @@ public class EditorSelectionController
                          break;
                      }
                      hitSource = hitSource.GetVisualParent();
+                 }
+
+                 var manualHit = HitTestShape(canvas, point);
+                 if (manualHit is SpotlightControl || manualHit is TextBox)
+                 {
+                     hitTarget = manualHit;
+                     manualHit = null;
+                 }
+
+                 if (vm.ActiveTool == EditorTool.Spotlight && !(hitTarget is SpotlightControl))
+                 {
+                     hitTarget = null;
                  }
 
                  if (hitTarget != null)
@@ -179,9 +191,6 @@ public class EditorSelectionController
                  }
                  else
                  {
-                     // Fallback: Manual hit detection (for Polylines with lenient stroke hit test)
-                     // If Avalonia hit test failed (e.g. clicked slightly off-stroke on polyline), use our custom tolerance.
-                     var manualHit = HitTestShape(canvas, point);
                      if (manualHit != null)
                      {
                           if (manualHit is TextBox tb && e.ClickCount == 2)
@@ -479,6 +488,20 @@ public class EditorSelectionController
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
             return;
+        }
+
+        if (_selectedShape is SpotlightControl spotlight && spotlight.Annotation is SpotlightAnnotation sa)
+        {
+             var currentStart = sa.StartPoint;
+             var currentEnd = sa.EndPoint;
+             sa.StartPoint = new SKPoint(currentStart.X + (float)deltaX, currentStart.Y + (float)deltaY);
+             sa.EndPoint = new SKPoint(currentEnd.X + (float)deltaX, currentEnd.Y + (float)deltaY);
+             spotlight.InvalidateVisual();
+             
+             _lastDragPoint = currentPoint;
+             UpdateSelectionHandles();
+             UpdateHoverOutline();
+             return;
         }
 
         var left = Canvas.GetLeft(_selectedShape);
@@ -783,6 +806,12 @@ public class EditorSelectionController
             if (child.Name == "CropOverlay" || child.Name == "CutOutOverlay") continue;
             // TextBox excluded? No, we want to select it now.
             // if (child is TextBox) continue;
+
+            if (child is SpotlightControl sc && sc.Annotation is SpotlightAnnotation sa)
+            {
+                if (sa.GetBounds().Contains(ToSKPoint(currentPoint))) return sc;
+                continue;
+            }
             
             // Check if point is within the bounds of this control
             var bounds = child.Bounds;
@@ -915,7 +944,16 @@ public class EditorSelectionController
             height = Math.Abs(endpoints.End.Y - endpoints.Start.Y);
             // Add some padding for thin lines
             if (width < 10) { left -= 5; width += 10; }
+
             if (height < 10) { top -= 5; height += 10; }
+        }
+        else if (_hoveredShape is SpotlightControl sc && sc.Annotation is SpotlightAnnotation sa)
+        {
+            var b = sa.GetBounds();
+            left = b.Left;
+            top = b.Top;
+            width = b.Width;
+            height = b.Height;
         }
         else
         {

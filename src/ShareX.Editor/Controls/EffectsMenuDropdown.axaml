@@ -157,6 +157,19 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         
+                        <Separator/>
+                        
+                        <MenuItem Header="Rounded Corners..." Click="OnRoundedCornersClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Skew..." Click="OnSkewClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSliders}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
                     </MenuItem>
 
                     <!-- Adjustments Submenu -->
@@ -231,7 +244,7 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Sepia" Click="OnSepiaClick">
+                        <MenuItem Header="Sepia..." Click="OnSepiaClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconCoffee}"/>
                             </MenuItem.Icon>
@@ -285,6 +298,24 @@
                         <MenuItem Header="Slice..." Click="OnSliceClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
+                        <Separator/>
+                        
+                        <MenuItem Header="Blur..." Click="OnBlurClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCloud}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Pixelate..." Click="OnPixelateClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Sharpen..." Click="OnSharpenClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconMagic}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>

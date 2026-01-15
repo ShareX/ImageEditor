@@ -167,15 +167,6 @@ namespace ShareX.Editor.Views
                 {
                     _zoomController.HandleZoomPropertyChanged(vm);
                 }
-                else if (e.PropertyName == nameof(MainViewModel.IsRotateCustomAngleDialogOpen))
-                {
-                    if (vm.IsRotateCustomAngleDialogOpen)
-                    {
-                        var dialog = new RotateCustomAngleDialog();
-                        vm.ModalContent = dialog;
-                        vm.IsModalOpen = true;
-                    }
-                }
                 else if (e.PropertyName == nameof(MainViewModel.ActiveTool))
                 {
                     _selectionController.ClearSelection();
@@ -916,6 +907,7 @@ namespace ShareX.Editor.Views
         {
             if (DataContext is MainViewModel vm)
             {
+                vm.OpenRotateCustomAngleDialogCommand.Execute(null);
                 var dialog = new RotateCustomAngleDialog();
                 vm.EffectsPanelContent = dialog;
                 vm.IsEffectsPanelOpen = true;
@@ -955,7 +947,7 @@ namespace ShareX.Editor.Views
 
         private void OnInvertRequested(object? sender, EventArgs e) { if (DataContext is MainViewModel vm) vm.InvertColorsCommand.Execute(null); }
         private void OnBlackAndWhiteRequested(object? sender, EventArgs e) { if (DataContext is MainViewModel vm) vm.BlackAndWhiteCommand.Execute(null); }
-        private void OnSepiaRequested(object? sender, EventArgs e) { if (DataContext is MainViewModel vm) vm.SepiaCommand.Execute(null); }
+        private void OnSepiaRequested(object? sender, EventArgs e) => ShowEffectDialog(new SepiaDialog());
         private void OnPolaroidRequested(object? sender, EventArgs e) { if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null); }
 
         // Filter handlers
@@ -966,6 +958,11 @@ namespace ShareX.Editor.Views
         private void OnReflectionRequested(object? sender, EventArgs e) => ShowEffectDialog(new ReflectionDialog());
         private void OnTornEdgeRequested(object? sender, EventArgs e) => ShowEffectDialog(new TornEdgeDialog());
         private void OnSliceRequested(object? sender, EventArgs e) => ShowEffectDialog(new SliceDialog());
+        private void OnRoundedCornersRequested(object? sender, EventArgs e) => ShowEffectDialog(new RoundedCornersDialog());
+        private void OnSkewRequested(object? sender, EventArgs e) => ShowEffectDialog(new SkewDialog());
+        private void OnBlurRequested(object? sender, EventArgs e) => ShowEffectDialog(new BlurDialog());
+        private void OnPixelateRequested(object? sender, EventArgs e) => ShowEffectDialog(new PixelateDialog());
+        private void OnSharpenRequested(object? sender, EventArgs e) => ShowEffectDialog(new SharpenDialog());
 
 
         private void ShowEffectDialog<T>(T dialog) where T : UserControl

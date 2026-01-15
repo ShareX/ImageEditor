@@ -206,6 +206,21 @@ namespace ShareX.Editor.Controls
             FlipVerticalRequested?.Invoke(this, EventArgs.Empty);
         }
 
+        public event EventHandler? RoundedCornersRequested;
+        public event EventHandler? SkewRequested;
+
+        private void OnRoundedCornersClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            RoundedCornersRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnSkewClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            SkewRequested?.Invoke(this, EventArgs.Empty);
+        }
+
         // --- Filters ---
         public event EventHandler? BorderRequested;
         public event EventHandler? OutlineRequested;
@@ -255,6 +270,28 @@ namespace ShareX.Editor.Controls
         {
             ClosePopup();
             SliceRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public event EventHandler? BlurRequested;
+        public event EventHandler? PixelateRequested;
+        public event EventHandler? SharpenRequested;
+
+        private void OnBlurClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            BlurRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnPixelateClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            PixelateRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnSharpenClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            SharpenRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }

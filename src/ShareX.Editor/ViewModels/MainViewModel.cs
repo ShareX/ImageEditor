@@ -1443,6 +1443,9 @@ namespace ShareX.Editor.ViewModels
         [ObservableProperty]
         private bool _isRotateCustomAngleDialogOpen;
 
+        [ObservableProperty]
+        private bool _rotateAutoResize = true;
+
         private SkiaSharp.SKBitmap? _rotateCustomAngleOriginalBitmap;
 
         [RelayCommand]
@@ -1465,14 +1468,19 @@ namespace ShareX.Editor.ViewModels
              RotateCustomAngleLiveApply();
         }
 
+        partial void OnRotateAutoResizeChanged(bool value)
+        {
+             RotateCustomAngleLiveApply();
+        }
+
         private void RotateCustomAngleLiveApply()
         {
             if (!IsRotateCustomAngleDialogOpen || _rotateCustomAngleOriginalBitmap == null) return;
 
             float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
-            var effect = RotateImageEffect.Custom(angle);
+            var effect = RotateImageEffect.Custom(angle, RotateAutoResize);
 
-            using var result = effect.Apply(_rotateCustomAngleOriginalBitmap);
+            var result = effect.Apply(_rotateCustomAngleOriginalBitmap);
             
             UpdatePreview(result, clearAnnotations: false); 
         }
@@ -1484,10 +1492,16 @@ namespace ShareX.Editor.ViewModels
 
             float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
 
-            var effect = RotateImageEffect.Custom(angle);
+            // Push original to undo stack
+            _imageUndoStack.Push(_rotateCustomAngleOriginalBitmap.Copy());
+            _imageRedoStack.Clear();
+
+            var effect = RotateImageEffect.Custom(angle, RotateAutoResize);
             var result = effect.Apply(_rotateCustomAngleOriginalBitmap);
             
-            ApplyEffect(result, $"Rotated {angle:0.0}°");
+            UpdatePreview(result, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = $"Rotated {angle:0}°";
 
             IsRotateCustomAngleDialogOpen = false;
             IsModalOpen = false;

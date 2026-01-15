@@ -767,13 +767,16 @@ public class EditorCore : IDisposable
     private bool IsVectorAnnotation(Annotation annotation)
     {
         // Define what counts as a 'Vector' annotation that Avalonia handles
+        // Effect annotations (Blur, Pixelate, Magnify, Highlight) are also vector in the hybrid model
+        // because they render their effect bitmaps directly as ImageBrush fills in Avalonia controls
         return annotation is RectangleAnnotation ||
                annotation is EllipseAnnotation ||
                annotation is LineAnnotation ||
                annotation is ArrowAnnotation ||
                annotation is TextAnnotation ||
                annotation is SpeechBalloonAnnotation ||
-               annotation is NumberAnnotation;
+               annotation is NumberAnnotation ||
+               annotation is BaseEffectAnnotation;
     }
 
     /// <summary>

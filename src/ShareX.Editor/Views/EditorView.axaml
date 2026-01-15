@@ -305,7 +305,12 @@
                         GlowRequested="OnGlowRequested"
                         ReflectionRequested="OnReflectionRequested"
                         TornEdgeRequested="OnTornEdgeRequested"
-                        SliceRequested="OnSliceRequested"/>
+                        SliceRequested="OnSliceRequested"
+                        RoundedCornersRequested="OnRoundedCornersRequested"
+                        SkewRequested="OnSkewRequested"
+                        BlurRequested="OnBlurRequested"
+                        PixelateRequested="OnPixelateRequested"
+                        SharpenRequested="OnSharpenRequested"/>
 
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>

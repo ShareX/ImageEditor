@@ -1,5 +1,5 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
+
 
 namespace ShareX.Editor.ImageEffects;
 
@@ -41,7 +41,7 @@ public class AdjustmentsSelectiveColorImageEffect : AdjustmentsImageEffect
     {
         if (Adjustments == null || Adjustments.Count == 0) return source.Copy();
 
-        return ImageHelpers.ApplyPixelOperation(source, (c) =>
+        return ApplyPixelOperation(source, (c) =>
         {
             c.ToHsl(out float h, out float s, out float l); 
             

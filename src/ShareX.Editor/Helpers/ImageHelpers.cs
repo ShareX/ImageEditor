@@ -283,61 +283,6 @@ public static class ImageHelpers
 
 
 
-    internal static SKBitmap ApplyColorMatrix(SKBitmap source, float[] matrix)
-    {
-        using var filter = SKColorFilter.CreateColorMatrix(matrix);
-        return ApplyColorFilter(source, filter);
-    }
-
-    internal static SKBitmap ApplyColorFilter(SKBitmap source, SKColorFilter filter)
-    {
-        if (source is null) throw new ArgumentNullException(nameof(source));
-
-        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-        using (SKCanvas canvas = new SKCanvas(result))
-        {
-            canvas.Clear(SKColors.Transparent);
-            using (SKPaint paint = new SKPaint())
-            {
-                paint.ColorFilter = filter;
-                canvas.DrawBitmap(source, 0, 0, paint);
-            }
-        }
-        return result;
-    }
-
-
-
-    internal static SKBitmap ApplyPixelOperation(SKBitmap source, Func<SKColor, SKColor> operation)
-    {
-        if (source is null) throw new ArgumentNullException(nameof(source));
-
-        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-
-        // Lock pixels for direct access (fast)
-        IntPtr srcPtr = source.GetPixels();
-        IntPtr dstPtr = result.GetPixels();
-
-        int count = source.Width * source.Height;
-
-        // Iterate assuming 32-bit (8888) format which is standard for SKBitmap usually
-        // Unsafe block would be faster, but let's stick to safe GetPixel/SetPixel if possible 
-        // or loop over buffer.
-        // For simplicity and safety in this context:
-
-        for (int x = 0; x < source.Width; x++)
-        {
-            for (int y = 0; y < source.Height; y++)
-            {
-                SKColor original = source.GetPixel(x, y);
-                SKColor modified = operation(original);
-                result.SetPixel(x, y, modified);
-            }
-        }
-
-        return result;
-    }
-
     // ============== FILTERS ==============
 
     public enum BorderType { Outside, Inside }

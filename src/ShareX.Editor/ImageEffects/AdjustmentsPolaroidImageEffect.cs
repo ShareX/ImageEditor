@@ -1,5 +1,5 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
+
 
 namespace ShareX.Editor.ImageEffects;
 
@@ -15,6 +15,6 @@ public class AdjustmentsPolaroidImageEffect : AdjustmentsImageEffect
             -0.016f, -0.016f, 1.483f, 0, 0,
             0,       0,       0,      1, 0
         };
-        return ImageHelpers.ApplyColorMatrix(source, matrix);
+        return ApplyColorMatrix(source, matrix);
     }
 }

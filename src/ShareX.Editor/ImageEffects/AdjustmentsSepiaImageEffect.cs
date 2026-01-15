@@ -1,5 +1,5 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
+
 
 namespace ShareX.Editor.ImageEffects;
 
@@ -36,6 +36,6 @@ public class AdjustmentsSepiaImageEffect : AdjustmentsImageEffect
             matrix[i] = identityMatrix[i] * (1 - s) + sepiaMatrix[i] * s;
         }
         
-        return ImageHelpers.ApplyColorMatrix(source, matrix);
+        return ApplyColorMatrix(source, matrix);
     }
 }

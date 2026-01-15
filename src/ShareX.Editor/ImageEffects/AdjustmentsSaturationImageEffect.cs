@@ -1,5 +1,5 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
+
 
 namespace ShareX.Editor.ImageEffects;
 
@@ -28,6 +28,6 @@ public class AdjustmentsSaturationImageEffect : AdjustmentsImageEffect
             r,     g,     b + x, 0, 0,
             0,     0,     0,     1, 0
         };
-        return ImageHelpers.ApplyColorMatrix(source, matrix);
+        return ApplyColorMatrix(source, matrix);
     }
 }

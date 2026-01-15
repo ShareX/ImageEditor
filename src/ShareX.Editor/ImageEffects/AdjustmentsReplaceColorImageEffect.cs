@@ -14,7 +14,7 @@ public class AdjustmentsReplaceColorImageEffect : AdjustmentsImageEffect
     public override SKBitmap Apply(SKBitmap source) 
     {
          int tol = (int)(Tolerance * 2.55f);
-         return ImageHelpers.ApplyPixelOperation(source, (c) =>
+         return ApplyPixelOperation(source, (c) =>
          {
              if (ImageHelpers.ColorsMatch(c, TargetColor, tol))
              {

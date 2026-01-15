@@ -1,5 +1,5 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
+
 
 namespace ShareX.Editor.ImageEffects;
 
@@ -21,6 +21,6 @@ public class AdjustmentsHueImageEffect : AdjustmentsImageEffect
             0.213f - c * 0.213f - s * 0.787f, 0.715f - c * 0.715f + s * 0.715f, 0.072f + c * 0.928f + s * 0.072f, 0, 0,
             0, 0, 0, 1, 0
         };
-        return ImageHelpers.ApplyColorMatrix(source, matrix);
+        return ApplyColorMatrix(source, matrix);
     }
 }

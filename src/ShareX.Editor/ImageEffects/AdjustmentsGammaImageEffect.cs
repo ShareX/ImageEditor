@@ -1,5 +1,5 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
+
 
 namespace ShareX.Editor.ImageEffects;
 
@@ -20,6 +20,6 @@ public class AdjustmentsGammaImageEffect : AdjustmentsImageEffect
         }
 
         using var filter = SKColorFilter.CreateTable(null, table, table, table);
-        return ImageHelpers.ApplyColorFilter(source, filter);
+        return ApplyColorFilter(source, filter);
     }
 }

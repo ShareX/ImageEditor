@@ -667,6 +667,7 @@ public class EditorInputController
                  }
              }
              canvas.Children.Remove(cutOverlay);
+             _currentShape = null;
         }
     }
 

@@ -324,6 +324,16 @@ public class EditorInputController
          var vm = ViewModel;
          if (vm != null && (vm.ActiveTool == EditorTool.Crop || vm.ActiveTool == EditorTool.CutOut))
          {
+             // Allow cancelling selection by right-clicking while holding left button
+             var props = e.GetCurrentPoint(canvas).Properties;
+             if (props.IsRightButtonPressed)
+             {
+                 CancelActiveRegionDrawing(canvas);
+                 e.Pointer.Capture(null);
+                 vm.StatusText = "Selection cancelled";
+                 return;
+             }
+             
              currentPoint = new Point(
                  Math.Max(0, Math.Min(currentPoint.X, canvas.Bounds.Width)),
                  Math.Max(0, Math.Min(currentPoint.Y, canvas.Bounds.Height))

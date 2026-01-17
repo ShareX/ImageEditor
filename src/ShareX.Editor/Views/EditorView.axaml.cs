@@ -67,6 +67,7 @@ namespace ShareX.Editor.Views
 
             // Subscribe to selection controller events
             _selectionController.RequestUpdateEffect += OnRequestUpdateEffect;
+            _selectionController.SelectionChanged += OnSelectionChanged;
 
             // SIP0018: Subscribe to Core events
             _editorCore.InvalidateRequested += () => Avalonia.Threading.Dispatcher.UIThread.Post(RenderCore);
@@ -89,6 +90,14 @@ namespace ShareX.Editor.Views
 
             // Capture wheel events in tunneling phase so ScrollViewer doesn't scroll when using Ctrl+wheel zoom.
             AddHandler(PointerWheelChangedEvent, OnPreviewPointerWheelChanged, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        }
+        
+        private void OnSelectionChanged(bool hasSelection)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.HasSelectedAnnotation = hasSelection;
+            }
         }
         
         private void UpdateViewModelHistoryState(MainViewModel vm)
@@ -408,6 +417,9 @@ namespace ShareX.Editor.Views
 
             // 3. Validate state synchronization (ISSUE-001 mitigation)
             ValidateAnnotationSync();
+            
+            // Update HasAnnotations state
+            UpdateHasAnnotationsState();
         }
 
         private Control? CreateControlForAnnotation(Annotation annotation)
@@ -605,6 +617,9 @@ namespace ShareX.Editor.Views
                     // Remove from view - Undo not fully supported for delete in view layer for now
                     // as it requires recreating the proper shape from history which is handled by core sync
                     _selectionController.ClearSelection();
+                    
+                    // Update HasAnnotations state
+                    UpdateHasAnnotationsState();
                 }
             }
         }
@@ -618,6 +633,26 @@ namespace ShareX.Editor.Views
                 _selectionController.ClearSelection();
                 _editorCore.ClearAll();
                 RenderCore();
+                
+                // Update HasAnnotations state
+                if (DataContext is MainViewModel vm)
+                {
+                    vm.HasAnnotations = false;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Updates the ViewModel's HasAnnotations property based on current annotation count.
+        /// </summary>
+        private void UpdateHasAnnotationsState()
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                int coreAnnotationCount = _editorCore.Annotations.Count;
+                int canvasChildCount = canvas?.Children.Count ?? 0;
+                vm.HasAnnotations = coreAnnotationCount > 0 || canvasChildCount > 0;
             }
         }
 

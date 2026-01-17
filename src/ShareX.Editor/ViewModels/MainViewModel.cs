@@ -82,6 +82,38 @@ namespace ShareX.Editor.ViewModels
             set => SetProperty(ref _hasPreviewImage, value);
         }
 
+        private bool _hasSelectedAnnotation;
+        /// <summary>
+        /// Whether there is a currently selected annotation (shape). Used for Delete button CanExecute.
+        /// </summary>
+        public bool HasSelectedAnnotation
+        {
+            get => _hasSelectedAnnotation;
+            set
+            {
+                if (SetProperty(ref _hasSelectedAnnotation, value))
+                {
+                    DeleteSelectedCommand.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
+        private bool _hasAnnotations;
+        /// <summary>
+        /// Whether there are any annotations on the canvas. Used for Clear All button CanExecute.
+        /// </summary>
+        public bool HasAnnotations
+        {
+            get => _hasAnnotations;
+            set
+            {
+                if (SetProperty(ref _hasAnnotations, value))
+                {
+                    ClearAnnotationsCommand.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
         [ObservableProperty]
         private double _imageWidth;
 
@@ -806,13 +838,13 @@ namespace ShareX.Editor.ViewModels
             RedoRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
         private void DeleteSelected()
         {
             DeleteRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(HasAnnotations))]
         private void ClearAnnotations()
         {
             ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);

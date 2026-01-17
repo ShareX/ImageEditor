@@ -44,6 +44,9 @@ public class EditorSelectionController
     // Event invoked when visual needs update (for Effects)
     public event Action<Control>? RequestUpdateEffect;
 
+    // Event invoked when selection state changes (shape selected or deselected)
+    public event Action<bool>? SelectionChanged;
+
     public EditorSelectionController(EditorView view)
     {
         _view = view;
@@ -51,21 +54,33 @@ public class EditorSelectionController
 
     public void ClearSelection()
     {
+        var wasSelected = _selectedShape != null;
         _selectedShape = null;
         _isDraggingHandle = false;
         _draggedHandle = null;
         _isDraggingShape = false;
         ClearHoverOutline();
         UpdateSelectionHandles();
+        if (wasSelected)
+        {
+            SelectionChanged?.Invoke(false);
+        }
     }
 
     public void SetSelectedShape(Control shape)
     {
+        var wasNull = _selectedShape == null;
         _selectedShape = shape;
         // Set the hovered shape to the selected shape so ant lines appear
         _hoveredShape = shape;
         UpdateHoverOutline();
         UpdateSelectionHandles();
+        
+        // Notify selection changed
+        if (wasNull && shape != null)
+        {
+            SelectionChanged?.Invoke(true);
+        }
         
         // Auto-enter text edit mode for speech balloon
         if (shape is SpeechBalloonControl balloonControl)
@@ -191,6 +206,7 @@ public class EditorSelectionController
                      _isDraggingShape = true;
                      _lastDragPoint = point;
                      UpdateSelectionHandles();
+                     SelectionChanged?.Invoke(true);
                      e.Pointer.Capture(hitTarget);
                      e.Handled = true;
                      return true;
@@ -211,6 +227,7 @@ public class EditorSelectionController
                           _isDraggingShape = true;
                           _lastDragPoint = point;
                           UpdateSelectionHandles();
+                          SelectionChanged?.Invoke(true);
                           e.Pointer.Capture(manualHit);
                           e.Handled = true;
                           return true;

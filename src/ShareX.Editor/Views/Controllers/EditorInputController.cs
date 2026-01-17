@@ -535,6 +535,9 @@ public class EditorInputController
 
                          // ISSUE-001 mitigation: Validate sync after adding annotation
                          System.Diagnostics.Debug.WriteLine($"[ANNOTATION] Added {annotation.GetType().Name} (ID: {annotation.Id})");
+                         
+                         // Update HasAnnotations state for Clear button
+                         vm.HasAnnotations = true;
                      }
                 }
             }
@@ -697,6 +700,9 @@ public class EditorInputController
                 // Add to Core history
                 _view.EditorCore.AddAnnotation(annotation);
                 
+                // Update HasAnnotations state for Clear button
+                if (ViewModel != null) ViewModel.HasAnnotations = true;
+                
                 _selectionController.SetSelectedShape(imageControl);
             }
         }
@@ -760,6 +766,12 @@ public class EditorInputController
                     if (_view?.EditorCore != null)
                     {
                         _view.EditorCore.AddAnnotation(annotation);
+                        
+                        // Update HasAnnotations state for Clear button
+                        if (_view?.DataContext is MainViewModel viewModel)
+                        {
+                            viewModel.HasAnnotations = true;
+                        }
                     }
 
                     // Convert to display mode (select-only)

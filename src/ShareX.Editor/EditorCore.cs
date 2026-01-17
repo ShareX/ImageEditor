@@ -648,8 +648,13 @@ public class EditorCore : IDisposable
     {
         if (_selectedAnnotation != null)
         {
+            // Capture state BEFORE deleting (so Undo reverts to state with this annotation)
+            _history.CreateAnnotationsMemento();
+            
             _annotations.Remove(_selectedAnnotation);
             _selectedAnnotation = null;
+            
+            HistoryChanged?.Invoke();
             InvalidateRequested?.Invoke();
         }
     }

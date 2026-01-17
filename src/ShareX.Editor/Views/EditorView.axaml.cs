@@ -609,13 +609,19 @@ namespace ShareX.Editor.Views
                 var canvas = this.FindControl<Canvas>("AnnotationCanvas");
                 if (canvas != null && canvas.Children.Contains(selected))
                 {
-                    // Dispose annotation resources before removing
+                    // Sync with EditorCore - this creates the undo history entry
+                    if (selected.Tag is Annotation annotation)
+                    {
+                        // Select the annotation in core so DeleteSelected knows what to remove
+                        _editorCore.Select(annotation);
+                        _editorCore.DeleteSelected();
+                    }
+                    
+                    // Dispose annotation resources before removing from view
                     (selected.Tag as IDisposable)?.Dispose();
 
                     canvas.Children.Remove(selected);
 
-                    // Remove from view - Undo not fully supported for delete in view layer for now
-                    // as it requires recreating the proper shape from history which is handled by core sync
                     _selectionController.ClearSelection();
                     
                     // Update HasAnnotations state

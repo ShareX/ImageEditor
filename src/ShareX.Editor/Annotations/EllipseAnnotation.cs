@@ -68,18 +68,21 @@ public class EllipseAnnotation : Annotation
 
         if (!expanded.Contains(point)) return false;
 
+        // Get ellipse center and radii (original bounds, not expanded)
         var centerX = rect.MidX;
         var centerY = rect.MidY;
-        var radiusX = expanded.Width / 2;
-        var radiusY = expanded.Height / 2;
+        var radiusX = rect.Width / 2 + tolerance;
+        var radiusY = rect.Height / 2 + tolerance;
 
         if (radiusX <= 0 || radiusY <= 0) return false;
 
-        // Normalize point relative to expanded ellipse center
-        var dx = (point.X - centerX) / radiusX;
-        var dy = (point.Y - centerY) / radiusY;
+        // Normalize point relative to center
+        var dx = point.X - centerX;
+        var dy = point.Y - centerY;
 
-        // Check if point is inside unit circle
-        return (dx * dx + dy * dy) <= 1.0f;
+        // Check if point is inside the ellipse (with tolerance)
+        // Point is inside if (dx/rx)^2 + (dy/ry)^2 <= 1
+        var normalizedDist = (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY);
+        return normalizedDist <= 1.0f;
     }
 }

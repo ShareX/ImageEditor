@@ -322,6 +322,13 @@ public class EditorSelectionController
             if (handleTag == "LineStart") targetLine.StartPoint = currentPoint;
             else if (handleTag == "LineEnd") targetLine.EndPoint = currentPoint;
             
+            // Sync annotation points for hit testing
+            if (targetLine.Tag is LineAnnotation lineAnnotation)
+            {
+                lineAnnotation.StartPoint = new SKPoint((float)targetLine.StartPoint.X, (float)targetLine.StartPoint.Y);
+                lineAnnotation.EndPoint = new SKPoint((float)targetLine.EndPoint.X, (float)targetLine.EndPoint.Y);
+            }
+            
             _startPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -341,6 +348,13 @@ public class EditorSelectionController
                 _shapeEndpoints[arrowPath] = (arrowStart, arrowEnd);
                 // ISSUE-005/006 fix: Use constant for arrow head width
                 arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(arrowStart, arrowEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+                
+                // Sync annotation points for hit testing
+                if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
+                {
+                    arrowAnnotation.StartPoint = new SKPoint((float)arrowStart.X, (float)arrowStart.Y);
+                    arrowAnnotation.EndPoint = new SKPoint((float)arrowEnd.X, (float)arrowEnd.Y);
+                }
             }
             _startPoint = currentPoint;
             UpdateSelectionHandles();
@@ -436,6 +450,13 @@ public class EditorSelectionController
              Canvas.SetTop(_selectedShape, newTop);
              _selectedShape.Width = newWidth;
              _selectedShape.Height = newHeight;
+             
+             // Sync annotation points for hit testing
+             if (_selectedShape.Tag is Annotation annotation)
+             {
+                 annotation.StartPoint = new SKPoint((float)newLeft, (float)newTop);
+                 annotation.EndPoint = new SKPoint((float)(newLeft + newWidth), (float)(newTop + newHeight));
+             }
         }
 
         _startPoint = currentPoint;
@@ -462,6 +483,14 @@ public class EditorSelectionController
         {
             targetLine.StartPoint = new Point(targetLine.StartPoint.X + deltaX, targetLine.StartPoint.Y + deltaY);
             targetLine.EndPoint = new Point(targetLine.EndPoint.X + deltaX, targetLine.EndPoint.Y + deltaY);
+            
+            // Sync annotation points for hit testing
+            if (targetLine.Tag is LineAnnotation lineAnnotation)
+            {
+                lineAnnotation.StartPoint = new SKPoint((float)targetLine.StartPoint.X, (float)targetLine.StartPoint.Y);
+                lineAnnotation.EndPoint = new SKPoint((float)targetLine.EndPoint.X, (float)targetLine.EndPoint.Y);
+            }
+            
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -477,6 +506,13 @@ public class EditorSelectionController
                 _shapeEndpoints[arrowPath] = (newStart, newEnd);
                 // ISSUE-005/006 fix: Use constant for arrow head width
                 arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+                
+                // Sync annotation points for hit testing
+                if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
+                {
+                    arrowAnnotation.StartPoint = new SKPoint((float)newStart.X, (float)newStart.Y);
+                    arrowAnnotation.EndPoint = new SKPoint((float)newEnd.X, (float)newEnd.Y);
+                }
             }
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
@@ -551,6 +587,13 @@ public class EditorSelectionController
         var top = Canvas.GetTop(_selectedShape);
         Canvas.SetLeft(_selectedShape, left + deltaX);
         Canvas.SetTop(_selectedShape, top + deltaY);
+
+        // Sync annotation points for hit testing (Rectangle, Ellipse, Highlight, etc.)
+        if (_selectedShape.Tag is Annotation annotation)
+        {
+            annotation.StartPoint = new SKPoint(annotation.StartPoint.X + (float)deltaX, annotation.StartPoint.Y + (float)deltaY);
+            annotation.EndPoint = new SKPoint(annotation.EndPoint.X + (float)deltaX, annotation.EndPoint.Y + (float)deltaY);
+        }
 
         _lastDragPoint = currentPoint;
         UpdateSelectionHandles();
@@ -951,40 +994,13 @@ public class EditorSelectionController
             
             if (shapeBounds.Contains(currentPoint))
             {
-                // Refined Hit Test for Line
-                if (child is global::Avalonia.Controls.Shapes.Line lineObj)
+                // Use the annotation's HitTest method if available
+                if (child.Tag is Annotation annotation)
                 {
-                    if (!IsPointNearLine(currentPoint, lineObj.StartPoint, lineObj.EndPoint, 5 + lineObj.StrokeThickness / 2))
+                    var skPoint = ToSKPoint(currentPoint);
+                    if (!annotation.HitTest(skPoint))
                     {
-                        continue; // Point is in bounds but not near stroke
-                    }
-                }
-                
-                // Refined Hit Test for Arrow (Path)
-                if (child is global::Avalonia.Controls.Shapes.Path pathObj && _shapeEndpoints.TryGetValue(child, out var arrowEndpoints))
-                {
-                    // Use a larger threshold for arrows since they have arrow heads
-                    if (!IsPointNearLine(currentPoint, arrowEndpoints.Start, arrowEndpoints.End, 10 + pathObj.StrokeThickness / 2))
-                    {
-                        continue; // Point is in bounds but not near stroke
-                    }
-                }
-                
-                // Refined Hit Test for Polyline
-                if (child is global::Avalonia.Controls.Shapes.Polyline polylineObj && polylineObj.Points != null)
-                {
-                     if (!IsPointNearPolyline(currentPoint, polylineObj, 5 + polylineObj.StrokeThickness / 2))
-                     {
-                         continue; // Point is in bounds but not near stroke
-                     }
-                }
-                
-                // Refined Hit Test for Ellipse - check if point is inside the ellipse shape
-                if (child is global::Avalonia.Controls.Shapes.Ellipse ellipseObj)
-                {
-                    if (!IsPointInsideEllipse(currentPoint, shapeBounds))
-                    {
-                        continue; // Point is in bounding rectangle but not inside the ellipse
+                        continue; // Annotation's hit test failed
                     }
                 }
                 
@@ -1186,123 +1202,5 @@ public class EditorSelectionController
     }
 
     private static SKPoint ToSKPoint(Point point) => new((float)point.X, (float)point.Y);
-
-    private bool IsPointNearPolyline(Point point, Polyline polyline, double threshold)
-    {
-        if (polyline.Points == null || polyline.Points.Count < 2) return false;
-
-        var thresholdSq = threshold * threshold;
-
-        for (int i = 0; i < polyline.Points.Count - 1; i++)
-        {
-            var p1 = polyline.Points[i];
-            var p2 = polyline.Points[i + 1];
-
-            var l2 = DistanceSquared(p1, p2);
-            if (l2 == 0)
-            {
-                if (DistanceSquared(point, p1) <= thresholdSq) return true;
-                continue;
-            }
-
-            var t = ((point.X - p1.X) * (p2.X - p1.X) + (point.Y - p1.Y) * (p2.Y - p1.Y)) / l2;
-            t = Math.Max(0, Math.Min(1, t));
-
-            var projX = p1.X + t * (p2.X - p1.X);
-            var projY = p1.Y + t * (p2.Y - p1.Y);
-
-            var distSq = (point.X - projX) * (point.X - projX) + (point.Y - projY) * (point.Y - projY);
-            if (distSq <= thresholdSq) return true;
-        }
-
-        return false;
-    }
-
-    private double DistanceSquared(Point p1, Point p2)
-    {
-        return (p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y);
-    }
-    
-    /// <summary>
-    /// Check if a point is within a threshold distance of a line segment.
-    /// </summary>
-    private bool IsPointNearLine(Point point, Point lineStart, Point lineEnd, double threshold)
-    {
-        var thresholdSq = threshold * threshold;
-        
-        var l2 = DistanceSquared(lineStart, lineEnd);
-        if (l2 == 0)
-        {
-            // Line is a point
-            return DistanceSquared(point, lineStart) <= thresholdSq;
-        }
-
-        // Calculate projection of point onto line segment
-        var t = ((point.X - lineStart.X) * (lineEnd.X - lineStart.X) + (point.Y - lineStart.Y) * (lineEnd.Y - lineStart.Y)) / l2;
-        t = Math.Max(0, Math.Min(1, t));
-
-        var projX = lineStart.X + t * (lineEnd.X - lineStart.X);
-        var projY = lineStart.Y + t * (lineEnd.Y - lineStart.Y);
-
-        var distSq = (point.X - projX) * (point.X - projX) + (point.Y - projY) * (point.Y - projY);
-        return distSq <= thresholdSq;
-    }
-    
-    /// <summary>
-    /// Check if a point is within a threshold distance of an ellipse stroke (perimeter).
-    /// </summary>
-    private bool IsPointNearEllipseStroke(Point point, Rect ellipseBounds, double threshold)
-    {
-        // Get ellipse center and radii
-        var centerX = ellipseBounds.X + ellipseBounds.Width / 2;
-        var centerY = ellipseBounds.Y + ellipseBounds.Height / 2;
-        var radiusX = ellipseBounds.Width / 2;
-        var radiusY = ellipseBounds.Height / 2;
-        
-        if (radiusX <= 0 || radiusY <= 0) return false;
-        
-        // Normalize point relative to center
-        var dx = point.X - centerX;
-        var dy = point.Y - centerY;
-        
-        // Calculate the normalized distance from center (1.0 = on ellipse perimeter)
-        var normalizedDist = (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY);
-        
-        // For a point on the ellipse, normalizedDist = 1
-        // We need to convert threshold to normalized units
-        // Use the average radius for approximation
-        var avgRadius = (radiusX + radiusY) / 2;
-        var normalizedThreshold = threshold / avgRadius;
-        
-        // Check if point is near the ellipse perimeter (between inner and outer threshold)
-        var lowerBound = 1 - normalizedThreshold;
-        var upperBound = 1 + normalizedThreshold;
-        
-        // Ensure lower bound doesn't go negative
-        if (lowerBound < 0) lowerBound = 0;
-        
-        return normalizedDist >= lowerBound * lowerBound && normalizedDist <= upperBound * upperBound;
-    }
-    
-    /// <summary>
-    /// Check if a point is inside an ellipse.
-    /// </summary>
-    private bool IsPointInsideEllipse(Point point, Rect ellipseBounds)
-    {
-        // Get ellipse center and radii
-        var centerX = ellipseBounds.X + ellipseBounds.Width / 2;
-        var centerY = ellipseBounds.Y + ellipseBounds.Height / 2;
-        var radiusX = ellipseBounds.Width / 2;
-        var radiusY = ellipseBounds.Height / 2;
-        
-        if (radiusX <= 0 || radiusY <= 0) return false;
-        
-        // Normalize point relative to center
-        var dx = point.X - centerX;
-        var dy = point.Y - centerY;
-        
-        // Point is inside ellipse if (dx/rx)^2 + (dy/ry)^2 <= 1
-        var normalizedDist = (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY);
-        return normalizedDist <= 1.0;
-    }
 }
+

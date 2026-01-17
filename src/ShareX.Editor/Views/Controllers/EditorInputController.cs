@@ -530,12 +530,14 @@ public class EditorInputController
 
     private void UpdateEffectVisual(Control shape, double x, double y, double width, double height)
     {
-        if (!_isCreatingEffect || ViewModel == null) return;
-        if (ViewModel.PreviewImage == null || shape.Tag is not BaseEffectAnnotation annotation) return;
+        // ISSUE-004 fix: Store ViewModel locally to prevent null reference if it changes
+        var vm = ViewModel;
+        if (!_isCreatingEffect || vm == null) return;
+        if (vm.PreviewImage == null || shape.Tag is not BaseEffectAnnotation annotation) return;
 
         if (_cachedSkBitmap == null)
         {
-             _cachedSkBitmap = BitmapConversionHelpers.ToSKBitmap(ViewModel.PreviewImage);
+             _cachedSkBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
         }
 
         if (width <= 0 || height <= 0) return;
@@ -562,7 +564,9 @@ public class EditorInputController
     private void PerformCrop()
     {
         var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
-        if (cropOverlay == null || !cropOverlay.IsVisible || ViewModel == null) return;
+        // ISSUE-004 fix: Store ViewModel locally to prevent null reference if it changes
+        var vm = ViewModel;
+        if (cropOverlay == null || !cropOverlay.IsVisible || vm == null) return;
 
         var x = Canvas.GetLeft(cropOverlay);
         var y = Canvas.GetTop(cropOverlay);
@@ -584,8 +588,8 @@ public class EditorInputController
         var physW = (int)(w * scaling);
         var physH = (int)(h * scaling);
 
-        ViewModel.CropImage(physX, physY, physW, physH);
-        ViewModel.StatusText = "Image cropped";
+        vm.CropImage(physX, physY, physW, physH);
+        vm.StatusText = "Image cropped";
 
         cropOverlay.IsVisible = false;
         _currentShape = null; // Ensure we clear current shape
@@ -593,7 +597,9 @@ public class EditorInputController
 
     private void PerformCutOut(Canvas canvas)
     {
-        if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle cutOverlay && ViewModel != null)
+        // ISSUE-004 fix: Store ViewModel locally to prevent null reference if it changes
+        var vm = ViewModel;
+        if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle cutOverlay && vm != null)
         {
              if (cutOverlay.Width > 0 && cutOverlay.Height > 0 && _cutOutDirection.HasValue)
              {
@@ -607,7 +613,7 @@ public class EditorInputController
                      var w = cutOverlay.Width;
                      int startX = (int)(left * scaling);
                      int endX = (int)((left + w) * scaling);
-                     ViewModel.CutOutImage(startX, endX, true);
+                     vm.CutOutImage(startX, endX, true);
                  }
                  else // Horizontal
                  {
@@ -615,7 +621,7 @@ public class EditorInputController
                      var h = cutOverlay.Height;
                      int startY = (int)(top * scaling);
                      int endY = (int)((top + h) * scaling);
-                     ViewModel.CutOutImage(startY, endY, false);
+                     vm.CutOutImage(startY, endY, false);
                  }
              }
              canvas.Children.Remove(cutOverlay);
@@ -709,10 +715,14 @@ public class EditorInputController
                     annotation.EndPoint = new SKPoint(
                         (float)(Canvas.GetLeft(tb) + tb.Bounds.Width),
                         (float)(Canvas.GetTop(tb) + tb.Bounds.Height));
-                    
+
                     // Add to EditorCore to enable undo/redo
-                    _view.EditorCore.AddAnnotation(annotation);
-                    
+                    // ISSUE-012 fix: Null check for EditorCore in closure
+                    if (_view?.EditorCore != null)
+                    {
+                        _view.EditorCore.AddAnnotation(annotation);
+                    }
+
                     // Convert to display mode (select-only)
                     tb.IsHitTestVisible = false;
                     

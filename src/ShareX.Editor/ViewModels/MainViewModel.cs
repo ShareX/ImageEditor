@@ -730,7 +730,17 @@ namespace ShareX.Editor.ViewModels
                 // Save current image to redo stack
                 if (_currentSourceImage != null)
                 {
-                    _imageRedoStack.Push(_currentSourceImage.Copy());
+                    // ISSUE-025 fix: Check for null after Copy()
+                    var copy = _currentSourceImage.Copy();
+                    if (copy == null)
+                    {
+                        StatusText = "Error: Out of memory - unable to save redo state";
+                        // Continue with undo despite redo stack failure
+                    }
+                    else
+                    {
+                        _imageRedoStack.Push(copy);
+                    }
                 }
 
                 // Restore previous image state
@@ -755,7 +765,17 @@ namespace ShareX.Editor.ViewModels
                 var next = _imageRedoStack.Pop();
                 if (_currentSourceImage != null)
                 {
-                    _imageUndoStack.Push(_currentSourceImage.Copy());
+                    // ISSUE-025 fix: Check for null after Copy()
+                    var copy = _currentSourceImage.Copy();
+                    if (copy == null)
+                    {
+                        StatusText = "Error: Out of memory - unable to save undo state";
+                        // Continue with redo despite undo stack failure
+                    }
+                    else
+                    {
+                        _imageUndoStack.Push(copy);
+                    }
                 }
                 UpdatePreview(next, clearAnnotations: true);
                 UpdateUndoRedoProperties();
@@ -1041,6 +1061,18 @@ namespace ShareX.Editor.ViewModels
         private readonly Stack<SkiaSharp.SKBitmap> _imageUndoStack = new();
         private readonly Stack<SkiaSharp.SKBitmap> _imageRedoStack = new();
 
+        /// <summary>
+        /// Updates the preview image. **TAKES OWNERSHIP** of the bitmap parameter.
+        /// </summary>
+        /// <remarks>
+        /// ISSUE-027: Ownership contract documentation
+        /// - The bitmap parameter is stored directly in _currentSourceImage
+        /// - The caller MUST NOT dispose the bitmap after calling this method
+        /// - A backup copy is created for _originalSourceImage (for smart padding)
+        /// - If the bitmap was created by the caller, ownership is fully transferred
+        /// </remarks>
+        /// <param name="image">Image bitmap (ownership transferred to ViewModel)</param>
+        /// <param name="clearAnnotations">Whether to clear all annotations</param>
         public void UpdatePreview(SkiaSharp.SKBitmap image, bool clearAnnotations = true)
         {
             // Store source image for operations like Crop
@@ -1050,7 +1082,14 @@ namespace ShareX.Editor.ViewModels
             if (!_isApplyingSmartPadding)
             {
                 _originalSourceImage?.Dispose();
-                _originalSourceImage = image.Copy();
+                // ISSUE-025 fix: Check for null after Copy()
+                var copy = image.Copy();
+                if (copy == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("[MEMORY WARNING] UpdatePreview: Failed to create backup copy");
+                    // Continue without backup - smart padding might fail but image update will work
+                }
+                _originalSourceImage = copy;
             }
 
             // Convert SKBitmap to Avalonia Bitmap
@@ -1080,7 +1119,14 @@ namespace ShareX.Editor.ViewModels
             if (rect.Width <= 0 || rect.Height <= 0) return;
 
             // Save current image state for undo before cropping
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return; // Can't proceed without undo capability for destructive operation
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var cropped = ImageHelpers.Crop(_currentSourceImage, rect.Left, rect.Top, rect.Width, rect.Height);
@@ -1105,7 +1151,14 @@ namespace ShareX.Editor.ViewModels
             }
 
             // Save current image state for undo before cutting out
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return; // Can't proceed without undo capability for destructive operation
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
             
             // ... (CutOut logic omitted for brevity in diff, assuming calling UpdateUndoRedoProperties after invalidation or here?)
@@ -1141,7 +1194,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var rotated = ImageHelpers.Rotate90Clockwise(_currentSourceImage);
@@ -1155,7 +1215,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var rotated = ImageHelpers.Rotate90CounterClockwise(_currentSourceImage);
@@ -1169,7 +1236,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var rotated = ImageHelpers.Rotate180(_currentSourceImage);
@@ -1183,7 +1257,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var flipped = ImageHelpers.FlipHorizontal(_currentSourceImage);
@@ -1197,7 +1278,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var flipped = ImageHelpers.FlipVertical(_currentSourceImage);
@@ -1218,7 +1306,14 @@ namespace ShareX.Editor.ViewModels
             if (cropped != null && cropped.Width > 0 && cropped.Height > 0 &&
                 (cropped.Width != _currentSourceImage.Width || cropped.Height != _currentSourceImage.Height))
             {
-                _imageUndoStack.Push(_currentSourceImage.Copy());
+                // ISSUE-025 fix: Check for null after Copy()
+                var undoCopy = _currentSourceImage.Copy();
+                if (undoCopy == null)
+                {
+                    StatusText = "Error: Out of memory - unable to save undo state";
+                    return;
+                }
+                _imageUndoStack.Push(undoCopy);
                 _imageRedoStack.Clear();
 
                 UpdatePreview(cropped, clearAnnotations: true);
@@ -1239,7 +1334,14 @@ namespace ShareX.Editor.ViewModels
             if (_currentSourceImage == null) return;
             if (newWidth <= 0 || newHeight <= 0) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var resized = ImageHelpers.Resize(_currentSourceImage, newWidth, newHeight, maintainAspectRatio: false, quality);
@@ -1258,7 +1360,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var resized = ImageHelpers.ResizeCanvas(_currentSourceImage, left, top, right, bottom, backgroundColor);
@@ -1300,7 +1409,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var result = effect(_currentSourceImage);
@@ -1328,7 +1444,15 @@ namespace ShareX.Editor.ViewModels
 
             // ISSUE-024 fix: Dispose previous bitmap before reassignment
             _preEffectImage?.Dispose();
-            _preEffectImage = _currentSourceImage.Copy();
+            // ISSUE-025 fix: Check for null after Copy()
+            var copy = _currentSourceImage.Copy();
+            if (copy == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[MEMORY WARNING] StartEffectPreview: Failed to create backup");
+                StatusText = "Warning: Effect preview may not be cancellable (low memory)";
+                // Continue without backup - preview will still work but cancel might fail
+            }
+            _preEffectImage = copy;
         }
 
         /// <summary>
@@ -1364,7 +1488,14 @@ namespace ShareX.Editor.ViewModels
             
             if (_currentSourceImage == null) return;
 
-            _imageUndoStack.Push(_currentSourceImage.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             UpdatePreview(result, clearAnnotations: true);
@@ -1437,7 +1568,14 @@ namespace ShareX.Editor.ViewModels
         {
             if (_preEffectImage == null || _currentSourceImage == null) return;
 
-             _imageUndoStack.Push(_currentSourceImage.Copy()); // _currentSourceImage matches _preEffectImage roughly
+             // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _currentSourceImage.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
             
             // _currentSourceImage IS the _preEffectImage content basically (before preview changes).
@@ -1483,7 +1621,14 @@ namespace ShareX.Editor.ViewModels
              {
                  // ISSUE-024 fix: Dispose previous bitmap before reassignment
                  _rotateCustomAngleOriginalBitmap?.Dispose();
-                 _rotateCustomAngleOriginalBitmap = current.Copy();
+                 // ISSUE-025 fix: Check for null after Copy()
+                 var copy = current.Copy();
+                 if (copy == null)
+                 {
+                     StatusText = "Error: Out of memory - unable to open rotate dialog";
+                     return;
+                 }
+                 _rotateCustomAngleOriginalBitmap = copy;
                  RotateAngleDegrees = 0;
                  IsRotateCustomAngleDialogOpen = true;
              }
@@ -1519,7 +1664,14 @@ namespace ShareX.Editor.ViewModels
             float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
 
             // Push original to undo stack
-            _imageUndoStack.Push(_rotateCustomAngleOriginalBitmap.Copy());
+            // ISSUE-025 fix: Check for null after Copy()
+            var undoCopy = _rotateCustomAngleOriginalBitmap.Copy();
+            if (undoCopy == null)
+            {
+                StatusText = "Error: Out of memory - unable to save undo state";
+                return;
+            }
+            _imageUndoStack.Push(undoCopy);
             _imageRedoStack.Clear();
 
             var effect = RotateImageEffect.Custom(angle, RotateAutoResize);

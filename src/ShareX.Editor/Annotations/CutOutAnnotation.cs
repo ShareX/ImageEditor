@@ -101,7 +101,7 @@ public class CutOutAnnotation : Annotation
         canvas.DrawRect(rect, strokePaint);
     }
 
-    public override bool HitTest(SKPoint point, float tolerance = 10)
+    public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var rect = GetBounds();
 

@@ -101,7 +101,7 @@ public abstract class Annotation
     /// <param name="point">Point to test</param>
     /// <param name="tolerance">Hit test tolerance in pixels</param>
     /// <returns>True if the point hits this annotation</returns>
-    public abstract bool HitTest(SKPoint point, float tolerance = 5);
+    public abstract bool HitTest(SKPoint point, float tolerance = 10);
 
     /// <summary>
     /// Get the bounding rectangle for this annotation

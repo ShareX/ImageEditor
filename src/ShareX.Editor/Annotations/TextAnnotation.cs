@@ -147,27 +147,7 @@ public class TextAnnotation : Annotation
         if (right - left < minSize) right = left + minSize;
         if (bottom - top < minSize) bottom = top + minSize;
 
-        // If text exists, calculate based on text metrics instead
-        if (!string.IsNullOrEmpty(Text))
-        {
-            using var paint = new SKPaint
-            {
-                TextSize = FontSize,
-                Typeface = SKTypeface.FromFamilyName(FontFamily)
-            };
-
-            var textWidth = paint.MeasureText(Text);
-            var metrics = paint.FontMetrics;
-            var textHeight = metrics.Descent - metrics.Ascent;
-
-            const float padding = 4f;
-            return new SKRect(
-                StartPoint.X,
-                StartPoint.Y,
-                StartPoint.X + textWidth + padding * 2,
-                StartPoint.Y + textHeight + padding * 2);
-        }
-
+        // Return the bounds defined by StartPoint and EndPoint
         return new SKRect(left, top, right, bottom);
     }
 }

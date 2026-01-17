@@ -125,6 +125,11 @@ public class EditorInputController
             var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
             if (cropOverlay != null)
             {
+                // Clamp start point to canvas bounds
+                var clampedX = Math.Max(0, Math.Min(_startPoint.X, canvas.Bounds.Width));
+                var clampedY = Math.Max(0, Math.Min(_startPoint.Y, canvas.Bounds.Height));
+                _startPoint = new Point(clampedX, clampedY);
+                
                 cropOverlay.IsVisible = true;
                 Canvas.SetLeft(cropOverlay, _startPoint.X);
                 Canvas.SetTop(cropOverlay, _startPoint.Y);
@@ -137,6 +142,11 @@ public class EditorInputController
 
         if (vm.ActiveTool == EditorTool.CutOut)
         {
+            // Clamp start point to canvas bounds
+            var clampedX = Math.Max(0, Math.Min(_startPoint.X, canvas.Bounds.Width));
+            var clampedY = Math.Max(0, Math.Min(_startPoint.Y, canvas.Bounds.Height));
+            _startPoint = new Point(clampedX, clampedY);
+            
             _cutOutDirection = null;
             var cutOutOverlay = new global::Avalonia.Controls.Shapes.Rectangle
             {
@@ -309,7 +319,17 @@ public class EditorInputController
          if (canvas == null) return;
 
          var currentPoint = e.GetPosition(canvas);
+         
+         // Clamp current point to canvas bounds for crop and cut-out tools
          var vm = ViewModel;
+         if (vm != null && (vm.ActiveTool == EditorTool.Crop || vm.ActiveTool == EditorTool.CutOut))
+         {
+             currentPoint = new Point(
+                 Math.Max(0, Math.Min(currentPoint.X, canvas.Bounds.Width)),
+                 Math.Max(0, Math.Min(currentPoint.Y, canvas.Bounds.Height))
+             );
+         }
+         
          if (vm == null) return;
 
          if (_currentShape is global::Avalonia.Controls.Shapes.Path freehandPath && (freehandPath.Tag is FreehandAnnotation || freehandPath.Tag is SmartEraserAnnotation))

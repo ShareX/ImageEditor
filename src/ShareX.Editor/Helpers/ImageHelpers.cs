@@ -1,5 +1,3 @@
-using ShareX.Editor.ImageEffects.Manipulations;
-using ShareX.Editor.ImageEffects.Filters;
 #region License Information (GPL v3)
 
 /*
@@ -25,6 +23,8 @@ using ShareX.Editor.ImageEffects.Filters;
 
 #endregion License Information (GPL v3)
 
+using ShareX.Editor.ImageEffects.Filters;
+using ShareX.Editor.ImageEffects.Manipulations;
 using SkiaSharp;
 
 namespace ShareX.Editor.Helpers;

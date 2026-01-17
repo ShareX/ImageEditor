@@ -97,12 +97,12 @@
                             <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
                         </MenuItem.Icon>
                         
-                        <MenuItem Header="Resize image" Click="OnResizeImageClick">
+                        <MenuItem Header="Resize image..." Click="OnResizeImageClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Resize canvas" Click="OnResizeCanvasClick">
+                        <MenuItem Header="Resize canvas..." Click="OnResizeCanvasClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconResizeCanvas}"/>
                             </MenuItem.Icon>
@@ -110,7 +110,7 @@
                         
                         <Separator/>
                         
-                        <MenuItem Header="Crop image" Click="OnCropImageClick">
+                        <MenuItem Header="Crop image..." Click="OnCropImageClick">
                              <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconCropAlt}"/>
                             </MenuItem.Icon>

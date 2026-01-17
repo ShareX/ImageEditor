@@ -496,24 +496,22 @@ public class EditorSelectionController
             return;
         }
 
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _view.DataContext is MainViewModel vm)
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _view.DataContext is MainViewModel vm && _shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
         {
-            if (_shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
-            {
-                var newStart = new Point(endpoints.Start.X + deltaX, endpoints.Start.Y + deltaY);
-                var newEnd = new Point(endpoints.End.X + deltaX, endpoints.End.Y + deltaY);
+            var newStart = new Point(endpoints.Start.X + deltaX, endpoints.Start.Y + deltaY);
+            var newEnd = new Point(endpoints.End.X + deltaX, endpoints.End.Y + deltaY);
 
-                _shapeEndpoints[arrowPath] = (newStart, newEnd);
-                // ISSUE-005/006 fix: Use constant for arrow head width
-                arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
-                
-                // Sync annotation points for hit testing
-                if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
-                {
-                    arrowAnnotation.StartPoint = new SKPoint((float)newStart.X, (float)newStart.Y);
-                    arrowAnnotation.EndPoint = new SKPoint((float)newEnd.X, (float)newEnd.Y);
-                }
+            _shapeEndpoints[arrowPath] = (newStart, newEnd);
+            // ISSUE-005/006 fix: Use constant for arrow head width
+            arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+            
+            // Sync annotation points for hit testing
+            if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
+            {
+                arrowAnnotation.StartPoint = new SKPoint((float)newStart.X, (float)newStart.Y);
+                arrowAnnotation.EndPoint = new SKPoint((float)newEnd.X, (float)newEnd.Y);
             }
+            
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -543,27 +541,21 @@ public class EditorSelectionController
             return;
         }
 
-        // Handle Polyline (freehand/eraser) movement by translating all points
-        if (_selectedShape is Polyline polyline)
+        // Handle Path (Freehand/SmartEraser) movement by translating all points
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Path path && path.Tag is FreehandAnnotation freehand)
         {
-            var newPoints = new Points();
-            foreach (var pt in polyline.Points)
+            // Update all points in the annotation
+            for (int i = 0; i < freehand.Points.Count; i++)
             {
-                newPoints.Add(new Point(pt.X + deltaX, pt.Y + deltaY));
+                var oldPt = freehand.Points[i];
+                freehand.Points[i] = new SKPoint(oldPt.X + (float)deltaX, oldPt.Y + (float)deltaY);
             }
-            polyline.Points = newPoints;
+            
+            // Regenerate the path geometry using the new points
+            path.Data = freehand.CreateSmoothedGeometry();
 
-            // ISSUE-013 fix: Use IPointBasedAnnotation interface to handle both FreehandAnnotation and SmartEraserAnnotation
-            if (polyline.Tag is IPointBasedAnnotation pointBased)
-            {
-                for (int i = 0; i < pointBased.Points.Count; i++)
-                {
-                    var oldPt = pointBased.Points[i];
-                    pointBased.Points[i] = new SKPoint(oldPt.X + (float)deltaX, oldPt.Y + (float)deltaY);
-                }
-            }
-
-            polyline.InvalidateVisual();
+            // Force visual update
+            path.InvalidateVisual();
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -969,6 +961,12 @@ public class EditorSelectionController
                 var maxY = Math.Max(endpoints.Start.Y, endpoints.End.Y) + 10;
                 shapeBounds = new Rect(minX, minY, maxX - minX, maxY - minY);
             }
+            // Special handling for Path (Freehand/SmartEraser) - use annotation bounds
+            else if (child is global::Avalonia.Controls.Shapes.Path && child.Tag is IPointBasedAnnotation pointAnnotation)
+            {
+                var annBounds = ((Annotation)pointAnnotation).GetBounds();
+                shapeBounds = new Rect(annBounds.Left - 5, annBounds.Top - 5, annBounds.Width + 10, annBounds.Height + 10);
+            }
             // Special handling for Polyline (Freehand)
             else if (child is global::Avalonia.Controls.Shapes.Polyline polyline && polyline.Points != null)
             {
@@ -1064,6 +1062,15 @@ public class EditorSelectionController
         else if (_hoveredShape is global::Avalonia.Controls.Shapes.Path arrowPath && _shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
         {
             outlinePoints = new List<Point> { endpoints.Start, endpoints.End };
+        }
+        else if (_hoveredShape is global::Avalonia.Controls.Shapes.Path path && path.Tag is IPointBasedAnnotation pointAnnotation)
+        {
+             // Convert SKPoints to Avalonia Points for the outline
+             outlinePoints = new List<Point>();
+             foreach (var pt in pointAnnotation.Points)
+             {
+                 outlinePoints.Add(new Point(pt.X, pt.Y));
+             }
         }
         else if (_hoveredShape is Polyline polyline)
         {

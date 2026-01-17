@@ -960,6 +960,16 @@ public class EditorSelectionController
                     }
                 }
                 
+                // Refined Hit Test for Arrow (Path)
+                if (child is global::Avalonia.Controls.Shapes.Path pathObj && _shapeEndpoints.TryGetValue(child, out var arrowEndpoints))
+                {
+                    // Use a larger threshold for arrows since they have arrow heads
+                    if (!IsPointNearLine(currentPoint, arrowEndpoints.Start, arrowEndpoints.End, 10 + pathObj.StrokeThickness / 2))
+                    {
+                        continue; // Point is in bounds but not near stroke
+                    }
+                }
+                
                 // Refined Hit Test for Polyline
                 if (child is global::Avalonia.Controls.Shapes.Polyline polylineObj && polylineObj.Points != null)
                 {

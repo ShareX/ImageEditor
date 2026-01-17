@@ -308,6 +308,7 @@
                         SliceRequested="OnSliceRequested"
                         RoundedCornersRequested="OnRoundedCornersRequested"
                         SkewRequested="OnSkewRequested"
+                        Rotate3DRequested="OnRotate3DRequested"
                         BlurRequested="OnBlurRequested"
                         PixelateRequested="OnPixelateRequested"
                         SharpenRequested="OnSharpenRequested"/>

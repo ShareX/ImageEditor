@@ -39,6 +39,7 @@ namespace ShareX.Editor.Controls
 
         public event EventHandler? RoundedCornersRequested;
         public event EventHandler? SkewRequested;
+        public event EventHandler? Rotate3DRequested;
 
         // Filters
         public event EventHandler? BorderRequested;
@@ -95,6 +96,7 @@ namespace ShareX.Editor.Controls
 
         private void OnRoundedCornersClick(object? sender, RoutedEventArgs e) => Raise(RoundedCornersRequested);
         private void OnSkewClick(object? sender, RoutedEventArgs e) => Raise(SkewRequested);
+        private void OnRotate3DClick(object? sender, RoutedEventArgs e) => Raise(Rotate3DRequested);
 
         // --- Filters ---
 

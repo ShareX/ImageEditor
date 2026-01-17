@@ -211,10 +211,7 @@ public class EditorCore : IDisposable
             var hitAnnotation = HitTest(point);
             if (hitAnnotation != null)
             {
-                _annotations.Remove(hitAnnotation);
-                if (_selectedAnnotation == hitAnnotation)
-                    _selectedAnnotation = null;
-                InvalidateRequested?.Invoke();
+                RemoveAnnotation(hitAnnotation);
             }
             return;
         }
@@ -648,14 +645,48 @@ public class EditorCore : IDisposable
     {
         if (_selectedAnnotation != null)
         {
-            // Capture state BEFORE deleting (so Undo reverts to state with this annotation)
-            _history.CreateAnnotationsMemento();
-            
-            _annotations.Remove(_selectedAnnotation);
+            RemoveAnnotation(_selectedAnnotation);
+        }
+    }
+
+    /// <summary>
+    /// Removes a specific annotation and handles history/renumbering
+    /// </summary>
+    public void RemoveAnnotation(Annotation annotation)
+    {
+        if (annotation == null || !_annotations.Contains(annotation)) return;
+
+        // Capture state BEFORE deleting (so Undo reverts to state with this annotation)
+        _history.CreateAnnotationsMemento();
+
+        bool renumbered = false;
+        if (annotation is NumberAnnotation num)
+        {
+            HandleStepRenumbering(num.Number);
+            renumbered = true;
+        }
+
+        _annotations.Remove(annotation);
+        if (_selectedAnnotation == annotation)
             _selectedAnnotation = null;
-            
-            HistoryChanged?.Invoke();
-            InvalidateRequested?.Invoke();
+
+        HistoryChanged?.Invoke();
+        InvalidateRequested?.Invoke();
+
+        if (renumbered)
+        {
+            AnnotationsRestored?.Invoke();
+        }
+    }
+
+    private void HandleStepRenumbering(int deletedNumber)
+    {
+        foreach (var annotation in _annotations)
+        {
+            if (annotation is NumberAnnotation numberAnnotation && numberAnnotation.Number > deletedNumber)
+            {
+                numberAnnotation.Number--;
+            }
         }
     }
 

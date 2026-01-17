@@ -96,6 +96,11 @@ public class EditorInputController
                  // Dispose annotation resources before removing
                  (hitTarget.Tag as IDisposable)?.Dispose();
 
+                 if (hitTarget.Tag is Annotation hitAnnotation)
+                 {
+                     _view.EditorCore.RemoveAnnotation(hitAnnotation);
+                 }
+
                  canvas.Children.Remove(hitTarget);
                  e.Handled = true;
                  return;

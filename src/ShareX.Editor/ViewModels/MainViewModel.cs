@@ -295,6 +295,22 @@ namespace ShareX.Editor.ViewModels
             NumberCounter = 1;
         }
 
+        public void RecalculateNumberCounter(IEnumerable<Annotation> annotations)
+        {
+            int max = 0;
+            if (annotations != null)
+            {
+                foreach (var ann in annotations)
+                {
+                    if (ann is NumberAnnotation num)
+                    {
+                        if (num.Number > max) max = num.Number;
+                    }
+                }
+            }
+            NumberCounter = max + 1;
+        }
+
         [RelayCommand]
         private void SetOutputRatio(string ratioKey)
         {

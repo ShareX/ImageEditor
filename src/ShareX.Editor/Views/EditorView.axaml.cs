@@ -85,7 +85,11 @@ namespace ShareX.Editor.Views
             });
             _editorCore.AnnotationsRestored += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationsRestored);
             _editorCore.HistoryChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
-                if (DataContext is MainViewModel vm) UpdateViewModelHistoryState(vm);
+                if (DataContext is MainViewModel vm)
+                {
+                    UpdateViewModelHistoryState(vm);
+                    vm.RecalculateNumberCounter(_editorCore.Annotations);
+                }
             });
 
             // Capture wheel events in tunneling phase so ScrollViewer doesn't scroll when using Ctrl+wheel zoom.

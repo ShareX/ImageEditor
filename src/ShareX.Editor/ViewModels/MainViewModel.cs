@@ -476,14 +476,18 @@ namespace ShareX.Editor.ViewModels
                 if (minX > maxX || minY > maxY || !AreBackgroundEffectsActive)
                 {
                     // No content found (or background effects disabled), keep original
-                    // (But verify if we should just show original)
+                    // ISSUE-023 fix: Dispose old currentSourceImage before reassignment (if different)
+                    if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
+                    {
+                        _currentSourceImage.Dispose();
+                    }
                     _currentSourceImage = _originalSourceImage;
                     PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_originalSourceImage);
                     ImageDimensions = $"{_originalSourceImage.Width} x {_originalSourceImage.Height}";
 
                     if (!AreBackgroundEffectsActive) StatusText = "Background effects hidden";
                     else StatusText = "Smart Padding: No content to crop";
-                    
+
                     return;
                 }
 
@@ -503,6 +507,11 @@ namespace ShareX.Editor.ViewModels
                 var cropped = ImageHelpers.Crop(_originalSourceImage, cropX, cropY, cropWidth, cropHeight);
 
                 // Update preview with cropped image
+                // ISSUE-023 fix: Dispose old currentSourceImage before reassignment (if different)
+                if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
+                {
+                    _currentSourceImage.Dispose();
+                }
                 _currentSourceImage = cropped;
                 PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(cropped);
                 ImageDimensions = $"{cropped.Width} x {cropped.Height}";
@@ -1075,7 +1084,11 @@ namespace ShareX.Editor.ViewModels
         /// <param name="clearAnnotations">Whether to clear all annotations</param>
         public void UpdatePreview(SkiaSharp.SKBitmap image, bool clearAnnotations = true)
         {
-            // Store source image for operations like Crop
+            // ISSUE-031 fix: Dispose old currentSourceImage before replacing (if different object)
+            if (_currentSourceImage != null && _currentSourceImage != image)
+            {
+                _currentSourceImage.Dispose();
+            }
             _currentSourceImage = image;
 
             // Update original backup first so smart padding uses the new image during PreviewImage change

@@ -39,6 +39,17 @@ namespace ShareX.Editor;
 /// - SKCanvas surface for rendering
 /// - Forward input events to this core
 /// - Display rendered results
+///
+/// <para><strong>THREADING CONTRACT (ISSUE-007 fix):</strong></para>
+/// <para>
+/// All events (<see cref="InvalidateRequested"/>, <see cref="ImageChanged"/>,
+/// <see cref="AnnotationsRestored"/>, <see cref="HistoryChanged"/>, etc.) are fired
+/// on the calling thread, which may NOT be the UI thread.
+/// </para>
+/// <para>
+/// Subscribers MUST dispatch to the UI thread when performing UI operations.
+/// Example: <c>Dispatcher.UIThread.Post(() => { /* UI update */ });</c>
+/// </para>
 /// </summary>
 public class EditorCore : IDisposable
 {

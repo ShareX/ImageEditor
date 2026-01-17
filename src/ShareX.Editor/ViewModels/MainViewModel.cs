@@ -123,6 +123,12 @@ namespace ShareX.Editor.ViewModels
         [ObservableProperty]
         private bool _useSmartPadding = true;
 
+        /// <summary>
+        /// ISSUE-022 fix: Recursion guard flag for smart padding event chain.
+        /// Prevents infinite loop: UseSmartPadding property change → ApplySmartPaddingCrop →
+        /// UpdatePreview → PreviewImage changed → ApplySmartPaddingCrop (again).
+        /// Set to true during ApplySmartPaddingCrop execution to break the cycle.
+        /// </summary>
         private bool _isApplyingSmartPadding = false;
 
         public Thickness SmartPaddingThickness => AreBackgroundEffectsActive ? new Thickness(SmartPadding) : new Thickness(0);
@@ -397,6 +403,26 @@ namespace ShareX.Editor.ViewModels
             return Color.FromArgb(pixel.Alpha, pixel.Red, pixel.Green, pixel.Blue);
         }
 
+        /// <summary>
+        /// Applies smart padding crop to remove uniform-colored borders from the image.
+        /// <para><strong>ISSUE-022 fix: Event Chain Documentation</strong></para>
+        /// <para>
+        /// This method is part of a complex event chain that requires recursion prevention:
+        /// </para>
+        /// <list type="number">
+        /// <item>User toggles UseSmartPadding property → OnPropertyChanged fires</item>
+        /// <item>Property change triggers this method via partial method hook</item>
+        /// <item>Method modifies PreviewImage (via UpdatePreview or direct assignment)</item>
+        /// <item>PreviewImage change would trigger this method again → infinite loop</item>
+        /// </list>
+        /// <para>
+        /// Solution: <c>_isApplyingSmartPadding</c> flag prevents re-entry during execution.
+        /// </para>
+        /// <para>
+        /// Additionally, this method is called automatically when background effects are applied,
+        /// ensuring the smart padding is re-applied to maintain correct image bounds.
+        /// </para>
+        /// </summary>
         private void ApplySmartPaddingCrop()
         {
             if (_originalSourceImage == null || PreviewImage == null)
@@ -439,15 +465,19 @@ namespace ShareX.Editor.ViewModels
                 var targetColor = skBitmap.GetPixel(0, 0);
                 const int tolerance = 30; // Color tolerance for matching
 
+                // ISSUE-021 fix: Sample every 4th pixel for performance (16x faster)
+                // For a 4K image (3840x2160 = 8.3M pixels), this reduces scans from 8.3M to ~520K
+                const int sampleStep = 4;
+
                 // Find bounds of content (non-matching pixels)
                 int minX = skBitmap.Width;
                 int minY = skBitmap.Height;
                 int maxX = 0;
                 int maxY = 0;
 
-                for (int y = 0; y < skBitmap.Height; y++)
+                for (int y = 0; y < skBitmap.Height; y += sampleStep)
                 {
-                    for (int x = 0; x < skBitmap.Width; x++)
+                    for (int x = 0; x < skBitmap.Width; x += sampleStep)
                     {
                         var pixel = skBitmap.GetPixel(x, y);
 

@@ -577,8 +577,13 @@ public class EditorInputController
 
         if (width <= 0 || height <= 0) return;
 
-        annotation.StartPoint = new SKPoint((float)x, (float)y);
-        annotation.EndPoint = new SKPoint((float)(x + width), (float)(y + height));
+        // ISSUE-008 fix: Apply DPI scaling for high-DPI displays
+        var scaling = 1.0;
+        var topLevel = TopLevel.GetTopLevel(_view);
+        if (topLevel != null) scaling = topLevel.RenderScaling;
+
+        annotation.StartPoint = new SKPoint((float)(x * scaling), (float)(y * scaling));
+        annotation.EndPoint = new SKPoint((float)((x + width) * scaling), (float)((y + height) * scaling));
         
         try
         {

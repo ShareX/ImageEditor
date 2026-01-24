@@ -764,15 +764,7 @@ namespace ShareX.Editor.Views
                         {
                             if (child is Avalonia.Controls.Shapes.Ellipse ellipse)
                             {
-                                // If transparent, use stroke color
-                                if (hexColor == "#00000000" && annotation is NumberAnnotation)
-                                {
-                                    ellipse.Fill = new SolidColorBrush(Color.Parse(annotation.StrokeColor));
-                                }
-                                else
-                                {
-                                    ellipse.Fill = solidBrush;
-                                }
+                                ellipse.Fill = hexColor == "#00000000" ? Brushes.Transparent : solidBrush;
                             }
                         }
                     }
@@ -964,7 +956,7 @@ namespace ShareX.Editor.Views
                     {
                         if (child is Ellipse ellipse)
                         {
-                            ellipse.Fill = brush;
+                            ellipse.Stroke = brush;
                         }
                     }
                     break;

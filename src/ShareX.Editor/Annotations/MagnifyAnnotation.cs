@@ -25,8 +25,8 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         var brush = new SolidColorBrush(Color.Parse(StrokeColor));
         return new Avalonia.Controls.Shapes.Rectangle
         {
-            Stroke = brush,
-            StrokeThickness = StrokeWidth,
+            Stroke = Brushes.Transparent,
+            StrokeThickness = 0,
             Fill = Brushes.Transparent,
             Tag = this
         };
@@ -50,9 +50,9 @@ public class MagnifyAnnotation : BaseEffectAnnotation
             canvas.DrawRect(rect, paint);
         }
 
-        // Always draw border for magnifier
-        using var strokePaint = CreateStrokePaint();
-        canvas.DrawRect(rect, strokePaint);
+        // No border for magnifier as requested
+        // using var strokePaint = CreateStrokePaint();
+        // canvas.DrawRect(rect, strokePaint);
 
         if (IsSelected)
         {

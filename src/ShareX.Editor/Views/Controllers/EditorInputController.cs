@@ -237,7 +237,7 @@ public class EditorInputController
                 {
                     StrokeColor = vm.SelectedColor,
                     StrokeWidth = vm.StrokeWidth,
-                    FillColor = vm.FillColor == "#00000000" ? vm.SelectedColor : vm.FillColor,
+                    FillColor = vm.FillColor,
                     FontSize = vm.FontSize,
                     ShadowEnabled = vm.ShadowEnabled,
                     StartPoint = ToSKPoint(_startPoint),
@@ -260,7 +260,7 @@ public class EditorInputController
                 var path = new global::Avalonia.Controls.Shapes.Path
                 {
                     Stroke = (vm.ActiveTool == EditorTool.SmartEraser) ? new SolidColorBrush(Color.Parse("#80FF0000")) : brush,
-                    StrokeThickness = (vm.ActiveTool == EditorTool.SmartEraser) ? 10 : vm.StrokeWidth,
+                    StrokeThickness = vm.StrokeWidth,
                     StrokeLineCap = PenLineCap.Round,
                     StrokeJoin = PenLineJoin.Round
                     // Data will be set on move
@@ -285,7 +285,7 @@ public class EditorInputController
                     // Sample pixel color from rendered canvas (including annotations)
                     var sampledColor = await _view.GetPixelColorFromRenderedCanvas(_startPoint);
 
-                    var smartEraser = new SmartEraserAnnotation { StrokeColor = sampledColor ?? "#FFFFFFFF", StrokeWidth = 10, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
+                    var smartEraser = new SmartEraserAnnotation { StrokeColor = sampledColor ?? "#FFFFFFFF", StrokeWidth = vm.StrokeWidth, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
                     path.Tag = smartEraser;
                     path.Data = smartEraser.CreateSmoothedGeometry();
 

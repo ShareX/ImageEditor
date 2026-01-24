@@ -75,9 +75,11 @@ public class NumberAnnotation : Annotation
     public Control CreateVisual()
     {
         var radius = CalculateRadius();
-        var fillBrush = string.IsNullOrEmpty(FillColor) || FillColor == "#00000000"
-            ? new SolidColorBrush(Color.Parse(StrokeColor))
+        IBrush fillBrush = string.IsNullOrEmpty(FillColor) || FillColor == "#00000000"
+            ? Brushes.Transparent
             : new SolidColorBrush(Color.Parse(FillColor));
+            
+        var strokeBrush = new SolidColorBrush(Color.Parse(StrokeColor));
         
         var grid = new Grid
         {
@@ -89,8 +91,8 @@ public class NumberAnnotation : Annotation
         var bg = new Avalonia.Controls.Shapes.Ellipse
         {
             Fill = fillBrush,
-            Stroke = Brushes.White,
-            StrokeThickness = 2
+            Stroke = strokeBrush,
+            StrokeThickness = StrokeWidth
         };
 
         var numText = new TextBlock
@@ -125,29 +127,30 @@ public class NumberAnnotation : Annotation
         var center = StartPoint;
         var radius = CalculateRadius();
 
-        // Draw filled circle - use StrokeColor if FillColor is transparent
-        using var fillPaint = new SKPaint
+        // Draw filled circle (if fill is not transparent)
+        if (!string.IsNullOrEmpty(FillColor) && FillColor != "#00000000")
         {
-            Color = string.IsNullOrEmpty(FillColor) || FillColor == "#00000000"
-                ? ParseColor(StrokeColor)
-                : ParseColor(FillColor),
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-        
-        if (ShadowEnabled)
-        {
-            fillPaint.ImageFilter = SKImageFilter.CreateDropShadow(
-                3, 3, 2, 2, new SKColor(0, 0, 0, 128));
+            using var fillPaint = new SKPaint
+            {
+                Color = ParseColor(FillColor),
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            };
+            
+            if (ShadowEnabled)
+            {
+                fillPaint.ImageFilter = SKImageFilter.CreateDropShadow(
+                    3, 3, 2, 2, new SKColor(0, 0, 0, 128));
+            }
+            
+            canvas.DrawCircle(center, radius, fillPaint);
         }
-        
-        canvas.DrawCircle(center, radius, fillPaint);
 
-        // Draw circle border (white)
+        // Draw circle border
         using var borderPaint = new SKPaint
         {
-            Color = SKColors.White,
-            StrokeWidth = 2,
+            Color = ParseColor(StrokeColor),
+            StrokeWidth = StrokeWidth,
             Style = SKPaintStyle.Stroke,
             IsAntialias = true
         };
@@ -156,7 +159,7 @@ public class NumberAnnotation : Annotation
         // Draw number text
         using var textPaint = new SKPaint
         {
-            Color = SKColors.White,
+            Color = SKColors.White, // Keep text white for now
             TextSize = FontSize * 0.6f, // Match visual scaling
             IsAntialias = true,
             TextAlign = SKTextAlign.Center,

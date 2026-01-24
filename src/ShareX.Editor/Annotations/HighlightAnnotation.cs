@@ -28,7 +28,7 @@ public class HighlightAnnotation : BaseEffectAnnotation
         {
             Fill = new SolidColorBrush(highlightColor),
             Stroke = Brushes.Transparent,
-            StrokeThickness = StrokeWidth,
+            StrokeThickness = 0,
             Tag = this
         };
     }

@@ -262,7 +262,9 @@ public class EditorInputController
                     Stroke = (vm.ActiveTool == EditorTool.SmartEraser) ? new SolidColorBrush(Color.Parse("#80FF0000")) : brush,
                     StrokeThickness = vm.StrokeWidth,
                     StrokeLineCap = PenLineCap.Round,
-                    StrokeJoin = PenLineJoin.Round
+                    StrokeJoin = PenLineJoin.Round,
+                    UseLayoutRounding = false,
+                    IsHitTestVisible = false
                     // Data will be set on move
                 };
                 
@@ -546,6 +548,9 @@ public class EditorInputController
                                  _currentShape.Width,
                                  _currentShape.Height);
                          }
+
+                         // Restore hit testing for the finalized shape (was disabled for performance during drawing)
+                         _currentShape.IsHitTestVisible = true;
 
                          _selectionController.SetSelectedShape(_currentShape);
                      }

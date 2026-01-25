@@ -233,7 +233,13 @@ public class EditorInputController
                 _isCreatingEffect = true;
                 break;
             case EditorTool.SpeechBalloon:
-                 var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = vm.FillColor == "#00000000" ? "#FFFFFFFF" : vm.FillColor, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                 var fillColor = vm.FillColor;
+                 // Smart default: If user selected transparent fill, default to White or Black based on Stroke contrast
+                 if (fillColor == "#00000000")
+                 {
+                     fillColor = IsColorLight(vm.SelectedColor) ? "#FF000000" : "#FFFFFFFF";
+                 }
+                 var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
                  var balloonControl = balloonAnnotation.CreateVisual();
                  balloonControl.Width = 0;
                  balloonControl.Height = 0;
@@ -854,6 +860,16 @@ public class EditorInputController
         _isDrawing = false;
     }
     
+    private static bool IsColorLight(string colorHex)
+    {
+        if (Avalonia.Media.Color.TryParse(colorHex, out var color))
+        {
+             double lum = (0.299 * color.R + 0.587 * color.G + 0.114 * color.B) / 255.0;
+             return lum > 0.5;
+        }
+        return true; // Default to light if parse fails
+    }
+
     private static SKPoint ToSKPoint(Point point) => new((float)point.X, (float)point.Y);
     private static SKSize ToSKSize(Size size) => new((float)size.Width, (float)size.Height);
 }

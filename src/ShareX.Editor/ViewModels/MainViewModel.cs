@@ -385,7 +385,10 @@ namespace ShareX.Editor.ViewModels
             OnPropertyChanged(nameof(ShowFontSize));
             OnPropertyChanged(nameof(ShowStrength));
             OnPropertyChanged(nameof(ShowShadow));
+            OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
+
+        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowThickness || ShowFontSize || ShowStrength || ShowShadow;
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;

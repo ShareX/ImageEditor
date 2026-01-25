@@ -1,8 +1,7 @@
-#nullable enable
 #region License Information (GPL v3)
 
 /*
-    ShareX.Ava - The Avalonia UI implementation of ShareX
+    ShareX.Editor - The UI-agnostic Editor library for ShareX
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -29,18 +28,16 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Layout; // Added for HorizontalAlignment/VerticalAlignment
+using Avalonia.Layout;
 using Avalonia.Media;
 using ShareX.Editor.Annotations;
+using ShareX.Editor.Controls;
 using ShareX.Editor.Helpers;
 using ShareX.Editor.ViewModels;
-using ShareX.Editor.Controls;
 using ShareX.Editor.Views.Controllers;
+using ShareX.Editor.Views.Dialogs;
 using SkiaSharp;
 using System.ComponentModel;
-using System.Linq; // Added for Enumerable.Select
-using ShareX.Editor.Views.Dialogs;
-using ShareX.Editor.ImageEffects;
 
 namespace ShareX.Editor.Views
 {
@@ -71,7 +68,8 @@ namespace ShareX.Editor.Views
 
             // SIP0018: Subscribe to Core events
             _editorCore.InvalidateRequested += () => Avalonia.Threading.Dispatcher.UIThread.Post(RenderCore);
-            _editorCore.ImageChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+            _editorCore.ImageChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
                 if (_canvasControl != null)
                 {
                     _canvasControl.Initialize((int)_editorCore.CanvasSize.Width, (int)_editorCore.CanvasSize.Height);
@@ -84,7 +82,8 @@ namespace ShareX.Editor.Views
                 }
             });
             _editorCore.AnnotationsRestored += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationsRestored);
-            _editorCore.HistoryChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+            _editorCore.HistoryChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
                 if (DataContext is MainViewModel vm)
                 {
                     UpdateViewModelHistoryState(vm);
@@ -95,7 +94,7 @@ namespace ShareX.Editor.Views
             // Capture wheel events in tunneling phase so ScrollViewer doesn't scroll when using Ctrl+wheel zoom.
             AddHandler(PointerWheelChangedEvent, OnPreviewPointerWheelChanged, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         }
-        
+
         private void OnSelectionChanged(bool hasSelection)
         {
             if (DataContext is MainViewModel vm)
@@ -103,12 +102,12 @@ namespace ShareX.Editor.Views
                 vm.HasSelectedAnnotation = hasSelection;
             }
         }
-        
+
         private void UpdateViewModelHistoryState(MainViewModel vm)
         {
             vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
         }
-        
+
 
         private void UpdateViewModelMetadata(MainViewModel vm)
         {
@@ -142,7 +141,7 @@ namespace ShareX.Editor.Views
                 // Wire up View interactions
                 vm.CopyRequested += OnCopyRequested;
                 vm.SaveAsRequested += OnSaveAsRequested;
-                
+
                 // Initial load
                 if (vm.PreviewImage != null)
                 {
@@ -229,7 +228,7 @@ namespace ShareX.Editor.Views
             {
                 // We must copy because ToSKBitmap might return a disposable wrapper or we need ownership
                 _editorCore.LoadImage(skBitmap.Copy());
-                
+
                 _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                 RenderCore();
             }
@@ -421,16 +420,18 @@ namespace ShareX.Editor.Views
 
             // 3. Validate state synchronization (ISSUE-001 mitigation)
             ValidateAnnotationSync();
-            
+
             // Update HasAnnotations state
             UpdateHasAnnotationsState();
         }
 
         private Control? CreateControlForAnnotation(Annotation annotation)
         {
-             // Factory for restoring vector visuals
-             if (annotation is RectangleAnnotation rect) {
-                var r = new global::Avalonia.Controls.Shapes.Rectangle { 
+            // Factory for restoring vector visuals
+            if (annotation is RectangleAnnotation rect)
+            {
+                var r = new global::Avalonia.Controls.Shapes.Rectangle
+                {
                     Stroke = new SolidColorBrush(Color.Parse(rect.StrokeColor)),
                     StrokeThickness = rect.StrokeWidth,
                     Tag = rect
@@ -440,9 +441,11 @@ namespace ShareX.Editor.Views
                 r.Width = rect.GetBounds().Width;
                 r.Height = rect.GetBounds().Height;
                 return r;
-             }
-             else if (annotation is EllipseAnnotation ellipse) {
-                var e = new global::Avalonia.Controls.Shapes.Ellipse {
+            }
+            else if (annotation is EllipseAnnotation ellipse)
+            {
+                var e = new global::Avalonia.Controls.Shapes.Ellipse
+                {
                     Stroke = new SolidColorBrush(Color.Parse(ellipse.StrokeColor)),
                     StrokeThickness = ellipse.StrokeWidth,
                     Tag = ellipse
@@ -452,9 +455,11 @@ namespace ShareX.Editor.Views
                 e.Width = ellipse.GetBounds().Width;
                 e.Height = ellipse.GetBounds().Height;
                 return e;
-             }
-             else if (annotation is LineAnnotation line) {
-                var l = new global::Avalonia.Controls.Shapes.Line {
+            }
+            else if (annotation is LineAnnotation line)
+            {
+                var l = new global::Avalonia.Controls.Shapes.Line
+                {
                     StartPoint = new Point(line.StartPoint.X, line.StartPoint.Y),
                     EndPoint = new Point(line.EndPoint.X, line.EndPoint.Y),
                     Stroke = new SolidColorBrush(Color.Parse(line.StrokeColor)),
@@ -462,9 +467,11 @@ namespace ShareX.Editor.Views
                     Tag = line
                 };
                 return l;
-             }
-             else if (annotation is ArrowAnnotation arrow) {
-                var path = new global::Avalonia.Controls.Shapes.Path {
+            }
+            else if (annotation is ArrowAnnotation arrow)
+            {
+                var path = new global::Avalonia.Controls.Shapes.Path
+                {
                     Fill = new SolidColorBrush(Color.Parse(arrow.StrokeColor)),
                     Stroke = new SolidColorBrush(Color.Parse(arrow.StrokeColor)),
                     StrokeThickness = 1, // Arrow handles thickness in geometry
@@ -473,11 +480,13 @@ namespace ShareX.Editor.Views
                 // ISSUE-005/006 fix: Use constant for arrow head width
                 path.Data = arrow.CreateArrowGeometry(new Point(arrow.StartPoint.X, arrow.StartPoint.Y), new Point(arrow.EndPoint.X, arrow.EndPoint.Y), arrow.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
                 return path;
-             }
-             else if (annotation is TextAnnotation text) {
+            }
+            else if (annotation is TextAnnotation text)
+            {
                 // For text, we might need a TextBox with IsReadOnly or similar
                 // For now, restoring as a TextBox
-                var tb = new TextBox {
+                var tb = new TextBox
+                {
                     Text = text.Text,
                     Foreground = new SolidColorBrush(Color.Parse(text.StrokeColor)),
                     Background = Brushes.Transparent,
@@ -492,31 +501,34 @@ namespace ShareX.Editor.Views
                 Canvas.SetTop(tb, text.StartPoint.Y);
                 return tb;
 
-             }
-             else if (annotation is SpotlightAnnotation spotlight) {
+            }
+            else if (annotation is SpotlightAnnotation spotlight)
+            {
                 var s = new SpotlightControl { Annotation = spotlight, Tag = spotlight, IsHitTestVisible = false };
                 Canvas.SetLeft(s, 0);
                 Canvas.SetTop(s, 0);
                 s.Width = spotlight.CanvasSize.Width;
                 s.Height = spotlight.CanvasSize.Height;
                 return s;
-             }
-             // Effect annotations (Blur, Pixelate, Magnify, Highlight)
-            else if (annotation is BaseEffectAnnotation effect) {
-                 Control? factorControl = null;
-                 
-                 // Use CreateVisual() which properly sets up the Fill for each type
-                 if (annotation is BlurAnnotation blur) factorControl = blur.CreateVisual();
-                 else if (annotation is PixelateAnnotation pix) factorControl = pix.CreateVisual();
-                 else if (annotation is MagnifyAnnotation mag) factorControl = mag.CreateVisual();
-                 else if (annotation is HighlightAnnotation high) factorControl = high.CreateVisual();
-                 
-                 if (factorControl != null) {
+            }
+            // Effect annotations (Blur, Pixelate, Magnify, Highlight)
+            else if (annotation is BaseEffectAnnotation effect)
+            {
+                Control? factorControl = null;
+
+                // Use CreateVisual() which properly sets up the Fill for each type
+                if (annotation is BlurAnnotation blur) factorControl = blur.CreateVisual();
+                else if (annotation is PixelateAnnotation pix) factorControl = pix.CreateVisual();
+                else if (annotation is MagnifyAnnotation mag) factorControl = mag.CreateVisual();
+                else if (annotation is HighlightAnnotation high) factorControl = high.CreateVisual();
+
+                if (factorControl != null)
+                {
                     Canvas.SetLeft(factorControl, effect.GetBounds().Left);
                     Canvas.SetTop(factorControl, effect.GetBounds().Top);
                     factorControl.Width = effect.GetBounds().Width;
                     factorControl.Height = effect.GetBounds().Height;
-                    
+
                     // Trigger visual update for effects that need bitmap generation (Blur, Pixelate, Magnify)
                     // HighlightAnnotation doesn't need this as CreateVisual() sets up the Fill
                     if (annotation is not HighlightAnnotation)
@@ -524,17 +536,19 @@ namespace ShareX.Editor.Views
                         OnRequestUpdateEffect(factorControl);
                     }
                     return factorControl;
-                 }
-             }
-             else if (annotation is SpeechBalloonAnnotation balloon) {
+                }
+            }
+            else if (annotation is SpeechBalloonAnnotation balloon)
+            {
                 var b = new SpeechBalloonControl { Annotation = balloon, Tag = balloon };
                 Canvas.SetLeft(b, balloon.GetBounds().Left);
                 Canvas.SetTop(b, balloon.GetBounds().Top);
                 b.Width = balloon.GetBounds().Width;
                 b.Height = balloon.GetBounds().Height;
                 return b;
-             }
-             else if (annotation is NumberAnnotation number) {
+            }
+            else if (annotation is NumberAnnotation number)
+            {
                 var brush = new SolidColorBrush(Color.Parse(number.StrokeColor));
                 var grid = new Grid
                 {
@@ -566,38 +580,44 @@ namespace ShareX.Editor.Views
                 Canvas.SetLeft(grid, number.StartPoint.X - 15);
                 Canvas.SetTop(grid, number.StartPoint.Y - 15);
                 return grid;
-             }
-             else if (annotation is ImageAnnotation imgAnn) {
-                 var img = new Image { Tag = imgAnn };
-                 if (imgAnn.ImageBitmap != null) {
+            }
+            else if (annotation is ImageAnnotation imgAnn)
+            {
+                var img = new Image { Tag = imgAnn };
+                if (imgAnn.ImageBitmap != null)
+                {
                     img.Source = BitmapConversionHelpers.ToAvaloniBitmap(imgAnn.ImageBitmap);
                     img.Width = imgAnn.ImageBitmap.Width;
                     img.Height = imgAnn.ImageBitmap.Height;
-                 }
-                 Canvas.SetLeft(img, imgAnn.StartPoint.X);
-                 Canvas.SetTop(img, imgAnn.StartPoint.Y);
-                 return img;
-             }
-             else if (annotation is FreehandAnnotation freehand) {
-                 var polyline = new Polyline {
+                }
+                Canvas.SetLeft(img, imgAnn.StartPoint.X);
+                Canvas.SetTop(img, imgAnn.StartPoint.Y);
+                return img;
+            }
+            else if (annotation is FreehandAnnotation freehand)
+            {
+                var polyline = new Polyline
+                {
                     Stroke = new SolidColorBrush(Color.Parse(freehand.StrokeColor)),
                     StrokeThickness = freehand.StrokeWidth,
                     Points = new Points(freehand.Points.Select(p => new Point(p.X, p.Y))),
                     Tag = freehand
-                 };
-                 return polyline;
-             }
-             else if (annotation is SmartEraserAnnotation eraser) {
-                 var polyline = new Polyline {
+                };
+                return polyline;
+            }
+            else if (annotation is SmartEraserAnnotation eraser)
+            {
+                var polyline = new Polyline
+                {
                     Stroke = new SolidColorBrush(Color.Parse(eraser.StrokeColor)),
                     StrokeThickness = 10, // hardcoded in input logic
                     Points = new Points(eraser.Points.Select(p => new Point(p.X, p.Y))),
                     Tag = eraser
-                 };
-                 return polyline;
-             }
-             
-             return null; 
+                };
+                return polyline;
+            }
+
+            return null;
         }
 
         private Color SKColorToAvalonia(SKColor color)
@@ -620,14 +640,14 @@ namespace ShareX.Editor.Views
                         _editorCore.Select(annotation);
                         _editorCore.DeleteSelected();
                     }
-                    
+
                     // Dispose annotation resources before removing from view
                     (selected.Tag as IDisposable)?.Dispose();
 
                     canvas.Children.Remove(selected);
 
                     _selectionController.ClearSelection();
-                    
+
                     // Update HasAnnotations state
                     UpdateHasAnnotationsState();
                 }
@@ -643,7 +663,7 @@ namespace ShareX.Editor.Views
                 _selectionController.ClearSelection();
                 _editorCore.ClearAll();
                 RenderCore();
-                
+
                 // Update HasAnnotations state
                 if (DataContext is MainViewModel vm)
                 {
@@ -651,7 +671,7 @@ namespace ShareX.Editor.Views
                 }
             }
         }
-        
+
         /// <summary>
         /// Updates the ViewModel's HasAnnotations property based on current annotation count.
         /// </summary>
@@ -745,13 +765,13 @@ namespace ShareX.Editor.Views
             {
                 var hexColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
                 vm.FillColor = hexColor;
-                
+
                 // Apply to selected annotation if any
                 var selected = _selectionController.SelectedShape;
                 if (selected?.Tag is Annotation annotation)
                 {
                     annotation.FillColor = hexColor;
-                    
+
                     // Update the UI control's Fill property
                     if (selected is Shape shape)
                     {
@@ -777,7 +797,7 @@ namespace ShareX.Editor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.FontSize = fontSize;
-                
+
                 // Apply to selected annotation if any
                 var selected = _selectionController.SelectedShape;
                 if (selected?.Tag is TextAnnotation textAnn)
@@ -791,14 +811,14 @@ namespace ShareX.Editor.Views
                 else if (selected?.Tag is NumberAnnotation numAnn)
                 {
                     numAnn.FontSize = fontSize;
-                    
+
                     // Update the visual - resize grid and update text
                     if (selected is Grid grid)
                     {
                         var radius = Math.Max(12, fontSize * 0.7f);
                         grid.Width = radius * 2;
                         grid.Height = radius * 2;
-                        
+
                         foreach (var child in grid.Children)
                         {
                             if (child is TextBlock textBlock)
@@ -816,7 +836,7 @@ namespace ShareX.Editor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.EffectStrength = strength;
-                
+
                 // Apply to selected annotation if any
                 var selected = _selectionController.SelectedShape;
                 if (selected?.Tag is BaseEffectAnnotation effectAnn)
@@ -835,13 +855,13 @@ namespace ShareX.Editor.Views
                 // Toggle state
                 vm.ShadowEnabled = !vm.ShadowEnabled;
                 var isEnabled = vm.ShadowEnabled;
-                
+
                 // Apply to selected annotation if any
                 var selected = _selectionController.SelectedShape;
                 if (selected?.Tag is Annotation annotation)
                 {
                     annotation.ShadowEnabled = isEnabled;
-                    
+
                     // Update the UI control's Effect property
                     if (selected is Control control)
                     {
@@ -1004,18 +1024,18 @@ namespace ShareX.Editor.Views
             {
                 var dialog = new ResizeImageDialog();
                 dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-                
+
                 dialog.ApplyRequested += (s, args) =>
                 {
                     vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };
-                
+
                 dialog.CancelRequested += (s, args) =>
                 {
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };
-                
+
                 vm.EffectsPanelContent = dialog;
                 vm.IsEffectsPanelOpen = true;
             }
@@ -1037,20 +1057,20 @@ namespace ShareX.Editor.Views
                     }
                 }
                 catch { }
-                
+
                 dialog.Initialize(edgeColor);
-                
+
                 dialog.ApplyRequested += (s, args) =>
                 {
                     vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };
-                
+
                 dialog.CancelRequested += (s, args) =>
                 {
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };
-                
+
                 vm.EffectsPanelContent = dialog;
                 vm.IsEffectsPanelOpen = true;
             }
@@ -1062,18 +1082,18 @@ namespace ShareX.Editor.Views
             {
                 var dialog = new CropImageDialog();
                 dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-                
+
                 dialog.ApplyRequested += (s, args) =>
                 {
                     vm.CropImage(args.X, args.Y, args.Width, args.Height);
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };
-                
+
                 dialog.CancelRequested += (s, args) =>
                 {
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };
-                
+
                 vm.EffectsPanelContent = dialog;
                 vm.IsEffectsPanelOpen = true;
             }
@@ -1181,17 +1201,17 @@ namespace ShareX.Editor.Views
 
             // Initialize logic
             vm.StartEffectPreview();
-            
+
             // Wire events using interface instead of dynamic
             dialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
-            dialog.ApplyRequested += (s, e) => 
-            { 
-                vm.ApplyEffect(e.EffectOperation, e.StatusMessage); 
+            dialog.ApplyRequested += (s, e) =>
+            {
+                vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
                 vm.CloseEffectsPanelCommand.Execute(null);
             };
-            dialog.CancelRequested += (s, e) => 
-            { 
-                vm.CancelEffectPreview(); 
+            dialog.CancelRequested += (s, e) =>
+            {
+                vm.CancelEffectPreview();
                 vm.CloseEffectsPanelCommand.Execute(null);
             };
 
@@ -1200,7 +1220,7 @@ namespace ShareX.Editor.Views
             // So we can keep left sidebar open or close it. 
             // Usually only one "main" panel is active or both sidebars. 
             // Let's keep existing behavior for SettingsPanel (left) but ensure EffectsPanel (right) opens.
-            
+
             vm.EffectsPanelContent = dialog;
             vm.IsEffectsPanelOpen = true;
         }

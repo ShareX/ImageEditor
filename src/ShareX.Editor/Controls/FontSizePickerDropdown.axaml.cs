@@ -12,7 +12,7 @@ namespace ShareX.Editor.Controls
         public static readonly StyledProperty<float> SelectedFontSizeProperty =
             AvaloniaProperty.Register<FontSizePickerDropdown, float>(
                 nameof(SelectedFontSize),
-                defaultValue: 24);
+                defaultValue: 30);
 
         public static readonly StyledProperty<IEnumerable<float>> FontSizeOptionsProperty =
             AvaloniaProperty.Register<FontSizePickerDropdown, IEnumerable<float>>(

@@ -900,6 +900,7 @@ public class EditorSelectionController
             BorderThickness = new Thickness(0),
             CornerRadius = new CornerRadius(0), // No corner radius needed if no border/background match
             Foreground = foregroundBrush,
+            CaretBrush = foregroundBrush,
             FontSize = annotation.FontSize,
             Padding = new Thickness(12),
             TextAlignment = TextAlignment.Center,
@@ -1442,7 +1443,8 @@ public class EditorSelectionController
 
         _balloonTextEditor.Background = editorBackground;
         _balloonTextEditor.Foreground = foregroundBrush;
-        
+        _balloonTextEditor.CaretBrush = foregroundBrush;
+
         // Update resource overrides for Focus state
         _balloonTextEditor.Resources["TextControlBackground"] = editorBackground;
         _balloonTextEditor.Resources["TextControlBackgroundFocused"] = editorBackground;

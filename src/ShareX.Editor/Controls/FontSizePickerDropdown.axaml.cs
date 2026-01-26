@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -35,6 +36,39 @@ namespace ShareX.Editor.Controls
         public FontSizePickerDropdown()
         {
             AvaloniaXamlLoader.Load(this);
+
+            var popup = this.FindControl<Popup>("FontSizePopup");
+            if (popup != null)
+            {
+                popup.Opened += OnPopupOpened;
+            }
+        }
+
+        private void OnPopupOpened(object? sender, EventArgs e)
+        {
+            UpdateActiveStates();
+        }
+
+        private void UpdateActiveStates()
+        {
+            var popup = this.FindControl<Popup>("FontSizePopup");
+            if (popup?.Child is Border border && border.Child is ItemsControl itemsControl)
+            {
+                foreach (var item in itemsControl.GetRealizedContainers())
+                {
+                    if (item is ContentPresenter presenter && presenter.Child is Button button)
+                    {
+                        if (button.CommandParameter is float size && size == SelectedFontSize)
+                        {
+                            button.Classes.Add("active");
+                        }
+                        else
+                        {
+                            button.Classes.Remove("active");
+                        }
+                    }
+                }
+            }
         }
 
         private void OnDropdownButtonClick(object? sender, RoutedEventArgs e)
@@ -52,6 +86,9 @@ namespace ShareX.Editor.Controls
             {
                 SelectedFontSize = selectedSize;
                 FontSizeChanged?.Invoke(this, selectedSize);
+
+                // Update active states before closing
+                UpdateActiveStates();
 
                 // Close the popup
                 var popup = this.FindControl<Popup>("FontSizePopup");

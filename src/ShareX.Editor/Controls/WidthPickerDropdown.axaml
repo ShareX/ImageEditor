@@ -6,6 +6,23 @@
              x:Class="ShareX.Editor.Controls.WidthPickerDropdown"
              x:Name="WidthPickerDropdownRoot">
 
+    <UserControl.Styles>
+        <Style Selector="Button.picker-button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style Selector="Button.picker-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#374151"/>
+        </Style>
+        <Style Selector="Button.picker-button.active">
+            <Setter Property="Background" Value="#3E83F2"/>
+        </Style>
+        <Style Selector="Button.picker-button.active /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#3E83F2"/>
+        </Style>
+    </UserControl.Styles>
+
     <Grid>
         <!-- Dropdown Button -->
         <Button x:Name="DropdownButton"
@@ -60,8 +77,7 @@
                             <Button Width="32"
                                     Height="32"
                                     Padding="0"
-                                    Background="Transparent"
-                                    BorderThickness="0"
+                                    Classes="picker-button"
                                     Click="OnWidthSelected"
                                     CommandParameter="{Binding .}"
                                     ToolTip.Tip="{Binding ., StringFormat='{}{0} px'}">

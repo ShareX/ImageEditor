@@ -513,12 +513,8 @@ namespace ShareX.Editor.Views
                     factorControl.Width = effect.GetBounds().Width;
                     factorControl.Height = effect.GetBounds().Height;
 
-                    // Trigger visual update for effects that need bitmap generation (Blur, Pixelate, Magnify)
-                    // HighlightAnnotation doesn't need this as CreateVisual() sets up the Fill
-                    if (annotation is not HighlightAnnotation)
-                    {
-                        OnRequestUpdateEffect(factorControl);
-                    }
+                    // Trigger visual update for all effect annotations
+                    OnRequestUpdateEffect(factorControl);
                     return factorControl;
                 }
             }

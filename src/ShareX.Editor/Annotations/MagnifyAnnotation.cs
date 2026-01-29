@@ -78,7 +78,7 @@ public class MagnifyAnnotation : BaseEffectAnnotation
 
         // Convert annotation bounds to integer rect
         var annotationRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
-        
+
         // Find intersection with source image bounds
         var validRect = annotationRect;
         validRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
@@ -97,7 +97,7 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         // For magnification, capture a SMALLER area from the CENTER OF THE VALID REGION and scale it UP
         // Use the valid region's center to avoid capturing outside the image
         float zoom = Math.Max(1.0f, Amount);
-        
+
         // Calculate capture size based on valid region (not full annotation)
         float captureWidth = validRect.Width / zoom;
         float captureHeight = validRect.Height / zoom;
@@ -110,9 +110,9 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         float captureY = centerY - (captureHeight / 2);
 
         var captureRect = new SKRectI(
-            (int)captureX, 
-            (int)captureY, 
-            (int)(captureX + captureWidth), 
+            (int)captureX,
+            (int)captureY,
+            (int)(captureX + captureWidth),
             (int)(captureY + captureHeight)
         );
 

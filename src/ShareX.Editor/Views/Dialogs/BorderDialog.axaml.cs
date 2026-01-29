@@ -27,14 +27,14 @@ public partial class BorderDialog : UserControl, IEffectDialog
     public BorderDialog()
     {
         InitializeComponent();
-        
+
         // Find controls after XAML is loaded
         _typeComboBox = this.FindControl<ComboBox>("TypeComboBox");
         _dashStyleComboBox = this.FindControl<ComboBox>("DashStyleComboBox");
         _sizeSlider = this.FindControl<Slider>("SizeSlider");
         _colorTextBox = this.FindControl<TextBox>("ColorTextBox");
         _colorPreview = this.FindControl<Border>("ColorPreview");
-        
+
         Loaded += OnLoaded;
     }
 
@@ -71,7 +71,7 @@ public partial class BorderDialog : UserControl, IEffectDialog
     {
         if (_isLoaded) RaisePreview();
     }
-    
+
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (_isLoaded) RaisePreview();
@@ -97,7 +97,7 @@ public partial class BorderDialog : UserControl, IEffectDialog
         var type = GetBorderType();
         var size = GetSize();
         var dashStyle = GetDashStyle();
-        
+
         PreviewRequested?.Invoke(this, new EffectEventArgs(
             img => ImageHelpers.ApplyBorder(img, type, size, dashStyle, _color),
             "Border applied"));
@@ -108,7 +108,7 @@ public partial class BorderDialog : UserControl, IEffectDialog
         var type = GetBorderType();
         var size = GetSize();
         var dashStyle = GetDashStyle();
-        
+
         ApplyRequested?.Invoke(this, new EffectEventArgs(
             img => ImageHelpers.ApplyBorder(img, type, size, dashStyle, _color),
             "Border applied"));

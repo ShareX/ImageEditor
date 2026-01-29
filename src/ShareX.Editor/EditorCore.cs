@@ -439,7 +439,7 @@ public class EditorCore : IDisposable
         {
             PerformCrop();
             _currentAnnotation = null;
-            HistoryChanged?.Invoke(); 
+            HistoryChanged?.Invoke();
             return;
         }
 
@@ -712,9 +712,9 @@ public class EditorCore : IDisposable
     {
         // Capture state BEFORE adding the new annotation (Undo will revert to this state)
         _history.CreateAnnotationsMemento();
-        
+
         _annotations.Add(annotation);
-        
+
         HistoryChanged?.Invoke();
         // We don't necessarily need to render if the view already added the control,
         // but this ensures raster effects are updated if needed.
@@ -746,8 +746,8 @@ public class EditorCore : IDisposable
     /// <param name="excludeAnnotation">Optional annotation to exclude from the snapshot (e.g. current one being drawn)</param>
     internal List<Annotation> GetAnnotationsSnapshot(Annotation? excludeAnnotation = null)
     {
-        var source = excludeAnnotation != null 
-            ? _annotations.Where(a => a != excludeAnnotation) 
+        var source = excludeAnnotation != null
+            ? _annotations.Where(a => a != excludeAnnotation)
             : _annotations;
         return source.Select(a => a.Clone()).ToList();
     }
@@ -770,7 +770,7 @@ public class EditorCore : IDisposable
             SourceImage?.Dispose();
             SourceImage = memento.Canvas.Copy();
             CanvasSize = memento.CanvasSize;
-            
+
             // Notify that image has changed so UI can resize canvas control if needed
             ImageChanged?.Invoke();
         }
@@ -977,7 +977,7 @@ public class EditorCore : IDisposable
 
         var bounds = cropAnnotation.GetBounds();
         Crop(bounds);
-        
+
         // Remove crop annotation after processing
         _annotations.Remove(cropAnnotation);
         InvalidateRequested?.Invoke();
@@ -1006,18 +1006,18 @@ public class EditorCore : IDisposable
         // Adjust coordinates of all remaining annotations
         var offsetX = -x;
         var offsetY = -y;
-        
+
         // Remove annotations that fall completely outside the cropped area
         // and adjust coordinates for those that remain
         for (int i = _annotations.Count - 1; i >= 0; i--)
         {
             var annotation = _annotations[i];
-            
+
             // Skip CropAnnotation as caller might handle it, or it will be removed/ignored
             if (annotation is CropAnnotation) continue;
 
             var annotationBounds = annotation.GetBounds();
-            
+
             // Check if annotation is completely outside the cropped region
             if (annotationBounds.Right < x || annotationBounds.Left > x + width ||
                 annotationBounds.Bottom < y || annotationBounds.Top > y + height)
@@ -1025,7 +1025,7 @@ public class EditorCore : IDisposable
                 _annotations.RemoveAt(i);
                 continue;
             }
-            
+
             // Adjust annotation coordinates
             annotation.StartPoint = new SKPoint(
                 annotation.StartPoint.X + offsetX,
@@ -1033,7 +1033,7 @@ public class EditorCore : IDisposable
             annotation.EndPoint = new SKPoint(
                 annotation.EndPoint.X + offsetX,
                 annotation.EndPoint.Y + offsetY);
-            
+
             // Handle freehand annotations (they have a Points list)
             if (annotation is FreehandAnnotation freehand)
             {
@@ -1044,13 +1044,13 @@ public class EditorCore : IDisposable
                         freehand.Points[j].Y + offsetY);
                 }
             }
-            
+
             // Update effect annotations with new bounds
             if (annotation is BaseEffectAnnotation effect)
             {
                 effect.UpdateEffect(croppedBitmap);
             }
-            
+
             // Update spotlight with new canvas size
             if (annotation is SpotlightAnnotation spotlight)
             {
@@ -1130,7 +1130,7 @@ public class EditorCore : IDisposable
             SourceImage.Dispose();
             SourceImage = resultBitmap;
             CanvasSize = new SKSize(newWidth, SourceImage.Height);
-            
+
             // Adjust annotations for vertical cut
             AdjustAnnotationsForVerticalCut(cutX, cutWidth, newWidth);
         }
@@ -1183,7 +1183,7 @@ public class EditorCore : IDisposable
             SourceImage.Dispose();
             SourceImage = resultBitmap;
             CanvasSize = new SKSize(SourceImage.Width, newHeight);
-            
+
             // Adjust annotations for horizontal cut
             AdjustAnnotationsForHorizontalCut(cutY, cutHeight, newHeight);
         }
@@ -1198,24 +1198,24 @@ public class EditorCore : IDisposable
     private void AdjustAnnotationsForVerticalCut(int cutX, int cutWidth, int newWidth)
     {
         int cutEnd = cutX + cutWidth;
-        
+
         // Process annotations in reverse to allow safe removal
         for (int i = _annotations.Count - 1; i >= 0; i--)
         {
             var annotation = _annotations[i];
             var bounds = annotation.GetBounds();
-            
+
             // Remove annotations completely within the cut area
             if (bounds.Left >= cutX && bounds.Right <= cutEnd)
             {
                 _annotations.RemoveAt(i);
                 continue;
             }
-            
+
             // Adjust annotations that cross or are to the right of the cut
             bool needsAdjustment = false;
             float offsetX = 0;
-            
+
             // Annotations to the right of the cut area: shift left by cutWidth
             if (bounds.Left >= cutEnd)
             {
@@ -1237,12 +1237,12 @@ public class EditorCore : IDisposable
                     annotation.EndPoint = new SKPoint(cutX, annotation.EndPoint.Y);
                 }
             }
-            
+
             if (needsAdjustment)
             {
                 annotation.StartPoint = new SKPoint(annotation.StartPoint.X + offsetX, annotation.StartPoint.Y);
                 annotation.EndPoint = new SKPoint(annotation.EndPoint.X + offsetX, annotation.EndPoint.Y);
-                
+
                 // Handle freehand annotations
                 if (annotation is FreehandAnnotation freehand)
                 {
@@ -1259,7 +1259,7 @@ public class EditorCore : IDisposable
                         }
                     }
                 }
-                
+
                 // Update effect annotations
                 if (annotation is BaseEffectAnnotation effect && SourceImage != null)
                 {
@@ -1272,24 +1272,24 @@ public class EditorCore : IDisposable
     private void AdjustAnnotationsForHorizontalCut(int cutY, int cutHeight, int newHeight)
     {
         int cutEnd = cutY + cutHeight;
-        
+
         // Process annotations in reverse to allow safe removal
         for (int i = _annotations.Count - 1; i >= 0; i--)
         {
             var annotation = _annotations[i];
             var bounds = annotation.GetBounds();
-            
+
             // Remove annotations completely within the cut area
             if (bounds.Top >= cutY && bounds.Bottom <= cutEnd)
             {
                 _annotations.RemoveAt(i);
                 continue;
             }
-            
+
             // Adjust annotations that cross or are below the cut
             bool needsAdjustment = false;
             float offsetY = 0;
-            
+
             // Annotations below the cut area: shift up by cutHeight
             if (bounds.Top >= cutEnd)
             {
@@ -1311,12 +1311,12 @@ public class EditorCore : IDisposable
                     annotation.EndPoint = new SKPoint(annotation.EndPoint.X, cutY);
                 }
             }
-            
+
             if (needsAdjustment)
             {
                 annotation.StartPoint = new SKPoint(annotation.StartPoint.X, annotation.StartPoint.Y + offsetY);
                 annotation.EndPoint = new SKPoint(annotation.EndPoint.X, annotation.EndPoint.Y + offsetY);
-                
+
                 // Handle freehand annotations
                 if (annotation is FreehandAnnotation freehand)
                 {
@@ -1333,7 +1333,7 @@ public class EditorCore : IDisposable
                         }
                     }
                 }
-                
+
                 // Update effect annotations
                 if (annotation is BaseEffectAnnotation effect && SourceImage != null)
                 {

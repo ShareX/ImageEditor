@@ -1,10 +1,7 @@
-using ShareX.Editor.ImageEffects.Manipulations;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.Editor.Helpers;
-using ShareX.Editor.ImageEffects;
-using System;
+using ShareX.Editor.ImageEffects.Manipulations;
 
 namespace ShareX.Editor.Views.Dialogs
 {
@@ -32,7 +29,7 @@ namespace ShareX.Editor.Views.Dialogs
             float rotateY = (float)(this.FindControl<Slider>("YAxisSlider")?.Value ?? 0);
             float rotateZ = (float)(this.FindControl<Slider>("ZAxisSlider")?.Value ?? 0);
             PreviewRequested?.Invoke(this, new EffectEventArgs(
-                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ }.Apply(img), 
+                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ }.Apply(img),
                 "Rotate 3D"));
         }
 
@@ -42,7 +39,7 @@ namespace ShareX.Editor.Views.Dialogs
             float rotateY = (float)(this.FindControl<Slider>("YAxisSlider")?.Value ?? 0);
             float rotateZ = (float)(this.FindControl<Slider>("ZAxisSlider")?.Value ?? 0);
             ApplyRequested?.Invoke(this, new EffectEventArgs(
-                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ }.Apply(img), 
+                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ }.Apply(img),
                 "Applied Rotate 3D"));
         }
 

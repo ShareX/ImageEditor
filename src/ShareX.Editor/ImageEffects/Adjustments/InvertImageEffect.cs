@@ -7,7 +7,7 @@ public class InvertImageEffect : ImageEffect
 {
     public override string Name => "Invert";
     public override string IconKey => "IconExchangeAlt";
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         float[] matrix = {
             -1,  0,  0, 0, 1,

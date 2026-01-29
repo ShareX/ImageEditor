@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using ShareX.Editor.ViewModels;
-using System;
 
 namespace ShareX.Editor.Views.Controllers;
 
@@ -15,7 +14,7 @@ public class EditorZoomController
     private bool _isPanning;
     private Point _panStart;
     private Vector _panOrigin;
-    
+
     // Throttle zoom changes to prevent rapid consecutive events
     private DateTime _lastZoomChangeTime = DateTime.MinValue;
     private const int ZoomThrottleMilliseconds = 150; // Minimum time between zoom changes
@@ -51,23 +50,23 @@ public class EditorZoomController
         }
 
         var oldZoom = vm.Zoom;
-        
+
         // Use Sign to get only the direction (1 or -1), ignoring the magnitude
         // This ensures we only move one zoom level at a time regardless of scroll speed settings
         var direction = Math.Sign(e.Delta.Y);
-        
+
         // If delta is 0, do nothing
         if (direction == 0) return;
-        
+
         // Find the current zoom level index or nearest one
         int currentIndex = FindNearestZoomLevelIndex(oldZoom);
-        
+
         // Move to next or previous zoom level (only by 1)
         int newIndex = Math.Clamp(currentIndex + direction, 0, ZoomLevels.Length - 1);
-        
+
         // If we're already at the min/max, don't do anything
         if (newIndex == currentIndex) return;
-        
+
         var newZoom = ZoomLevels[newIndex];
         if (Math.Abs(newZoom - oldZoom) < 0.0001) return;
 
@@ -126,7 +125,7 @@ public class EditorZoomController
         // Find the index of the zoom level closest to the current zoom
         int nearestIndex = 0;
         double minDifference = Math.Abs(ZoomLevels[0] - currentZoom);
-        
+
         for (int i = 1; i < ZoomLevels.Length; i++)
         {
             double difference = Math.Abs(ZoomLevels[i] - currentZoom);
@@ -136,7 +135,7 @@ public class EditorZoomController
                 nearestIndex = i;
             }
         }
-        
+
         return nearestIndex;
     }
 
@@ -250,7 +249,7 @@ public class EditorZoomController
 
     public void HandleZoomPropertyChanged(MainViewModel vm)
     {
-         if (!_isPointerZooming)
+        if (!_isPointerZooming)
         {
             var scrollViewer = _view.FindControl<ScrollViewer>("CanvasScrollViewer");
             if (scrollViewer != null)

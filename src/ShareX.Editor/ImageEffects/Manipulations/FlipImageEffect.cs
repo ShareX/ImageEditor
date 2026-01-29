@@ -1,5 +1,4 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects.Manipulations;
 
@@ -22,7 +21,7 @@ public class FlipImageEffect : ImageEffect
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
-        
+
         SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
         using (SKCanvas canvas = new SKCanvas(result))
         {

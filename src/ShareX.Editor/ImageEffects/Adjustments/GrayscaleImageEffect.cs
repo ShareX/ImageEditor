@@ -10,7 +10,7 @@ public class GrayscaleImageEffect : ImageEffect
     public override bool HasParameters => true;
     public float Strength { get; set; } = 100f;
 
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         float strength = Strength;
         if (strength >= 100)
@@ -31,7 +31,7 @@ public class GrayscaleImageEffect : ImageEffect
         {
             float s = strength / 100f;
             float invS = 1f - s;
-            
+
             float[] matrix = {
                 0.2126f * s + invS, 0.7152f * s,        0.0722f * s,        0, 0,
                 0.2126f * s,        0.7152f * s + invS, 0.0722f * s,        0, 0,

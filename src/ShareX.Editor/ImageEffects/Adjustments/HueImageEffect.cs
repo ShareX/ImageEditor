@@ -9,7 +9,7 @@ public class HueImageEffect : ImageEffect
     public override string IconKey => "IconPalette";
     public float Amount { get; set; } = 0; // -180 to 180
 
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         float radians = (float)(Amount * Math.PI / 180.0);
         float c = (float)Math.Cos(radians);

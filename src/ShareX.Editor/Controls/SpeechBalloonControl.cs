@@ -98,7 +98,7 @@ namespace ShareX.Editor.Controls
 
                 // Calculate centered text position with padding
                 var padding = 12; // Adjusted to match TextBox padding
-                
+
                 // Allow wrapping
                 var maxTextWidth = Math.Max(0, width - (padding * 2));
                 formattedText.MaxTextWidth = maxTextWidth;

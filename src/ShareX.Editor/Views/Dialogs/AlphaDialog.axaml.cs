@@ -1,11 +1,7 @@
-using ShareX.Editor.ImageEffects.Adjustments;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.Editor.ImageEffects;
-using SkiaSharp;
-using System;
+using ShareX.Editor.ImageEffects.Adjustments;
 
 namespace ShareX.Editor.Views.Dialogs
 {
@@ -30,17 +26,17 @@ namespace ShareX.Editor.Views.Dialogs
 
         private void RequestPreview()
         {
-             var slider = this.FindControl<Slider>("AmountSlider");
-             float amount = (float)(slider?.Value ?? 100);
+            var slider = this.FindControl<Slider>("AmountSlider");
+            float amount = (float)(slider?.Value ?? 100);
 
-             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AlphaImageEffect { Amount = amount }.Apply(img), $"Alpha: {amount:0}%"));
+            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new AlphaImageEffect { Amount = amount }.Apply(img), $"Alpha: {amount:0}%"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
         {
             var slider = this.FindControl<Slider>("AmountSlider");
             float amount = (float)(slider?.Value ?? 100);
-            
+
             ApplyRequested?.Invoke(this, new EffectEventArgs(img => new AlphaImageEffect { Amount = amount }.Apply(img), $"Set alpha to {amount:0}%"));
         }
 

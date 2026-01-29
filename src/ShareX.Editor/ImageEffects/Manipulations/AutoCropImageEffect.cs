@@ -1,5 +1,5 @@
-using SkiaSharp;
 using ShareX.Editor.Helpers;
+using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects.Manipulations;
 
@@ -7,7 +7,7 @@ public class AutoCropImageEffect : ImageEffect
 {
     private readonly SKColor _color;
     private readonly int _tolerance;
-    
+
     public override string Name => "Auto crop image";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
 

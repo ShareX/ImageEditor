@@ -28,7 +28,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Layout;
 using Avalonia.Media;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Controls;
@@ -51,7 +50,7 @@ namespace ShareX.Editor.Views
         // SIP0018: Hybrid Rendering
         private SKCanvasControl? _canvasControl;
         private readonly EditorCore _editorCore;
-        
+
         // Sync flags to prevent loop between VM.PreviewImage <-> Core.SourceImage
         private bool _isSyncingFromVM;
         private bool _isSyncingToVM;
@@ -86,14 +85,14 @@ namespace ShareX.Editor.Views
                         // Sync Core image back to VM if change originated from Core (Undo/Redo, Core Crop)
                         if (!_isSyncingFromVM && !_isSyncingToVM && _editorCore.SourceImage != null)
                         {
-                            try 
-                            { 
+                            try
+                            {
                                 _isSyncingToVM = true;
                                 vm.UpdatePreviewImageOnly(_editorCore.SourceImage);
                             }
-                            finally 
-                            { 
-                                _isSyncingToVM = false; 
+                            finally
+                            {
+                                _isSyncingToVM = false;
                             }
                         }
                     }
@@ -264,7 +263,7 @@ namespace ShareX.Editor.Views
                     // This allows VM-driven updates (Effects, Undo) to not wipe Core state.
                     // New file loads should be preceded by Clear() from the VM/Host.
                     _editorCore.UpdateSourceImage(skBitmap.Copy());
-    
+
                     _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                     RenderCore();
                 }
@@ -774,10 +773,10 @@ namespace ShareX.Editor.Views
                     }
                     else if (selected is SpeechBalloonControl balloon)
                     {
-                         // For speech balloon, trigger visual invalidation to redraw filling
-                         balloon.InvalidateVisual();
+                        // For speech balloon, trigger visual invalidation to redraw filling
+                        balloon.InvalidateVisual();
                     }
-                    
+
                     // ISSUE-LIVE-UPDATE: Update active text editor if present
                     _selectionController.UpdateActiveTextEditorProperties();
                 }
@@ -789,7 +788,7 @@ namespace ShareX.Editor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.FontSize = fontSize;
-                
+
                 // ... (rest of logic) ...
 
                 // Apply to selected annotation if any
@@ -850,13 +849,13 @@ namespace ShareX.Editor.Views
                 }
                 else if (selected?.Tag is SpotlightAnnotation spotlightAnn)
                 {
-                     // Map EffectStrength (0-30) to DarkenOpacity (0-255)
-                     spotlightAnn.DarkenOpacity = (byte)Math.Clamp(strength / 30.0 * 255, 0, 255);
-                     
-                     if (selected is SpotlightControl spotlightControl)
-                     {
-                         spotlightControl.InvalidateVisual();
-                     }
+                    // Map EffectStrength (0-30) to DarkenOpacity (0-255)
+                    spotlightAnn.DarkenOpacity = (byte)Math.Clamp(strength / 30.0 * 255, 0, 255);
+
+                    if (selected is SpotlightControl spotlightControl)
+                    {
+                        spotlightControl.InvalidateVisual();
+                    }
                 }
             }
         }
@@ -986,7 +985,7 @@ namespace ShareX.Editor.Views
                     }
                     else if (selected is SpeechBalloonControl balloon)
                     {
-                         balloon.InvalidateVisual();
+                        balloon.InvalidateVisual();
                     }
                     break;
                 case TextBox textBox:
@@ -1005,7 +1004,7 @@ namespace ShareX.Editor.Views
                     balloonControl.InvalidateVisual();
                     break;
             }
-            
+
             // ISSUE-LIVE-UPDATE: Update active text editor if present
             _selectionController.UpdateActiveTextEditorProperties();
         }
@@ -1118,8 +1117,8 @@ namespace ShareX.Editor.Views
                 dialog.ApplyRequested += (s, args) =>
                 {
                     // vm.CropImage(args.X, args.Y, args.Width, args.Height);
-                     // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                     _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
+                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
+                    _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
 
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };

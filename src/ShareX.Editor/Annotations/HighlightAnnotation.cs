@@ -57,18 +57,18 @@ public class HighlightAnnotation : BaseEffectAnnotation
 
             canvas.DrawRect(rect, paint);
         }
-        
+
         // Draw selection highlight if selected
         if (IsSelected)
         {
-             using var selectPaint = new SKPaint
-             {
-                 Color = SKColors.DodgerBlue,
-                 StrokeWidth = 2,
-                 Style = SKPaintStyle.Stroke,
-                 IsAntialias = true
-             };
-             canvas.DrawRect(rect, selectPaint);
+            using var selectPaint = new SKPaint
+            {
+                Color = SKColors.DodgerBlue,
+                StrokeWidth = 2,
+                Style = SKPaintStyle.Stroke,
+                IsAntialias = true
+            };
+            canvas.DrawRect(rect, selectPaint);
         }
     }
 
@@ -97,10 +97,10 @@ public class HighlightAnnotation : BaseEffectAnnotation
             // Extract the valid region to highlight
             using var crop = new SKBitmap(intersect.Width, intersect.Height);
             source.ExtractSubset(crop, intersect);
-            
+
             // We will modify a copy of the crop (so we don't affect source)
             using var processedCrop = crop.Copy();
-            
+
             var highlightColor = ParseColor(StrokeColor);
             byte r = highlightColor.Red;
             byte g = highlightColor.Green;
@@ -112,7 +112,7 @@ public class HighlightAnnotation : BaseEffectAnnotation
                 var pixels = (byte*)processedCrop.GetPixels();
                 int count = processedCrop.Width * processedCrop.Height;
                 var colorType = processedCrop.ColorType;
-                
+
                 // Handle standard formats using channel-independent Min logic
                 if (colorType == SKColorType.Bgra8888 || colorType == SKColorType.Rgba8888)
                 {
@@ -122,7 +122,7 @@ public class HighlightAnnotation : BaseEffectAnnotation
                     // For BGRA: [0]=B, [1]=G, [2]=R.
                     // For RGBA: [0]=R, [1]=G, [2]=B.
                     // To do this correctly without conditional loop:
-                    
+
                     if (colorType == SKColorType.Bgra8888)
                     {
                         for (int i = 0; i < count; i++)

@@ -7,7 +7,7 @@ public class PolaroidImageEffect : ImageEffect
 {
     public override string Name => "Polaroid";
     public override string IconKey => "IconCameraRetro";
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         float[] matrix = {
             1.438f, -0.062f, -0.062f, 0, 0,

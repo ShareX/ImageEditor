@@ -1,12 +1,9 @@
-using ShareX.Editor.ImageEffects.Adjustments;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using ShareX.Editor.ImageEffects;
+using ShareX.Editor.ImageEffects.Adjustments;
 using SkiaSharp;
-using System;
 
 namespace ShareX.Editor.Views.Dialogs
 {
@@ -22,11 +19,11 @@ namespace ShareX.Editor.Views.Dialogs
         {
             AvaloniaXamlLoader.Load(this);
             AvaloniaXamlLoader.Load(this);
-            
+
             // Re-find the brush if it's set in XAML resources or use direct binding
             // Actually, we can just set the property of the Border or a named brush.
             // XAML defines: <SolidColorBrush x:Name="PreviewColorBrush"/>
-            
+
             // Initial update
             UpdateColorPreview();
             RequestPreview();
@@ -46,7 +43,7 @@ namespace ShareX.Editor.Views.Dialogs
 
             float h = (float)(hueSlider?.Value ?? 0);
             float s = (float)(satSlider?.Value ?? 50);
-            
+
             // Default Lightness to 50% for standard color representation
             return SKColor.FromHsl(h, s, 50);
         }
@@ -64,7 +61,7 @@ namespace ShareX.Editor.Views.Dialogs
             {
                 var c = GetCurrentColor();
                 var color = Color.FromRgb(c.Red, c.Green, c.Blue);
-                
+
                 if (border.Background is SolidColorBrush brush)
                 {
                     brush.Color = color;
@@ -78,23 +75,23 @@ namespace ShareX.Editor.Views.Dialogs
 
         private void RequestPreview()
         {
-             var color = GetCurrentColor();
-             float strength = GetStrength();
+            var color = GetCurrentColor();
+            float strength = GetStrength();
 
-             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new ColorizeImageEffect { Color = color, Strength = strength }.Apply(img), $"Colorize: Hue {GetHue():0}, Strength {strength:0}%"));
+            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new ColorizeImageEffect { Color = color, Strength = strength }.Apply(img), $"Colorize: Hue {GetHue():0}, Strength {strength:0}%"));
         }
 
         private float GetHue()
         {
-             var hueSlider = this.FindControl<Slider>("HueSlider");
-             return (float)(hueSlider?.Value ?? 0);
+            var hueSlider = this.FindControl<Slider>("HueSlider");
+            return (float)(hueSlider?.Value ?? 0);
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
         {
             var color = GetCurrentColor();
             float strength = GetStrength();
-            
+
             ApplyRequested?.Invoke(this, new EffectEventArgs(img => new ColorizeImageEffect { Color = color, Strength = strength }.Apply(img), "Applied Colorize"));
         }
 

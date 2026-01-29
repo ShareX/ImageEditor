@@ -34,7 +34,7 @@ public class SelectiveColorImageEffect : ImageEffect
 {
     public override string Name => "Selective Color";
     public override string IconKey => "IconHighlighter";
-    
+
     public Dictionary<SelectiveColorRange, SelectiveColorAdjustment> Adjustments { get; set; } = new();
 
     public override SKBitmap Apply(SKBitmap source)
@@ -43,8 +43,8 @@ public class SelectiveColorImageEffect : ImageEffect
 
         return ApplyPixelOperation(source, (c) =>
         {
-            c.ToHsl(out float h, out float s, out float l); 
-            
+            c.ToHsl(out float h, out float s, out float l);
+
             // Determine range preference: Whites/Blacks/Neutrals first
             SelectiveColorRange? range = null;
 
@@ -73,7 +73,7 @@ public class SelectiveColorImageEffect : ImageEffect
 
                     s = Math.Clamp(s + adj.Saturation, 0, 100);
                     l = Math.Clamp(l + adj.Lightness, 0, 100);
-                    
+
                     return SKColor.FromHsl(h, s, l, c.Alpha);
                 }
             }

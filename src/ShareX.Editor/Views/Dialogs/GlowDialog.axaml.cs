@@ -28,7 +28,7 @@ public partial class GlowDialog : UserControl, IEffectDialog
     public GlowDialog()
     {
         InitializeComponent();
-        
+
         // Find controls after XAML is loaded
         _sizeSlider = this.FindControl<Slider>("SizeSlider");
         _strengthSlider = this.FindControl<Slider>("StrengthSlider");
@@ -36,7 +36,7 @@ public partial class GlowDialog : UserControl, IEffectDialog
         _offsetYSlider = this.FindControl<Slider>("OffsetYSlider");
         _colorTextBox = this.FindControl<TextBox>("ColorTextBox");
         _colorPreview = this.FindControl<Border>("ColorPreview");
-        
+
         Loaded += OnLoaded;
     }
 

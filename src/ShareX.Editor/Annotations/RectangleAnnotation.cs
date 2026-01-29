@@ -55,7 +55,7 @@ public class RectangleAnnotation : Annotation
             Fill = fillBrush,
             Tag = this
         };
-        
+
         if (ShadowEnabled)
         {
             rect.Effect = new Avalonia.Media.DropShadowEffect
@@ -66,21 +66,21 @@ public class RectangleAnnotation : Annotation
                 Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
             };
         }
-        
+
         return rect;
     }
 
     public override void Render(SKCanvas canvas)
     {
         var rect = GetBounds();
-        
+
         // Draw fill first (if not transparent)
         if (!string.IsNullOrEmpty(FillColor) && FillColor != "#00000000")
         {
             using var fillPaint = CreateFillPaint();
             canvas.DrawRect(rect, fillPaint);
         }
-        
+
         // Draw stroke on top
         using var strokePaint = CreateStrokePaint();
         canvas.DrawRect(rect, strokePaint);

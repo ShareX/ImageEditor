@@ -26,7 +26,7 @@ public partial class TornEdgeDialog : UserControl, IEffectDialog
     public TornEdgeDialog()
     {
         InitializeComponent();
-        
+
         // Find controls after XAML is loaded
         _depthSlider = this.FindControl<Slider>("DepthSlider");
         _rangeSlider = this.FindControl<Slider>("RangeSlider");
@@ -35,7 +35,7 @@ public partial class TornEdgeDialog : UserControl, IEffectDialog
         _bottomCheckBox = this.FindControl<CheckBox>("BottomCheckBox");
         _leftCheckBox = this.FindControl<CheckBox>("LeftCheckBox");
         _curvedCheckBox = this.FindControl<CheckBox>("CurvedCheckBox");
-        
+
         Loaded += OnLoaded;
     }
 

@@ -47,7 +47,7 @@ public class SpeechBalloonAnnotation : Annotation
             IsHitTestVisible = true,
             Tag = this
         };
-        
+
         if (ShadowEnabled)
         {
             control.Effect = new Avalonia.Media.DropShadowEffect
@@ -58,7 +58,7 @@ public class SpeechBalloonAnnotation : Annotation
                 Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
             };
         }
-        
+
         return control;
     }
 

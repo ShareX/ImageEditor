@@ -9,7 +9,7 @@ public class GammaImageEffect : ImageEffect
     public override string IconKey => "IconWaveSquare";
     public float Amount { get; set; } = 1f;
 
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         byte[] table = new byte[256];
         for (int i = 0; i < 256; i++)

@@ -69,17 +69,17 @@ internal class EditorHistory : IDisposable
         _undoMementoStack.Push(memento);
 
         // Flatten stack to apply limits linearly from Newest to Oldest
-        EditorMemento[] allMementos = _undoMementoStack.ToArray(); 
+        EditorMemento[] allMementos = _undoMementoStack.ToArray();
         _undoMementoStack.Clear(); // Clear and rebuild
-        
+
         var keptItems = new List<EditorMemento>();
         int keptCanvasCount = 0;
-        
+
         for (int i = 0; i < allMementos.Length; i++)
         {
             var m = allMementos[i];
             bool keep = false;
-            
+
             // Check Total Limit
             if (keptItems.Count < MaxAnnotationMementos)
             {
@@ -106,7 +106,7 @@ internal class EditorHistory : IDisposable
             {
                 System.Diagnostics.Debug.WriteLine($"[HISTORY] Total limit ({MaxAnnotationMementos}) reached at index {i}. Disposing older items.");
             }
-            
+
             if (keep)
             {
                 keptItems.Add(m);
@@ -115,7 +115,7 @@ internal class EditorHistory : IDisposable
             {
                 // Discard this item and ALL older items (since history is linear)
                 m.Dispose();
-                
+
                 // Dispose the rest of the array
                 for (int j = i + 1; j < allMementos.Length; j++)
                 {
@@ -124,7 +124,7 @@ internal class EditorHistory : IDisposable
                 break; // Stop processing
             }
         }
-        
+
         // Rebuild stack (Reverse of keptItems to restore Oldest -> Newest)
         // keptItems[0] is Newest (Top). 
         // Stack.Push pushes to Top. 
@@ -141,7 +141,7 @@ internal class EditorHistory : IDisposable
         }
 
         _redoMementoStack.Clear();
-        
+
         System.Diagnostics.Debug.WriteLine($"[HISTORY] Added memento. Stack size: {_undoMementoStack.Count} (Canvas: {keptCanvasCount})");
     }
 

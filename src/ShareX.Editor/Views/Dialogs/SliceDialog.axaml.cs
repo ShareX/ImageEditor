@@ -23,13 +23,13 @@ public partial class SliceDialog : UserControl, IEffectDialog
     public SliceDialog()
     {
         InitializeComponent();
-        
+
         // Find controls after XAML is loaded
         _minHeightSlider = this.FindControl<Slider>("MinHeightSlider");
         _maxHeightSlider = this.FindControl<Slider>("MaxHeightSlider");
         _minShiftSlider = this.FindControl<Slider>("MinShiftSlider");
         _maxShiftSlider = this.FindControl<Slider>("MaxShiftSlider");
-        
+
         Loaded += OnLoaded;
     }
 

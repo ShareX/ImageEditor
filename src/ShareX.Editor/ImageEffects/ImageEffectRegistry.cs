@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using ShareX.Editor.ImageEffects.Adjustments;
 using ShareX.Editor.ImageEffects.Filters;
 using ShareX.Editor.ImageEffects.Manipulations;
@@ -24,7 +22,7 @@ public static class ImageEffectRegistry
             FlipImageEffect.Vertical,
             
             // Manipulations - Resize (parameterized)
-            new ResizeImageEffect(), 
+            new ResizeImageEffect(),
             new AutoCropImageEffect(),
             
             // Adjustments

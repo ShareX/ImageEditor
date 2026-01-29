@@ -64,13 +64,13 @@ public class ArrowAnnotation : Annotation
             Fill = brush, // Fill arrowhead
             Tag = this
         };
-        
+
         // Populate the arrow geometry using the annotation's points
         path.Data = CreateArrowGeometry(
             new Point(StartPoint.X, StartPoint.Y),
             new Point(EndPoint.X, EndPoint.Y),
             StrokeWidth * ArrowHeadWidthMultiplier);
-        
+
         if (ShadowEnabled)
         {
             path.Effect = new Avalonia.Media.DropShadowEffect
@@ -81,7 +81,7 @@ public class ArrowAnnotation : Annotation
                 Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
             };
         }
-        
+
         return path;
     }
 

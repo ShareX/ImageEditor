@@ -30,7 +30,7 @@ public partial class ShadowDialog : UserControl, IEffectDialog
     public ShadowDialog()
     {
         InitializeComponent();
-        
+
         // Find controls after XAML is loaded
         _opacitySlider = this.FindControl<Slider>("OpacitySlider");
         _sizeSlider = this.FindControl<Slider>("SizeSlider");
@@ -40,7 +40,7 @@ public partial class ShadowDialog : UserControl, IEffectDialog
         _autoResizeCheckBox = this.FindControl<CheckBox>("AutoResizeCheckBox");
         _colorTextBox = this.FindControl<TextBox>("ColorTextBox");
         _colorPreview = this.FindControl<Border>("ColorPreview");
-        
+
         Loaded += OnLoaded;
     }
 

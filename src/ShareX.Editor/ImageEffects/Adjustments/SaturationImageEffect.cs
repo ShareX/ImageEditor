@@ -9,7 +9,7 @@ public class SaturationImageEffect : ImageEffect
     public override string IconKey => "IconFillDrip";
     public float Amount { get; set; } = 0; // -100 to 100
 
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         float x = 1f + (Amount / 100f);
         float lumR = 0.3086f;

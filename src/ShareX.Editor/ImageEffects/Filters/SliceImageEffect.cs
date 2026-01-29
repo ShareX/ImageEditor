@@ -1,4 +1,3 @@
-using ShareX.Editor.Helpers;
 using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects.Filters;

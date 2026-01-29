@@ -73,7 +73,7 @@ public class PixelateAnnotation : BaseEffectAnnotation
 
         // Convert annotation bounds to integer rect
         var annotationRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
-        
+
         // Find intersection with source image bounds
         var validRect = annotationRect;
         validRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));

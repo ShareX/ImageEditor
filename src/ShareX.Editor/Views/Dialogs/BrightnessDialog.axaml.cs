@@ -1,11 +1,8 @@
-using ShareX.Editor.ImageEffects.Adjustments;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.Editor.ImageEffects;
+using ShareX.Editor.ImageEffects.Adjustments;
 using SkiaSharp;
-using System;
 
 namespace ShareX.Editor.Views.Dialogs
 {
@@ -25,10 +22,10 @@ namespace ShareX.Editor.Views.Dialogs
         private void OnValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             if (_suppressPreview) return;
-            
+
             // Debounce logic could be added here if needed, but for simple brightness it should be fast enough.
             // Or rely on MainViewModel to handle update speed.
-            
+
             // We pass the function to apply, or the result?
             // Passing the result means we do the processing here or in a helper.
             // Better to decouple: Notify that we want a preview with these parameters.
@@ -44,17 +41,17 @@ namespace ShareX.Editor.Views.Dialogs
 
         private void RequestPreview()
         {
-             var slider = this.FindControl<Slider>("AmountSlider");
-             float amount = (float)(slider?.Value ?? 0);
+            var slider = this.FindControl<Slider>("AmountSlider");
+            float amount = (float)(slider?.Value ?? 0);
 
-             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new BrightnessImageEffect { Amount = amount }.Apply(img), $"Brightness: {amount:0}"));
+            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new BrightnessImageEffect { Amount = amount }.Apply(img), $"Brightness: {amount:0}"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
         {
             var slider = this.FindControl<Slider>("AmountSlider");
             float amount = (float)(slider?.Value ?? 0);
-            
+
             ApplyRequested?.Invoke(this, new EffectEventArgs(img => new BrightnessImageEffect { Amount = amount }.Apply(img), $"Adjusted brightness by {amount:0}"));
         }
 

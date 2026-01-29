@@ -36,7 +36,7 @@ namespace ShareX.Editor.Helpers
                     {
                         var srcPtr = locked.Address;
                         var dstPtr = skBitmap.GetPixels();
-                        
+
                         // Copy row by row to handle stride differences if any
                         var height = info.Height;
                         var width = info.Width;
@@ -86,7 +86,7 @@ namespace ShareX.Editor.Helpers
             // Ensure we are in a compatible format for Avalonia (BGRA8888 is standard)
             // If not, we might need to convert. 
             // Avalonia WriteableBitmap usually expects Bgra8888 or Rgba8888 depending on platform, but Bgr8888 is safest default.
-            
+
             var width = skBitmap.Width;
             var height = skBitmap.Height;
 
@@ -94,13 +94,13 @@ namespace ShareX.Editor.Helpers
             var writeableBitmap = new WriteableBitmap(
                 new Avalonia.PixelSize(width, height),
                 new Avalonia.Vector(96, 96), // DPI
-                Avalonia.Platform.PixelFormat.Bgra8888, 
+                Avalonia.Platform.PixelFormat.Bgra8888,
                 Avalonia.Platform.AlphaFormat.Premul);
 
             using (var locked = writeableBitmap.Lock())
             {
                 var info = skBitmap.Info;
-                
+
                 // If the source is already Bgra8888, we can copy directly
                 if (info.ColorType == SKColorType.Bgra8888)
                 {
@@ -114,8 +114,8 @@ namespace ShareX.Editor.Helpers
 
                         if (srcStride == dstStride)
                         {
-                             long totalBytes = (long)height * srcStride;
-                             Buffer.MemoryCopy((void*)srcPtr, (void*)dstPtr, totalBytes, totalBytes);
+                            long totalBytes = (long)height * srcStride;
+                            Buffer.MemoryCopy((void*)srcPtr, (void*)dstPtr, totalBytes, totalBytes);
                         }
                         else
                         {
@@ -132,7 +132,7 @@ namespace ShareX.Editor.Helpers
                 {
                     // If ColorType differs, let Skia handle the pixel conversion into the destination buffer
                     var dstInfo = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
-                    
+
                     // We can read pixels directly into the WriteableBitmap's buffer
                     // We can read pixels directly into the WriteableBitmap's buffer
                     // using var pixmap = skBitmap.PeekPixels();
@@ -150,8 +150,8 @@ namespace ShareX.Editor.Helpers
                         // If PeekPixels is null, maybe pixels aren't allocated.
                         // But we are converting valid bitmap.
                         // Force allocation/lock?
-                         IntPtr ptr = skBitmap.GetPixels(); // Forces pixel lock
-                         skBitmap.PeekPixels()?.ReadPixels(dstInfo, locked.Address, locked.RowBytes, 0, 0);
+                        IntPtr ptr = skBitmap.GetPixels(); // Forces pixel lock
+                        skBitmap.PeekPixels()?.ReadPixels(dstInfo, locked.Address, locked.RowBytes, 0, 0);
                     }
                 }
             }

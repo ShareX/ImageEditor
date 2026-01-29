@@ -1,5 +1,4 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects.Manipulations;
 
@@ -89,7 +88,7 @@ public class RotateImageEffect : ImageEffect
         SKMatrix matrix = SKMatrix.CreateRotationDegrees(angle, source.Width / 2f, source.Height / 2f);
         SKRect rect = new SKRect(0, 0, source.Width, source.Height);
         SKRect mapped = matrix.MapRect(rect);
-        
+
         int newWidth = (int)Math.Ceiling(mapped.Width);
         int newHeight = (int)Math.Ceiling(mapped.Height);
 

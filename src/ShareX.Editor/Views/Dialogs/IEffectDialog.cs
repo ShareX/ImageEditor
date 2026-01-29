@@ -1,6 +1,3 @@
-using SkiaSharp;
-using System;
-
 namespace ShareX.Editor.Views.Dialogs
 {
     /// <summary>

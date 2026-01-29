@@ -54,7 +54,7 @@ public class LineAnnotation : Annotation
             EndPoint = new Point(EndPoint.X, EndPoint.Y),
             Tag = this
         };
-        
+
         if (ShadowEnabled)
         {
             line.Effect = new Avalonia.Media.DropShadowEffect
@@ -65,7 +65,7 @@ public class LineAnnotation : Annotation
                 Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
             };
         }
-        
+
         return line;
     }
 

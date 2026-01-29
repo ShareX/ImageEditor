@@ -26,13 +26,13 @@ public partial class OutlineDialog : UserControl, IEffectDialog
     public OutlineDialog()
     {
         InitializeComponent();
-        
+
         // Find controls after XAML is loaded
         _sizeSlider = this.FindControl<Slider>("SizeSlider");
         _paddingSlider = this.FindControl<Slider>("PaddingSlider");
         _colorTextBox = this.FindControl<TextBox>("ColorTextBox");
         _colorPreview = this.FindControl<Border>("ColorPreview");
-        
+
         Loaded += OnLoaded;
     }
 
@@ -74,7 +74,7 @@ public partial class OutlineDialog : UserControl, IEffectDialog
     {
         var size = GetSize();
         var padding = GetPadding();
-        
+
         PreviewRequested?.Invoke(this, new EffectEventArgs(
             img => ImageHelpers.ApplyOutline(img, size, padding, _color),
             "Outline applied"));
@@ -84,7 +84,7 @@ public partial class OutlineDialog : UserControl, IEffectDialog
     {
         var size = GetSize();
         var padding = GetPadding();
-        
+
         ApplyRequested?.Invoke(this, new EffectEventArgs(
             img => ImageHelpers.ApplyOutline(img, size, padding, _color),
             "Outline applied"));

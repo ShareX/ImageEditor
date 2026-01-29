@@ -86,7 +86,7 @@ public class TextAnnotation : Annotation
             MinWidth = 0,
             IsHitTestVisible = false
         };
-        
+
         if (ShadowEnabled)
         {
             textBox.Effect = new Avalonia.Media.DropShadowEffect
@@ -97,7 +97,7 @@ public class TextAnnotation : Annotation
                 Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
             };
         }
-        
+
         return textBox;
     }
 

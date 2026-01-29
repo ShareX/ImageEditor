@@ -1,10 +1,7 @@
-using ShareX.Editor.ImageEffects.Manipulations;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.Editor.Helpers;
-using ShareX.Editor.ImageEffects;
-using System;
+using ShareX.Editor.ImageEffects.Manipulations;
 
 namespace ShareX.Editor.Views.Dialogs
 {

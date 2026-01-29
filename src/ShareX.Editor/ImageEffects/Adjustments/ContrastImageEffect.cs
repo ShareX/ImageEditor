@@ -9,10 +9,10 @@ public class ContrastImageEffect : ImageEffect
     public override string IconKey => "IconAdjust";
     public float Amount { get; set; } = 0; // -100 to 100
 
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         float scale = (100f + Amount) / 100f;
-        scale = scale * scale; 
+        scale = scale * scale;
         float shift = 0.5f * (1f - scale);
 
         float[] matrix = {

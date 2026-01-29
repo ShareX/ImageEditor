@@ -9,7 +9,7 @@ public class PixelateImageEffect : ImageEffect
     public override bool HasParameters => true;
     public int Size { get; set; } = 10;
 
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
         if (Size <= 1) return source.Copy();

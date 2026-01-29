@@ -4,7 +4,6 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using SkiaSharp;
-using System;
 
 namespace ShareX.Editor.Controls;
 
@@ -33,7 +32,7 @@ public class SKCanvasControl : Control
             // Create a WriteableBitmap with Bgra8888 which is standard for Skia/Avalonia interop
             _bitmap = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
         }
-        
+
         InvalidateVisual();
     }
 
@@ -59,9 +58,9 @@ public class SKCanvasControl : Control
             using (var buffer = _bitmap.Lock())
             {
                 var info = new SKImageInfo(
-                    _bitmap.PixelSize.Width, 
-                    _bitmap.PixelSize.Height, 
-                    SKColorType.Bgra8888, 
+                    _bitmap.PixelSize.Width,
+                    _bitmap.PixelSize.Height,
+                    SKColorType.Bgra8888,
                     SKAlphaType.Premul);
 
                 using (var surface = SKSurface.Create(info, buffer.Address, buffer.RowBytes))
@@ -79,7 +78,7 @@ public class SKCanvasControl : Control
         // We need to request invalidation on UI thread.
         Avalonia.Threading.Dispatcher.UIThread.Post(InvalidateVisual, Avalonia.Threading.DispatcherPriority.Render);
     }
-    
+
     /// <summary>
     /// Releases resources
     /// </summary>

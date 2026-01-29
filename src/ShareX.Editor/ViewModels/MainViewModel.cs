@@ -506,7 +506,7 @@ namespace ShareX.Editor.ViewModels
             // However, setting properties triggers On...Changed which calls UpdateOptionsFrom...
             // Use a flag to suppress updates back to Options? 
             // Actually, if we set the property to the value from Options, updating Options back to the same value is harmless.
-            
+
             switch (tool)
             {
                 case EditorTool.Rectangle:

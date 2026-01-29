@@ -9,8 +9,6 @@ using ShareX.Editor.Annotations;
 using ShareX.Editor.Controls;
 using ShareX.Editor.ViewModels;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
 
 namespace ShareX.Editor.Views.Controllers;
 
@@ -75,13 +73,13 @@ public class EditorSelectionController
         _hoveredShape = shape;
         UpdateHoverOutline();
         UpdateSelectionHandles();
-        
+
         // Notify selection changed
         if (wasNull && shape != null)
         {
             SelectionChanged?.Invoke(true);
         }
-        
+
         // Auto-enter text edit mode for speech balloon
         if (shape is SpeechBalloonControl balloonControl)
         {
@@ -126,7 +124,7 @@ public class EditorSelectionController
         // ShareX logic: If in Select Tool, selecting works. If in other tools, usually drawing takes precedence unless we click a handle.
         // But logic in EditorView.axaml.cs had: 
         // if (vm.ActiveTool == EditorTool.Select ...) -> Try select.
-        
+
         if (_view.DataContext is MainViewModel vm)
         {
             // Allow dragging selected shapes even when not in Select tool mode
@@ -186,99 +184,99 @@ public class EditorSelectionController
 
             if (vm.ActiveTool == EditorTool.Select || vm.ActiveTool == EditorTool.Spotlight)
             {
-                 // Hit test
-                 var hitSource = e.Source as global::Avalonia.Visual;
-                 Control? hitTarget = null;
-                 while (hitSource != null && hitSource != canvas)
-                 {
-                     var candidate = hitSource as Control;
-                     if (candidate != null && canvas.Children.Contains(candidate))
-                     {
-                         hitTarget = candidate;
-                         break;
-                     }
-                     hitSource = hitSource.GetVisualParent();
-                 }
+                // Hit test
+                var hitSource = e.Source as global::Avalonia.Visual;
+                Control? hitTarget = null;
+                while (hitSource != null && hitSource != canvas)
+                {
+                    var candidate = hitSource as Control;
+                    if (candidate != null && canvas.Children.Contains(candidate))
+                    {
+                        hitTarget = candidate;
+                        break;
+                    }
+                    hitSource = hitSource.GetVisualParent();
+                }
 
-                 var manualHit = HitTestShape(canvas, point);
-                 if (manualHit is SpotlightControl || manualHit is TextBox)
-                 {
-                     hitTarget = manualHit;
-                 }
+                var manualHit = HitTestShape(canvas, point);
+                if (manualHit is SpotlightControl || manualHit is TextBox)
+                {
+                    hitTarget = manualHit;
+                }
 
-                 // Integrity Check: Ensure we didn't mistakenly hit the Spotlight overlay (visual pass-through)
-                 if (hitTarget is SpotlightControl sc && manualHit != sc)
-                 {
-                      hitTarget = null;
-                 }
+                // Integrity Check: Ensure we didn't mistakenly hit the Spotlight overlay (visual pass-through)
+                if (hitTarget is SpotlightControl sc && manualHit != sc)
+                {
+                    hitTarget = null;
+                }
 
-                 if (vm.ActiveTool == EditorTool.Spotlight)
-                 {
-                      if (!(hitTarget is SpotlightControl)) hitTarget = null;
-                      if (!(manualHit is SpotlightControl)) manualHit = null;
-                 }
+                if (vm.ActiveTool == EditorTool.Spotlight)
+                {
+                    if (!(hitTarget is SpotlightControl)) hitTarget = null;
+                    if (!(manualHit is SpotlightControl)) manualHit = null;
+                }
 
-                     if (hitTarget != null)
-                     {
-                         if (hitTarget is TextBox tb && e.ClickCount == 2)
-                         {
-                             tb.IsHitTestVisible = true;
-                             tb.Focus();
-                             AttachTextBoxEditHandlers(tb);
-                             e.Handled = true;
-                             return true;
-                         }
+                if (hitTarget != null)
+                {
+                    if (hitTarget is TextBox tb && e.ClickCount == 2)
+                    {
+                        tb.IsHitTestVisible = true;
+                        tb.Focus();
+                        AttachTextBoxEditHandlers(tb);
+                        e.Handled = true;
+                        return true;
+                    }
 
-                         if (hitTarget is SpeechBalloonControl balloon && e.ClickCount == 2)
-                         {
-                             ShowSpeechBalloonTextEditor(balloon, canvas);
-                             e.Handled = true;
-                             return true;
-                         }
+                    if (hitTarget is SpeechBalloonControl balloon && e.ClickCount == 2)
+                    {
+                        ShowSpeechBalloonTextEditor(balloon, canvas);
+                        e.Handled = true;
+                        return true;
+                    }
 
-                         _selectedShape = hitTarget;
-                         _isDraggingShape = true;
-                         _lastDragPoint = point;
-                         UpdateSelectionHandles();
-                         SelectionChanged?.Invoke(true);
-                         e.Pointer.Capture(hitTarget);
-                         e.Handled = true;
-                         return true;
-                     }
-                     else
-                     {
-                         if (manualHit != null)
-                         {
-                              if (manualHit is TextBox tb && e.ClickCount == 2)
-                              {
-                                  tb.IsHitTestVisible = true;
-                                  tb.Focus();
-                                  AttachTextBoxEditHandlers(tb);
-                                  e.Handled = true;
-                                  return true;
-                              }
+                    _selectedShape = hitTarget;
+                    _isDraggingShape = true;
+                    _lastDragPoint = point;
+                    UpdateSelectionHandles();
+                    SelectionChanged?.Invoke(true);
+                    e.Pointer.Capture(hitTarget);
+                    e.Handled = true;
+                    return true;
+                }
+                else
+                {
+                    if (manualHit != null)
+                    {
+                        if (manualHit is TextBox tb && e.ClickCount == 2)
+                        {
+                            tb.IsHitTestVisible = true;
+                            tb.Focus();
+                            AttachTextBoxEditHandlers(tb);
+                            e.Handled = true;
+                            return true;
+                        }
 
-                              if (manualHit is SpeechBalloonControl balloon && e.ClickCount == 2)
-                              {
-                                  ShowSpeechBalloonTextEditor(balloon, canvas);
-                                  e.Handled = true;
-                                  return true;
-                              }
+                        if (manualHit is SpeechBalloonControl balloon && e.ClickCount == 2)
+                        {
+                            ShowSpeechBalloonTextEditor(balloon, canvas);
+                            e.Handled = true;
+                            return true;
+                        }
 
-                              _selectedShape = manualHit;
-                              _isDraggingShape = true;
-                              _lastDragPoint = point;
-                              UpdateSelectionHandles();
-                              SelectionChanged?.Invoke(true);
-                              e.Pointer.Capture(manualHit);
-                              e.Handled = true;
-                              return true;
-                         }
+                        _selectedShape = manualHit;
+                        _isDraggingShape = true;
+                        _lastDragPoint = point;
+                        UpdateSelectionHandles();
+                        SelectionChanged?.Invoke(true);
+                        e.Pointer.Capture(manualHit);
+                        e.Handled = true;
+                        return true;
+                    }
 
-                         ClearSelection();
-                         // Don't return true, allowing rubber band selection (if implemented) or just clearing
-                         return false;
-                     }
+                    ClearSelection();
+                    // Don't return true, allowing rubber band selection (if implemented) or just clearing
+                    return false;
+                }
             }
         }
 
@@ -319,7 +317,7 @@ public class EditorSelectionController
             _isDraggingHandle = false;
             _draggedHandle = null;
             e.Pointer.Capture(null);
-            
+
             if (_selectedShape?.Tag is BaseEffectAnnotation)
             {
                 RequestUpdateEffect?.Invoke(_selectedShape);
@@ -363,14 +361,14 @@ public class EditorSelectionController
         {
             if (handleTag == "LineStart") targetLine.StartPoint = currentPoint;
             else if (handleTag == "LineEnd") targetLine.EndPoint = currentPoint;
-            
+
             // Sync annotation points for hit testing
             if (targetLine.Tag is LineAnnotation lineAnnotation)
             {
                 lineAnnotation.StartPoint = new SKPoint((float)targetLine.StartPoint.X, (float)targetLine.StartPoint.Y);
                 lineAnnotation.EndPoint = new SKPoint((float)targetLine.EndPoint.X, (float)targetLine.EndPoint.Y);
             }
-            
+
             _startPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -390,7 +388,7 @@ public class EditorSelectionController
                 _shapeEndpoints[arrowPath] = (arrowStart, arrowEnd);
                 // ISSUE-005/006 fix: Use constant for arrow head width
                 arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(arrowStart, arrowEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
-                
+
                 // Sync annotation points for hit testing
                 if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
                 {
@@ -424,81 +422,81 @@ public class EditorSelectionController
         // Special handling for SpeechBalloonControl resizing
         if (_selectedShape is SpeechBalloonControl resizeBalloonControl && resizeBalloonControl.Annotation is SpeechBalloonAnnotation resizeBalloon)
         {
-             double newLeft = left;
-             double newTop = top;
-             double newWidth = width;
-             double newHeight = height;
+            double newLeft = left;
+            double newTop = top;
+            double newWidth = width;
+            double newHeight = height;
 
-             if (handleTag.Contains("Right")) newWidth = Math.Max(20, width + deltaX);
-             else if (handleTag.Contains("Left")) { var change = Math.Min(width - 20, deltaX); newLeft += change; newWidth -= change; }
+            if (handleTag.Contains("Right")) newWidth = Math.Max(20, width + deltaX);
+            else if (handleTag.Contains("Left")) { var change = Math.Min(width - 20, deltaX); newLeft += change; newWidth -= change; }
 
-             if (handleTag.Contains("Bottom")) newHeight = Math.Max(20, height + deltaY);
-             else if (handleTag.Contains("Top")) { var change = Math.Min(height - 20, deltaY); newTop += change; newHeight -= change; }
+            if (handleTag.Contains("Bottom")) newHeight = Math.Max(20, height + deltaY);
+            else if (handleTag.Contains("Top")) { var change = Math.Min(height - 20, deltaY); newTop += change; newHeight -= change; }
 
-             resizeBalloon.StartPoint = ToSKPoint(new Point(newLeft, newTop));
-             resizeBalloon.EndPoint = ToSKPoint(new Point(newLeft + newWidth, newTop + newHeight));
+            resizeBalloon.StartPoint = ToSKPoint(new Point(newLeft, newTop));
+            resizeBalloon.EndPoint = ToSKPoint(new Point(newLeft + newWidth, newTop + newHeight));
 
-             Canvas.SetLeft(resizeBalloonControl, newLeft);
-             Canvas.SetTop(resizeBalloonControl, newTop);
-             resizeBalloonControl.Width = newWidth;
-             resizeBalloonControl.Height = newHeight;
-             resizeBalloonControl.InvalidateVisual();
+            Canvas.SetLeft(resizeBalloonControl, newLeft);
+            Canvas.SetTop(resizeBalloonControl, newTop);
+            resizeBalloonControl.Width = newWidth;
+            resizeBalloonControl.Height = newHeight;
+            resizeBalloonControl.InvalidateVisual();
 
-             _startPoint = currentPoint;
-             UpdateSelectionHandles();
-             return;
+            _startPoint = currentPoint;
+            UpdateSelectionHandles();
+            return;
         }
 
         if (_selectedShape is ShareX.Editor.Controls.SpotlightControl spotlight && spotlight.Annotation is SpotlightAnnotation sa)
         {
-             var bounds = sa.GetBounds();
-             var newLeft = bounds.Left;
-             var newTop = bounds.Top;
-             var newWidth = bounds.Width;
-             var newHeight = bounds.Height;
-             
-             float dx = (float)deltaX;
-             float dy = (float)deltaY;
+            var bounds = sa.GetBounds();
+            var newLeft = bounds.Left;
+            var newTop = bounds.Top;
+            var newWidth = bounds.Width;
+            var newHeight = bounds.Height;
 
-             if (handleTag.Contains("Right")) newWidth = Math.Max(10, newWidth + dx);
-             else if (handleTag.Contains("Left")) { var change = Math.Min(newWidth - 10, dx); newLeft += change; newWidth -= change; }
+            float dx = (float)deltaX;
+            float dy = (float)deltaY;
 
-             if (handleTag.Contains("Bottom")) newHeight = Math.Max(10, newHeight + dy);
-             else if (handleTag.Contains("Top")) { var change = Math.Min(newHeight - 10, dy); newTop += change; newHeight -= change; }
+            if (handleTag.Contains("Right")) newWidth = Math.Max(10, newWidth + dx);
+            else if (handleTag.Contains("Left")) { var change = Math.Min(newWidth - 10, dx); newLeft += change; newWidth -= change; }
 
-             sa.StartPoint = ToSKPoint(new Point(newLeft, newTop));
-             sa.EndPoint = ToSKPoint(new Point(newLeft + newWidth, newTop + newHeight));
-             spotlight.InvalidateVisual();
-             
-             _startPoint = currentPoint;
-             UpdateSelectionHandles();
-             return;
+            if (handleTag.Contains("Bottom")) newHeight = Math.Max(10, newHeight + dy);
+            else if (handleTag.Contains("Top")) { var change = Math.Min(newHeight - 10, dy); newTop += change; newHeight -= change; }
+
+            sa.StartPoint = ToSKPoint(new Point(newLeft, newTop));
+            sa.EndPoint = ToSKPoint(new Point(newLeft + newWidth, newTop + newHeight));
+            spotlight.InvalidateVisual();
+
+            _startPoint = currentPoint;
+            UpdateSelectionHandles();
+            return;
         }
 
         if (_selectedShape is global::Avalonia.Controls.Shapes.Rectangle || _selectedShape is global::Avalonia.Controls.Shapes.Ellipse || _selectedShape is Grid)
         {
-             double newLeft = left;
-             double newTop = top;
-             double newWidth = width;
-             double newHeight = height;
+            double newLeft = left;
+            double newTop = top;
+            double newWidth = width;
+            double newHeight = height;
 
-             if (handleTag.Contains("Right")) newWidth = Math.Max(1, width + deltaX);
-             else if (handleTag.Contains("Left")) { var change = Math.Min(width - 1, deltaX); newLeft += change; newWidth -= change; }
+            if (handleTag.Contains("Right")) newWidth = Math.Max(1, width + deltaX);
+            else if (handleTag.Contains("Left")) { var change = Math.Min(width - 1, deltaX); newLeft += change; newWidth -= change; }
 
-             if (handleTag.Contains("Bottom")) newHeight = Math.Max(1, height + deltaY);
-             else if (handleTag.Contains("Top")) { var change = Math.Min(height - 1, deltaY); newTop += change; newHeight -= change; }
+            if (handleTag.Contains("Bottom")) newHeight = Math.Max(1, height + deltaY);
+            else if (handleTag.Contains("Top")) { var change = Math.Min(height - 1, deltaY); newTop += change; newHeight -= change; }
 
-             Canvas.SetLeft(_selectedShape, newLeft);
-             Canvas.SetTop(_selectedShape, newTop);
-             _selectedShape.Width = newWidth;
-             _selectedShape.Height = newHeight;
-             
-             // Sync annotation points for hit testing
-             if (_selectedShape.Tag is Annotation annotation)
-             {
-                 annotation.StartPoint = new SKPoint((float)newLeft, (float)newTop);
-                 annotation.EndPoint = new SKPoint((float)(newLeft + newWidth), (float)(newTop + newHeight));
-             }
+            Canvas.SetLeft(_selectedShape, newLeft);
+            Canvas.SetTop(_selectedShape, newTop);
+            _selectedShape.Width = newWidth;
+            _selectedShape.Height = newHeight;
+
+            // Sync annotation points for hit testing
+            if (_selectedShape.Tag is Annotation annotation)
+            {
+                annotation.StartPoint = new SKPoint((float)newLeft, (float)newTop);
+                annotation.EndPoint = new SKPoint((float)(newLeft + newWidth), (float)(newTop + newHeight));
+            }
         }
 
         _startPoint = currentPoint;
@@ -525,14 +523,14 @@ public class EditorSelectionController
         {
             targetLine.StartPoint = new Point(targetLine.StartPoint.X + deltaX, targetLine.StartPoint.Y + deltaY);
             targetLine.EndPoint = new Point(targetLine.EndPoint.X + deltaX, targetLine.EndPoint.Y + deltaY);
-            
+
             // Sync annotation points for hit testing
             if (targetLine.Tag is LineAnnotation lineAnnotation)
             {
                 lineAnnotation.StartPoint = new SKPoint((float)targetLine.StartPoint.X, (float)targetLine.StartPoint.Y);
                 lineAnnotation.EndPoint = new SKPoint((float)targetLine.EndPoint.X, (float)targetLine.EndPoint.Y);
             }
-            
+
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -546,14 +544,14 @@ public class EditorSelectionController
             _shapeEndpoints[arrowPath] = (newStart, newEnd);
             // ISSUE-005/006 fix: Use constant for arrow head width
             arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
-            
+
             // Sync annotation points for hit testing
             if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
             {
                 arrowAnnotation.StartPoint = new SKPoint((float)newStart.X, (float)newStart.Y);
                 arrowAnnotation.EndPoint = new SKPoint((float)newEnd.X, (float)newEnd.Y);
             }
-            
+
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -592,7 +590,7 @@ public class EditorSelectionController
                 var oldPt = freehand.Points[i];
                 freehand.Points[i] = new SKPoint(oldPt.X + (float)deltaX, oldPt.Y + (float)deltaY);
             }
-            
+
             // Regenerate the path geometry using the new points
             path.Data = freehand.CreateSmoothedGeometry();
 
@@ -605,16 +603,16 @@ public class EditorSelectionController
 
         if (_selectedShape is SpotlightControl spotlight && spotlight.Annotation is SpotlightAnnotation sa)
         {
-             var currentStart = sa.StartPoint;
-             var currentEnd = sa.EndPoint;
-             sa.StartPoint = new SKPoint(currentStart.X + (float)deltaX, currentStart.Y + (float)deltaY);
-             sa.EndPoint = new SKPoint(currentEnd.X + (float)deltaX, currentEnd.Y + (float)deltaY);
-             spotlight.InvalidateVisual();
-             
-             _lastDragPoint = currentPoint;
-             UpdateSelectionHandles();
-             UpdateHoverOutline();
-             return;
+            var currentStart = sa.StartPoint;
+            var currentEnd = sa.EndPoint;
+            sa.StartPoint = new SKPoint(currentStart.X + (float)deltaX, currentStart.Y + (float)deltaY);
+            sa.EndPoint = new SKPoint(currentEnd.X + (float)deltaX, currentEnd.Y + (float)deltaY);
+            spotlight.InvalidateVisual();
+
+            _lastDragPoint = currentPoint;
+            UpdateSelectionHandles();
+            UpdateHoverOutline();
+            return;
         }
 
         var left = Canvas.GetLeft(_selectedShape);
@@ -673,36 +671,36 @@ public class EditorSelectionController
 
         if (_selectedShape is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloon)
         {
-             var balloonLeft = Canvas.GetLeft(_selectedShape);
-             var balloonTop = Canvas.GetTop(_selectedShape);
-             var balloonWidth = _selectedShape.Bounds.Width;
-             var balloonHeight = _selectedShape.Bounds.Height;
-             if (double.IsNaN(balloonWidth)) balloonWidth = _selectedShape.Width;
-             if (double.IsNaN(balloonHeight)) balloonHeight = _selectedShape.Height;
+            var balloonLeft = Canvas.GetLeft(_selectedShape);
+            var balloonTop = Canvas.GetTop(_selectedShape);
+            var balloonWidth = _selectedShape.Bounds.Width;
+            var balloonHeight = _selectedShape.Bounds.Height;
+            if (double.IsNaN(balloonWidth)) balloonWidth = _selectedShape.Width;
+            if (double.IsNaN(balloonHeight)) balloonHeight = _selectedShape.Height;
 
-             CreateHandle(balloonLeft, balloonTop, "TopLeft");
-             CreateHandle(balloonLeft + balloonWidth / 2, balloonTop, "TopCenter");
-             CreateHandle(balloonLeft + balloonWidth, balloonTop, "TopRight");
-             CreateHandle(balloonLeft + balloonWidth, balloonTop + balloonHeight / 2, "RightCenter");
-             CreateHandle(balloonLeft + balloonWidth, balloonTop + balloonHeight, "BottomRight");
-             CreateHandle(balloonLeft + balloonWidth / 2, balloonTop + balloonHeight, "BottomCenter");
-             CreateHandle(balloonLeft, balloonTop + balloonHeight, "BottomLeft");
-             CreateHandle(balloonLeft, balloonTop + balloonHeight / 2, "LeftCenter");
+            CreateHandle(balloonLeft, balloonTop, "TopLeft");
+            CreateHandle(balloonLeft + balloonWidth / 2, balloonTop, "TopCenter");
+            CreateHandle(balloonLeft + balloonWidth, balloonTop, "TopRight");
+            CreateHandle(balloonLeft + balloonWidth, balloonTop + balloonHeight / 2, "RightCenter");
+            CreateHandle(balloonLeft + balloonWidth, balloonTop + balloonHeight, "BottomRight");
+            CreateHandle(balloonLeft + balloonWidth / 2, balloonTop + balloonHeight, "BottomCenter");
+            CreateHandle(balloonLeft, balloonTop + balloonHeight, "BottomLeft");
+            CreateHandle(balloonLeft, balloonTop + balloonHeight / 2, "LeftCenter");
 
-             if (balloon.TailPoint.X == 0 && balloon.TailPoint.Y == 0)
-             {
-                 balloon.TailPoint = new SKPoint(
-                     balloon.StartPoint.X + (balloon.EndPoint.X - balloon.StartPoint.X) / 2,
-                     balloon.EndPoint.Y + 30
-                 );
-                 balloonControl.InvalidateVisual();
-             }
+            if (balloon.TailPoint.X == 0 && balloon.TailPoint.Y == 0)
+            {
+                balloon.TailPoint = new SKPoint(
+                    balloon.StartPoint.X + (balloon.EndPoint.X - balloon.StartPoint.X) / 2,
+                    balloon.EndPoint.Y + 30
+                );
+                balloonControl.InvalidateVisual();
+            }
 
-             var tailX = (double)balloon.TailPoint.X;
-             var tailY = (double)balloon.TailPoint.Y;
-             CreateHandle(tailX, tailY, "BalloonTail");
-             UpdateHoverOutline();
-             return;
+            var tailX = (double)balloon.TailPoint.X;
+            var tailY = (double)balloon.TailPoint.Y;
+            CreateHandle(tailX, tailY, "BalloonTail");
+            UpdateHoverOutline();
+            return;
         }
 
         if (_selectedShape is Polyline || _selectedShape is TextBox)
@@ -722,7 +720,7 @@ public class EditorSelectionController
             CreateHandle(bounds.Left + bounds.Width / 2, bounds.Bottom, "BottomCenter");
             CreateHandle(bounds.Left, bounds.Bottom, "BottomLeft");
             CreateHandle(bounds.Left, bounds.Top + bounds.Height / 2, "LeftCenter");
-            
+
             UpdateHoverOutline();
             return;
         }
@@ -795,11 +793,11 @@ public class EditorSelectionController
         overlay.Children.Add(handleBorder);
         _selectionHandles.Add(handleBorder);
     }
-    
+
     private void ShowSpeechBalloonTextEditor(SpeechBalloonControl balloonControl, Canvas unusedCanvas)
     {
         if (balloonControl.Annotation == null) return;
-        
+
         // Use OverlayCanvas to ensure TextBox is on top of everything
         var overlay = _view.FindControl<Canvas>("OverlayCanvas");
         if (overlay == null) return;
@@ -824,25 +822,25 @@ public class EditorSelectionController
         {
             balloonWidth = Math.Max(balloonWidth, 200);
             balloonHeight = Math.Max(balloonHeight, 100);
-            
+
             balloonControl.Width = balloonWidth;
             balloonControl.Height = balloonHeight;
-            
+
             annotation.EndPoint = new SKPoint(
                 annotation.StartPoint.X + (float)balloonWidth,
                 annotation.StartPoint.Y + (float)balloonHeight
             );
-            
+
             // Fix Tail Point if it was at 0,0 or default
-            if (annotation.TailPoint.X == 0 && annotation.TailPoint.Y == 0 || 
+            if (annotation.TailPoint.X == 0 && annotation.TailPoint.Y == 0 ||
                (Math.Abs(annotation.TailPoint.X - annotation.StartPoint.X) < 1 && Math.Abs(annotation.TailPoint.Y - annotation.StartPoint.Y) < 1))
             {
-                 annotation.TailPoint = new SKPoint(
-                     annotation.StartPoint.X + (float)balloonWidth / 2,
-                     annotation.StartPoint.Y + (float)balloonHeight + 30
-                 );
+                annotation.TailPoint = new SKPoint(
+                    annotation.StartPoint.X + (float)balloonWidth / 2,
+                    annotation.StartPoint.Y + (float)balloonHeight + 30
+                );
             }
-            
+
             balloonControl.InvalidateVisual();
             UpdateSelectionHandles();
         }
@@ -853,14 +851,14 @@ public class EditorSelectionController
         {
             var foreColor = Avalonia.Media.Color.Parse(annotation.StrokeColor);
             var backColor = Avalonia.Media.Color.Parse(annotation.FillColor);
-            
+
             // Calculate relative luminance
             double foreLum = (0.299 * foreColor.R + 0.587 * foreColor.G + 0.114 * foreColor.B) / 255.0;
             double backLum = (0.299 * backColor.R + 0.587 * backColor.G + 0.114 * backColor.B) / 255.0;
             double backAlpha = backColor.A / 255.0;
-            
+
             // If background is transparent (showing image/canvas behind), we can't guarantee contrast.
-            
+
             // If background is visible and contrast is low, pick black or white
             if (backAlpha > 0.1)
             {
@@ -876,21 +874,21 @@ public class EditorSelectionController
         // Use the fill color of the balloon as the base background for the editor
         IBrush editorBackground;
         var fillColor = Avalonia.Media.Color.Parse(annotation.FillColor);
-        
+
         if (fillColor.A < 20)
         {
-             // If balloon is transparent, continue to use the high-contrast semi-transparent background
-             var fgBrush = foregroundBrush as SolidColorBrush;
-             var fgColor = fgBrush?.Color ?? Avalonia.Media.Colors.Black;
-             editorBackground = fgColor.R > 127 
-                 ? new SolidColorBrush(Avalonia.Media.Color.Parse("#AA000000")) 
-                 : new SolidColorBrush(Avalonia.Media.Color.Parse("#AAFFFFFF"));
+            // If balloon is transparent, continue to use the high-contrast semi-transparent background
+            var fgBrush = foregroundBrush as SolidColorBrush;
+            var fgColor = fgBrush?.Color ?? Avalonia.Media.Colors.Black;
+            editorBackground = fgColor.R > 127
+                ? new SolidColorBrush(Avalonia.Media.Color.Parse("#AA000000"))
+                : new SolidColorBrush(Avalonia.Media.Color.Parse("#AAFFFFFF"));
         }
         else
         {
-             // Use the actual fill color
-             // We use the exact fill color so it looks seamless
-             editorBackground = new SolidColorBrush(fillColor);
+            // Use the actual fill color
+            // We use the exact fill color so it looks seamless
+            editorBackground = new SolidColorBrush(fillColor);
         }
 
         var textBox = new TextBox
@@ -908,12 +906,12 @@ public class EditorSelectionController
             AcceptsReturn = false,
             TextWrapping = TextWrapping.Wrap
         };
-        
+
         // ISSUE-FIX: Override theme resources to ensure Focus state doesn't revert to White background
         textBox.Resources["TextControlBackground"] = editorBackground;
         textBox.Resources["TextControlBackgroundFocused"] = editorBackground;
         textBox.Resources["TextControlBackgroundPointerOver"] = editorBackground;
-        
+
         // ISSUE-FIX: Override border resources to remove them completely in all states
         textBox.Resources["TextControlBorderThemeThickness"] = new Thickness(0);
         textBox.Resources["TextControlBorderThemeThicknessFocused"] = new Thickness(0);
@@ -925,8 +923,8 @@ public class EditorSelectionController
         // Ensure TextBox is above the balloon geometry (ZIndex 100 might not be enough if Overlay is higher)
         // But AnnotationCanvas is usually below Overlay. 
         // We can't put TextBox in Overlay because Overlay is for handles.
-        textBox.SetValue(Panel.ZIndexProperty, 9999); 
-        
+        textBox.SetValue(Panel.ZIndexProperty, 9999);
+
         Canvas.SetLeft(textBox, balloonLeft);
         Canvas.SetTop(textBox, balloonTop);
         textBox.Width = balloonWidth;
@@ -956,37 +954,37 @@ public class EditorSelectionController
         _balloonTextEditor = textBox;
         textBox.Focus();
         textBox.CaretIndex = textBox.Text.Length; // Place caret at end
-        
+
         // Attach extended handlers for live update if needed, or rely on LostFocus
         AttachTextBoxEditHandlers(textBox);
     }
-    
+
     public void PerformDelete()
     {
         if (_selectedShape != null)
         {
-             var canvas = _view.FindControl<Canvas>("AnnotationCanvas");
-             if (canvas != null && canvas.Children.Contains(_selectedShape))
-             {
-                 canvas.Children.Remove(_selectedShape);
-             
-                 if (_selectedShape is SpeechBalloonControl && _balloonTextEditor != null)
-                 {
-                     canvas.Children.Remove(_balloonTextEditor);
-                     _balloonTextEditor = null;
-                 }
-                 
-                 // Note: Undo stack logic not fully integrated here since EditorView owned it.
-                 // For now we assume EditorView handles undo/redo wrapping or we rely on events.
-                 // BUT: PerformDelete in EditorView used to push to redo stack?
-                 // Wait, EditorView.PerformDelete handles undo stack logic.
-                 // To avoid breaking Undo, we should perhaps keep PerformDelete in EditorView
-                 // OR EditorSelectionController delegates back to EditorView/UndoService?
-                 // Given constraints to NO logic changes, I should probably expose the inner delete logic
-                 // or call back to EditorView to delete.
-                 // But cleaning up handles is definitely SelectionController job.
-             }
-             ClearSelection();
+            var canvas = _view.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas != null && canvas.Children.Contains(_selectedShape))
+            {
+                canvas.Children.Remove(_selectedShape);
+
+                if (_selectedShape is SpeechBalloonControl && _balloonTextEditor != null)
+                {
+                    canvas.Children.Remove(_balloonTextEditor);
+                    _balloonTextEditor = null;
+                }
+
+                // Note: Undo stack logic not fully integrated here since EditorView owned it.
+                // For now we assume EditorView handles undo/redo wrapping or we rely on events.
+                // BUT: PerformDelete in EditorView used to push to redo stack?
+                // Wait, EditorView.PerformDelete handles undo stack logic.
+                // To avoid breaking Undo, we should perhaps keep PerformDelete in EditorView
+                // OR EditorSelectionController delegates back to EditorView/UndoService?
+                // Given constraints to NO logic changes, I should probably expose the inner delete logic
+                // or call back to EditorView to delete.
+                // But cleaning up handles is definitely SelectionController job.
+            }
+            ClearSelection();
         }
     }
 
@@ -1013,7 +1011,7 @@ public class EditorSelectionController
                 // Fall through to hit testing to check if we are hovering the selected shape
             }
         }
-        
+
         // Find shape under cursor (hit test)
         Control? hitShape = HitTestShape(canvas, currentPoint);
 
@@ -1024,13 +1022,13 @@ public class EditorSelectionController
         }
 
         // Filter: If using other tools (Rect, etc), only allow hovering the ACTIVE selection
-        if (_view.DataContext is MainViewModel vm3 && 
-            vm3.ActiveTool != EditorTool.Select && 
+        if (_view.DataContext is MainViewModel vm3 &&
+            vm3.ActiveTool != EditorTool.Select &&
             vm3.ActiveTool != EditorTool.Spotlight)
         {
-             if (hitShape != _selectedShape) hitShape = null;
+            if (hitShape != _selectedShape) hitShape = null;
         }
-        
+
         // If we're hovering over the selected shape, keep showing ant lines on it
         // Otherwise, show ant lines on the hovered (unselected) shape
         if (hitShape == _selectedShape && _selectedShape != null)
@@ -1048,7 +1046,7 @@ public class EditorSelectionController
             // Hovering over a different shape (or no shape)
             ClearHoverOutline();
             _hoveredShape = hitShape;
-            
+
             if (_hoveredShape != null)
             {
                 UpdateHoverOutline();
@@ -1060,7 +1058,7 @@ public class EditorSelectionController
             UpdateHoverOutline();
         }
     }
-    
+
     public Control? HitTestShape(Canvas canvas, Point currentPoint)
     {
         // Iterate through canvas children in reverse (top-most first)
@@ -1068,7 +1066,7 @@ public class EditorSelectionController
         {
             var child = canvas.Children[i] as Control;
             if (child == null) continue;
-            
+
             // Skip non-moveable overlays and text editors
             if (child.Name == "CropOverlay" || child.Name == "CutOutOverlay") continue;
             // TextBox excluded? No, we want to select it now.
@@ -1079,16 +1077,16 @@ public class EditorSelectionController
                 if (sa.GetBounds().Contains(ToSKPoint(currentPoint))) return sc;
                 continue;
             }
-            
+
             // Check if point is within the bounds of this control
             var bounds = child.Bounds;
             var left = Canvas.GetLeft(child);
             var top = Canvas.GetTop(child);
             if (double.IsNaN(left)) left = 0;
             if (double.IsNaN(top)) top = 0;
-            
+
             var shapeBounds = new Rect(left, top, bounds.Width, bounds.Height);
-            
+
             // Special handling for Line
             if (child is global::Avalonia.Controls.Shapes.Line line)
             {
@@ -1125,9 +1123,9 @@ public class EditorSelectionController
                     if (p.X > maxX) maxX = p.X;
                     if (p.Y > maxY) maxY = p.Y;
                 }
-                if (minX == double.MaxValue) 
-                { 
-                    minX = 0; minY = 0; maxX = 0; maxY = 0; 
+                if (minX == double.MaxValue)
+                {
+                    minX = 0; minY = 0; maxX = 0; maxY = 0;
                 }
                 else
                 {
@@ -1135,7 +1133,7 @@ public class EditorSelectionController
                 }
                 shapeBounds = new Rect(minX, minY, maxX - minX, maxY - minY);
             }
-            
+
             if (shapeBounds.Contains(currentPoint))
             {
                 // Use the annotation's HitTest method if available
@@ -1148,7 +1146,7 @@ public class EditorSelectionController
                         continue; // Annotation's hit test failed
                     }
                 }
-                
+
                 return child;
             }
         }
@@ -1190,14 +1188,14 @@ public class EditorSelectionController
         }
         _hoveredShape = null;
     }
-    
+
     private void UpdateHoverOutline()
     {
         if (_hoveredShape == null) return;
-        
+
         var overlay = _view.FindControl<Canvas>("OverlayCanvas");
         if (overlay == null) return;
-        
+
         // 1. Path-based Outline (Polyline)
         // Used for Line, Arrow (Path), and Freehand (Polyline) to show outline along the stroke
         IList<Point>? outlinePoints = null;
@@ -1212,12 +1210,12 @@ public class EditorSelectionController
         }
         else if (_hoveredShape is global::Avalonia.Controls.Shapes.Path path && path.Tag is IPointBasedAnnotation pointAnnotation)
         {
-             // Convert SKPoints to Avalonia Points for the outline
-             outlinePoints = new List<Point>();
-             foreach (var pt in pointAnnotation.Points)
-             {
-                 outlinePoints.Add(new Point(pt.X, pt.Y));
-             }
+            // Convert SKPoints to Avalonia Points for the outline
+            outlinePoints = new List<Point>();
+            foreach (var pt in pointAnnotation.Points)
+            {
+                outlinePoints.Add(new Point(pt.X, pt.Y));
+            }
         }
         else if (_hoveredShape is Polyline polyline)
         {
@@ -1226,33 +1224,33 @@ public class EditorSelectionController
 
         if (outlinePoints != null)
         {
-             if (_hoverPolylineBlack == null)
-             {
-                 _hoverPolylineBlack = new Polyline
-                 {
-                     Stroke = Brushes.Black,
-                     StrokeThickness = 1,
-                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
-                     IsHitTestVisible = false
-                 };
-                 overlay.Children.Add(_hoverPolylineBlack);
-             }
-             if (_hoverPolylineWhite == null)
-             {
-                 _hoverPolylineWhite = new Polyline
-                 {
-                     Stroke = Brushes.White,
-                     StrokeThickness = 1,
-                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
-                     StrokeDashOffset = 3,
-                     IsHitTestVisible = false
-                 };
-                 overlay.Children.Add(_hoverPolylineWhite);
-             }
-             
-             _hoverPolylineBlack.Points = outlinePoints;
-             _hoverPolylineWhite.Points = outlinePoints;
-             return;
+            if (_hoverPolylineBlack == null)
+            {
+                _hoverPolylineBlack = new Polyline
+                {
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1,
+                    StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
+                    IsHitTestVisible = false
+                };
+                overlay.Children.Add(_hoverPolylineBlack);
+            }
+            if (_hoverPolylineWhite == null)
+            {
+                _hoverPolylineWhite = new Polyline
+                {
+                    Stroke = Brushes.White,
+                    StrokeThickness = 1,
+                    StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
+                    StrokeDashOffset = 3,
+                    IsHitTestVisible = false
+                };
+                overlay.Children.Add(_hoverPolylineWhite);
+            }
+
+            _hoverPolylineBlack.Points = outlinePoints;
+            _hoverPolylineWhite.Points = outlinePoints;
+            return;
         }
 
         // 2. Bounds-based Calculation
@@ -1274,46 +1272,46 @@ public class EditorSelectionController
             if (width <= 0) width = _hoveredShape.Width;
             if (height <= 0) height = _hoveredShape.Height;
         }
-        
+
         if (width <= 0 || height <= 0) return;
-        
+
         // 3. Ellipse Outline (for Ellipse and Step/Number)
         if (_hoveredShape is Ellipse || (_hoveredShape is Grid && _hoveredShape.Tag is NumberAnnotation))
         {
-             if (_hoverEllipseBlack == null)
-             {
-                 _hoverEllipseBlack = new Ellipse
-                 {
-                     Stroke = Brushes.Black,
-                     StrokeThickness = 1,
-                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
-                     IsHitTestVisible = false
-                 };
-                 overlay.Children.Add(_hoverEllipseBlack);
-             }
-             if (_hoverEllipseWhite == null)
-             {
-                 _hoverEllipseWhite = new Ellipse
-                 {
-                     Stroke = Brushes.White,
-                     StrokeThickness = 1,
-                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
-                     StrokeDashOffset = 3,
-                     IsHitTestVisible = false
-                 };
-                 overlay.Children.Add(_hoverEllipseWhite);
-             }
+            if (_hoverEllipseBlack == null)
+            {
+                _hoverEllipseBlack = new Ellipse
+                {
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1,
+                    StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
+                    IsHitTestVisible = false
+                };
+                overlay.Children.Add(_hoverEllipseBlack);
+            }
+            if (_hoverEllipseWhite == null)
+            {
+                _hoverEllipseWhite = new Ellipse
+                {
+                    Stroke = Brushes.White,
+                    StrokeThickness = 1,
+                    StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
+                    StrokeDashOffset = 3,
+                    IsHitTestVisible = false
+                };
+                overlay.Children.Add(_hoverEllipseWhite);
+            }
 
-             Canvas.SetLeft(_hoverEllipseBlack, left - 2);
-             Canvas.SetTop(_hoverEllipseBlack, top - 2);
-             _hoverEllipseBlack.Width = width + 4;
-             _hoverEllipseBlack.Height = height + 4;
+            Canvas.SetLeft(_hoverEllipseBlack, left - 2);
+            Canvas.SetTop(_hoverEllipseBlack, top - 2);
+            _hoverEllipseBlack.Width = width + 4;
+            _hoverEllipseBlack.Height = height + 4;
 
-             Canvas.SetLeft(_hoverEllipseWhite, left - 2);
-             Canvas.SetTop(_hoverEllipseWhite, top - 2);
-             _hoverEllipseWhite.Width = width + 4;
-             _hoverEllipseWhite.Height = height + 4;
-             return;
+            Canvas.SetLeft(_hoverEllipseWhite, left - 2);
+            Canvas.SetTop(_hoverEllipseWhite, top - 2);
+            _hoverEllipseWhite.Width = width + 4;
+            _hoverEllipseWhite.Height = height + 4;
+            return;
         }
 
         // 4. Rectangle Outline (Default)
@@ -1329,7 +1327,7 @@ public class EditorSelectionController
             };
             overlay.Children.Add(_hoverOutlineBlack);
         }
-        
+
         if (_hoverOutlineWhite == null)
         {
             _hoverOutlineWhite = new global::Avalonia.Controls.Shapes.Rectangle
@@ -1343,12 +1341,12 @@ public class EditorSelectionController
             };
             overlay.Children.Add(_hoverOutlineWhite);
         }
-        
+
         Canvas.SetLeft(_hoverOutlineBlack, left - 2);
         Canvas.SetTop(_hoverOutlineBlack, top - 2);
         _hoverOutlineBlack.Width = width + 4;
         _hoverOutlineBlack.Height = height + 4;
-        
+
         Canvas.SetLeft(_hoverOutlineWhite, left - 2);
         Canvas.SetTop(_hoverOutlineWhite, top - 2);
         _hoverOutlineWhite.Width = width + 4;
@@ -1369,20 +1367,20 @@ public class EditorSelectionController
 
             if (tb.Tag is Annotation annotation)
             {
-                 // Sync Text
-                 if (annotation is TextAnnotation textAnn)
-                 {
-                     textAnn.Text = tb.Text ?? string.Empty;
-                     
-                     // Sync Bounds
-                     textAnn.EndPoint = new SKPoint(
-                         (float)(Canvas.GetLeft(tb) + tb.Bounds.Width),
-                         (float)(Canvas.GetTop(tb) + tb.Bounds.Height)
-                     );
-                     
-                     UpdateSelectionHandles();
-                     UpdateHoverOutline();
-                 }
+                // Sync Text
+                if (annotation is TextAnnotation textAnn)
+                {
+                    textAnn.Text = tb.Text ?? string.Empty;
+
+                    // Sync Bounds
+                    textAnn.EndPoint = new SKPoint(
+                        (float)(Canvas.GetLeft(tb) + tb.Bounds.Width),
+                        (float)(Canvas.GetTop(tb) + tb.Bounds.Height)
+                    );
+
+                    UpdateSelectionHandles();
+                    UpdateHoverOutline();
+                }
             }
         };
 
@@ -1410,7 +1408,7 @@ public class EditorSelectionController
 
         // Re-execute color logic (matching ShowSpeechBalloonTextEditor logic)
         IBrush foregroundBrush = new SolidColorBrush(Avalonia.Media.Color.Parse(annotation.StrokeColor));
-        
+
         try
         {
             var foreColor = Avalonia.Media.Color.Parse(annotation.StrokeColor);
@@ -1418,7 +1416,7 @@ public class EditorSelectionController
             double foreLum = (0.299 * foreColor.R + 0.587 * foreColor.G + 0.114 * foreColor.B) / 255.0;
             double backLum = (0.299 * backColor.R + 0.587 * backColor.G + 0.114 * backColor.B) / 255.0;
             double backAlpha = backColor.A / 255.0;
-            
+
             if (backAlpha > 0.1)
             {
                 if (Math.Abs(foreLum - backLum) < 0.3)
@@ -1433,15 +1431,15 @@ public class EditorSelectionController
         var fillColor = Avalonia.Media.Color.Parse(annotation.FillColor);
         if (fillColor.A < 20)
         {
-             var fgBrush = foregroundBrush as SolidColorBrush;
-             var fgColor = fgBrush?.Color ?? Avalonia.Media.Colors.Black;
-             editorBackground = fgColor.R > 127 
-                 ? new SolidColorBrush(Avalonia.Media.Color.Parse("#AA000000")) 
-                 : new SolidColorBrush(Avalonia.Media.Color.Parse("#AAFFFFFF"));
+            var fgBrush = foregroundBrush as SolidColorBrush;
+            var fgColor = fgBrush?.Color ?? Avalonia.Media.Colors.Black;
+            editorBackground = fgColor.R > 127
+                ? new SolidColorBrush(Avalonia.Media.Color.Parse("#AA000000"))
+                : new SolidColorBrush(Avalonia.Media.Color.Parse("#AAFFFFFF"));
         }
         else
         {
-             editorBackground = new SolidColorBrush(fillColor);
+            editorBackground = new SolidColorBrush(fillColor);
         }
 
         _balloonTextEditor.Background = editorBackground;
@@ -1452,7 +1450,7 @@ public class EditorSelectionController
         _balloonTextEditor.Resources["TextControlBackground"] = editorBackground;
         _balloonTextEditor.Resources["TextControlBackgroundFocused"] = editorBackground;
         _balloonTextEditor.Resources["TextControlBackgroundPointerOver"] = editorBackground;
-        
+
         _balloonTextEditor.Resources["TextControlBorderThemeThickness"] = new Thickness(0);
         _balloonTextEditor.Resources["TextControlBorderThemeThicknessFocused"] = new Thickness(0);
         _balloonTextEditor.Resources["TextControlBorderThemeThicknessPointerOver"] = new Thickness(0);

@@ -1,5 +1,4 @@
 using SkiaSharp;
-using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.ImageEffects.Manipulations;
 
@@ -21,7 +20,7 @@ public class ResizeImageEffect : ImageEffect
         _maintainAspectRatio = maintainAspectRatio;
         _name = "Resize image";
     }
-    
+
     public ResizeImageEffect()
     {
         _name = "Resize image";
@@ -30,7 +29,7 @@ public class ResizeImageEffect : ImageEffect
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
-        
+
         int width = _width > 0 ? _width : source.Width;
         int height = _height > 0 ? _height : source.Height;
 
@@ -51,7 +50,7 @@ public class ResizeImageEffect : ImageEffect
                 width = (int)Math.Round(height * sourceAspect);
             }
         }
-        
+
         SKImageInfo info = new SKImageInfo(width, height, source.ColorType, source.AlphaType, source.ColorSpace);
         return source.Resize(info, SKFilterQuality.High);
     }

@@ -25,7 +25,7 @@ public partial class ReflectionDialog : UserControl, IEffectDialog
     public ReflectionDialog()
     {
         InitializeComponent();
-        
+
         // Find controls after XAML is loaded
         _percentageSlider = this.FindControl<Slider>("PercentageSlider");
         _maxAlphaSlider = this.FindControl<Slider>("MaxAlphaSlider");
@@ -33,7 +33,7 @@ public partial class ReflectionDialog : UserControl, IEffectDialog
         _offsetSlider = this.FindControl<Slider>("OffsetSlider");
         _skewCheckBox = this.FindControl<CheckBox>("SkewCheckBox");
         _skewSizeSlider = this.FindControl<Slider>("SkewSizeSlider");
-        
+
         Loaded += OnLoaded;
     }
 

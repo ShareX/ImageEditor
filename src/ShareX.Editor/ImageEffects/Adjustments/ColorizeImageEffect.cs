@@ -10,7 +10,7 @@ public class ColorizeImageEffect : ImageEffect
     public SKColor Color { get; set; } = SKColors.Red; // Default
     public float Strength { get; set; } = 50f;
 
-    public override SKBitmap Apply(SKBitmap source) 
+    public override SKBitmap Apply(SKBitmap source)
     {
         float strength = Strength;
         if (strength <= 0) return source.Copy();
@@ -29,12 +29,12 @@ public class ColorizeImageEffect : ImageEffect
         using var composed = SKColorFilter.CreateCompose(tint, grayscale);
 
         paint.ColorFilter = composed;
-        
+
         SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
         using (SKCanvas canvas = new SKCanvas(result))
         {
             canvas.Clear(SKColors.Transparent);
-            
+
             if (strength >= 100)
             {
                 canvas.DrawBitmap(source, 0, 0, paint);

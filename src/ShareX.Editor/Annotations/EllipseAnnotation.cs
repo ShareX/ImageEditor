@@ -55,7 +55,7 @@ public class EllipseAnnotation : Annotation
             Fill = fillBrush,
             Tag = this
         };
-        
+
         if (ShadowEnabled)
         {
             ellipse.Effect = new Avalonia.Media.DropShadowEffect
@@ -66,21 +66,21 @@ public class EllipseAnnotation : Annotation
                 Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
             };
         }
-        
+
         return ellipse;
     }
 
     public override void Render(SKCanvas canvas)
     {
         var rect = GetBounds();
-        
+
         // Draw fill first (if not transparent)
         if (!string.IsNullOrEmpty(FillColor) && FillColor != "#00000000")
         {
             using var fillPaint = CreateFillPaint();
             canvas.DrawOval(rect, fillPaint);
         }
-        
+
         // Draw stroke on top
         using var strokePaint = CreateStrokePaint();
         canvas.DrawOval(rect, strokePaint);

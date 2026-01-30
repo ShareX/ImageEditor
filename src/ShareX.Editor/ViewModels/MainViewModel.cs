@@ -51,6 +51,8 @@ namespace ShareX.Editor.ViewModels
         [ObservableProperty]
         private string _exportState = "";
 
+        private bool _isSyncingFromCore;
+
         [ObservableProperty]
         private string _windowTitle = "ShareX - Image Editor";
 
@@ -133,7 +135,8 @@ namespace ShareX.Editor.ViewModels
 
                 // Apply smart padding crop if enabled (but not if we're already applying it)
                 // Only trigger if background effects are active to avoid overwriting live previews
-                if (UseSmartPadding && !_isApplyingSmartPadding && AreBackgroundEffectsActive)
+                // Also skip if we are syncing from Core (to prevent infinite loops)
+                if (UseSmartPadding && !_isApplyingSmartPadding && AreBackgroundEffectsActive && !_isSyncingFromCore)
                 {
                     ApplySmartPaddingCrop();
                 }
@@ -1814,7 +1817,15 @@ namespace ShareX.Editor.ViewModels
             // 2. Backs up original (WE DO NOT WANT THIS)
             // 3. Converts to Avalonia Bitmap (WE WANT THIS)
 
-            PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
+            try
+            {
+                _isSyncingFromCore = true;
+                PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
+            }
+            finally
+            {
+                _isSyncingFromCore = false;
+            }
         }
 
         /// <summary>

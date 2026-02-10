@@ -160,222 +160,10 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,*,Auto">
-        <!-- Row 0: Annotation Toolbar (single row with all tools and controls) -->
-        <Border Grid.Row="0" Padding="0" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="0,0,0,1">
-            <ScrollViewer x:Name="ToolbarScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="OnToolbarScrollChanged">
-                <StackPanel Orientation="Horizontal" Spacing="4" Margin="8">
-                    <!-- Drawing Tools -->
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Select}"
-                            ToolTip.Tip="Select (V)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSelect}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Rectangle}"
-                            ToolTip.Tip="Rectangle (R)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRectangle}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Ellipse}"
-                            ToolTip.Tip="Ellipse (E)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconEllipse}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Line}"
-                            ToolTip.Tip="Line (L)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconLine}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Arrow}"
-                            ToolTip.Tip="Arrow (A)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconArrow}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pen}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Freehand}"
-                            ToolTip.Tip="Freehand (P)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPen}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Text}"
-                            ToolTip.Tip="Text (T)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconText}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
-                            ToolTip.Tip="Speech Balloon (B)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Number}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Step}"
-                            ToolTip.Tip="Step (N)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconNumber}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SmartEraser}"
-                            ToolTip.Tip="Smart Eraser"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSmartEraser}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Blur}"
-                            ToolTip.Tip="Blur"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBlur}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pixelate}"
-                            ToolTip.Tip="Pixelate"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPixelate}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Magnify}"
-                            ToolTip.Tip="Magnify (M)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMagnify}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlighter}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlight}"
-                            ToolTip.Tip="Highlight (H)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconHighlighter}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Spotlight}"
-                            ToolTip.Tip="Spotlight (S)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpotlight}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
-                            ToolTip.Tip="Crop (C)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCrop}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=CutOut}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
-                            ToolTip.Tip="Cut Out (U)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCutOut}"/>
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding IsSettingsPanelOpen}"
-                            Command="{Binding ToggleSettingsPanelCommand}"
-                            ToolTip.Tip="Background"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBackground}"/>
-
-                    <!-- Effects Menu Dropdown -->
-                    <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
-                        Height="40"
-                        ToolTip.Tip="Effects"
-                        ResizeImageRequested="OnResizeImageRequested"
-                        ResizeCanvasRequested="OnResizeCanvasRequested"
-                        CropImageRequested="OnCropImageRequested"
-                        AutoCropImageRequested="OnAutoCropImageRequested"
-                        Rotate90CWRequested="OnRotate90CWRequested"
-                        Rotate90CCWRequested="OnRotate90CCWRequested"
-                        Rotate180Requested="OnRotate180Requested"
-                        RotateCustomAngleRequested="OnRotateCustomAngleRequested"
-                        FlipHorizontalRequested="OnFlipHorizontalRequested"
-                        FlipVerticalRequested="OnFlipVerticalRequested"
-                        BrightnessRequested="OnBrightnessRequested"
-                        ContrastRequested="OnContrastRequested"
-                        HueRequested="OnHueRequested"
-                        SaturationRequested="OnSaturationRequested"
-                        GammaRequested="OnGammaRequested"
-                        AlphaRequested="OnAlphaRequested"
-                        ColorizeRequested="OnColorizeRequested"
-                        SelectiveColorRequested="OnSelectiveColorRequested"
-                        ReplaceColorRequested="OnReplaceColorRequested"
-                        GrayscaleRequested="OnGrayscaleRequested"
-                        InvertRequested="OnInvertRequested"
-                        BlackAndWhiteRequested="OnBlackAndWhiteRequested"
-                        SepiaRequested="OnSepiaRequested"
-                        PolaroidRequested="OnPolaroidRequested"
-                        BorderRequested="OnBorderRequested"
-                        OutlineRequested="OnOutlineRequested"
-                        ShadowRequested="OnShadowRequested"
-                        GlowRequested="OnGlowRequested"
-                        ReflectionRequested="OnReflectionRequested"
-                        TornEdgeRequested="OnTornEdgeRequested"
-                        SliceRequested="OnSliceRequested"
-                        RoundedCornersRequested="OnRoundedCornersRequested"
-                        SkewRequested="OnSkewRequested"
-                        Rotate3DRequested="OnRotate3DRequested"
-                        BlurRequested="OnBlurRequested"
-                        PixelateRequested="OnPixelateRequested"
-                        SharpenRequested="OnSharpenRequested"/>
-
-                    <!-- Separator -->
-                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
-
-                    <!-- Border Color Picker Dropdown -->
-                    <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
-                        SelectedColor="{Binding SelectedColorBrush}"
-                        ColorChanged="OnColorChanged"
-                        Height="40"
-                        IsVisible="{Binding ShowBorderColor}"
-                        ToolTip.Tip="Border Color"/>
-
-                    <!-- Fill Color Picker Dropdown -->
-                    <controls:ColorPickerDropdown x:Name="FillColorPickerDropdown"
-                        SelectedColor="{Binding FillColorBrush}"
-                        ColorChanged="OnFillColorChanged"
-                        Height="40"
-                        IsVisible="{Binding ShowFillColor}"
-                        ToolTip.Tip="Fill Color"/>
-
-                    <!-- Thickness Picker Dropdown -->
-                    <controls:WidthPickerDropdown
-                        SelectedWidth="{Binding StrokeWidth}"
-                        WidthChanged="OnWidthChanged"
-                        Height="40"
-                        IsVisible="{Binding ShowThickness}"
-                        ToolTip.Tip="Thickness"/>
-
-                    <!-- Font Size Picker Dropdown -->
-                    <controls:FontSizePickerDropdown
-                        SelectedFontSize="{Binding FontSize}"
-                        FontSizeChanged="OnFontSizeChanged"
-                        Height="40"
-                        IsVisible="{Binding ShowFontSize}"
-                        ToolTip.Tip="Font Size"/>
-
-                    <!-- Strength Slider -->
-                    <controls:StrengthSlider
-                        SelectedStrength="{Binding EffectStrength}"
-                        StrengthChanged="OnStrengthChanged"
-                        IsVisible="{Binding ShowStrength}"
-                        ToolTip.Tip="Effect Strength"/>
-
-                    <!-- Shadow Toggle Button -->
-                    <Button Classes="editor-button" Width="40"
-                            Classes.active="{Binding ShadowEnabled}"
-                            Click="OnShadowButtonClick"
-                            IsVisible="{Binding ShowShadow}"
-                            ToolTip.Tip="Toggle Shadow"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMoon}"/>
-
-                    <!-- Separator -->
-                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0" IsVisible="{Binding ShowToolOptionsSeparator}"/>
-
-                    <!-- Undo Button -->
-                    <Button Classes="editor-button" Width="40"
-                            Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconUndo}"/>
-
-                    <!-- Redo Button -->
-                    <Button Classes="editor-button" Width="40"
-                            Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Shift+Z)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRedo}"/>
-
-                    <!-- Separator -->
-                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
-
-
-                    <!-- Clear Button -->
-                    <Button Classes="editor-button" Width="40"
-                            Command="{Binding ClearAnnotationsCommand}" ToolTip.Tip="Clear all annotations"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconClear}"/>
-                </StackPanel>
-            </ScrollViewer>
-        </Border>
-
-        <!-- Row 1: Main Content Area with Preview and Sidebar -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Background="#272727">
+    <Grid RowDefinitions="*,Auto">
+        
+        <!-- Row 0: Main Content Area with Preview and Sidebar (Background Layer) -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="#272727">
 
             <!-- Left Sidebar (Settings Panel) -->
             <Border Grid.Column="0" Padding="0" IsVisible="{Binding IsSettingsPanelOpen}" Background="#242424"
@@ -638,8 +426,232 @@
 
         </Grid>
 
-        <!-- Row 2: Combined Bottom Bar (Export + Zoom Controls) -->
-        <Border Grid.Row="2" Padding="8" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="0,1,0,0">
+        <!-- Row 0: Annotation Toolbar (split into two centered rows) - OVERLAY -->
+        <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
+            
+            <!-- Top Toolbar: Tools and Actions -->
+            <Border Padding="4" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+                    MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <ScrollViewer x:Name="ToolbarScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="OnToolbarScrollChanged">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <!-- Drawing Tools -->
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Select}"
+                                ToolTip.Tip="Select (V)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSelect}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Rectangle}"
+                                ToolTip.Tip="Rectangle (R)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRectangle}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Ellipse}"
+                                ToolTip.Tip="Ellipse (E)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconEllipse}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Line}"
+                                ToolTip.Tip="Line (L)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconLine}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Arrow}"
+                                ToolTip.Tip="Arrow (A)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconArrow}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pen}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Freehand}"
+                                ToolTip.Tip="Freehand (P)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPen}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Text}"
+                                ToolTip.Tip="Text (T)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconText}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
+                                ToolTip.Tip="Speech Balloon (B)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Number}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Step}"
+                                ToolTip.Tip="Step (N)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconNumber}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SmartEraser}"
+                                ToolTip.Tip="Smart Eraser"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSmartEraser}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Blur}"
+                                ToolTip.Tip="Blur"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBlur}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pixelate}"
+                                ToolTip.Tip="Pixelate"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPixelate}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Magnify}"
+                                ToolTip.Tip="Magnify (M)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMagnify}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlighter}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlight}"
+                                ToolTip.Tip="Highlight (H)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconHighlighter}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Spotlight}"
+                                ToolTip.Tip="Spotlight (S)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpotlight}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
+                                ToolTip.Tip="Crop (C)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCrop}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=CutOut}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
+                                ToolTip.Tip="Cut Out (U)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCutOut}"/>
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding IsSettingsPanelOpen}"
+                                Command="{Binding ToggleSettingsPanelCommand}"
+                                ToolTip.Tip="Background"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBackground}"/>
+
+                        <!-- Effects Menu Dropdown -->
+                        <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
+                            Height="40"
+                            ToolTip.Tip="Effects"
+                            ResizeImageRequested="OnResizeImageRequested"
+                            ResizeCanvasRequested="OnResizeCanvasRequested"
+                            CropImageRequested="OnCropImageRequested"
+                            AutoCropImageRequested="OnAutoCropImageRequested"
+                            Rotate90CWRequested="OnRotate90CWRequested"
+                            Rotate90CCWRequested="OnRotate90CCWRequested"
+                            Rotate180Requested="OnRotate180Requested"
+                            RotateCustomAngleRequested="OnRotateCustomAngleRequested"
+                            FlipHorizontalRequested="OnFlipHorizontalRequested"
+                            FlipVerticalRequested="OnFlipVerticalRequested"
+                            BrightnessRequested="OnBrightnessRequested"
+                            ContrastRequested="OnContrastRequested"
+                            HueRequested="OnHueRequested"
+                            SaturationRequested="OnSaturationRequested"
+                            GammaRequested="OnGammaRequested"
+                            AlphaRequested="OnAlphaRequested"
+                            ColorizeRequested="OnColorizeRequested"
+                            SelectiveColorRequested="OnSelectiveColorRequested"
+                            ReplaceColorRequested="OnReplaceColorRequested"
+                            GrayscaleRequested="OnGrayscaleRequested"
+                            InvertRequested="OnInvertRequested"
+                            BlackAndWhiteRequested="OnBlackAndWhiteRequested"
+                            SepiaRequested="OnSepiaRequested"
+                            PolaroidRequested="OnPolaroidRequested"
+                            BorderRequested="OnBorderRequested"
+                            OutlineRequested="OnOutlineRequested"
+                            ShadowRequested="OnShadowRequested"
+                            GlowRequested="OnGlowRequested"
+                            ReflectionRequested="OnReflectionRequested"
+                            TornEdgeRequested="OnTornEdgeRequested"
+                            SliceRequested="OnSliceRequested"
+                            RoundedCornersRequested="OnRoundedCornersRequested"
+                            SkewRequested="OnSkewRequested"
+                            Rotate3DRequested="OnRotate3DRequested"
+                            BlurRequested="OnBlurRequested"
+                            PixelateRequested="OnPixelateRequested"
+                            SharpenRequested="OnSharpenRequested"/>
+
+                        <!-- Separator -->
+                        <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
+
+                        <!-- Undo Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconUndo}"/>
+
+                        <!-- Redo Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Shift+Z)"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRedo}"/>
+
+                        <!-- Separator -->
+                        <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
+
+
+                        <!-- Clear Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Command="{Binding ClearAnnotationsCommand}" ToolTip.Tip="Clear all annotations"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconClear}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Bottom Toolbar: Tool Options -->
+            <Border Padding="4" Margin="0,-4,0,0" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+                    IsVisible="{Binding ShowToolOptionsSeparator}"
+                    MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <!-- Border Color Picker Dropdown -->
+                        <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
+                            SelectedColor="{Binding SelectedColorBrush}"
+                            ColorChanged="OnColorChanged"
+                            Height="40"
+                            IsVisible="{Binding ShowBorderColor}"
+                            ToolTip.Tip="Border Color"/>
+
+                        <!-- Fill Color Picker Dropdown -->
+                        <controls:ColorPickerDropdown x:Name="FillColorPickerDropdown"
+                            SelectedColor="{Binding FillColorBrush}"
+                            ColorChanged="OnFillColorChanged"
+                            Height="40"
+                            IsVisible="{Binding ShowFillColor}"
+                            ToolTip.Tip="Fill Color"/>
+
+                        <!-- Thickness Picker Dropdown -->
+                        <controls:WidthPickerDropdown
+                            SelectedWidth="{Binding StrokeWidth}"
+                            WidthChanged="OnWidthChanged"
+                            Height="40"
+                            IsVisible="{Binding ShowThickness}"
+                            ToolTip.Tip="Thickness"/>
+
+                        <!-- Font Size Picker Dropdown -->
+                        <controls:FontSizePickerDropdown
+                            SelectedFontSize="{Binding FontSize}"
+                            FontSizeChanged="OnFontSizeChanged"
+                            Height="40"
+                            IsVisible="{Binding ShowFontSize}"
+                            ToolTip.Tip="Font Size"/>
+
+                        <!-- Strength Slider -->
+                        <controls:StrengthSlider
+                            SelectedStrength="{Binding EffectStrength}"
+                            StrengthChanged="OnStrengthChanged"
+                            IsVisible="{Binding ShowStrength}"
+                            ToolTip.Tip="Effect Strength"/>
+
+                        <!-- Shadow Toggle Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ShadowEnabled}"
+                                Click="OnShadowButtonClick"
+                                IsVisible="{Binding ShowShadow}"
+                                ToolTip.Tip="Toggle Shadow"
+                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMoon}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
+
+        <!-- Row 1: Combined Bottom Bar (Export + Zoom Controls) -->
+        <Border Grid.Row="1" Padding="8" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="0,1,0,0">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <!-- Left: Zoom Controls -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
@@ -684,7 +696,7 @@
         </Border>
 
         <!-- Modal Overlay -->
-        <Border Grid.Row="0" Grid.RowSpan="3"
+        <Border Grid.Row="0" Grid.RowSpan="2"
                 IsVisible="{Binding IsModalOpen}"
                 Background="#80000000"
                 IsHitTestVisible="True">

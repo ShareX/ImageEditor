@@ -23,7 +23,9 @@
                 Minimum="{Binding Minimum, ElementName=StrengthSliderRoot}"
                 Maximum="{Binding Maximum, ElementName=StrengthSliderRoot}"
                 Value="{Binding SelectedStrength, ElementName=StrengthSliderRoot, Mode=TwoWay}"
-                Width="80"
+                Height="50"
+                Width="100"
+                Margin="0,0,4,0"
                 VerticalAlignment="Center"/>
     </Grid>
 </UserControl>

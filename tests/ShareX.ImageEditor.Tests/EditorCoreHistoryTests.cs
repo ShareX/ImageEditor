@@ -200,6 +200,35 @@ public class EditorCoreHistoryTests
         Assert.Equal(18, text.FontSize);
     }
 
+    [Fact]
+    public void ImageAnnotationUndoRedo_RestoresBitmapData()
+    {
+        using var core = new EditorCore();
+        core.LoadImage(CreateTestBitmap(200, 150));
+
+        // Create and add an ImageAnnotation via AddAnnotation (simulating paste)
+        var imgAnnotation = new ImageAnnotation();
+        var insertBitmap = CreateTestBitmap(50, 50);
+        imgAnnotation.SetImage(insertBitmap);
+        imgAnnotation.StartPoint = new SKPoint(10, 10);
+        imgAnnotation.EndPoint = new SKPoint(60, 60);
+        core.AddAnnotation(imgAnnotation);
+
+        Assert.Single(core.Annotations);
+        Assert.IsType<ImageAnnotation>(core.Annotations[0]);
+        Assert.NotNull(((ImageAnnotation)core.Annotations[0]).ImageBitmap);
+
+        core.Undo();
+        Assert.Empty(core.Annotations);
+
+        core.Redo();
+        Assert.Single(core.Annotations);
+        var restored = Assert.IsType<ImageAnnotation>(core.Annotations[0]);
+        Assert.NotNull(restored.ImageBitmap);
+        Assert.Equal(50, restored.ImageBitmap!.Width);
+        Assert.Equal(50, restored.ImageBitmap.Height);
+    }
+
     private static SKBitmap CreateTestBitmap(int width, int height)
     {
         var bitmap = new SKBitmap(width, height);

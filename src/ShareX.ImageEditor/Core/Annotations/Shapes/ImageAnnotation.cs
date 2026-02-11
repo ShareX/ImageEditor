@@ -109,9 +109,8 @@ public class ImageAnnotation : Annotation, IDisposable
     public override Annotation Clone()
     {
         var clone = (ImageAnnotation)base.Clone();
-        // Don't copy the bitmap reference - caller should reload or set new bitmap
-        // This avoids shared bitmap references and disposal issues
-        clone._imageBitmap = null;
+        // Deep-copy bitmap for undo/redo to properly preserve image data
+        clone._imageBitmap = _imageBitmap?.Copy();
         return clone;
     }
 }

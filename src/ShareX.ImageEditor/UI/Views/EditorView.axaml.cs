@@ -29,6 +29,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
 using ShareX.ImageEditor.Helpers;
@@ -110,6 +111,11 @@ namespace ShareX.ImageEditor.Views
 
             // Capture wheel events in tunneling phase so ScrollViewer doesn't scroll when using Ctrl+wheel zoom.
             AddHandler(PointerWheelChangedEvent, OnPreviewPointerWheelChanged, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+
+            // Enable drag-and-drop for image files
+            DragDrop.SetAllowDrop(this, true);
+            AddHandler(DragDrop.DropEvent, OnDrop);
+            AddHandler(DragDrop.DragOverEvent, OnDragOver);
         }
 
         private void OnSelectionChanged(bool hasSelection)
@@ -428,6 +434,11 @@ namespace ShareX.ImageEditor.Views
                     else if (e.Key == Key.Y)
                     {
                         vm.RedoCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    else if (e.Key == Key.V)
+                    {
+                        _ = PasteImageFromClipboard();
                         e.Handled = true;
                     }
                 }
@@ -1326,6 +1337,204 @@ namespace ShareX.ImageEditor.Views
             {
                 var message = $"[SYNC WARNING] Annotation count mismatch: UI={uiAnnotationCount}, Core={coreAnnotationCount}";
                 System.Diagnostics.Debug.WriteLine(message);
+            }
+        }
+
+        // --- Image Paste & Drag-Drop ---
+
+        /// <summary>
+        /// Shared helper to insert an image annotation from an SKBitmap.
+        /// Adds the annotation to both the Avalonia canvas and EditorCore, then switches to Select tool.
+        /// </summary>
+        private void InsertImageAnnotation(SKBitmap skBitmap, Point? dropPosition = null)
+        {
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null || DataContext is not MainViewModel vm) return;
+
+            // Calculate position: drop point or center of canvas
+            var posX = dropPosition?.X ?? (_editorCore.CanvasSize.Width / 2 - skBitmap.Width / 2);
+            var posY = dropPosition?.Y ?? (_editorCore.CanvasSize.Height / 2 - skBitmap.Height / 2);
+
+            var annotation = new ImageAnnotation();
+            annotation.SetImage(skBitmap);
+            annotation.StartPoint = new SKPoint((float)posX, (float)posY);
+            annotation.EndPoint = new SKPoint(
+                (float)posX + skBitmap.Width,
+                (float)posY + skBitmap.Height);
+
+            var avBitmap = BitmapConversionHelpers.ToAvaloniBitmap(skBitmap);
+            var imageControl = new Image
+            {
+                Source = avBitmap,
+                Width = skBitmap.Width,
+                Height = skBitmap.Height,
+                Tag = annotation
+            };
+            Canvas.SetLeft(imageControl, posX);
+            Canvas.SetTop(imageControl, posY);
+
+            canvas.Children.Add(imageControl);
+            _editorCore.AddAnnotation(annotation);
+
+            vm.HasAnnotations = true;
+            vm.ActiveTool = EditorTool.Select; // Auto-switch to Select tool
+            _selectionController.SetSelectedShape(imageControl);
+        }
+
+        /// <summary>
+        /// Handles Ctrl+V paste of images from clipboard (both bitmap data and file references).
+        /// </summary>
+        private async Task PasteImageFromClipboard()
+        {
+            var topLevel = TopLevel.GetTopLevel(this);
+            var clipboard = topLevel?.Clipboard;
+            if (clipboard == null) return;
+
+            try
+            {
+                // Try bitmap data formats first
+                var formats = await clipboard.GetFormatsAsync();
+
+                // Check for image file paths in clipboard (e.g. copied from Explorer)
+                var fileData = await clipboard.GetDataAsync(DataFormats.Files);
+                if (fileData is System.Collections.Generic.IEnumerable<IStorageItem> files)
+                {
+                    foreach (var file in files)
+                    {
+                        if (file is IStorageFile storageFile)
+                        {
+                            var ext = System.IO.Path.GetExtension(storageFile.Name)?.ToLowerInvariant();
+                            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".webp" || ext == ".ico" || ext == ".tiff" || ext == ".tif")
+                            {
+                                try
+                                {
+                                    using var stream = await storageFile.OpenReadAsync();
+                                    using var memStream = new MemoryStream();
+                                    await stream.CopyToAsync(memStream);
+                                    memStream.Position = 0;
+                                    var skBitmap = SKBitmap.Decode(memStream);
+                                    if (skBitmap != null)
+                                    {
+                                        InsertImageAnnotation(skBitmap);
+                                        return;
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+                }
+
+                // Try raw bitmap data from clipboard (e.g. PrintScreen, copy from image app)
+                // Avalonia exposes bitmap clipboard data as image/png or similar
+                foreach (var format in new[] { "image/png", "PNG", "image/bmp", "image/jpeg" })
+                {
+                    if (formats.Contains(format))
+                    {
+                        var data = await clipboard.GetDataAsync(format);
+                        if (data is byte[] bytes)
+                        {
+                            var skBitmap = SKBitmap.Decode(bytes);
+                            if (skBitmap != null)
+                            {
+                                InsertImageAnnotation(skBitmap);
+                                return;
+                            }
+                        }
+                        else if (data is MemoryStream ms)
+                        {
+                            ms.Position = 0;
+                            var skBitmap = SKBitmap.Decode(ms);
+                            if (skBitmap != null)
+                            {
+                                InsertImageAnnotation(skBitmap);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // Final fallback: try "Bitmap" format (Windows-specific)
+                var bitmapData = await clipboard.GetDataAsync("Bitmap");
+                if (bitmapData is byte[] bmpBytes)
+                {
+                    var skBitmap = SKBitmap.Decode(bmpBytes);
+                    if (skBitmap != null)
+                    {
+                        InsertImageAnnotation(skBitmap);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[PASTE] Failed to paste image: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles DragOver event to show appropriate drag cursor.
+        /// </summary>
+        private void OnDragOver(object? sender, DragEventArgs e)
+        {
+            // Accept file drops that contain images
+            if (e.Data.Contains(DataFormats.Files))
+            {
+                e.DragEffects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+            }
+        }
+
+        /// <summary>
+        /// Handles drag-and-drop of image files onto the editor canvas.
+        /// </summary>
+        private async void OnDrop(object? sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(DataFormats.Files))
+            {
+                var files = e.Data.GetFiles();
+                if (files == null) return;
+
+                // Get drop position relative to the annotation canvas
+                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                Point? dropPos = null;
+                if (canvas != null)
+                {
+                    dropPos = e.GetPosition(canvas);
+                }
+
+                foreach (var item in files)
+                {
+                    if (item is IStorageFile file)
+                    {
+                        var ext = System.IO.Path.GetExtension(file.Name)?.ToLowerInvariant();
+                        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".webp" || ext == ".ico" || ext == ".tiff" || ext == ".tif")
+                        {
+                            try
+                            {
+                                using var stream = await file.OpenReadAsync();
+                                using var memStream = new MemoryStream();
+                                await stream.CopyToAsync(memStream);
+                                memStream.Position = 0;
+                                var skBitmap = SKBitmap.Decode(memStream);
+                                if (skBitmap != null)
+                                {
+                                    // Center image on drop point
+                                    var centeredPos = dropPos.HasValue
+                                        ? new Point(dropPos.Value.X - skBitmap.Width / 2, dropPos.Value.Y - skBitmap.Height / 2)
+                                        : (Point?)null;
+                                    InsertImageAnnotation(skBitmap, centeredPos);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[DROP] Failed to load dropped file '{file.Name}': {ex.Message}");
+                            }
+                        }
+                    }
+                }
             }
         }
     }

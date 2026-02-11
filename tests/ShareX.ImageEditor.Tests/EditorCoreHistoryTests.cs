@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.ImageEffects.Adjustments;
 using ShareX.ImageEditor.Serialization;
 using SkiaSharp;
 
@@ -81,6 +82,73 @@ public class EditorCoreHistoryTests
         Assert.NotNull(core.SourceImage);
         Assert.Equal(100, core.SourceImage!.Width);
         Assert.Equal(60, core.SourceImage.Height);
+    }
+
+    [Fact]
+    public void ImageEffectUndoRedo_RestoresImageAndAnnotationsTogether()
+    {
+        using var core = new EditorCore();
+        core.LoadImage(CreateTestBitmap(128, 96));
+        core.ActiveTool = EditorTool.Rectangle;
+
+        core.OnPointerPressed(new SKPoint(12, 12));
+        core.OnPointerMoved(new SKPoint(72, 44));
+        core.OnPointerReleased(new SKPoint(72, 44));
+
+        Assert.Single(core.Annotations);
+        SKColor originalColor = core.SourceImage!.GetPixel(20, 20);
+
+        bool applied = core.ApplyImageEffect(img => new InvertImageEffect().Apply(img));
+
+        Assert.True(applied);
+        Assert.Single(core.Annotations);
+        SKColor effectedColor = core.SourceImage!.GetPixel(20, 20);
+        Assert.NotEqual(originalColor, effectedColor);
+        Assert.True(core.CanUndo);
+
+        core.Undo();
+
+        Assert.Single(core.Annotations);
+        Assert.Equal(originalColor, core.SourceImage!.GetPixel(20, 20));
+        Assert.True(core.CanRedo);
+
+        core.Redo();
+
+        Assert.Single(core.Annotations);
+        Assert.Equal(effectedColor, core.SourceImage!.GetPixel(20, 20));
+    }
+
+    [Fact]
+    public void RotateUndoRedo_RestoresCanvasAndAnnotationState()
+    {
+        using var core = new EditorCore();
+        core.LoadImage(CreateTestBitmap(120, 80));
+        core.ActiveTool = EditorTool.Rectangle;
+
+        core.OnPointerPressed(new SKPoint(10, 10));
+        core.OnPointerMoved(new SKPoint(50, 40));
+        core.OnPointerReleased(new SKPoint(50, 40));
+
+        Assert.Single(core.Annotations);
+
+        bool rotated = core.Rotate90Clockwise();
+
+        Assert.True(rotated);
+        Assert.Empty(core.Annotations);
+        Assert.Equal(80, core.SourceImage!.Width);
+        Assert.Equal(120, core.SourceImage.Height);
+
+        core.Undo();
+
+        Assert.Single(core.Annotations);
+        Assert.Equal(120, core.SourceImage!.Width);
+        Assert.Equal(80, core.SourceImage.Height);
+
+        core.Redo();
+
+        Assert.Empty(core.Annotations);
+        Assert.Equal(80, core.SourceImage!.Width);
+        Assert.Equal(120, core.SourceImage.Height);
     }
 
     [Fact]

@@ -88,7 +88,7 @@ namespace ShareX.ImageEditor.Views
                             try
                             {
                                 _isSyncingToVM = true;
-                                vm.UpdatePreviewImageOnly(_editorCore.SourceImage);
+                                vm.UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
                             }
                             finally
                             {
@@ -172,6 +172,7 @@ namespace ShareX.ImageEditor.Views
 
             if (DataContext is MainViewModel vm)
             {
+                vm.AttachEditorCore(_editorCore);
                 vm.UndoRequested += (s, args) => PerformUndo();
                 vm.RedoRequested += (s, args) => PerformRedo();
                 vm.DeleteRequested += (s, args) => PerformDelete();

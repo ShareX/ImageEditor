@@ -24,6 +24,8 @@
 #endregion License Information (GPL v3)
 
 using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.ImageEffects.Manipulations;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor;
@@ -193,6 +195,245 @@ public class EditorCore : IDisposable
     }
 
     /// <summary>
+    /// Applies an image mutation and records it in the unified core history stack.
+    /// </summary>
+    /// <param name="operation">Operation that takes current source image and returns the mutated image.</param>
+    /// <param name="clearAnnotations">Whether annotations should be cleared after mutation.</param>
+    /// <returns>True if operation succeeded and image changed.</returns>
+    public bool ApplyImageOperation(Func<SKBitmap, SKBitmap> operation, bool clearAnnotations = false)
+    {
+        if (SourceImage == null || operation == null)
+        {
+            return false;
+        }
+
+        SKBitmap? result = null;
+
+        try
+        {
+            result = operation(SourceImage);
+
+            if (result == null || result.Width <= 0 || result.Height <= 0)
+            {
+                result?.Dispose();
+                return false;
+            }
+
+            // Some operations may return the same bitmap instance. Normalize to an owned copy.
+            if (ReferenceEquals(result, SourceImage))
+            {
+                SKBitmap? copy = SourceImage.Copy();
+                if (copy == null)
+                {
+                    return false;
+                }
+
+                result = copy;
+            }
+        }
+        catch
+        {
+            result?.Dispose();
+            return false;
+        }
+
+        _history.CreateCanvasMemento();
+
+        SourceImage.Dispose();
+        SourceImage = result;
+        CanvasSize = new SKSize(SourceImage.Width, SourceImage.Height);
+
+        if (clearAnnotations)
+        {
+            ClearAnnotationsForImageMutation();
+        }
+        else
+        {
+            RefreshAnnotationsForCurrentImage();
+        }
+
+        ImageChanged?.Invoke();
+        HistoryChanged?.Invoke();
+        InvalidateRequested?.Invoke();
+        return true;
+    }
+
+    /// <summary>
+    /// Applies an image effect operation and tracks it in unified core history.
+    /// </summary>
+    public bool ApplyImageEffect(Func<SKBitmap, SKBitmap> effectOperation)
+    {
+        return ApplyImageOperation(effectOperation, clearAnnotations: false);
+    }
+
+    public bool ResizeImage(int newWidth, int newHeight, SKFilterQuality quality = SKFilterQuality.High)
+    {
+        if (newWidth <= 0 || newHeight <= 0)
+        {
+            return false;
+        }
+
+        return ApplyImageOperation(
+            img => ImageHelpers.Resize(img, newWidth, newHeight, maintainAspectRatio: false, quality),
+            clearAnnotations: true);
+    }
+
+    public bool ResizeCanvas(int top, int right, int bottom, int left, SKColor backgroundColor)
+    {
+        return ApplyImageOperation(
+            img => ImageHelpers.ResizeCanvas(img, left, top, right, bottom, backgroundColor),
+            clearAnnotations: true);
+    }
+
+    public bool Rotate90Clockwise()
+    {
+        return ApplyImageOperation(ImageHelpers.Rotate90Clockwise, clearAnnotations: true);
+    }
+
+    public bool Rotate90CounterClockwise()
+    {
+        return ApplyImageOperation(ImageHelpers.Rotate90CounterClockwise, clearAnnotations: true);
+    }
+
+    public bool Rotate180()
+    {
+        return ApplyImageOperation(ImageHelpers.Rotate180, clearAnnotations: true);
+    }
+
+    public bool RotateCustomAngle(float angle, bool autoResize = true)
+    {
+        return ApplyImageOperation(img => RotateImageEffect.Custom(angle, autoResize).Apply(img), clearAnnotations: true);
+    }
+
+    public bool FlipHorizontal()
+    {
+        return ApplyImageOperation(ImageHelpers.FlipHorizontal, clearAnnotations: true);
+    }
+
+    public bool FlipVertical()
+    {
+        return ApplyImageOperation(ImageHelpers.FlipVertical, clearAnnotations: true);
+    }
+
+    public bool AutoCrop(int tolerance = 10)
+    {
+        if (SourceImage == null)
+        {
+            return false;
+        }
+
+        SKColor topLeft = SourceImage.GetPixel(0, 0);
+        return ApplyImageOperation(img => ImageHelpers.AutoCrop(img, topLeft, tolerance), clearAnnotations: true);
+    }
+
+    /// <summary>
+    /// Perform cut-out operation with explicit start/end coordinates.
+    /// </summary>
+    public bool CutOut(int startPos, int endPos, bool isVertical)
+    {
+        if (SourceImage == null)
+        {
+            return false;
+        }
+
+        if (startPos > endPos)
+        {
+            (startPos, endPos) = (endPos, startPos);
+        }
+
+        if (isVertical)
+        {
+            if (startPos < 0 || endPos > SourceImage.Width || startPos >= endPos)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (startPos < 0 || endPos > SourceImage.Height || startPos >= endPos)
+            {
+                return false;
+            }
+        }
+
+        _history.CreateCanvasMemento();
+
+        if (isVertical)
+        {
+            int cutX = startPos;
+            int cutWidth = endPos - startPos;
+            int newWidth = SourceImage.Width - cutWidth;
+            if (newWidth <= 0)
+            {
+                return false;
+            }
+
+            var resultBitmap = new SKBitmap(newWidth, SourceImage.Height);
+            using (var canvas = new SKCanvas(resultBitmap))
+            {
+                if (cutX > 0)
+                {
+                    var sourceRect = new SKRect(0, 0, cutX, SourceImage.Height);
+                    var destRect = new SKRect(0, 0, cutX, SourceImage.Height);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
+                }
+
+                int rightStart = cutX + cutWidth;
+                if (rightStart < SourceImage.Width)
+                {
+                    var sourceRect = new SKRect(rightStart, 0, SourceImage.Width, SourceImage.Height);
+                    var destRect = new SKRect(cutX, 0, newWidth, SourceImage.Height);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
+                }
+            }
+
+            SourceImage.Dispose();
+            SourceImage = resultBitmap;
+            CanvasSize = new SKSize(newWidth, SourceImage.Height);
+            AdjustAnnotationsForVerticalCut(cutX, cutWidth, newWidth);
+        }
+        else
+        {
+            int cutY = startPos;
+            int cutHeight = endPos - startPos;
+            int newHeight = SourceImage.Height - cutHeight;
+            if (newHeight <= 0)
+            {
+                return false;
+            }
+
+            var resultBitmap = new SKBitmap(SourceImage.Width, newHeight);
+            using (var canvas = new SKCanvas(resultBitmap))
+            {
+                if (cutY > 0)
+                {
+                    var sourceRect = new SKRect(0, 0, SourceImage.Width, cutY);
+                    var destRect = new SKRect(0, 0, SourceImage.Width, cutY);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
+                }
+
+                int bottomStart = cutY + cutHeight;
+                if (bottomStart < SourceImage.Height)
+                {
+                    var sourceRect = new SKRect(0, bottomStart, SourceImage.Width, SourceImage.Height);
+                    var destRect = new SKRect(0, cutY, SourceImage.Width, newHeight);
+                    canvas.DrawBitmap(SourceImage, sourceRect, destRect);
+                }
+            }
+
+            SourceImage.Dispose();
+            SourceImage = resultBitmap;
+            CanvasSize = new SKSize(SourceImage.Width, newHeight);
+            AdjustAnnotationsForHorizontalCut(cutY, cutHeight, newHeight);
+        }
+
+        ImageChanged?.Invoke();
+        HistoryChanged?.Invoke();
+        InvalidateRequested?.Invoke();
+        return true;
+    }
+
+    /// <summary>
     /// Clear all annotations
     /// </summary>
     public void ClearAll()
@@ -206,6 +447,41 @@ public class EditorCore : IDisposable
         NumberCounter = 1;
         InvalidateRequested?.Invoke();
         HistoryChanged?.Invoke();
+    }
+
+    private void RefreshAnnotationsForCurrentImage()
+    {
+        if (SourceImage == null)
+        {
+            return;
+        }
+
+        foreach (Annotation annotation in _annotations)
+        {
+            if (annotation is BaseEffectAnnotation effect)
+            {
+                effect.UpdateEffect(SourceImage);
+            }
+            else if (annotation is SpotlightAnnotation spotlight)
+            {
+                spotlight.CanvasSize = CanvasSize;
+            }
+        }
+    }
+
+    private void ClearAnnotationsForImageMutation()
+    {
+        if (_annotations.Count == 0)
+        {
+            return;
+        }
+
+        _annotations.Clear();
+        _selectedAnnotation = null;
+        _currentAnnotation = null;
+        _isDrawing = false;
+        NumberCounter = 1;
+        AnnotationsRestored?.Invoke();
     }
 
     #endregion

@@ -573,6 +573,7 @@ namespace ShareX.ImageEditor.ViewModels
 
         private bool _isCoreUndoAvailable;
         private bool _isCoreRedoAvailable;
+        private EditorCore? _editorCore;
 
         private bool _isPreviewingEffect;
         public bool AreBackgroundEffectsActive => IsSettingsPanelOpen && !_isPreviewingEffect;
@@ -601,8 +602,8 @@ namespace ShareX.ImageEditor.ViewModels
 
         private void UpdateUndoRedoProperties()
         {
-            CanUndo = _isCoreUndoAvailable || _imageUndoStack.Count > 0;
-            CanRedo = _isCoreRedoAvailable || _imageRedoStack.Count > 0;
+            CanUndo = _isCoreUndoAvailable;
+            CanRedo = _isCoreRedoAvailable;
         }
 
         [ObservableProperty]
@@ -710,6 +711,12 @@ namespace ShareX.ImageEditor.ViewModels
             _appVersion = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.0.0";
 
             UpdateCanvasProperties();
+        }
+
+        public void AttachEditorCore(EditorCore editorCore)
+        {
+            _editorCore = editorCore;
+            UpdateCoreHistoryState(editorCore.CanUndo, editorCore.CanRedo);
         }
 
         partial void OnApplicationNameChanged(string value)
@@ -1121,61 +1128,12 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand(CanExecute = nameof(CanUndo))]
         private void Undo()
         {
-            // First check if we have image-level undo (crop/cutout operations)
-            if (_imageUndoStack.Count > 0)
-            {
-                // Save current image to redo stack
-                if (_currentSourceImage != null)
-                {
-                    // ISSUE-025 fix: Check for null after Copy()
-                    var copy = _currentSourceImage.Copy();
-                    if (copy == null)
-                    {
-                        // Continue with undo despite redo stack failure
-                    }
-                    else
-                    {
-                        _imageRedoStack.Push(copy);
-                    }
-                }
-
-                // Restore previous image state
-                var previousImage = _imageUndoStack.Pop();
-                UpdatePreview(previousImage, clearAnnotations: false);
-                return;
-            }
-
-            // Otherwise delegate to annotation undo
             UndoRequested?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand(CanExecute = nameof(CanRedo))]
         private void Redo()
         {
-            // First check if we have image-level redo (crop/cutout operations)
-            if (_imageRedoStack.Count > 0)
-            {
-                // Save current image to undo stack
-                var next = _imageRedoStack.Pop();
-                if (_currentSourceImage != null)
-                {
-                    // ISSUE-025 fix: Check for null after Copy()
-                    var copy = _currentSourceImage.Copy();
-                    if (copy == null)
-                    {
-                        // Continue with redo despite undo stack failure
-                    }
-                    else
-                    {
-                        _imageUndoStack.Push(copy);
-                    }
-                }
-                UpdatePreview(next, clearAnnotations: false);
-                UpdateUndoRedoProperties();
-                return;
-            }
-
-            // Otherwise delegate to annotation redo
             RedoRequested?.Invoke(this, EventArgs.Empty);
         }
 
@@ -1227,16 +1185,6 @@ namespace ShareX.ImageEditor.ViewModels
 
             _originalSourceImage?.Dispose();
             _originalSourceImage = null;
-
-            // Dispose all bitmaps in undo/redo stacks
-            while (_imageUndoStack.Count > 0)
-            {
-                _imageUndoStack.Pop()?.Dispose();
-            }
-            while (_imageRedoStack.Count > 0)
-            {
-                _imageRedoStack.Pop()?.Dispose();
-            }
 
             // HasPreviewImage = false; // Handled by OnPreviewImageChanged
             ImageDimensions = "No image";
@@ -1431,10 +1379,6 @@ namespace ShareX.ImageEditor.ViewModels
         private SkiaSharp.SKBitmap? _currentSourceImage;
         private SkiaSharp.SKBitmap? _originalSourceImage; // Backup for smart padding restore
 
-        // Image undo/redo stacks for crop/cutout operations
-        private readonly Stack<SkiaSharp.SKBitmap> _imageUndoStack = new();
-        private readonly Stack<SkiaSharp.SKBitmap> _imageRedoStack = new();
-
         /// <summary>
         /// Updates the preview image. **TAKES OWNERSHIP** of the bitmap parameter.
         /// </summary>
@@ -1485,79 +1429,17 @@ namespace ShareX.ImageEditor.ViewModels
 
         public void CropImage(int x, int y, int width, int height)
         {
-            if (_currentSourceImage == null) return;
-            if (width <= 0 || height <= 0) return;
-
-            // Ensure bounds
-            var rect = new SkiaSharp.SKRectI(x, y, x + width, y + height);
-            var imageRect = new SkiaSharp.SKRectI(0, 0, _currentSourceImage.Width, _currentSourceImage.Height);
-            rect.Intersect(imageRect);
-
-            if (rect.Width <= 0 || rect.Height <= 0) return;
-
-            // Save current image state for undo before cropping
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
+            if (_editorCore == null || width <= 0 || height <= 0)
             {
-                return; // Can't proceed without undo capability for destructive operation
+                return;
             }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
 
-            var cropped = ImageHelpers.Crop(_currentSourceImage, rect.Left, rect.Top, rect.Width, rect.Height);
-            // Don't clear annotations - they are adjusted in EditorCore
-            UpdatePreview(cropped, clearAnnotations: false);
-            UpdateUndoRedoProperties();
+            _editorCore.Crop(new SkiaSharp.SKRect(x, y, x + width, y + height));
         }
 
         public void CutOutImage(int startPos, int endPos, bool isVertical)
         {
-            if (_currentSourceImage == null) return;
-
-            // Ensure valid range
-            if (isVertical)
-            {
-                if (startPos < 0 || endPos > _currentSourceImage.Width || startPos >= endPos)
-                    return;
-            }
-            else
-            {
-                if (startPos < 0 || endPos > _currentSourceImage.Height || startPos >= endPos)
-                    return;
-            }
-
-            // Save current image state for undo before cutting out
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                return; // Can't proceed without undo capability for destructive operation
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-
-            // ... (CutOut logic omitted for brevity in diff, assuming calling UpdateUndoRedoProperties after invalidation or here?)
-            // Actually CutOutImage calls UpdatePreview implicitly? No, it uses ViewModel.CutOutImage which calls this.
-            // Wait, CutOut modifies bitmap?
-            // The method CutOutImage only pushes undo stack, then loop logic?
-            // Ah, CutOutImage implementation matches Logic.
-            // Wait, CutOutImage in ViewModel logic seems incomplete in my view?
-            // Line 1000 was last line viewed. I assume it continues.
-            // I will just update the start of CutOut to ensure stack is pushed, and I should call UpdateUndoRedoProperties.
-            // BUT I don't see the end of CutOutImage.
-
-            // Safer to just update CropImage and Undo/Redo for now. 
-            // I'll verify CutOutImage later or assuming it calls UpdatePreview?
-            // Note: CutOut logic in Controller calls ViewModel.CutOutImage.
-            // I will update CutOutImage if I can see it. I saw lines 983-1000.
-            // I will just apply to Crop and Undo/Redo first.
-
-            _imageRedoStack.Clear();
-
-            var result = ImageHelpers.CutOut(_currentSourceImage, startPos, endPos, isVertical);
-            // Don't clear annotations - they are adjusted in EditorCore
-            UpdatePreview(result, clearAnnotations: false);
+            _editorCore?.CutOut(startPos, endPos, isVertical);
         }
 
         // --- Edit Menu Commands ---
@@ -1565,122 +1447,37 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         private void Rotate90Clockwise()
         {
-            if (_currentSourceImage == null) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                return;
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-
-            var rotated = ImageHelpers.Rotate90Clockwise(_currentSourceImage);
-            UpdatePreview(rotated, clearAnnotations: true);
-            UpdateUndoRedoProperties();
+            _editorCore?.Rotate90Clockwise();
         }
 
         [RelayCommand]
         private void Rotate90CounterClockwise()
         {
-            if (_currentSourceImage == null) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                return;
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-
-            var rotated = ImageHelpers.Rotate90CounterClockwise(_currentSourceImage);
-            UpdatePreview(rotated, clearAnnotations: true);
-            UpdateUndoRedoProperties();
+            _editorCore?.Rotate90CounterClockwise();
         }
 
         [RelayCommand]
         private void Rotate180()
         {
-            if (_currentSourceImage == null) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                return;
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-
-            var rotated = ImageHelpers.Rotate180(_currentSourceImage);
-            UpdatePreview(rotated, clearAnnotations: true);
-            UpdateUndoRedoProperties();
+            _editorCore?.Rotate180();
         }
 
         [RelayCommand]
         private void FlipHorizontal()
         {
-            if (_currentSourceImage == null) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                return;
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-
-            var flipped = ImageHelpers.FlipHorizontal(_currentSourceImage);
-            UpdatePreview(flipped, clearAnnotations: true);
-            UpdateUndoRedoProperties();
+            _editorCore?.FlipHorizontal();
         }
 
         [RelayCommand]
         private void FlipVertical()
         {
-            if (_currentSourceImage == null) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                return;
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-
-            var flipped = ImageHelpers.FlipVertical(_currentSourceImage);
-            UpdatePreview(flipped, clearAnnotations: true);
-            UpdateUndoRedoProperties();
+            _editorCore?.FlipVertical();
         }
 
         [RelayCommand]
         private void AutoCropImage()
         {
-            if (_currentSourceImage == null) return;
-
-            var topLeftColor = _currentSourceImage.GetPixel(0, 0);
-
-            var cropped = ImageHelpers.AutoCrop(_currentSourceImage, topLeftColor, tolerance: 10);
-
-            if (cropped != null && cropped.Width > 0 && cropped.Height > 0 &&
-                (cropped.Width != _currentSourceImage.Width || cropped.Height != _currentSourceImage.Height))
-            {
-                // ISSUE-025 fix: Check for null after Copy()
-                var undoCopy = _currentSourceImage.Copy();
-                if (undoCopy == null)
-                {
-                    return;
-                }
-                _imageUndoStack.Push(undoCopy);
-                _imageRedoStack.Clear();
-
-                UpdatePreview(cropped, clearAnnotations: true);
-                UpdateUndoRedoProperties();
-            }
+            _editorCore?.AutoCrop(10);
         }
 
         /// <summary>
@@ -1688,24 +1485,12 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void ResizeImage(int newWidth, int newHeight, SkiaSharp.SKFilterQuality quality = SkiaSharp.SKFilterQuality.High)
         {
-            if (_currentSourceImage == null) return;
-            if (newWidth <= 0 || newHeight <= 0) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
+            if (newWidth <= 0 || newHeight <= 0)
             {
                 return;
             }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
 
-            var resized = ImageHelpers.Resize(_currentSourceImage, newWidth, newHeight, maintainAspectRatio: false, quality);
-            if (resized != null)
-            {
-                UpdatePreview(resized, clearAnnotations: true);
-                UpdateUndoRedoProperties();
-            }
+            _editorCore?.ResizeImage(newWidth, newHeight, quality);
         }
 
         /// <summary>
@@ -1713,20 +1498,7 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void ResizeCanvas(int top, int right, int bottom, int left, SkiaSharp.SKColor backgroundColor)
         {
-            if (_currentSourceImage == null) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                return;
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-
-            var resized = ImageHelpers.ResizeCanvas(_currentSourceImage, left, top, right, bottom, backgroundColor);
-            UpdatePreview(resized, clearAnnotations: true);
-            UpdateUndoRedoProperties();
+            _editorCore?.ResizeCanvas(top, right, bottom, left, backgroundColor);
         }
 
         // --- Effects Menu Commands ---
@@ -1757,20 +1529,15 @@ namespace ShareX.ImageEditor.ViewModels
 
         private void ApplyOneShotEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect, string statusMessage)
         {
-            if (_currentSourceImage == null) return;
-
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
+            if (_editorCore == null)
             {
                 return;
             }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
 
-            var result = effect(_currentSourceImage);
-            UpdatePreview(result, clearAnnotations: false);
-            UpdateUndoRedoProperties();
+            if (_editorCore.ApplyImageEffect(effect) && !string.IsNullOrWhiteSpace(statusMessage))
+            {
+                ExportState = statusMessage;
+            }
         }
 
         // --- Effect Live Preview Logic ---
@@ -1783,7 +1550,11 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void StartEffectPreview()
         {
-            if (_currentSourceImage == null) return;
+            SkiaSharp.SKBitmap? source = _editorCore?.SourceImage ?? _currentSourceImage;
+            if (source == null)
+            {
+                return;
+            }
 
             _isPreviewingEffect = true;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
@@ -1793,7 +1564,7 @@ namespace ShareX.ImageEditor.ViewModels
             // ISSUE-024 fix: Dispose previous bitmap before reassignment
             _preEffectImage?.Dispose();
             // ISSUE-025 fix: Check for null after Copy()
-            var copy = _currentSourceImage.Copy();
+            var copy = source.Copy();
             if (copy == null)
             {
                 System.Diagnostics.Debug.WriteLine("[MEMORY WARNING] StartEffectPreview: Failed to create backup");
@@ -1805,24 +1576,31 @@ namespace ShareX.ImageEditor.ViewModels
         /// <summary>
         /// Updates the displayed preview without committing changes to the source image or undo stack.
         /// </summary>
-        public void UpdatePreviewImageOnly(SkiaSharp.SKBitmap preview)
+        public void UpdatePreviewImageOnly(SkiaSharp.SKBitmap preview, bool syncSourceState = false)
         {
             if (preview == null) return;
-
-            // Dispose previous preview bitmap if it exists and isn't the source
-            // Note: UpdatePreview creates a new Avalonia bitmap, so we are fine.
-            // We just need to update the binding properly.
-
-            // We don't call UpdatePreview() here because that resets annotations and other state too aggressively?
-            // Actually UpdatePreview() does:
-            // 1. Sets _currentSourceImage (WE DO NOT WANT THIS yet)
-            // 2. Backs up original (WE DO NOT WANT THIS)
-            // 3. Converts to Avalonia Bitmap (WE WANT THIS)
 
             try
             {
                 _isSyncingFromCore = true;
                 PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
+                ImageDimensions = $"{preview.Width} x {preview.Height}";
+
+                if (syncSourceState)
+                {
+                    SkiaSharp.SKBitmap? sourceCopy = preview.Copy();
+                    if (sourceCopy != null)
+                    {
+                        _currentSourceImage?.Dispose();
+                        _currentSourceImage = sourceCopy;
+
+                        if (!_isApplyingSmartPadding)
+                        {
+                            _originalSourceImage?.Dispose();
+                            _originalSourceImage = sourceCopy.Copy();
+                        }
+                    }
+                }
             }
             finally
             {
@@ -1835,27 +1613,44 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         private void CommitEffectAndCleanup(SkiaSharp.SKBitmap result, string statusMessage)
         {
-            if (_currentSourceImage == null) return;
+            SkiaSharp.SKBitmap? preEffectImage = _preEffectImage;
+            bool applied = false;
+            bool resultTransferred = false;
 
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
+            if (_editorCore != null)
             {
-                return;
+                applied = _editorCore.ApplyImageOperation(_ => result, clearAnnotations: false);
+                resultTransferred = applied;
+                if (!applied)
+                {
+                    if (!ReferenceEquals(result, preEffectImage))
+                    {
+                        result.Dispose();
+                    }
+                }
             }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
+            else
+            {
+                UpdatePreview(result, clearAnnotations: false);
+                applied = true;
+                resultTransferred = true;
+            }
 
-            UpdatePreview(result, clearAnnotations: false);
-            UpdateUndoRedoProperties();
-
-            _preEffectImage?.Dispose();
+            if (!(resultTransferred && ReferenceEquals(preEffectImage, result)))
+            {
+                preEffectImage?.Dispose();
+            }
             _preEffectImage = null;
 
             _isPreviewingEffect = false;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
+
+            if (applied && !string.IsNullOrWhiteSpace(statusMessage))
+            {
+                ExportState = statusMessage;
+            }
         }
 
         /// <summary>
@@ -1872,14 +1667,13 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void CancelEffectPreview()
         {
-            if (_preEffectImage != null)
+            if (_editorCore?.SourceImage != null)
             {
-                UpdatePreview(_preEffectImage, clearAnnotations: false);
-                // Do NOT dispose _preEffectImage here, because UpdatePreview takes ownership 
-                // and sets it as _currentSourceImage.
-                // and sets it as _currentSourceImage.
-                _preEffectImage = null;
+                UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
             }
+
+            _preEffectImage?.Dispose();
+            _preEffectImage = null;
 
             // Restore Background Effects
             _isPreviewingEffect = false;
@@ -1895,20 +1689,10 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (_preEffectImage == null || effect == null) return;
 
-            // Run effect on copy of pre-effect image? 
-            // Or if effect is non-destructive (returns new), pass pre-effect directly.
-            // ImageHelpers methods return NEW bitmap.
             try
             {
                 var result = effect(_preEffectImage);
-                // UpdatePreviewImageOnly takes ownership or we verify disposal?
-                // ToAvaloniBitmap creates a copy/wrapper. result needs disposal eventually?
-                // UpdatePreviewImageOnly converts it. We should dispose 'result' after conversion if it's not needed.
-                // But PreviewImage might depend on it if it wraps it directly?
-                // ToAvaloniaBitmap usually creates a WriteableBitmap copy.
-                // Let's assume we need to dispose result if ToAvaloniaBitmap copies.
-
-                PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(result);
+                UpdatePreviewImageOnly(result, syncSourceState: false);
                 result.Dispose();
             }
             catch (Exception ex)
@@ -1944,10 +1728,14 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         public void OpenRotateCustomAngleDialog()
         {
-            if (PreviewImage == null || _currentSourceImage == null) return;
+            SkiaSharp.SKBitmap? source = _editorCore?.SourceImage ?? _currentSourceImage;
+            if (PreviewImage == null || source == null)
+            {
+                return;
+            }
 
             // Snapshot the CURRENT state (including any previous edits)
-            var current = _currentSourceImage;
+            var current = source;
             if (current != null)
             {
                 // ISSUE-024 fix: Dispose previous bitmap before reassignment
@@ -1983,31 +1771,20 @@ namespace ShareX.ImageEditor.ViewModels
 
             var result = effect.Apply(_rotateCustomAngleOriginalBitmap);
 
-            UpdatePreview(result, clearAnnotations: false);
+            UpdatePreviewImageOnly(result, syncSourceState: false);
+            result.Dispose();
         }
 
         [RelayCommand]
         public void CommitRotateCustomAngle()
         {
-            if (_rotateCustomAngleOriginalBitmap == null) return;
-
-            float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
-
-            // Push original to undo stack
-            // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _rotateCustomAngleOriginalBitmap.Copy();
-            if (undoCopy == null)
+            if (_editorCore == null || _rotateCustomAngleOriginalBitmap == null)
             {
                 return;
             }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
 
-            var effect = RotateImageEffect.Custom(angle, RotateAutoResize);
-            var result = effect.Apply(_rotateCustomAngleOriginalBitmap);
-
-            UpdatePreview(result, clearAnnotations: true);
-            UpdateUndoRedoProperties();
+            float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
+            _editorCore.RotateCustomAngle(angle, RotateAutoResize);
 
             IsRotateCustomAngleDialogOpen = false;
             IsModalOpen = false;
@@ -2020,15 +1797,19 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         public void CancelRotateCustomAngle()
         {
-            if (_rotateCustomAngleOriginalBitmap != null)
+            if (_editorCore?.SourceImage != null)
             {
-                // Restore original
-                // UpdatePreview takes ownership of the bitmap, so we transfer ownership without disposing
+                UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
+            }
+            else if (_rotateCustomAngleOriginalBitmap != null)
+            {
                 UpdatePreview(_rotateCustomAngleOriginalBitmap, clearAnnotations: false);
-
-                // ISSUE-026 fix: Don't dispose - UpdatePreview took ownership (sets _currentSourceImage = bitmap)
-                // Disposing here would cause use-after-free when _currentSourceImage is accessed later
-                _rotateCustomAngleOriginalBitmap = null; // Transfer ownership without disposal
+                _rotateCustomAngleOriginalBitmap = null;
+            }
+            else
+            {
+                _rotateCustomAngleOriginalBitmap?.Dispose();
+                _rotateCustomAngleOriginalBitmap = null;
             }
 
             IsRotateCustomAngleDialogOpen = false;

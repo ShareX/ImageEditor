@@ -48,6 +48,12 @@
         <x:String x:Key="IconCloud">&#xf0c2;</x:String>
         <x:String x:Key="IconCloudArrowUp">&#xf0ee;</x:String>
         <x:String x:Key="IconMoon">&#xf186;</x:String>
+        <x:String x:Key="IconPaste">&#xf0ea;</x:String>
+        <x:String x:Key="IconDuplicate">&#xf24d;</x:String>
+        <x:String x:Key="IconBringToFront">&#xf102;</x:String>
+        <x:String x:Key="IconBringForward">&#xf106;</x:String>
+        <x:String x:Key="IconSendBackward">&#xf107;</x:String>
+        <x:String x:Key="IconSendToBack">&#xf103;</x:String>
         <x:String x:Key="IconHardDrive">&#xf0a0;</x:String>
         <x:String x:Key="IconThumbtack">&#xf08d;</x:String>
 
@@ -79,6 +85,91 @@
                 </DrawingGroup>
             </DrawingBrush.Drawing>
         </DrawingBrush>
+        <ContextMenu x:Key="EditorContextMenu"
+                     Placement="Pointer"
+                     BorderBrush="#1F1F1F"
+                     BorderThickness="1"
+                     CornerRadius="6"
+                     Padding="4">
+            <ContextMenu.Styles>
+                <Style Selector="MenuItem">
+                    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="Padding" Value="12,8"/>
+                    <Setter Property="CornerRadius" Value="4"/>
+                </Style>
+                <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+                    <Setter Property="Background" Value="#3E83F2"/>
+                </Style>
+                <Style Selector="MenuItem:separator">
+                    <Setter Property="Height" Value="1"/>
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="Background" Value="#3E3E3E"/>
+                </Style>
+                <!-- Blurry Glass Effect -->
+                <Style Selector="ContextMenu">
+                    <Setter Property="Background" Value="#CC202020"/>
+                    <!-- <Setter Property="TransparencyLevelHint" Value="Blur"/> -->
+                </Style>
+            </ContextMenu.Styles>
+
+            <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconUndo}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconRedo}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Paste image" Command="{Binding PasteCommand}" InputGesture="Ctrl+V">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconPaste}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Duplicate" Command="{Binding DuplicateSelectedCommand}" InputGesture="Ctrl+D">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconDuplicate}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            
+            <Separator/>
+            
+            <MenuItem Header="Delete" Command="{Binding DeleteSelectedCommand}" InputGesture="Delete">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconDelete}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Delete all" Command="{Binding ClearAnnotationsCommand}" InputGesture="Shift+Delete">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconClear}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            
+            <Separator/>
+            
+            <MenuItem Header="Bring to front" Command="{Binding BringToFrontCommand}" InputGesture="Home">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconBringToFront}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Bring forward" Command="{Binding BringForwardCommand}" InputGesture="PageUp">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconBringForward}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Send backward" Command="{Binding SendBackwardCommand}" InputGesture="PageDown">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconSendBackward}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Send to back" Command="{Binding SendToBackCommand}" InputGesture="End">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconSendToBack}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
     </UserControl.Resources>
 
     <UserControl.Styles>

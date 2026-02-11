@@ -40,6 +40,8 @@ using ShareX.ImageEditor.Views.Dialogs;
 using SkiaSharp;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
 
 namespace ShareX.ImageEditor.Views
 {
@@ -198,15 +200,43 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AttachEditorCore(_editorCore);
+                vm.DeleteRequested += (s, args) => PerformDelete();
                 vm.UndoRequested += (s, args) => PerformUndo();
                 vm.RedoRequested += (s, args) => PerformRedo();
-                vm.DeleteRequested += (s, args) => PerformDelete();
                 vm.ClearAnnotationsRequested += (s, args) => ClearAllAnnotations();
-                vm.SnapshotRequested += () =>
+
+                // Subscribe to new context menu events
+                vm.PasteRequested += OnPasteRequested;
+                vm.DuplicateRequested += OnDuplicateRequested;
+
+                vm.SnapshotRequested += async () =>
                 {
-                    var skBitmap = GetSnapshot();
-                    var snapshot = skBitmap != null ? BitmapConversionHelpers.ToAvaloniBitmap(skBitmap) : null;
-                    return Task.FromResult<Avalonia.Media.Imaging.Bitmap?>(snapshot);
+                    // Render current state to bitmap
+                    if (vm.PreviewImage == null) return null;
+                    return await RenderSnapshot();
+                };
+
+                vm.SaveAsRequested += async () =>
+                {
+                    var topLevel = TopLevel.GetTopLevel(this);
+                    if (topLevel == null) return null;
+
+                    var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                    {
+                        Title = "Save Image",
+                        FileTypeChoices = new[]
+                        {
+                            new FilePickerFileType("PNG Image") { Patterns = new[] { "*.png" } },
+                            new FilePickerFileType("JPEG Image") { Patterns = new[] { "*.jpg", "*.jpeg" } },
+                            new FilePickerFileType("Bitmap Image") { Patterns = new[] { "*.bmp" } },
+                            new FilePickerFileType("GIF Image") { Patterns = new[] { "*.gif" } },
+                            new FilePickerFileType("WebP Image") { Patterns = new[] { "*.webp" } },
+                            new FilePickerFileType("TIFF Image") { Patterns = new[] { "*.tiff", "*.tif" } } // Added TIFF support
+                        },
+                        DefaultExtension = ".png"
+                    });
+
+                    return file?.Path.LocalPath;
                 };
 
                 // Original code subscribed to vm.PropertyChanged
@@ -800,6 +830,13 @@ namespace ShareX.ImageEditor.Views
 
             rtb.Render(container);
             return BitmapConversionHelpers.ToSKBitmap(rtb);
+        }
+
+        public Task<Bitmap?> RenderSnapshot()
+        {
+            var skBitmap = GetSnapshot();
+            var snapshot = skBitmap != null ? BitmapConversionHelpers.ToAvaloniBitmap(skBitmap) : null;
+            return Task.FromResult<Bitmap?>(snapshot);
         }
 
         // This is called by SelectionController/InputController via event when an effect logic needs update
@@ -1639,5 +1676,24 @@ namespace ShareX.ImageEditor.Views
             vm.HasAnnotations = true;
         }
     }
+        private void OnPasteRequested(object? sender, EventArgs e)
+        {
+            _ = PasteImageFromClipboard();
+        }
+
+        private void OnDuplicateRequested(object? sender, EventArgs e)
+        {
+            DuplicateSelectedAnnotation();
+        }
+
+        public void OpenContextMenu(Control target)
+        {
+            var menu = this.Resources["EditorContextMenu"] as ContextMenu;
+            if (menu != null)
+            {
+                menu.PlacementTarget = target;
+                menu.Open(target);
+            }
+        }
     }
 }

@@ -822,7 +822,18 @@ namespace ShareX.ImageEditor.ViewModels
                     _isApplyingSmartPadding = true;
                     try
                     {
-                        UpdatePreview(_originalSourceImage, clearAnnotations: false);
+                        SkiaSharp.SKBitmap? restored = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.RestoreOriginal");
+                        if (restored != null)
+                        {
+                            if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
+                            {
+                                _currentSourceImage.Dispose();
+                            }
+
+                            _currentSourceImage = restored;
+                            PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(restored);
+                            ImageDimensions = $"{restored.Width} x {restored.Height}";
+                        }
                     }
                     finally
                     {
@@ -878,14 +889,20 @@ namespace ShareX.ImageEditor.ViewModels
                 if (minX > maxX || minY > maxY || !AreBackgroundEffectsActive)
                 {
                     // No content found (or background effects disabled), keep original
-                    // ISSUE-023 fix: Dispose old currentSourceImage before reassignment (if different)
+                    SkiaSharp.SKBitmap? restored = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.NoContentRestore");
+                    if (restored == null)
+                    {
+                        return;
+                    }
+
                     if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
                     {
                         _currentSourceImage.Dispose();
                     }
-                    _currentSourceImage = _originalSourceImage;
-                    PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_originalSourceImage);
-                    ImageDimensions = $"{_originalSourceImage.Width} x {_originalSourceImage.Height}";
+
+                    _currentSourceImage = restored;
+                    PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(restored);
+                    ImageDimensions = $"{restored.Width} x {restored.Height}";
 
                     return;
                 }
@@ -1379,6 +1396,52 @@ namespace ShareX.ImageEditor.ViewModels
         private SkiaSharp.SKBitmap? _currentSourceImage;
         private SkiaSharp.SKBitmap? _originalSourceImage; // Backup for smart padding restore
 
+        private static bool IsBitmapAlive(SkiaSharp.SKBitmap? bitmap)
+        {
+            return bitmap != null && bitmap.Handle != IntPtr.Zero;
+        }
+
+        private static SkiaSharp.SKBitmap? SafeCopyBitmap(SkiaSharp.SKBitmap? source, string context)
+        {
+            if (!IsBitmapAlive(source))
+            {
+                DebugHelper.WriteLine($"[MEMORY WARNING] {context}: Source bitmap is null/disposed.");
+                return null;
+            }
+
+            SkiaSharp.SKBitmap safeSource = source!;
+            SkiaSharp.SKBitmap? copy = safeSource.Copy();
+            if (copy == null || copy.Handle == IntPtr.Zero)
+            {
+                DebugHelper.WriteLine($"[MEMORY WARNING] {context}: Failed to create bitmap copy.");
+                copy?.Dispose();
+                return null;
+            }
+
+            return copy;
+        }
+
+        private SkiaSharp.SKBitmap? GetBestAvailableSourceBitmap()
+        {
+            SkiaSharp.SKBitmap? coreSource = _editorCore?.SourceImage;
+            if (IsBitmapAlive(coreSource))
+            {
+                return coreSource;
+            }
+
+            if (coreSource != null)
+            {
+                DebugHelper.WriteLine("[MEMORY WARNING] Core source bitmap is disposed. Falling back to ViewModel source.");
+            }
+
+            if (IsBitmapAlive(_currentSourceImage))
+            {
+                return _currentSourceImage;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Updates the preview image. **TAKES OWNERSHIP** of the bitmap parameter.
         /// </summary>
@@ -1393,6 +1456,12 @@ namespace ShareX.ImageEditor.ViewModels
         /// <param name="clearAnnotations">Whether to clear all annotations</param>
         public void UpdatePreview(SkiaSharp.SKBitmap image, bool clearAnnotations = true)
         {
+            if (!IsBitmapAlive(image))
+            {
+                DebugHelper.WriteLine("[MEMORY WARNING] UpdatePreview: Ignoring disposed bitmap.");
+                return;
+            }
+
             // ISSUE-031 fix: Dispose old currentSourceImage before replacing (if different object)
             if (_currentSourceImage != null && _currentSourceImage != image)
             {
@@ -1404,8 +1473,7 @@ namespace ShareX.ImageEditor.ViewModels
             if (!_isApplyingSmartPadding)
             {
                 _originalSourceImage?.Dispose();
-                // ISSUE-025 fix: Check for null after Copy()
-                var copy = image.Copy();
+                var copy = SafeCopyBitmap(image, "UpdatePreview");
                 if (copy == null)
                 {
                     System.Diagnostics.Debug.WriteLine("[MEMORY WARNING] UpdatePreview: Failed to create backup copy");
@@ -1414,9 +1482,13 @@ namespace ShareX.ImageEditor.ViewModels
                 _originalSourceImage = copy;
             }
 
+            // Store dimensions BEFORE conversion (ToAvaloniBitmap triggers property change that may dispose the bitmap)
+            int width = image.Width;
+            int height = image.Height;
+
             // Convert SKBitmap to Avalonia Bitmap
             PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(image);
-            ImageDimensions = $"{image.Width} x {image.Height}";
+            ImageDimensions = $"{width} x {height}";
 
             // Reset view state for the new image
             Zoom = 1.0;
@@ -1550,27 +1622,26 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void StartEffectPreview()
         {
-            SkiaSharp.SKBitmap? source = _editorCore?.SourceImage ?? _currentSourceImage;
+            SkiaSharp.SKBitmap? source = GetBestAvailableSourceBitmap();
             if (source == null)
             {
                 return;
             }
 
+            SkiaSharp.SKBitmap? copy = SafeCopyBitmap(source, "StartEffectPreview");
+            if (copy == null)
+            {
+                return;
+            }
+
+            // ISSUE-024 fix: Dispose previous bitmap before reassignment
+            _preEffectImage?.Dispose();
+            _preEffectImage = copy;
+
             _isPreviewingEffect = true;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
-
-            // ISSUE-024 fix: Dispose previous bitmap before reassignment
-            _preEffectImage?.Dispose();
-            // ISSUE-025 fix: Check for null after Copy()
-            var copy = source.Copy();
-            if (copy == null)
-            {
-                System.Diagnostics.Debug.WriteLine("[MEMORY WARNING] StartEffectPreview: Failed to create backup");
-                // Continue without backup - preview will still work but cancel might fail
-            }
-            _preEffectImage = copy;
         }
 
         /// <summary>
@@ -1578,7 +1649,11 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void UpdatePreviewImageOnly(SkiaSharp.SKBitmap preview, bool syncSourceState = false)
         {
-            if (preview == null) return;
+            if (!IsBitmapAlive(preview))
+            {
+                DebugHelper.WriteLine("[MEMORY WARNING] UpdatePreviewImageOnly: Ignoring disposed bitmap.");
+                return;
+            }
 
             try
             {
@@ -1588,7 +1663,7 @@ namespace ShareX.ImageEditor.ViewModels
 
                 if (syncSourceState)
                 {
-                    SkiaSharp.SKBitmap? sourceCopy = preview.Copy();
+                    SkiaSharp.SKBitmap? sourceCopy = SafeCopyBitmap(preview, "UpdatePreviewImageOnly.SyncCurrent");
                     if (sourceCopy != null)
                     {
                         _currentSourceImage?.Dispose();
@@ -1597,7 +1672,7 @@ namespace ShareX.ImageEditor.ViewModels
                         if (!_isApplyingSmartPadding)
                         {
                             _originalSourceImage?.Dispose();
-                            _originalSourceImage = sourceCopy.Copy();
+                            _originalSourceImage = SafeCopyBitmap(sourceCopy, "UpdatePreviewImageOnly.SyncOriginal");
                         }
                     }
                 }
@@ -1667,9 +1742,10 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void CancelEffectPreview()
         {
-            if (_editorCore?.SourceImage != null)
+            SkiaSharp.SKBitmap? source = GetBestAvailableSourceBitmap();
+            if (source != null)
             {
-                UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
+                UpdatePreviewImageOnly(source, syncSourceState: true);
             }
 
             _preEffectImage?.Dispose();
@@ -1728,7 +1804,7 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         public void OpenRotateCustomAngleDialog()
         {
-            SkiaSharp.SKBitmap? source = _editorCore?.SourceImage ?? _currentSourceImage;
+            SkiaSharp.SKBitmap? source = GetBestAvailableSourceBitmap();
             if (PreviewImage == null || source == null)
             {
                 return;
@@ -1740,8 +1816,7 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 // ISSUE-024 fix: Dispose previous bitmap before reassignment
                 _rotateCustomAngleOriginalBitmap?.Dispose();
-                // ISSUE-025 fix: Check for null after Copy()
-                var copy = current.Copy();
+                var copy = SafeCopyBitmap(current, "OpenRotateCustomAngleDialog");
                 if (copy == null)
                 {
                     return;
@@ -1797,9 +1872,10 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         public void CancelRotateCustomAngle()
         {
-            if (_editorCore?.SourceImage != null)
+            SkiaSharp.SKBitmap? source = GetBestAvailableSourceBitmap();
+            if (source != null)
             {
-                UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
+                UpdatePreviewImageOnly(source, syncSourceState: true);
             }
             else if (_rotateCustomAngleOriginalBitmap != null)
             {

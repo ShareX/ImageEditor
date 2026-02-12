@@ -887,14 +887,17 @@ namespace ShareX.ImageEditor.ViewModels
                     _isApplyingSmartPadding = true;
                     try
                     {
-                        // ISSUE-024 fix: Direct assignment instead of SafeCopyBitmap to prevent double-dispose
+                        // SIP-FIX: Must copy _originalSourceImage because _currentSourceImage is owned/disposable
                         if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
                         {
                             _currentSourceImage.Dispose();
                         }
-                        _currentSourceImage = _originalSourceImage;
-                        PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_originalSourceImage);
-                        ImageDimensions = $"{_originalSourceImage.Width} x {_originalSourceImage.Height}";
+                        _currentSourceImage = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.Restore");
+                        if (_currentSourceImage != null)
+                        {
+                            PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_currentSourceImage);
+                            ImageDimensions = $"{_currentSourceImage.Width} x {_currentSourceImage.Height}";
+                        }
                     }
                     finally
                     {
@@ -931,7 +934,7 @@ namespace ShareX.ImageEditor.ViewModels
                     int height = skBitmap.Height;
                     int rowBytes = skBitmap.RowBytes;
                     int bpp = skBitmap.BytesPerPixel;
-                    
+
                     byte tR = targetColor.Red;
                     byte tG = targetColor.Green;
                     byte tB = targetColor.Blue;
@@ -941,12 +944,12 @@ namespace ShareX.ImageEditor.ViewModels
                     if (bpp == 4)
                     {
                         bool isBgra = skBitmap.ColorType == SkiaSharp.SKColorType.Bgra8888;
-                        
+
                         for (int y = 0; y < height; y++)
                         {
                             byte* row = ptr + (y * rowBytes);
                             bool rowHasContent = false;
-                            
+
                             // Scan from left
                             for (int x = 0; x < width; x++)
                             {
@@ -1035,7 +1038,7 @@ namespace ShareX.ImageEditor.ViewModels
                                     if (y < minY) minY = y;
                                     if (y > maxY) maxY = y;
                                     rowHasContent = true;
-                                    break; 
+                                    break;
                                 }
                             }
                             if (rowHasContent)
@@ -1050,7 +1053,7 @@ namespace ShareX.ImageEditor.ViewModels
                                         Math.Abs(pixel.Alpha - tA) > tolerance)
                                     {
                                         if (x > maxX) maxX = x;
-                                        break; 
+                                        break;
                                     }
                                 }
                             }
@@ -1062,14 +1065,17 @@ namespace ShareX.ImageEditor.ViewModels
                 if (minX > maxX || minY > maxY || !AreBackgroundEffectsActive)
                 {
                     // No content found (or background effects disabled), keep original
-                    // ISSUE-024 fix: Direct assignment instead of SafeCopyBitmap to prevent double-dispose
+                    // SIP-FIX: Must copy _originalSourceImage because _currentSourceImage is owned/disposable
                     if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
                     {
                         _currentSourceImage.Dispose();
                     }
-                    _currentSourceImage = _originalSourceImage;
-                    PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_originalSourceImage);
-                    ImageDimensions = $"{_originalSourceImage.Width} x {_originalSourceImage.Height}";
+                    _currentSourceImage = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.NoCrop");
+                    if (_currentSourceImage != null)
+                    {
+                        PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_currentSourceImage);
+                        ImageDimensions = $"{_currentSourceImage.Width} x {_currentSourceImage.Height}";
+                    }
 
                     return;
                 }
@@ -1831,8 +1837,14 @@ namespace ShareX.ImageEditor.ViewModels
             try
             {
                 _isSyncingFromCore = true;
+                
+                // SIP-FIX: Calculate dimensions string BEFORE setting PreviewImage.
+                // Setting PreviewImage can trigger bindings that might dispose the source 
+                // via EditorCore updates if not handled carefully.
+                string dimStr = $"{preview.Width} x {preview.Height}";
+                
                 PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
-                ImageDimensions = $"{preview.Width} x {preview.Height}";
+                ImageDimensions = dimStr;
 
                 if (syncSourceState)
                 {
@@ -1869,6 +1881,24 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 applied = _editorCore.ApplyImageOperation(_ => result, clearAnnotations: false);
                 resultTransferred = applied;
+
+                // SIP-FIX: Ensure ViewModel state (_currentSourceImage) matches Core state after apply.
+                if (applied)
+                {
+                    var syncCopy = SafeCopyBitmap(result, "CommitEffect.Sync");
+                    if (syncCopy != null)
+                    {
+                        _currentSourceImage?.Dispose();
+                        _currentSourceImage = syncCopy;
+
+                        if (!_isApplyingSmartPadding)
+                        {
+                            _originalSourceImage?.Dispose();
+                            _originalSourceImage = SafeCopyBitmap(syncCopy, "CommitEffect.SyncOriginal");
+                        }
+                    }
+                }
+
                 if (!applied)
                 {
                     if (!ReferenceEquals(result, preEffectImage))

@@ -1792,8 +1792,8 @@ namespace ShareX.ImageEditor.Views
                     }
 
                     // Check for bitmap
-                    var formats = await clipboard.GetFormatsAsync();
-                    if (formats.Contains("PNG") || formats.Contains("Bitmap") || formats.Contains("DeviceIndependentBitmap"))
+                    var formats = await clipboard.GetDataFormatsAsync();
+                    if (formats.Any(f => f.ToString() == "PNG") || formats.Any(f => f.ToString() == "Bitmap") || formats.Any(f => f.ToString() == "DeviceIndependentBitmap"))
                     {
                         await PasteImageFromClipboard();
                         return;
@@ -1925,10 +1925,10 @@ namespace ShareX.ImageEditor.Views
                         else
                         {
                             // Check for bitmap
-                            var formats = await clipboard.GetFormatsAsync();
-                            if (formats.Contains("PNG") || 
-                                formats.Contains("Bitmap") || 
-                                formats.Contains("DeviceIndependentBitmap"))
+                            var formats = await clipboard.GetDataFormatsAsync();
+                            if (formats.Any(f => f.ToString() == "PNG") || 
+                                formats.Any(f => f.ToString() == "Bitmap") || 
+                                formats.Any(f => f.ToString() == "DeviceIndependentBitmap"))
                             {
                                 canPaste = true;
                             }

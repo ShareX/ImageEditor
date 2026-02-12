@@ -618,19 +618,23 @@ namespace ShareX.ImageEditor.ViewModels
             CanRedo = _isCoreRedoAvailable;
         }
 
-        [RelayCommand]
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(PasteCommand))]
+        private bool _canPaste;
+
+        [RelayCommand(CanExecute = nameof(CanPaste))]
         private void Paste()
         {
             PasteRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
         private void CutAnnotation()
         {
             CutAnnotationRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
         private void CopyAnnotation()
         {
             CopyAnnotationRequested?.Invoke(this, EventArgs.Empty);

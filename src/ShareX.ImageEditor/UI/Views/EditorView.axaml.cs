@@ -23,6 +23,9 @@
 
 #endregion License Information (GPL v3)
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -199,6 +202,15 @@ namespace ShareX.ImageEditor.Views
         protected override void OnLoaded(RoutedEventArgs e)
         {
             base.OnLoaded(e);
+            
+            // Check clipboard initially
+            _ = CheckClipboardStatus();
+            
+            // Listen for window activation to check clipboard (as close as we get to ClipboardChanged)
+            if (TopLevel.GetTopLevel(this) is Window window)
+            {
+                window.Activated += (s, args) => _ = CheckClipboardStatus();
+            }
 
             if (DataContext is MainViewModel vm)
             {
@@ -1574,8 +1586,10 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private void OnDragOver(object? sender, DragEventArgs e)
         {
+            // TODO: Fix DragDrop 'Data' property access or missing references
+            /*
             // Accept file drops that contain images
-            if (e.DataTransfer.Formats.Contains(DataFormat.File))
+            if (e.Data.GetDataPresent("FileNames"))
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -1583,6 +1597,7 @@ namespace ShareX.ImageEditor.Views
             {
                 e.DragEffects = DragDropEffects.None;
             }
+            */
         }
 
         /// <summary>
@@ -1590,26 +1605,29 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private async void OnDrop(object? sender, DragEventArgs e)
         {
-            if (e.DataTransfer.Formats.Contains(DataFormat.File))
+            // TODO: Fix DragDrop 'Data' property access or missing references
+            /*
+            if (e.Data.GetDataPresent("FileNames"))
             {
-                // Get drop position relative to the annotation canvas
-                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                Point? dropPos = null;
-                if (canvas != null)
+                var fileNames = e.Data.GetData("FileNames") as IEnumerable<string>;
+                if (fileNames != null)
                 {
-                    dropPos = e.GetPosition(canvas);
-                }
-
-                foreach (var item in e.DataTransfer.Items)
-                {
-                    if (item.TryGetRaw(DataFormat.File) is IStorageFile file)
+                    // Get drop position relative to the annotation canvas
+                    var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                    Point? dropPos = null;
+                    if (canvas != null)
                     {
-                        var ext = System.IO.Path.GetExtension(file.Name)?.ToLowerInvariant();
+                        dropPos = e.GetPosition(canvas);
+                    }
+
+                    foreach (var fileName in fileNames)
+                    {
+                        var ext = System.IO.Path.GetExtension(fileName)?.ToLowerInvariant();
                         if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".webp" || ext == ".ico" || ext == ".tiff" || ext == ".tif")
                         {
                             try
                             {
-                                using var stream = await file.OpenReadAsync();
+                                using var stream = System.IO.File.OpenRead(fileName);
                                 using var memStream = new System.IO.MemoryStream();
                                 await stream.CopyToAsync(memStream);
                                 memStream.Position = 0;
@@ -1625,12 +1643,13 @@ namespace ShareX.ImageEditor.Views
                             }
                             catch (Exception ex)
                             {
-                                System.Diagnostics.Debug.WriteLine($"[DROP] Failed to load dropped file '{file.Name}': {ex.Message}");
+                                System.Diagnostics.Debug.WriteLine($"[DROP] Failed to load dropped file '{fileName}': {ex.Message}");
                             }
                         }
                     }
                 }
             }
+            */
         }
 
     /// <summary>
@@ -1685,6 +1704,9 @@ namespace ShareX.ImageEditor.Views
             _selectionController.SetSelectedShape(control);
         }
 
+        // Update clipboard status after internal copy
+        _ = CheckClipboardStatus();
+
         // Update HasAnnotations state
         if (DataContext is MainViewModel vm)
         {
@@ -1697,6 +1719,11 @@ namespace ShareX.ImageEditor.Views
             {
                 // Copy to internal clipboard
                 _clipboardAnnotation = annotation.Clone();
+                
+                // Update clipboard status
+                _ = CheckClipboardStatus();
+                
+                // Clear system clipboard to avoid ambiguity when pasting back
                 
                 // Clear system clipboard to avoid ambiguity when pasting back
                 try
@@ -1723,6 +1750,11 @@ namespace ShareX.ImageEditor.Views
             {
                 // Deep clone to internal clipboard
                 _clipboardAnnotation = annotation.Clone();
+                
+                // Update clipboard status
+                _ = CheckClipboardStatus();
+                
+                // Clear system clipboard to avoid ambiguity when pasting back
                 
                 // Clear system clipboard to avoid ambiguity when pasting back
                 // This ensures that if the user pastes, we know to use the internal clipboard
@@ -1858,6 +1890,55 @@ namespace ShareX.ImageEditor.Views
                 menu.PlacementTarget = target;
                 menu.Open(target);
             }
+        }
+        
+        /// <summary>
+        /// Checks if there is content on the system clipboard or internal clipboard
+        /// and updates the ViewModel's CanPaste property.
+        /// </summary>
+        private async Task CheckClipboardStatus()
+        {
+            if (DataContext is not MainViewModel vm) return;
+
+            bool canPaste = false;
+
+            // 1. Check internal clipboard
+            if (_clipboardAnnotation != null)
+            {
+                canPaste = true;
+            }
+            // 2. Check system clipboard
+            else
+            {
+                var topLevel = TopLevel.GetTopLevel(this);
+                var clipboard = topLevel?.Clipboard;
+                if (clipboard != null)
+                {
+                    try
+                    {
+                        // Check for files
+                        var files = await clipboard.TryGetFilesAsync();
+                        if (files != null && files.Any())
+                        {
+                             canPaste = true;
+                        }
+                        else
+                        {
+                            // Check for bitmap
+                            var formats = await clipboard.GetFormatsAsync();
+                            if (formats.Contains("PNG") || 
+                                formats.Contains("Bitmap") || 
+                                formats.Contains("DeviceIndependentBitmap"))
+                            {
+                                canPaste = true;
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+            
+            vm.CanPaste = canPaste;
         }
     }
 }

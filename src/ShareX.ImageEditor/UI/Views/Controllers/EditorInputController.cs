@@ -87,32 +87,20 @@ public class EditorInputController
 
             if (hitTarget != null)
             {
-                if (_selectionController.SelectedShape == hitTarget)
+                // Select the shape if not already selected (standard right-click behavior)
+                if (_selectionController.SelectedShape != hitTarget)
                 {
-                    _selectionController.ClearSelection();
+                    _selectionController.SetSelectedShape(hitTarget);
                 }
 
-                if (hitTarget.Tag is Annotation hitAnnotation)
-                {
-                    // RemoveAnnotation captures history FIRST (clones bitmap for undo),
-                    // then we dispose after so the clone retains the bitmap data
-                    _view.EditorCore.RemoveAnnotation(hitAnnotation);
-                }
-
-                // Dispose annotation resources AFTER history snapshot is captured
-                (hitTarget.Tag as IDisposable)?.Dispose();
-
-                canvas.Children.Remove(hitTarget);
-
-                // Update HasAnnotations state
-                if (vm != null && _view != null)
-                {
-                    vm.HasAnnotations = _view.EditorCore.Annotations.Count > 0 || canvas.Children.Count > 0;
-                }
-
+                _view.OpenContextMenu(hitTarget);
                 e.Handled = true;
                 return;
             }
+            
+            // If clicked on empty space, open context menu on canvas
+            _view.OpenContextMenu(canvas);
+            e.Handled = true;
             return;
         }
 

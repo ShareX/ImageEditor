@@ -69,6 +69,10 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? DeleteRequested;
         public event EventHandler? ClearAnnotationsRequested;
         public event EventHandler? DeselectRequested;
+        public event EventHandler? PasteRequested;
+        public event EventHandler? DuplicateRequested;
+        public event EventHandler? CutAnnotationRequested;
+        public event EventHandler? CopyAnnotationRequested;
 
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage
@@ -102,6 +106,14 @@ namespace ShareX.ImageEditor.ViewModels
                 if (SetProperty(ref _hasSelectedAnnotation, value))
                 {
                     DeleteSelectedCommand.NotifyCanExecuteChanged();
+                    DuplicateSelectedCommand.NotifyCanExecuteChanged();
+                    BringToFrontCommand.NotifyCanExecuteChanged();
+                    SendToBackCommand.NotifyCanExecuteChanged();
+                    BringForwardCommand.NotifyCanExecuteChanged();
+                    BringForwardCommand.NotifyCanExecuteChanged();
+                    SendBackwardCommand.NotifyCanExecuteChanged();
+                    CutAnnotationCommand.NotifyCanExecuteChanged();
+                    CopyAnnotationCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -604,6 +616,58 @@ namespace ShareX.ImageEditor.ViewModels
         {
             CanUndo = _isCoreUndoAvailable;
             CanRedo = _isCoreRedoAvailable;
+        }
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(PasteCommand))]
+        private bool _canPaste;
+
+        [RelayCommand(CanExecute = nameof(CanPaste))]
+        private void Paste()
+        {
+            PasteRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
+        private void CutAnnotation()
+        {
+            CutAnnotationRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
+        private void CopyAnnotation()
+        {
+            CopyAnnotationRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
+        private void DuplicateSelected()
+        {
+            DuplicateRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
+        private void BringToFront()
+        {
+            _editorCore?.BringToFront();
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
+        private void SendToBack()
+        {
+            _editorCore?.SendToBack();
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
+        private void BringForward()
+        {
+            _editorCore?.BringForward();
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]
+        private void SendBackward()
+        {
+            _editorCore?.SendBackward();
         }
 
         [ObservableProperty]

@@ -43,7 +43,9 @@ public partial class EditorViewModel : ObservableObject
     public event EventHandler? RedoRequested;
     public event EventHandler? DeleteRequested;
     public event EventHandler? ClearAnnotationsRequested;
+    public event EventHandler? CutRequested;
     public event EventHandler? CopyRequested;
+    public event EventHandler? PasteRequested;
     public event EventHandler? SaveRequested;
     public event EventHandler? SaveAsRequested;
     public event EventHandler<CropEventArgs>? CropRequested;
@@ -289,7 +291,13 @@ public partial class EditorViewModel : ObservableObject
     private void ClearAnnotations() => ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand]
+    private void Cut() => CutRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand]
     private void Copy() => CopyRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand]
+    private void Paste() => PasteRequested?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand]
     private void QuickSave() => SaveRequested?.Invoke(this, EventArgs.Empty);

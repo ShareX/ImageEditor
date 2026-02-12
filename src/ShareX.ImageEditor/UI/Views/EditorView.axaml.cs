@@ -60,6 +60,9 @@ namespace ShareX.ImageEditor.Views
         private bool _isSyncingFromVM;
         private bool _isSyncingToVM;
 
+        // SIP-CLIPBOARD: Internal clipboard for shape deep-cloning
+        private static Annotation? _clipboardAnnotation;
+
         public EditorView()
         {
             InitializeComponent();
@@ -206,6 +209,8 @@ namespace ShareX.ImageEditor.Views
                 vm.ClearAnnotationsRequested += (s, args) => ClearAllAnnotations();
 
                 // Subscribe to new context menu events
+                vm.CutAnnotationRequested += OnCutRequested;
+                vm.CopyAnnotationRequested += OnCopyRequested;
                 vm.PasteRequested += OnPasteRequested;
                 vm.DuplicateRequested += OnDuplicateRequested;
 
@@ -496,9 +501,19 @@ namespace ShareX.ImageEditor.Views
                         vm.RedoCommand.Execute(null);
                         e.Handled = true;
                     }
+                    else if (e.Key == Key.X)
+                    {
+                        vm.CutAnnotationCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    else if (e.Key == Key.C)
+                    {
+                        vm.CopyAnnotationCommand.Execute(null);
+                        e.Handled = true;
+                    }
                     else if (e.Key == Key.V)
                     {
-                        _ = PasteImageFromClipboard();
+                        vm.PasteCommand.Execute(null);
                         e.Handled = true;
                     }
                     else if (e.Key == Key.D)
@@ -1520,7 +1535,7 @@ namespace ShareX.ImageEditor.Views
                                 try
                                 {
                                     using var stream = await storageFile.OpenReadAsync();
-                                    using var memStream = new MemoryStream();
+                                    using var memStream = new System.IO.MemoryStream();
                                     await stream.CopyToAsync(memStream);
                                     memStream.Position = 0;
                                     var skBitmap = SKBitmap.Decode(memStream);
@@ -1595,7 +1610,7 @@ namespace ShareX.ImageEditor.Views
                             try
                             {
                                 using var stream = await file.OpenReadAsync();
-                                using var memStream = new MemoryStream();
+                                using var memStream = new System.IO.MemoryStream();
                                 await stream.CopyToAsync(memStream);
                                 memStream.Position = 0;
                                 var skBitmap = SKBitmap.Decode(memStream);
@@ -1660,7 +1675,7 @@ namespace ShareX.ImageEditor.Views
         }
 
         // Add to EditorCore (captures undo history before adding)
-        EditorCore.AddAnnotation(clone);
+        _editorCore.AddAnnotation(clone);
 
         // Create the UI control for the cloned annotation
         var control = CreateControlForAnnotation(clone);
@@ -1676,9 +1691,158 @@ namespace ShareX.ImageEditor.Views
             vm.HasAnnotations = true;
         }
     }
-        private void OnPasteRequested(object? sender, EventArgs e)
+        private async void OnCutRequested(object? sender, EventArgs e)
         {
-            _ = PasteImageFromClipboard();
+            if (_selectionController.SelectedShape?.Tag is Annotation annotation)
+            {
+                // Copy to internal clipboard
+                _clipboardAnnotation = annotation.Clone();
+                
+                // Clear system clipboard to avoid ambiguity when pasting back
+                try
+                {
+                    var topLevel = TopLevel.GetTopLevel(this);
+                    if (topLevel?.Clipboard != null)
+                    {
+                        await topLevel.Clipboard.ClearAsync();
+                    }
+                }
+                catch { }
+
+                // Delete original using ViewModel command to ensure undo history is recorded
+                if (DataContext is MainViewModel vm)
+                {
+                    vm.DeleteSelectedCommand.Execute(null);
+                }
+            }
+        }
+
+        private async void OnCopyRequested(object? sender, EventArgs e)
+        {
+            if (_selectionController.SelectedShape?.Tag is Annotation annotation)
+            {
+                // Deep clone to internal clipboard
+                _clipboardAnnotation = annotation.Clone();
+                
+                // Clear system clipboard to avoid ambiguity when pasting back
+                // This ensures that if the user pastes, we know to use the internal clipboard
+                // unless they subsequently copy something externally
+                try
+                {
+                    var topLevel = TopLevel.GetTopLevel(this);
+                    if (topLevel?.Clipboard != null)
+                    {
+                        await topLevel.Clipboard.ClearAsync();
+                    }
+                }
+                catch { }
+            }
+        }
+
+        private async void OnPasteRequested(object? sender, EventArgs e)
+        {
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel == null) return;
+            var clipboard = topLevel.Clipboard;
+
+            try
+            {
+                // Priority 1: Check system clipboard for images/files (external content)
+                // This allows users to copy from browser/explorer and paste even if they previously copied a shape
+                if (clipboard != null)
+                {
+                    // Check for files
+                    var files = await clipboard.TryGetFilesAsync();
+                    if (files != null && files.Any())
+                    {
+                        await PasteImageFromClipboard();
+                        return;
+                    }
+
+                    // Check for bitmap
+                    var formats = await clipboard.GetFormatsAsync();
+                    if (formats.Contains("PNG") || formats.Contains("Bitmap") || formats.Contains("DeviceIndependentBitmap"))
+                    {
+                        await PasteImageFromClipboard();
+                        return;
+                    }
+                }
+
+                // Priority 2: Internal shape clipboard
+                if (_clipboardAnnotation != null)
+                {
+                    PasteInternalShape();
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[PASTE] Failed to paste: {ex.Message}");
+            }
+        }
+
+        private void PasteInternalShape()
+        {
+            if (_clipboardAnnotation == null) return;
+
+            // Clone again from clipboard so we can paste multiple times
+            var newAnnotation = _clipboardAnnotation.Clone();
+
+            // Offset position so it's visible (10px offset)
+            const float offset = 20f;
+            
+            // Adjust points based on type
+            if (newAnnotation is ImageAnnotation img)
+            {
+                // Check if the image bitmap is valid (disposed?)
+                if (img.ImageBitmap == null && _clipboardAnnotation is ImageAnnotation clipImg)
+                {
+                   // Resurrect bitmap if needed (unlikely if deep cloned correctly)
+                   // But Clone() manages it.
+                }
+            }
+
+            // General offset logic
+            newAnnotation.StartPoint = new SKPoint(newAnnotation.StartPoint.X + offset, newAnnotation.StartPoint.Y + offset);
+            newAnnotation.EndPoint = new SKPoint(newAnnotation.EndPoint.X + offset, newAnnotation.EndPoint.Y + offset);
+
+            if (newAnnotation is FreehandAnnotation freehand)
+            {
+                 for (int i = 0; i < freehand.Points.Count; i++)
+                 {
+                     freehand.Points[i] = new SKPoint(freehand.Points[i].X + offset, freehand.Points[i].Y + offset);
+                 }
+            }
+            else if (newAnnotation is SmartEraserAnnotation eraser)
+            {
+                 for (int i = 0; i < eraser.Points.Count; i++)
+                 {
+                     eraser.Points[i] = new SKPoint(eraser.Points[i].X + offset, eraser.Points[i].Y + offset);
+                 }
+            }
+
+            // Add to Core
+            _editorCore.AddAnnotation(newAnnotation);
+            
+            // Create UI
+            var control = CreateControlForAnnotation(newAnnotation);
+            if (control != null)
+            {
+                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                if (canvas != null)
+                {
+                    canvas.Children.Add(control);
+                    
+                    // Update selection to the pasted object
+                    _selectionController.SetSelectedShape(control);
+                }
+            }
+
+            // Update VM state
+            if (DataContext is MainViewModel vm)
+            {
+                vm.HasAnnotations = true;
+            }
         }
 
         private void OnDuplicateRequested(object? sender, EventArgs e)

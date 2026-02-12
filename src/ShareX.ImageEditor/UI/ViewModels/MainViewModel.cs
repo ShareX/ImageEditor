@@ -71,6 +71,8 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? DeselectRequested;
         public event EventHandler? PasteRequested;
         public event EventHandler? DuplicateRequested;
+        public event EventHandler? CutAnnotationRequested;
+        public event EventHandler? CopyAnnotationRequested;
 
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage
@@ -108,7 +110,10 @@ namespace ShareX.ImageEditor.ViewModels
                     BringToFrontCommand.NotifyCanExecuteChanged();
                     SendToBackCommand.NotifyCanExecuteChanged();
                     BringForwardCommand.NotifyCanExecuteChanged();
+                    BringForwardCommand.NotifyCanExecuteChanged();
                     SendBackwardCommand.NotifyCanExecuteChanged();
+                    CutAnnotationCommand.NotifyCanExecuteChanged();
+                    CopyAnnotationCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -617,6 +622,18 @@ namespace ShareX.ImageEditor.ViewModels
         private void Paste()
         {
             PasteRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand]
+        private void CutAnnotation()
+        {
+            CutAnnotationRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand]
+        private void CopyAnnotation()
+        {
+            CopyAnnotationRequested?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand(CanExecute = nameof(HasSelectedAnnotation))]

@@ -121,7 +121,17 @@
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconRedo}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Paste image" Command="{Binding PasteCommand}" InputGesture="Ctrl+V">
+            <MenuItem Header="Cut" Command="{Binding CutAnnotationCommand}" InputGesture="Ctrl+X">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconCutOut}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Copy" Command="{Binding CopyAnnotationCommand}" InputGesture="Ctrl+C">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconCopy}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Paste" Command="{Binding PasteCommand}" InputGesture="Ctrl+V">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconPaste}"/>
                 </MenuItem.Icon>

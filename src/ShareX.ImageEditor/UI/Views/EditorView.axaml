@@ -121,6 +121,9 @@
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconRedo}"/>
                 </MenuItem.Icon>
             </MenuItem>
+
+            <Separator/>
+
             <MenuItem Header="Cut" Command="{Binding CutAnnotationCommand}" InputGesture="Ctrl+X">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconCutOut}"/>

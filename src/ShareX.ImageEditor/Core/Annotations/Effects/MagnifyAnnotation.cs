@@ -10,8 +10,8 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
     public MagnifyAnnotation()
     {
         ToolType = EditorTool.Magnify;
-        StrokeColor = "#FF000000"; // Black border
-        StrokeWidth = 2;
+        StrokeColor = "#00000000"; // Transparent border
+        StrokeWidth = 0;
         Amount = 2.0f; // Zoom level (2x)
     }
 

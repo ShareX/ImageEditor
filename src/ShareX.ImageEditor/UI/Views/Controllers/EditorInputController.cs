@@ -97,7 +97,7 @@ public class EditorInputController
                 e.Handled = true;
                 return;
             }
-            
+
             // If clicked on empty space, open context menu on canvas
             _view.OpenContextMenu(canvas);
             e.Handled = true;
@@ -214,19 +214,19 @@ public class EditorInputController
                 _currentShape = spotlightControl;
                 break;
             case EditorTool.Blur:
-                _currentShape = new BlurAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, Amount = vm.EffectStrength, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
+                _currentShape = new BlurAnnotation { Amount = vm.EffectStrength, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
                 _isCreatingEffect = true;
                 break;
             case EditorTool.Pixelate:
-                _currentShape = new PixelateAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, Amount = vm.EffectStrength, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
+                _currentShape = new PixelateAnnotation { Amount = vm.EffectStrength, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
                 _isCreatingEffect = true;
                 break;
             case EditorTool.Magnify:
-                _currentShape = new MagnifyAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, Amount = vm.EffectStrength, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
+                _currentShape = new MagnifyAnnotation { Amount = vm.EffectStrength, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
                 _isCreatingEffect = true;
                 break;
             case EditorTool.Highlight:
-                _currentShape = new HighlightAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
+                _currentShape = new HighlightAnnotation { StrokeColor = vm.SelectedColor, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
                 _isCreatingEffect = true;
                 break;
             case EditorTool.SpeechBalloon:

@@ -886,18 +886,14 @@ namespace ShareX.ImageEditor.ViewModels
                     _isApplyingSmartPadding = true;
                     try
                     {
-                        SkiaSharp.SKBitmap? restored = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.RestoreOriginal");
-                        if (restored != null)
+                        // ISSUE-024 fix: Direct assignment instead of SafeCopyBitmap to prevent double-dispose
+                        if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
                         {
-                            if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
-                            {
-                                _currentSourceImage.Dispose();
-                            }
-
-                            _currentSourceImage = restored;
-                            PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(restored);
-                            ImageDimensions = $"{restored.Width} x {restored.Height}";
+                            _currentSourceImage.Dispose();
                         }
+                        _currentSourceImage = _originalSourceImage;
+                        PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_originalSourceImage);
+                        ImageDimensions = $"{_originalSourceImage.Width} x {_originalSourceImage.Height}";
                     }
                     finally
                     {
@@ -953,20 +949,14 @@ namespace ShareX.ImageEditor.ViewModels
                 if (minX > maxX || minY > maxY || !AreBackgroundEffectsActive)
                 {
                     // No content found (or background effects disabled), keep original
-                    SkiaSharp.SKBitmap? restored = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.NoContentRestore");
-                    if (restored == null)
-                    {
-                        return;
-                    }
-
+                    // ISSUE-024 fix: Direct assignment instead of SafeCopyBitmap to prevent double-dispose
                     if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
                     {
                         _currentSourceImage.Dispose();
                     }
-
-                    _currentSourceImage = restored;
-                    PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(restored);
-                    ImageDimensions = $"{restored.Width} x {restored.Height}";
+                    _currentSourceImage = _originalSourceImage;
+                    PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_originalSourceImage);
+                    ImageDimensions = $"{_originalSourceImage.Width} x {_originalSourceImage.Height}";
 
                     return;
                 }

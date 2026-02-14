@@ -81,7 +81,7 @@ namespace ShareX.ImageEditor.ViewModels
         public event Func<Task>? SaveAsRequested;
         public event Func<Bitmap, Task>? CopyRequested;
         public event Func<Bitmap, Task>? UploadRequested;
-        public event Func<Task<Bitmap>>? SnapshotRequested;
+        public event Func<Task<Bitmap?>>? SnapshotRequested;
 
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage

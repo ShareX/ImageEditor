@@ -651,118 +651,26 @@ namespace ShareX.ImageEditor.Views
 
         private Control? CreateControlForAnnotation(Annotation annotation)
         {
-            // Factory for restoring vector visuals
-            if (annotation is RectangleAnnotation rect)
+            var control = AnnotationVisualFactory.CreateVisualControl(annotation, AnnotationVisualMode.Persisted);
+            if (control == null)
             {
-                var r = rect.CreateVisual();
-                Canvas.SetLeft(r, rect.GetBounds().Left);
-                Canvas.SetTop(r, rect.GetBounds().Top);
-                r.Width = rect.GetBounds().Width;
-                r.Height = rect.GetBounds().Height;
-                return r;
-            }
-            else if (annotation is EllipseAnnotation ellipse)
-            {
-                var e = ellipse.CreateVisual();
-                Canvas.SetLeft(e, ellipse.GetBounds().Left);
-                Canvas.SetTop(e, ellipse.GetBounds().Top);
-                e.Width = ellipse.GetBounds().Width;
-                e.Height = ellipse.GetBounds().Height;
-                return e;
-            }
-            else if (annotation is LineAnnotation line)
-            {
-                return line.CreateVisual();
-            }
-            else if (annotation is ArrowAnnotation arrow)
-            {
-                return arrow.CreateVisual();
-            }
-            else if (annotation is TextAnnotation text)
-            {
-                var tb = text.CreateVisual();
-                Canvas.SetLeft(tb, text.StartPoint.X);
-                Canvas.SetTop(tb, text.StartPoint.Y);
-                return tb;
-            }
-            else if (annotation is SpotlightAnnotation spotlight)
-            {
-                var s = new SpotlightControl { Annotation = spotlight, Tag = spotlight, IsHitTestVisible = false };
-                Canvas.SetLeft(s, 0);
-                Canvas.SetTop(s, 0);
-                s.Width = spotlight.CanvasSize.Width;
-                s.Height = spotlight.CanvasSize.Height;
-                return s;
-            }
-            // Effect annotations (Blur, Pixelate, Magnify, Highlight)
-            else if (annotation is BaseEffectAnnotation effect)
-            {
-                Control? factorControl = null;
-
-                // Use CreateVisual() which properly sets up the Fill for each type
-                if (annotation is BlurAnnotation blur) factorControl = blur.CreateVisual();
-                else if (annotation is PixelateAnnotation pix) factorControl = pix.CreateVisual();
-                else if (annotation is MagnifyAnnotation mag) factorControl = mag.CreateVisual();
-                else if (annotation is HighlightAnnotation high) factorControl = high.CreateVisual();
-
-                if (factorControl != null)
-                {
-                    Canvas.SetLeft(factorControl, effect.GetBounds().Left);
-                    Canvas.SetTop(factorControl, effect.GetBounds().Top);
-                    factorControl.Width = effect.GetBounds().Width;
-                    factorControl.Height = effect.GetBounds().Height;
-
-                    // Trigger visual update for all effect annotations
-                    OnRequestUpdateEffect(factorControl);
-                    return factorControl;
-                }
-            }
-            else if (annotation is SpeechBalloonAnnotation balloon)
-            {
-                var b = new SpeechBalloonControl { Annotation = balloon, Tag = balloon };
-                Canvas.SetLeft(b, balloon.GetBounds().Left);
-                Canvas.SetTop(b, balloon.GetBounds().Top);
-                b.Width = balloon.GetBounds().Width;
-                b.Height = balloon.GetBounds().Height;
-                return b;
-            }
-            else if (annotation is NumberAnnotation number)
-            {
-                var grid = number.CreateVisual();
-                Canvas.SetLeft(grid, number.StartPoint.X - number.Radius);
-                Canvas.SetTop(grid, number.StartPoint.Y - number.Radius);
-                return grid;
-            }
-            else if (annotation is ImageAnnotation imgAnn)
-            {
-                var img = new Image { Tag = imgAnn };
-                if (imgAnn.ImageBitmap != null)
-                {
-                    img.Source = BitmapConversionHelpers.ToAvaloniBitmap(imgAnn.ImageBitmap);
-                    img.Width = imgAnn.ImageBitmap.Width;
-                    img.Height = imgAnn.ImageBitmap.Height;
-                }
-                Canvas.SetLeft(img, imgAnn.StartPoint.X);
-                Canvas.SetTop(img, imgAnn.StartPoint.Y);
-                return img;
-            }
-            else if (annotation is FreehandAnnotation freehand)
-            {
-                return freehand.CreateVisual();
-            }
-            else if (annotation is SmartEraserAnnotation eraser)
-            {
-                var polyline = new Polyline
-                {
-                    Stroke = new SolidColorBrush(Color.Parse(eraser.StrokeColor)),
-                    StrokeThickness = 10, // hardcoded in input logic
-                    Points = new Points(eraser.Points.Select(p => new Point(p.X, p.Y))),
-                    Tag = eraser
-                };
-                return polyline;
+                return null;
             }
 
-            return null;
+            AnnotationVisualFactory.UpdateVisualControl(
+                control,
+                annotation,
+                AnnotationVisualMode.Persisted,
+                _editorCore.CanvasSize.Width,
+                _editorCore.CanvasSize.Height);
+
+            // Effect annotations require bitmap-backed fills from current source image.
+            if (annotation is BaseEffectAnnotation)
+            {
+                OnRequestUpdateEffect(control);
+            }
+
+            return control;
         }
 
         private Color SKColorToAvalonia(SKColor color)

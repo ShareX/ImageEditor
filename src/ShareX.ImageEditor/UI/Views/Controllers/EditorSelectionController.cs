@@ -375,7 +375,7 @@ public class EditorSelectionController
         }
 
         // Special handling for Arrow endpoints
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _view.DataContext is MainViewModel vm)
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath)
         {
             if (_shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
             {
@@ -386,14 +386,13 @@ public class EditorSelectionController
                 else if (handleTag == "ArrowEnd") arrowEnd = currentPoint;
 
                 _shapeEndpoints[arrowPath] = (arrowStart, arrowEnd);
-                // ISSUE-005/006 fix: Use constant for arrow head width
-                arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(arrowStart, arrowEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
 
                 // Sync annotation points for hit testing
                 if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
                 {
                     arrowAnnotation.StartPoint = new SKPoint((float)arrowStart.X, (float)arrowStart.Y);
                     arrowAnnotation.EndPoint = new SKPoint((float)arrowEnd.X, (float)arrowEnd.Y);
+                    AnnotationVisualFactory.UpdateVisualControl(arrowPath, arrowAnnotation);
                 }
             }
             _startPoint = currentPoint;
@@ -536,20 +535,19 @@ public class EditorSelectionController
             return;
         }
 
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _view.DataContext is MainViewModel vm && _shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
         {
             var newStart = new Point(endpoints.Start.X + deltaX, endpoints.Start.Y + deltaY);
             var newEnd = new Point(endpoints.End.X + deltaX, endpoints.End.Y + deltaY);
 
             _shapeEndpoints[arrowPath] = (newStart, newEnd);
-            // ISSUE-005/006 fix: Use constant for arrow head width
-            arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
 
             // Sync annotation points for hit testing
             if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
             {
                 arrowAnnotation.StartPoint = new SKPoint((float)newStart.X, (float)newStart.Y);
                 arrowAnnotation.EndPoint = new SKPoint((float)newEnd.X, (float)newEnd.Y);
+                AnnotationVisualFactory.UpdateVisualControl(arrowPath, arrowAnnotation);
             }
 
             _lastDragPoint = currentPoint;

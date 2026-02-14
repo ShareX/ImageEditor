@@ -49,6 +49,16 @@ public partial class ArrowAnnotation : Annotation
         ToolType = EditorTool.Arrow;
     }
 
+    /// <summary>
+    /// Resolves the effective arrow-head size from explicit override or stroke-based default.
+    /// </summary>
+    public float GetEffectiveArrowHeadSize()
+    {
+        return ArrowHeadSize > 0
+            ? ArrowHeadSize
+            : (float)(StrokeWidth * ArrowHeadWidthMultiplier);
+    }
+
     public override void Render(SKCanvas canvas)
     {
         using var strokePaint = CreateStrokePaint();
@@ -69,9 +79,7 @@ public partial class ArrowAnnotation : Annotation
             // Modern arrow: narrower angle (20 degrees instead of 30)
             var arrowAngle = Math.PI / 9; // 20 degrees for sleeker look
             var angle = Math.Atan2(dy, dx);
-            float headSize = ArrowHeadSize > 0
-                ? ArrowHeadSize
-                : (float)(StrokeWidth * ArrowHeadWidthMultiplier);
+            float headSize = GetEffectiveArrowHeadSize();
 
             // Calculate arrowhead base point
             var arrowBase = new SKPoint(

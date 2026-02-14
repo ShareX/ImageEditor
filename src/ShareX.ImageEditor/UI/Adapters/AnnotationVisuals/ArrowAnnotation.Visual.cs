@@ -48,7 +48,7 @@ public partial class ArrowAnnotation
         path.Data = CreateArrowGeometry(
             new Point(StartPoint.X, StartPoint.Y),
             new Point(EndPoint.X, EndPoint.Y),
-            StrokeWidth * ArrowHeadWidthMultiplier);
+            GetEffectiveArrowHeadSize());
 
         if (ShadowEnabled)
         {

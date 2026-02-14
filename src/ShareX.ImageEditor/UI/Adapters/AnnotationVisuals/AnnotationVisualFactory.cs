@@ -98,7 +98,7 @@ public static class AnnotationVisualFactory
             case ArrowAnnotation arrow when control is Avalonia.Controls.Shapes.Path arrowPath:
                 var start = new Avalonia.Point(annotation.StartPoint.X, annotation.StartPoint.Y);
                 var end = new Avalonia.Point(annotation.EndPoint.X, annotation.EndPoint.Y);
-                arrowPath.Data = arrow.CreateArrowGeometry(start, end, arrow.GetEffectiveArrowHeadSize());
+                arrowPath.Data = arrow.CreateArrowGeometry(start, end, arrow.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
                 break;
 
             case FreehandAnnotation freehand when control is Avalonia.Controls.Shapes.Path freehandPath:

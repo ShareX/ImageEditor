@@ -63,18 +63,19 @@
             <GradientStop Color="#3E83F2" Offset="0"/>
             <GradientStop Color="#3975D5" Offset="1"/>
         </LinearGradientBrush>
-        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
-        <SolidColorBrush x:Key="BorderColor">#1F1F1F</SolidColorBrush>
+        <SolidColorBrush x:Key="TextColor" Color="{DynamicResource TextFillColorPrimary}" />
+        <SolidColorBrush x:Key="SecondaryTextColor" Color="{DynamicResource TextFillColorSecondary}" />
+        <SolidColorBrush x:Key="BorderColor" Color="{DynamicResource SurfaceStrokeColorDefault}" />
 
         <DrawingBrush x:Key="CheckeredBrush" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
             <DrawingBrush.Drawing>
                 <DrawingGroup>
-                    <GeometryDrawing Brush="#272727">
+                    <GeometryDrawing Brush="{DynamicResource SolidBackgroundFillColorBaseBrush}">
                         <GeometryDrawing.Geometry>
                             <RectangleGeometry Rect="0,0,30,30" />
                         </GeometryDrawing.Geometry>
                     </GeometryDrawing>
-                    <GeometryDrawing Brush="#2E2E2E">
+                    <GeometryDrawing Brush="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
                         <GeometryDrawing.Geometry>
                             <GeometryGroup>
                                 <RectangleGeometry Rect="0,0,15,15" />
@@ -87,7 +88,7 @@
         </DrawingBrush>
         <ContextMenu x:Key="EditorContextMenu"
                      Placement="Pointer"
-                     BorderBrush="#1F1F1F"
+                     BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
                      BorderThickness="1"
                      CornerRadius="6"
                      Padding="6,2"
@@ -105,10 +106,10 @@
                 <Style Selector="MenuItem:separator">
                     <Setter Property="Height" Value="1"/>
                     <Setter Property="Margin" Value="0,4"/>
-                    <Setter Property="Background" Value="#2E2E2E"/>
+                    <Setter Property="Background" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}"/>
                 </Style>
                 <Style Selector="ContextMenu">
-                    <Setter Property="Background" Value="#2E2E2E"/>
+                    <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
                 </Style>
             </ContextMenu.Styles>
 
@@ -193,8 +194,8 @@
 
         <Style Selector="Button.editor-button">
             <Setter Property="Height" Value="40"/>
-            <Setter Property="Background" Value="#2E2E2E"/>
-            <Setter Property="BorderBrush" Value="#1F1F1F"/>
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
             <Setter Property="Padding" Value="8,6"/>
@@ -204,7 +205,7 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="BorderBrush" Value="#1F1F1F"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
@@ -213,7 +214,7 @@
             </Style>
 
             <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="BorderBrush" Value="#1F1F1F"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
@@ -223,8 +224,8 @@
         </Style>
 
         <Style Selector="Border.popup-border">
-            <Setter Property="Background" Value="#2E2E2E"/>
-            <Setter Property="BorderBrush" Value="#1F1F1F"/>
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="Padding" Value="8"/>
@@ -236,7 +237,7 @@
 
             <Style Selector="^ /template/ Thumb">
                 <Setter Property="Background" Value="{StaticResource AccentColor}"/>
-                <Setter Property="BorderBrush" Value="#2E2E2E"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
                 <Setter Property="BorderThickness" Value="4"/>
             </Style>
 
@@ -266,11 +267,11 @@
     <Grid RowDefinitions="*">
         
         <!-- Row 0: Main Content Area with Preview and Sidebar (Background Layer) -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="#272727">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
 
             <!-- Left Sidebar (Settings Panel) -->
-            <Border Grid.Column="0" Padding="0" IsVisible="{Binding IsSettingsPanelOpen}" Background="#242424"
-                    BorderBrush="#1F1F1F" BorderThickness="0,0,1,0">
+            <Border Grid.Column="0" Padding="0" IsVisible="{Binding IsSettingsPanelOpen}" Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
                 <ScrollViewer x:Name="SidebarScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               ScrollChanged="OnSidebarScrollChanged">
                     <StackPanel Width="220" Spacing="0" Margin="16">
@@ -278,7 +279,7 @@
                         <!-- Margin Slider -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Margin" Foreground="#9CA3AF"/>
+                                <TextBlock Grid.Column="0" Text="Margin" Foreground="{StaticResource SecondaryTextColor}"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding PreviewPadding, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -286,13 +287,13 @@
                             <Slider Minimum="0"
                                     Maximum="200"
                                     Value="{Binding PreviewPadding}"
-                                    Background="#374151"/>
+                                    Background="{DynamicResource ControlStrokeColorDefaultBrush}"/>
                         </StackPanel>
 
                         <!-- Padding Slider -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Padding" Foreground="#9CA3AF"/>
+                                <TextBlock Grid.Column="0" Text="Padding" Foreground="{StaticResource SecondaryTextColor}"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding SmartPadding, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -300,10 +301,10 @@
                             <Slider Minimum="0"
                                     Maximum="200"
                                     Value="{Binding SmartPadding}"
-                                    Background="#374151"/>
+                                    Background="{DynamicResource ControlStrokeColorDefaultBrush}"/>
                             <!-- Smart Padding Checkbox -->
                             <CheckBox IsChecked="{Binding UseSmartPadding}"
-                                      Foreground="#9CA3AF"
+                                      Foreground="{StaticResource SecondaryTextColor}"
                                       Content="Smart Padding"
                                       Margin="0,0,0,8"/>
                         </StackPanel>
@@ -311,7 +312,7 @@
                         <!-- Rounded Corner Slider -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Rounded Corner" Foreground="#9CA3AF"/>
+                                <TextBlock Grid.Column="0" Text="Rounded Corner" Foreground="{StaticResource SecondaryTextColor}"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding PreviewCornerRadius, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -319,13 +320,13 @@
                             <Slider Minimum="0"
                                     Maximum="50"
                                     Value="{Binding PreviewCornerRadius}"
-                                    Background="#374151"/>
+                                    Background="{DynamicResource ControlStrokeColorDefaultBrush}"/>
                         </StackPanel>
 
                         <!-- Shadow Slider -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Shadow" Foreground="#9CA3AF"/>
+                                <TextBlock Grid.Column="0" Text="Shadow" Foreground="{StaticResource SecondaryTextColor}"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding ShadowBlur, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -333,12 +334,12 @@
                             <Slider Minimum="0"
                                     Maximum="100"
                                     Value="{Binding ShadowBlur}"
-                                    Background="#374151"/>
+                                    Background="{DynamicResource ControlStrokeColorDefaultBrush}"/>
                         </StackPanel>
 
                         <!-- Ratio -->
                         <StackPanel Spacing="0">
-                            <TextBlock Text="Ratio" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+                            <TextBlock Text="Ratio" Foreground="{StaticResource SecondaryTextColor}" Margin="0,0,0,8"/>
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*">
                                 <Grid.Styles>
                                     <Style Selector="Button.editor-button">
@@ -403,7 +404,7 @@
 
                         <!-- Background -->
                         <StackPanel Spacing="0">
-                            <TextBlock Text="Background" Foreground="#9CA3AF" Margin="0,8"/>
+                            <TextBlock Text="Background" Foreground="{StaticResource SecondaryTextColor}" Margin="0,8"/>
                             <ItemsControl ItemsSource="{Binding GradientPresets}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -511,8 +512,8 @@
             </Grid>
 
             <!-- Right Sidebar (Effects Panel) -->
-            <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsEffectsPanelOpen}" Background="#242424"
-                    BorderBrush="#1F1F1F" BorderThickness="1,0,0,0">
+            <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsEffectsPanelOpen}" Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1,0,0,0">
                 <Grid>
                      <Grid.RowDefinitions>
                          <RowDefinition Height="*" />
@@ -533,7 +534,7 @@
         <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
             
             <!-- Top Toolbar: Tools and Actions -->
-            <Border Padding="4" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+            <Border Padding="4" Background="{DynamicResource ControlFillColorSecondaryBrush}" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
                     DataContext="{Binding ToolbarAdapter}"
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ScrollViewer x:Name="ToolbarScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="OnToolbarScrollChanged">
@@ -677,7 +678,7 @@
             </Border>
 
             <!-- Bottom Toolbar: Tool Options -->
-            <Border Padding="4" Margin="0,-4,0,0" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+            <Border Padding="4" Margin="0,-4,0,0" Background="{DynamicResource ControlFillColorSecondaryBrush}" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
                     DataContext="{Binding ToolbarAdapter}"
                     IsVisible="{Binding ShowToolOptionsSeparator}"
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
@@ -736,7 +737,7 @@
 
         <!-- Row 0: Export Actions Toolbar (Bottom Centered, Floating) -->
         <Border Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,0"
-                Padding="4" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="4,4,0,0"
+                Padding="4" Background="{DynamicResource ControlFillColorSecondaryBrush}" BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4,4,0,0"
                 MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
             <StackPanel Orientation="Horizontal" Spacing="4">
                 <!-- Zoom Picker -->
@@ -747,7 +748,7 @@
                     ToolTip.Tip="Zoom (Ctrl + Wheel)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"/>
 
                 <!-- Separator -->
-                <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
+                <Border Width="1" Height="40" Background="{DynamicResource SurfaceStrokeColorDefaultBrush}" Margin="4,0"/>
 
                 <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Copy image to clipboard" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">

@@ -86,33 +86,39 @@ namespace ShareX.ImageEditor
         {
             Initialize();
             EditorWindow window = new EditorWindow();
-            window.Show();
 
             if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
                 window.LoadImage(filePath);
             }
+
+            window.Show();
         }
 
         public static void ShowEditor(Stream imageStream)
         {
             Initialize();
             EditorWindow window = new EditorWindow();
-            window.Show();
 
             if (imageStream != null)
             {
                 window.LoadImage(imageStream);
             }
+
+            window.Show();
         }
 
         public static byte[]? ShowEditorDialog(Stream imageStream, EditorEvents? events = null)
         {
-            Initialize();
             byte[]? result = null;
 
+            Initialize();
             EditorWindow window = new EditorWindow();
-            if (imageStream != null) window.LoadImage(imageStream);
+
+            if (imageStream != null)
+            {
+                window.LoadImage(imageStream);
+            }
 
             SetupEvents(window, events, () =>
             {
@@ -120,6 +126,7 @@ namespace ShareX.ImageEditor
             });
 
             window.Show();
+
             DispatcherFrame frame = new DispatcherFrame();
             window.Closed += (s, e) => frame.Continue = false;
             Dispatcher.UIThread.PushFrame(frame);

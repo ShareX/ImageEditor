@@ -95,16 +95,17 @@
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
 
             <Color x:Key="ShareX.Color.Text">#454545</Color>
-            <Color x:Key="ShareX.Color.Text.Secondary">#454545</Color>
+            <Color x:Key="ShareX.Color.Text.Secondary">#86868B</Color>
 
+            <!-- Base Colors with Transparency -->
             <Color x:Key="ShareX.Color.Background.Main">#F5F5F7</Color>
-            <Color x:Key="ShareX.Color.Background.Panel">#FFFFFF</Color>
-            <Color x:Key="ShareX.Color.Background.Popup">#FFFFFF</Color>
-            <Color x:Key="ShareX.Color.Background.Toolbar">#FFFFFF</Color>
+            <Color x:Key="ShareX.Color.Background.Panel">#CCFFFFFF</Color>
+            <Color x:Key="ShareX.Color.Background.Popup">#CCFFFFFF</Color>
+            <Color x:Key="ShareX.Color.Background.Toolbar">#CCFFFFFF</Color>
 
-            <Color x:Key="ShareX.Color.Border">#FDFDFD</Color>
-            <Color x:Key="ShareX.Color.Control.Background">#E5E5EA</Color>
-            <Color x:Key="ShareX.Color.Control.Border">#FDFDFD</Color>
+            <Color x:Key="ShareX.Color.Border">#80D1D1D6</Color>
+            <Color x:Key="ShareX.Color.Control.Background">#80E5E5EA</Color>
+            <Color x:Key="ShareX.Color.Control.Border">#80C7C7CC</Color>
 
             <LinearGradientBrush x:Key="ShareX.Brush.Accent" StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="{StaticResource ShareX.Color.Accent.Start}" Offset="0" />
@@ -122,8 +123,8 @@
             <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{StaticResource ShareX.Color.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{StaticResource ShareX.Color.Control.Background}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#AEAEB2" />
-            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#C9C9C9" />
+            <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#80AEAEB2" />
+            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#80C9C9C9" />
 
             <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
                 <DrawingBrush.Drawing>

@@ -43,7 +43,6 @@
       <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#AEAEB2" />
       <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#C9C9C9" />
 
-      <!-- Checkered Brush for Light -->
       <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
         <DrawingBrush.Drawing>
           <DrawingGroup>
@@ -65,7 +64,7 @@
       </DrawingBrush>
     </ResourceDictionary>
 
-    <!-- Custom ShareX Theme (Dark-based) -->
+    <!-- Custom ShareX Dark -->
     <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareXDark}">
       <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
       <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
@@ -103,9 +102,9 @@
       <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{StaticResource ShareX.Color.Border}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{StaticResource ShareX.Color.Control.Background}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#383838" />
       <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#2E2E2E" />
 
-      <!-- Checkered Brush for ShareX Dark -->
       <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
         <DrawingBrush.Drawing>
           <DrawingGroup>
@@ -146,9 +145,9 @@
       <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{DynamicResource SystemBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{DynamicResource SystemControlBackgroundBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{DynamicResource SystemBaseLowColor}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#383838" />
       <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="{DynamicResource SystemBaseLowColor}" />
 
-      <!-- Checkered Brush for Dark (Same as ShareX roughly) -->
       <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
         <DrawingBrush.Drawing>
           <DrawingGroup>
@@ -189,9 +188,9 @@
       <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{DynamicResource SystemBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{DynamicResource SystemControlBackgroundBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{DynamicResource SystemBaseLowColor}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#AEAEB2" />
       <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="{DynamicResource SystemBaseMediumLowColor}" />
 
-      <!-- Checkered Brush for Light -->
       <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
         <DrawingBrush.Drawing>
           <DrawingGroup>

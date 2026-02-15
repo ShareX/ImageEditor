@@ -60,7 +60,7 @@
             <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
                 <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
             </Style>
-             <Style Selector="^:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
                 <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
             </Style>
         </Style>

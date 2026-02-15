@@ -41,6 +41,8 @@ public partial class ArrowAnnotation
         {
             Stroke = brush,
             StrokeThickness = StrokeWidth,
+            StrokeLineCap = PenLineCap.Round,
+            StrokeJoin = PenLineJoin.Round,
             Fill = brush,
             Tag = this
         };

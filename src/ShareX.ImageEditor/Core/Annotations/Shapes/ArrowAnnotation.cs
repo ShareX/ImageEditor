@@ -98,9 +98,24 @@ public partial class ArrowAnnotation : Annotation
 
     public override void Render(SKCanvas canvas)
     {
-        using var strokePaint = CreateStrokePaint();
-        using var fillPaint = CreateFillPaint();
-        fillPaint.Color = ParseColor(StrokeColor);
+        var color = ParseColor(StrokeColor);
+
+        using var fillPaint = new SKPaint
+        {
+            Color = color,
+            Style = SKPaintStyle.Fill,
+            IsAntialias = true
+        };
+
+        using var strokePaint = new SKPaint
+        {
+            Color = color,
+            StrokeWidth = StrokeWidth,
+            Style = SKPaintStyle.Stroke,
+            IsAntialias = true,
+            StrokeCap = SKStrokeCap.Round,
+            StrokeJoin = SKStrokeJoin.Round
+        };
 
         var pts = ComputeArrowPoints(
             StartPoint.X, StartPoint.Y,
@@ -118,8 +133,24 @@ public partial class ArrowAnnotation : Annotation
             path.LineTo(p.ShaftEndRight);
             path.Close();
 
+            // Apply shadow once to the entire arrow composite via SaveLayer
+            if (ShadowEnabled)
+            {
+                using var shadowPaint = new SKPaint
+                {
+                    ImageFilter = SKImageFilter.CreateDropShadow(
+                        3, 3, 2, 2, new SKColor(0, 0, 0, 128))
+                };
+                canvas.SaveLayer(shadowPaint);
+            }
+
             canvas.DrawPath(path, fillPaint);
             canvas.DrawPath(path, strokePaint);
+
+            if (ShadowEnabled)
+            {
+                canvas.Restore();
+            }
         }
         else
         {

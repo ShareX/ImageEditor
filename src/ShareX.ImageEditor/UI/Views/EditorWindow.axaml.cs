@@ -27,6 +27,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Helpers;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Views
@@ -49,6 +50,10 @@ namespace ShareX.ImageEditor.Views
 
             // Defer image loading until EditorView is loaded and subscribed
             this.Loaded += OnWindowLoaded;
+            
+            // Set initial theme and subscribe to changes
+            RequestedThemeVariant = ThemeManager.ShareX;
+            ThemeManager.ThemeChanged += (s, theme) => RequestedThemeVariant = theme;
         }
 
         private void InitializeComponent()

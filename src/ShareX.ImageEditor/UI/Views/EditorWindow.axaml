@@ -8,6 +8,14 @@
         Title="{Binding WindowTitle}"
         WindowStartupLocation="CenterScreen">
     
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ShareX.ImageEditor/UI/Themes/ShareXTheme.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <views:EditorView Name="EditorViewControl"/>
 
 </Window>

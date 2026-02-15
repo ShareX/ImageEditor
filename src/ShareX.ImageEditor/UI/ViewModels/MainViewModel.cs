@@ -26,6 +26,7 @@
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.Abstractions;
@@ -739,6 +740,19 @@ namespace ShareX.ImageEditor.ViewModels
         {
             IsModalOpen = false;
             ModalContent = null;
+        }
+
+        [RelayCommand]
+        private void SetTheme(string themeName)
+        {
+            var theme = themeName switch
+            {
+                "Dark" => ThemeVariant.Dark,
+                "Light" => ThemeVariant.Light,
+                "ShareX" => ThemeManager.ShareX,
+                _ => ThemeVariant.Default
+            };
+            ThemeManager.SetTheme(theme);
         }
 
         [ObservableProperty]

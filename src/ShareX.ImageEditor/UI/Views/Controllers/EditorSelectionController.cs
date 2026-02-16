@@ -1240,20 +1240,30 @@ public class EditorSelectionController
                 shapeBounds = new Rect(minX, minY, maxX - minX, maxY - minY);
             }
 
-            if (shapeBounds.Contains(currentPoint))
+            // Start with rough bounds check
+            bool isRotated = false;
+            if (child.Tag is Annotation tagAnn && tagAnn.RotationAngle != 0)
+            {
+                isRotated = true;
+            }
+
+            // If rotated, the axis-aligned 'shapeBounds' is invalid/insufficient.
+            // We skip the Contains check and rely on the annotation's own HitTest (which handles rotation).
+            if (isRotated || shapeBounds.Contains(currentPoint))
             {
                 // Use the annotation's HitTest method if available
-                // Skip strict hit test for TextBox to match visual bounds (ant lines)
-                if (child.Tag is Annotation annotation && !(child is TextBox))
+                if (child.Tag is Annotation annotation)
                 {
                     var skPoint = ToSKPoint(currentPoint);
-                    if (!annotation.HitTest(skPoint))
+                    if (annotation.HitTest(skPoint))
                     {
-                        continue; // Annotation's hit test failed
+                        return child;
                     }
                 }
-
-                return child;
+                else
+                {
+                    return child;
+                }
             }
         }
         return null;

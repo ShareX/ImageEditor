@@ -1178,61 +1178,26 @@ public class EditorCore : IDisposable
     #region Rendering
 
     /// <summary>
-    /// Render the entire editor canvas to an SKCanvas
+    /// Render the source image to an SKCanvas.
+    /// Annotations are rendered by the Avalonia visual tree (hybrid rendering).
     /// </summary>
     /// <param name="canvas">Target canvas</param>
-    /// <param name="renderVectorAnnotations">If true, renders all annotations. If false, skips vector annotations (for hybrid rendering).</param>
-    public void Render(SKCanvas canvas, bool renderVectorAnnotations = true)
+    public void Render(SKCanvas canvas)
     {
         canvas.Clear(SKColors.Transparent);
 
-        // Draw source image
+        // Draw source image only — annotations are handled by Avalonia controls
         if (SourceImage != null)
         {
             canvas.DrawBitmap(SourceImage, 0, 0);
         }
-
-        // Draw annotations
-        foreach (var annotation in _annotations)
-        {
-            // In hybrid mode, we skip vector annotations as they are handled by Avalonia
-            if (!renderVectorAnnotations && IsVectorAnnotation(annotation))
-            {
-                continue;
-            }
-
-            annotation.Render(canvas);
-        }
-
-        // Draw selection handles only if we are rendering everything (or strictly debugging)
-        // Usually handles are vectors in the hybrid view
-        if (renderVectorAnnotations && _selectedAnnotation != null)
-        {
-            DrawSelectionHandles(canvas, _selectedAnnotation);
-        }
-    }
-
-    private bool IsVectorAnnotation(Annotation annotation)
-    {
-        // Define what counts as a 'Vector' annotation that Avalonia handles
-        // Effect annotations (Blur, Pixelate, Magnify, Highlight) are also vector in the hybrid model
-        // because they render their effect bitmaps directly as ImageBrush fills in Avalonia controls
-        return annotation is RectangleAnnotation ||
-               annotation is EllipseAnnotation ||
-               annotation is LineAnnotation ||
-               annotation is ArrowAnnotation ||
-               annotation is TextAnnotation ||
-               annotation is SpeechBalloonAnnotation ||
-               annotation is NumberAnnotation ||
-               annotation is BaseEffectAnnotation ||
-               annotation is FreehandAnnotation ||
-               annotation is SmartEraserAnnotation ||
-               annotation is ImageAnnotation ||
-               annotation is SpotlightAnnotation;
     }
 
     /// <summary>
-    /// Get a snapshot of the current canvas as an SKBitmap
+    /// Get a snapshot of the source image (without annotations) as an SKBitmap.
+    /// Used internally for pixel color sampling (e.g. SmartEraser).
+    /// For full export with annotations, use EditorView.GetSnapshot() which
+    /// renders the Avalonia visual tree via RenderTargetBitmap.
     /// </summary>
     public SKBitmap? GetSnapshot()
     {
@@ -1240,103 +1205,9 @@ public class EditorCore : IDisposable
 
         var bitmap = new SKBitmap(SourceImage.Width, SourceImage.Height);
         using var canvas = new SKCanvas(bitmap);
-
-        // Draw without selection handles
         canvas.DrawBitmap(SourceImage, 0, 0);
-        foreach (var annotation in _annotations)
-        {
-            annotation.Render(canvas);
-        }
 
         return bitmap;
-    }
-
-    private void DrawSelectionHandles(SKCanvas canvas, Annotation annotation)
-    {
-        if (annotation is FreehandAnnotation || annotation is SmartEraserAnnotation)
-        {
-            return;
-        }
-
-        var bounds = annotation.GetBounds();
-
-        using var strokePaint = new SKPaint
-        {
-            Color = SKColors.DodgerBlue,
-            StrokeWidth = 2,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true
-        };
-
-        using var fillPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-
-        // Draw selection rectangle only for box-based annotations
-        if (!(annotation is LineAnnotation || annotation is ArrowAnnotation))
-        {
-            // Rotate the selection rect + dotted line with the shape
-            if (annotation.RotationAngle != 0)
-            {
-                canvas.Save();
-                canvas.RotateDegrees(annotation.RotationAngle, bounds.MidX, bounds.MidY);
-            }
-
-            canvas.DrawRect(bounds, strokePaint);
-
-            // Draw rotation handle connector (dotted line from top-center to rotation handle)
-            if (annotation is TextAnnotation)
-            {
-                var topCenter = new SKPoint(bounds.MidX, bounds.Top);
-                var rotateHandlePos = new SKPoint(bounds.MidX, bounds.Top - RotationHandleOffset);
-
-                using var dottedPaint = new SKPaint
-                {
-                    Color = SKColors.DodgerBlue,
-                    StrokeWidth = 1.5f,
-                    Style = SKPaintStyle.Stroke,
-                    IsAntialias = true,
-                    PathEffect = SKPathEffect.CreateDash(new float[] { 4, 4 }, 0)
-                };
-                canvas.DrawLine(topCenter, rotateHandlePos, dottedPaint);
-            }
-
-            // Restore canvas after drawing rotated selection rect + dotted line
-            if (annotation.RotationAngle != 0)
-            {
-                canvas.Restore();
-            }
-        }
-
-        // Draw handles
-        var handles = GetAnnotationHandles(annotation);
-        float handleSize = HandleSize;
-
-        foreach (var handle in handles)
-        {
-            float radius = handleSize / 2;
-
-            if (handle.Type == HandleType.Rotate)
-            {
-                // Rotation handle: green-tinted circle
-                using var rotateFill = new SKPaint
-                {
-                    Color = new SKColor(220, 255, 220),
-                    Style = SKPaintStyle.Fill,
-                    IsAntialias = true
-                };
-                canvas.DrawCircle(handle.Position, radius, rotateFill);
-                canvas.DrawCircle(handle.Position, radius, strokePaint);
-            }
-            else
-            {
-                canvas.DrawCircle(handle.Position, radius, fillPaint);
-                canvas.DrawCircle(handle.Position, radius, strokePaint);
-            }
-        }
     }
 
     private IEnumerable<(HandleType Type, SKPoint Position)> GetAnnotationHandles(Annotation annotation)

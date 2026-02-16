@@ -385,7 +385,7 @@ namespace ShareX.ImageEditor.Views
             if (_canvasControl == null) return;
             // Hybrid rendering: Render only background + raster effects from Core
             // Vector annotations are handled by Avalonia Canvas
-            _canvasControl.Draw(canvas => _editorCore.Render(canvas, false));
+            _canvasControl.Draw(canvas => _editorCore.Render(canvas));
         }
 
         /// <summary>
@@ -741,8 +741,46 @@ namespace ShareX.ImageEditor.Views
 
         public SkiaSharp.SKBitmap? GetSnapshot()
         {
-            // Use EditorCore to get snapshot without selection handles
-            return _editorCore.GetSnapshot();
+            if (_editorCore.SourceImage == null) return null;
+
+            var canvasContainer = this.FindControl<Grid>("CanvasContainer");
+            var overlayCanvas = this.FindControl<Canvas>("OverlayCanvas");
+            if (canvasContainer == null) return _editorCore.GetSnapshot();
+
+            // Hide OverlayCanvas (selection handles, crop overlay) during capture
+            bool overlayWasVisible = overlayCanvas?.IsVisible ?? false;
+            if (overlayCanvas != null) overlayCanvas.IsVisible = false;
+
+            try
+            {
+                int width = _editorCore.SourceImage.Width;
+                int height = _editorCore.SourceImage.Height;
+
+                // Force layout at native resolution (un-zoomed)
+                canvasContainer.Measure(new Size(width, height));
+                canvasContainer.Arrange(new Rect(0, 0, width, height));
+
+                // Render Avalonia visual tree to bitmap
+                var rtb = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+                rtb.Render(canvasContainer);
+
+                // Convert Avalonia RenderTargetBitmap → SKBitmap
+                using var stream = new System.IO.MemoryStream();
+                rtb.Save(stream);
+                stream.Position = 0;
+                var skBitmap = SkiaSharp.SKBitmap.Decode(stream);
+
+                return skBitmap;
+            }
+            finally
+            {
+                // Restore OverlayCanvas visibility
+                if (overlayCanvas != null) overlayCanvas.IsVisible = overlayWasVisible;
+
+                // Re-trigger layout with current zoom
+                canvasContainer.InvalidateMeasure();
+                canvasContainer.InvalidateArrange();
+            }
         }
 
         public Task<Bitmap?> RenderSnapshot()

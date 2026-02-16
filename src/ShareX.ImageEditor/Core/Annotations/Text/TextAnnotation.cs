@@ -62,60 +62,7 @@ public partial class TextAnnotation : Annotation
         ToolType = EditorTool.Text;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
-        const float padding = 4f;
 
-        // Apply rotation around center if needed
-        float centerX = rect.MidX;
-        float centerY = rect.MidY;
-        bool hasRotation = RotationAngle != 0;
-
-        if (hasRotation)
-        {
-            canvas.Save();
-            canvas.RotateDegrees(RotationAngle, centerX, centerY);
-        }
-
-        // Always draw a visible placeholder/border when text is empty
-        if (string.IsNullOrEmpty(Text))
-        {
-            // Draw a dashed border placeholder to show where text will go
-            using var borderPaint = new SKPaint
-            {
-                Color = ParseColor(StrokeColor),
-                StrokeWidth = 1,
-                Style = SKPaintStyle.Stroke,
-                PathEffect = SKPathEffect.CreateDash(new float[] { 4, 4 }, 0),
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, borderPaint);
-
-            if (hasRotation) canvas.Restore();
-            return;
-        }
-
-        using var paint = new SKPaint
-        {
-            Color = ParseColor(StrokeColor),
-            TextSize = FontSize,
-            IsAntialias = true,
-            Typeface = SKTypeface.FromFamilyName(
-                FontFamily,
-                IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
-                SKFontStyleWidth.Normal,
-                IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright)
-        };
-
-        // Treat StartPoint as the top-left of the text box with a small padding like the Avalonia TextBox.
-        var metrics = paint.FontMetrics;
-        float baseline = rect.Top + padding - metrics.Ascent; // ascent is negative
-
-        canvas.DrawText(Text, rect.Left + padding, baseline, paint);
-
-        if (hasRotation) canvas.Restore();
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

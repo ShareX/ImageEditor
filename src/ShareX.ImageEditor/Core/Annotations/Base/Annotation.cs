@@ -104,11 +104,7 @@ public abstract class Annotation
     /// </summary>
     public float RotationAngle { get; set; }
 
-    /// <summary>
-    /// Render this annotation to the SkiaSharp canvas
-    /// </summary>
-    /// <param name="canvas">SKCanvas to render to</param>
-    public abstract void Render(SKCanvas canvas);
+
 
     /// <summary>
     /// Hit test to determine if a point intersects this annotation
@@ -151,54 +147,5 @@ public abstract class Annotation
         return SKColor.Parse(hexColor);
     }
 
-    /// <summary>
-    /// Create a paint for stroke drawing
-    /// </summary>
-    protected SKPaint CreateStrokePaint()
-    {
-        var paint = new SKPaint
-        {
-            Color = ParseColor(StrokeColor),
-            StrokeWidth = StrokeWidth,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true,
-            StrokeCap = SKStrokeCap.Round,
-            StrokeJoin = SKStrokeJoin.Round
-        };
 
-        if (ShadowEnabled)
-        {
-            paint.ImageFilter = SKImageFilter.CreateDropShadow(
-                3, 3, // X and Y offset
-                2, 2, // X and Y blur sigma
-                new SKColor(0, 0, 0, 128) // Semi-transparent black shadow
-            );
-        }
-
-        return paint;
-    }
-
-    /// <summary>
-    /// Create a paint for fill drawing
-    /// </summary>
-    protected SKPaint CreateFillPaint()
-    {
-        var paint = new SKPaint
-        {
-            Color = ParseColor(FillColor),
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-
-        if (ShadowEnabled)
-        {
-            paint.ImageFilter = SKImageFilter.CreateDropShadow(
-                3, 3, // X and Y offset
-                2, 2, // X and Y blur sigma
-                new SKColor(0, 0, 0, 128) // Semi-transparent black shadow
-            );
-        }
-
-        return paint;
-    }
 }

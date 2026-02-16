@@ -96,67 +96,7 @@ public partial class ArrowAnnotation : Annotation
         SKPoint WingLeft,
         SKPoint WingRight);
 
-    public override void Render(SKCanvas canvas)
-    {
-        var color = ParseColor(StrokeColor);
 
-        using var fillPaint = new SKPaint
-        {
-            Color = color,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-
-        using var strokePaint = new SKPaint
-        {
-            Color = color,
-            StrokeWidth = StrokeWidth,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true,
-            StrokeCap = SKStrokeCap.Round,
-            StrokeJoin = SKStrokeJoin.Round
-        };
-
-        var pts = ComputeArrowPoints(
-            StartPoint.X, StartPoint.Y,
-            EndPoint.X, EndPoint.Y,
-            StrokeWidth * ArrowHeadWidthMultiplier);
-
-        if (pts is { } p)
-        {
-            using var path = new SKPath();
-            path.MoveTo(StartPoint);
-            path.LineTo(p.ShaftEndLeft);
-            path.LineTo(p.WingLeft);
-            path.LineTo(EndPoint);
-            path.LineTo(p.WingRight);
-            path.LineTo(p.ShaftEndRight);
-            path.Close();
-
-            // Apply shadow once to the entire arrow composite via SaveLayer
-            if (ShadowEnabled)
-            {
-                using var shadowPaint = new SKPaint
-                {
-                    ImageFilter = SKImageFilter.CreateDropShadow(
-                        3, 3, 2, 2, new SKColor(0, 0, 0, 128))
-                };
-                canvas.SaveLayer(shadowPaint);
-            }
-
-            canvas.DrawPath(path, fillPaint);
-            canvas.DrawPath(path, strokePaint);
-
-            if (ShadowEnabled)
-            {
-                canvas.Restore();
-            }
-        }
-        else
-        {
-            canvas.DrawLine(StartPoint, EndPoint, strokePaint);
-        }
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

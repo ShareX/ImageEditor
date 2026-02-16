@@ -120,6 +120,17 @@ public static class AnnotationVisualFactory
                 textBox.FontSize = text.FontSize;
                 textBox.FontWeight = text.IsBold ? FontWeight.Bold : FontWeight.Normal;
                 textBox.FontStyle = text.IsItalic ? FontStyle.Italic : FontStyle.Normal;
+
+                // Apply rotation transform if set
+                if (text.RotationAngle != 0)
+                {
+                    textBox.RenderTransformOrigin = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative);
+                    textBox.RenderTransform = new RotateTransform(text.RotationAngle);
+                }
+                else
+                {
+                    textBox.RenderTransform = null;
+                }
                 break;
 
             case SpeechBalloonAnnotation balloon when mode == AnnotationVisualMode.Preview && control is Rectangle:

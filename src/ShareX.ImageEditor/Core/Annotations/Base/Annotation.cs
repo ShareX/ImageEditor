@@ -100,6 +100,11 @@ public abstract class Annotation
     public int ZIndex { get; set; }
 
     /// <summary>
+    /// Rotation angle in degrees (clockwise). Used for rotating annotations.
+    /// </summary>
+    public float RotationAngle { get; set; }
+
+    /// <summary>
     /// Render this annotation to the SkiaSharp canvas
     /// </summary>
     /// <param name="canvas">SKCanvas to render to</param>

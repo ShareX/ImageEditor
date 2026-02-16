@@ -67,6 +67,17 @@ public partial class TextAnnotation : Annotation
         var rect = GetBounds();
         const float padding = 4f;
 
+        // Apply rotation around center if needed
+        float centerX = rect.MidX;
+        float centerY = rect.MidY;
+        bool hasRotation = RotationAngle != 0;
+
+        if (hasRotation)
+        {
+            canvas.Save();
+            canvas.RotateDegrees(RotationAngle, centerX, centerY);
+        }
+
         // Always draw a visible placeholder/border when text is empty
         if (string.IsNullOrEmpty(Text))
         {
@@ -80,6 +91,8 @@ public partial class TextAnnotation : Annotation
                 IsAntialias = true
             };
             canvas.DrawRect(rect, borderPaint);
+
+            if (hasRotation) canvas.Restore();
             return;
         }
 
@@ -100,11 +113,27 @@ public partial class TextAnnotation : Annotation
         float baseline = rect.Top + padding - metrics.Ascent; // ascent is negative
 
         canvas.DrawText(Text, rect.Left + padding, baseline, paint);
+
+        if (hasRotation) canvas.Restore();
     }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var textBounds = GetBounds();
+
+        // If rotated, transform the test point by the inverse rotation
+        if (RotationAngle != 0)
+        {
+            float cx = textBounds.MidX;
+            float cy = textBounds.MidY;
+            float rad = -RotationAngle * (float)Math.PI / 180f;
+            float cos = (float)Math.Cos(rad);
+            float sin = (float)Math.Sin(rad);
+            float dx = point.X - cx;
+            float dy = point.Y - cy;
+            point = new SKPoint(cx + dx * cos - dy * sin, cy + dx * sin + dy * cos);
+        }
+
         var inflatedBounds = SKRect.Inflate(textBounds, tolerance, tolerance);
         return inflatedBounds.Contains(point);
     }

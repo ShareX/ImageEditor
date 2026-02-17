@@ -54,11 +54,11 @@ namespace ShareX.ImageEditor
 
     public class EditorEvents
     {
-        public Func<byte[], Task>? CopyImageRequested { get; set; }
-        public Func<byte[], Task>? SaveImageRequested { get; set; }
-        public Func<byte[], Task>? SaveImageAsRequested { get; set; }
+        public Action<byte[]>? CopyImageRequested { get; set; }
+        public Action<byte[]>? SaveImageRequested { get; set; }
+        public Action<byte[]>? SaveImageAsRequested { get; set; }
         public Action<byte[]>? PinImageRequested { get; set; }
-        public Func<byte[], Task>? UploadImageRequested { get; set; }
+        public Action<byte[]>? UploadImageRequested { get; set; }
     }
 
     public static class AvaloniaIntegration
@@ -141,10 +141,6 @@ namespace ShareX.ImageEditor
                                 break;
                         }
                     }
-                    else
-                    {
-                        result = window.GetResultBytes();
-                    }
                 }
             });
 
@@ -164,39 +160,21 @@ namespace ShareX.ImageEditor
             MainViewModel? vm = window.DataContext as MainViewModel;
             if (vm == null) return;
 
-            if (events.SaveImageRequested != null)
-            {
-                vm.SaveRequested += async () =>
-                {
-                    byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) await events.SaveImageRequested(bytes);
-                };
-            }
-
             if (events.CopyImageRequested != null)
             {
                 vm.CopyRequested += async (img) =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) await events.CopyImageRequested(bytes);
+                    if (bytes != null) events.CopyImageRequested(bytes);
                 };
             }
 
-            if (events.UploadImageRequested != null)
+            if (events.SaveImageRequested != null)
             {
-                vm.UploadRequested += async (img) =>
+                vm.SaveRequested += async () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) await events.UploadImageRequested(bytes);
-                };
-            }
-
-            if (events.PinImageRequested != null)
-            {
-                vm.PinRequested += (s, e) =>
-                {
-                    byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) events.PinImageRequested(bytes);
+                    if (bytes != null) events.SaveImageRequested(bytes);
                 };
             }
 
@@ -205,7 +183,25 @@ namespace ShareX.ImageEditor
                 vm.SaveAsRequested += async () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) await events.SaveImageAsRequested(bytes);
+                    if (bytes != null) events.SaveImageAsRequested(bytes);
+                };
+            }
+
+            if (events.UploadImageRequested != null)
+            {
+                vm.UploadRequested += async (img) =>
+                {
+                    byte[]? bytes = window.GetResultBytes();
+                    if (bytes != null) events.UploadImageRequested(bytes);
+                };
+            }
+
+            if (events.PinImageRequested != null)
+            {
+                vm.PinRequested += async () =>
+                {
+                    byte[]? bytes = window.GetResultBytes();
+                    if (bytes != null) events.PinImageRequested(bytes);
                 };
             }
 

@@ -86,15 +86,6 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? CutAnnotationRequested;
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
-        private EventHandler? _pinRequested;
-        public event EventHandler? PinRequested
-        {
-            add { _pinRequested += value; PinToScreenCommand.NotifyCanExecuteChanged(); }
-            remove { _pinRequested -= value; PinToScreenCommand.NotifyCanExecuteChanged(); }
-        }
-
-        public bool CanPinToScreen() => _pinRequested != null;
-
         public event EventHandler? CloseRequested;
 
         [ObservableProperty]
@@ -135,6 +126,7 @@ namespace ShareX.ImageEditor.ViewModels
             var dialog = new ConfirmationDialogViewModel(
                 onYes: async () =>
                 {
+                    await Save();
                     TaskResult = EditorTaskResult.Continue;
                     IsModalOpen = false;
                     CloseRequested?.Invoke(this, EventArgs.Empty);
@@ -156,6 +148,14 @@ namespace ShareX.ImageEditor.ViewModels
         }
 
         // Export events
+        private Func<Bitmap, Task>? _copyRequested;
+        public event Func<Bitmap, Task>? CopyRequested
+        {
+            add { _copyRequested += value; CopyCommand.NotifyCanExecuteChanged(); }
+            remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanCopy() => _copyRequested != null;
+
         private Func<Task>? _saveRequested;
         public event Func<Task>? SaveRequested
         {
@@ -172,13 +172,13 @@ namespace ShareX.ImageEditor.ViewModels
         }
         public bool CanSaveAs() => _saveAsRequested != null;
 
-        private Func<Bitmap, Task>? _copyRequested;
-        public event Func<Bitmap, Task>? CopyRequested
+        private Func<Task>? _pinRequested;
+        public event Func<Task>? PinRequested
         {
-            add { _copyRequested += value; CopyCommand.NotifyCanExecuteChanged(); }
-            remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
+            add { _pinRequested += value; PinToScreenCommand.NotifyCanExecuteChanged(); }
+            remove { _pinRequested -= value; PinToScreenCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanCopy() => _copyRequested != null;
+        public bool CanPinToScreen() => _pinRequested != null;
 
         private Func<Bitmap, Task>? _uploadRequested;
         public event Func<Bitmap, Task>? UploadRequested
@@ -187,6 +187,7 @@ namespace ShareX.ImageEditor.ViewModels
             remove { _uploadRequested -= value; UploadCommand.NotifyCanExecuteChanged(); }
         }
         public bool CanUpload() => _uploadRequested != null;
+
         public event Func<Task<Bitmap?>>? SnapshotRequested;
 
         private Bitmap? _previewImage;
@@ -1566,45 +1567,7 @@ namespace ShareX.ImageEditor.ViewModels
             if (_saveRequested != null)
             {
                 await _saveRequested.Invoke();
-                return;
             }
-
-            // Try get flattened image first
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            if (snapshot == null && _currentSourceImage == null) return;
-
-            try
-            {
-                // Simple quick save to Pictures/ShareX
-                var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "ShareX");
-                if (!System.IO.Directory.Exists(folder)) System.IO.Directory.CreateDirectory(folder);
-
-                var filename = $"ShareX_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png";
-                var path = System.IO.Path.Combine(folder, filename);
-
-                if (snapshot != null)
-                {
-                    snapshot.Save(path);
-                }
-                else if (_currentSourceImage != null)
-                {
-                    ImageHelpers.SaveBitmap(_currentSourceImage, path);
-                }
-
-                ExportState = "Saved";
-                IsDirty = false;
-                DebugHelper.WriteLine($"File saved: {path}");
-            }
-            catch (Exception ex)
-            {
-                DebugHelper.WriteLine($"File save failed: {ex.Message}");
-            }
-            await Task.CompletedTask;
         }
 
         [RelayCommand(CanExecute = nameof(CanSaveAs))]
@@ -1613,14 +1576,13 @@ namespace ShareX.ImageEditor.ViewModels
             if (_saveAsRequested != null)
             {
                 await _saveAsRequested.Invoke();
-                return;
             }
         }
 
         [RelayCommand(CanExecute = nameof(CanPinToScreen))]
         private void PinToScreen()
         {
-            _pinRequested?.Invoke(this, EventArgs.Empty);
+            _pinRequested?.Invoke();
         }
 
         [RelayCommand(CanExecute = nameof(CanUpload))]

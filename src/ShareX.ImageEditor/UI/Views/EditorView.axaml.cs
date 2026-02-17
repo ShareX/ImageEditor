@@ -120,6 +120,9 @@ namespace ShareX.ImageEditor.Views
                 {
                     UpdateViewModelHistoryState(vm);
                     vm.RecalculateNumberCounter(_editorCore.Annotations);
+                    
+                    // Mark as dirty when history changes (annotations added/interactions/undo/redo)
+                    vm.IsDirty = true;
                 }
             });
 

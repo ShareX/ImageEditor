@@ -57,17 +57,26 @@ namespace ShareX.ImageEditor.Loader
                     vm.TaskMode = true;
                     LoadExampleImage(vm);
 
-                    vm.CopyRequested += async (bitmap) =>
+                    vm.CopyRequested += async () =>
                     {
                         var clipboard = desktop.MainWindow?.Clipboard;
 
                         if (clipboard != null)
                         {
-                            var data = new DataTransfer();
-                            var item = new DataTransferItem();
-                            item.SetBitmap(bitmap);
-                            data.Add(item);
-                            await clipboard.SetDataAsync(data);
+                            var bytes = window.GetResultBytes();
+
+                            if (bytes != null)
+                            {
+                                using (var stream = new MemoryStream(bytes))
+                                {
+                                    var bitmap = new Avalonia.Media.Imaging.Bitmap(stream);
+                                    var data = new DataTransfer();
+                                    var item = new DataTransferItem();
+                                    item.SetBitmap(bitmap);
+                                    data.Add(item);
+                                    await clipboard.SetDataAsync(data);
+                                }
+                            }
                         }
                     };
                 }

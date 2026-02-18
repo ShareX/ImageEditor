@@ -756,11 +756,16 @@
                             ToolTip.Tip="Cancel" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             ZIndex="0">
                         <Button.Styles>
-                            <Style Selector="Button:pressed /template/ ContentPresenter">
+                            <Style Selector="Button:pressed">
                                 <Setter Property="RenderTransform" Value="none"/>
                             </Style>
+                            <Style Selector="Button:pressed /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#EF4444"/>
+                                <Setter Property="BorderBrush" Value="#EF4444"/>
+                            </Style>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="ZIndex" Value="0"/>
+                                <Setter Property="Background" Value="#EF4444"/>
+                                <Setter Property="BorderBrush" Value="#EF4444"/>
                             </Style>
                         </Button.Styles>
                         <TextBlock Text="{StaticResource IconCancel}"
@@ -780,8 +785,16 @@
                             ToolTip.Tip="Continue" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             ZIndex="20">
                         <Button.Styles>
+                            <Style Selector="Button:pressed">
+                                <Setter Property="RenderTransform" Value="none"/>
+                            </Style>
+                            <Style Selector="Button:pressed /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#13DD9A"/>
+                                <Setter Property="BorderBrush" Value="#13DD9A"/>
+                            </Style>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="ZIndex" Value="20"/>
+                                <Setter Property="Background" Value="#13DD9A"/>
+                                <Setter Property="BorderBrush" Value="#13DD9A"/>
                             </Style>
                         </Button.Styles>
                         <TextBlock Text="{StaticResource IconPlay}"

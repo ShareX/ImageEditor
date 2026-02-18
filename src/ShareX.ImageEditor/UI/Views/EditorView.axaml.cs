@@ -240,8 +240,6 @@ namespace ShareX.ImageEditor.Views
                     return await RenderSnapshot();
                 };
 
-
-
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
 

@@ -121,9 +121,9 @@ namespace ShareX.ImageEditor.ViewModels
         private void ShowConfirmationDialog()
         {
             var dialog = new ConfirmationDialogViewModel(
-                onYes: async () =>
+                onYes: () =>
                 {
-                    await Save();
+                    Save();
                     TaskResult = EditorTaskResult.Continue;
                     IsModalOpen = false;
                     CloseRequested?.Invoke(this, EventArgs.Empty);
@@ -145,40 +145,40 @@ namespace ShareX.ImageEditor.ViewModels
         }
 
         // Export events
-        private Func<Bitmap, Task>? _copyRequested;
-        public event Func<Bitmap, Task>? CopyRequested
+        private Action? _copyRequested;
+        public event Action? CopyRequested
         {
             add { _copyRequested += value; CopyCommand.NotifyCanExecuteChanged(); }
             remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
         }
         public bool CanCopy() => _copyRequested != null;
 
-        private Func<Task>? _saveRequested;
-        public event Func<Task>? SaveRequested
+        private Action? _saveRequested;
+        public event Action? SaveRequested
         {
             add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
             remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
         }
         public bool CanSave() => _saveRequested != null;
 
-        private Func<Task>? _saveAsRequested;
-        public event Func<Task>? SaveAsRequested
+        private Action? _saveAsRequested;
+        public event Action? SaveAsRequested
         {
             add { _saveAsRequested += value; SaveAsCommand.NotifyCanExecuteChanged(); }
             remove { _saveAsRequested -= value; SaveAsCommand.NotifyCanExecuteChanged(); }
         }
         public bool CanSaveAs() => _saveAsRequested != null;
 
-        private Func<Task>? _pinRequested;
-        public event Func<Task>? PinRequested
+        private Action? _pinRequested;
+        public event Action? PinRequested
         {
             add { _pinRequested += value; PinToScreenCommand.NotifyCanExecuteChanged(); }
             remove { _pinRequested -= value; PinToScreenCommand.NotifyCanExecuteChanged(); }
         }
         public bool CanPinToScreen() => _pinRequested != null;
 
-        private Func<Bitmap, Task>? _uploadRequested;
-        public event Func<Bitmap, Task>? UploadRequested
+        private Action? _uploadRequested;
+        public event Action? UploadRequested
         {
             add { _uploadRequested += value; UploadCommand.NotifyCanExecuteChanged(); }
             remove { _uploadRequested -= value; UploadCommand.NotifyCanExecuteChanged(); }
@@ -1519,57 +1519,21 @@ namespace ShareX.ImageEditor.ViewModels
         public event Func<string, string, Task>? ShowErrorDialog;
 
         [RelayCommand(CanExecute = nameof(CanCopy))]
-        private async Task Copy()
+        private void Copy()
         {
-            // Get flattened image with annotations
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            // Fallback to preview image if snapshot fails
-            var imageToUse = snapshot ?? PreviewImage;
-            if (imageToUse == null)
-            {
-                return;
-            }
-
-            if (_copyRequested != null)
-            {
-                try
-                {
-                    await _copyRequested.Invoke(imageToUse);
-                }
-                catch (Exception ex)
-                {
-                    var errorMessage = $"Failed to copy image to clipboard.\n\nError: {ex.Message}";
-
-                    // Show error dialog
-                    if (ShowErrorDialog != null)
-                    {
-                        await ShowErrorDialog.Invoke("Copy Failed", errorMessage);
-                    }
-                }
-            }
+            _copyRequested?.Invoke();
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
-        private async Task Save()
+        private void Save()
         {
-            if (_saveRequested != null)
-            {
-                await _saveRequested.Invoke();
-            }
+            _saveRequested?.Invoke();
         }
 
         [RelayCommand(CanExecute = nameof(CanSaveAs))]
-        private async Task SaveAs()
+        private void SaveAs()
         {
-            if (_saveAsRequested != null)
-            {
-                await _saveAsRequested.Invoke();
-            }
+            _saveAsRequested?.Invoke();
         }
 
         [RelayCommand(CanExecute = nameof(CanPinToScreen))]
@@ -1581,26 +1545,7 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand(CanExecute = nameof(CanUpload))]
         private async Task Upload()
         {
-            // Get flattened image with annotations
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            var imageToUpload = snapshot ?? PreviewImage;
-            if (imageToUpload == null) return;
-
-            if (_uploadRequested != null)
-            {
-                try
-                {
-                    await _uploadRequested.Invoke(imageToUpload);
-                }
-                catch
-                {
-                }
-            }
+            _uploadRequested?.Invoke();
         }
 
         private SkiaSharp.SKBitmap? _currentSourceImage;

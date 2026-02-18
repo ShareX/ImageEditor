@@ -162,7 +162,7 @@ namespace ShareX.ImageEditor
 
             if (events.CopyImageRequested != null)
             {
-                vm.CopyRequested += async (img) =>
+                vm.CopyRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null) events.CopyImageRequested(bytes);
@@ -171,7 +171,7 @@ namespace ShareX.ImageEditor
 
             if (events.SaveImageRequested != null)
             {
-                vm.SaveRequested += async () =>
+                vm.SaveRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null) events.SaveImageRequested(bytes);
@@ -180,28 +180,28 @@ namespace ShareX.ImageEditor
 
             if (events.SaveImageAsRequested != null)
             {
-                vm.SaveAsRequested += async () =>
+                vm.SaveAsRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null) events.SaveImageAsRequested(bytes);
                 };
             }
 
-            if (events.UploadImageRequested != null)
-            {
-                vm.UploadRequested += async (img) =>
-                {
-                    byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) events.UploadImageRequested(bytes);
-                };
-            }
-
             if (events.PinImageRequested != null)
             {
-                vm.PinRequested += async () =>
+                vm.PinRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null) events.PinImageRequested(bytes);
+                };
+            }
+
+            if (events.UploadImageRequested != null)
+            {
+                vm.UploadRequested += () =>
+                {
+                    byte[]? bytes = window.GetResultBytes();
+                    if (bytes != null) events.UploadImageRequested(bytes);
                 };
             }
 

@@ -38,11 +38,6 @@ public partial class ArrowAnnotation : Annotation
     /// </summary>
     public const double ArrowHeadWidthMultiplier = 3.0;
 
-    /// <summary>
-    /// Arrow head size in pixels (retained for serialization compatibility).
-    /// </summary>
-    public float ArrowHeadSize { get; set; } = 12;
-
     public ArrowAnnotation()
     {
         ToolType = EditorTool.Arrow;
@@ -70,14 +65,15 @@ public partial class ArrowAnnotation : Annotation
         var perpX = -uy;
         var perpY = ux;
 
-        var enlargedHeadSize = headSize * 1.5;
+        var headHeight = headSize * 2.5;
+        var headWidthBase = headSize * 1.5;
         var arrowAngle = Math.PI / 5.14; // 35 degrees
 
-        var baseX = endX - enlargedHeadSize * ux;
-        var baseY = endY - enlargedHeadSize * uy;
+        var baseX = endX - headHeight * ux;
+        var baseY = endY - headHeight * uy;
 
-        var wingWidth = enlargedHeadSize * Math.Tan(arrowAngle);
-        var shaftWidth = enlargedHeadSize * 0.30;
+        var wingWidth = headWidthBase * Math.Tan(arrowAngle);
+        var shaftWidth = headWidthBase * 0.25;
 
         return new ArrowPoints(
             ShaftEndLeft: new SKPoint((float)(baseX + perpX * shaftWidth), (float)(baseY + perpY * shaftWidth)),
@@ -95,8 +91,6 @@ public partial class ArrowAnnotation : Annotation
         SKPoint ShaftEndRight,
         SKPoint WingLeft,
         SKPoint WingRight);
-
-
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

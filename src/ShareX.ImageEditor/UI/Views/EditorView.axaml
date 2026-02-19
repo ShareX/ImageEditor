@@ -561,7 +561,7 @@
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Freehand}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Freehand}"
-                                ToolTip.Tip="Freehand (P)"
+                                ToolTip.Tip="Freehand (F)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPen}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
@@ -571,7 +571,7 @@
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
-                                ToolTip.Tip="Speech Balloon (B)"
+                                ToolTip.Tip="Speech Balloon (O)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Step}"
@@ -581,17 +581,17 @@
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SmartEraser}"
-                                ToolTip.Tip="Smart Eraser"
+                                ToolTip.Tip="Smart Eraser (W)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSmartEraser}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Blur}"
-                                ToolTip.Tip="Blur"
+                                ToolTip.Tip="Blur (B)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBlur}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pixelate}"
-                                ToolTip.Tip="Pixelate"
+                                ToolTip.Tip="Pixelate (P)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPixelate}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
@@ -753,7 +753,7 @@
                             BorderThickness="1"
                             Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right"
                             Width="50" Margin="0,0,0,0" Padding="25,0,10,0" CornerRadius="0,4,4,0"
-                            ToolTip.Tip="Cancel" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
+                            ToolTip.Tip="Cancel (Esc)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             ZIndex="0">
                         <Button.Styles>
                             <Style Selector="Button:pressed">
@@ -782,7 +782,7 @@
                             BorderThickness="1"
                             HorizontalAlignment="Left" VerticalAlignment="Bottom"
                             Margin="0,0,0,-8"
-                            ToolTip.Tip="Continue" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
+                            ToolTip.Tip="Continue (Enter)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             ZIndex="20">
                         <Button.Styles>
                             <Style Selector="Button:pressed">
@@ -806,27 +806,27 @@
                 </Grid>
 
                 <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
-                        ToolTip.Tip="Copy image to clipboard" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        ToolTip.Tip="Copy image to clipboard (Ctrl+Shift+C)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{StaticResource IconCopy}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding SaveCommand}" Width="40" Padding="0"
-                        ToolTip.Tip="Save image" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        ToolTip.Tip="Save image (Ctrl+S)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{StaticResource IconSave}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding SaveAsCommand}" Width="40" Padding="0"
-                        ToolTip.Tip="Save image as..." ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        ToolTip.Tip="Save image as... (Ctrl+Shift+S)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{StaticResource IconHardDrive}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding PinToScreenCommand}" Width="40" Padding="0"
-                        ToolTip.Tip="Pin image to screen" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        ToolTip.Tip="Pin image to screen (Ctrl+P)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{StaticResource IconThumbtack}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding UploadCommand}" Width="40" Padding="0"
-                        ToolTip.Tip="Upload image" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        ToolTip.Tip="Upload image (Ctrl+U)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{StaticResource IconCloudArrowUp}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black"/>
                 </Button>
             </StackPanel>

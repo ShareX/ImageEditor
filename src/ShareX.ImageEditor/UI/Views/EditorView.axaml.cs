@@ -481,10 +481,23 @@ namespace ShareX.ImageEditor.Views
                         e.Handled = true;
                     }
                 }
-                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift) && e.Key == Key.Z)
+                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift))
                 {
-                    vm.RedoCommand.Execute(null);
-                    e.Handled = true;
+                    if (e.Key == Key.Z)
+                    {
+                        vm.RedoCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    else if (e.Key == Key.C)
+                    {
+                        vm.CopyCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    else if (e.Key == Key.S)
+                    {
+                        vm.SaveAsCommand.Execute(null);
+                        e.Handled = true;
+                    }
                 }
                 else if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 {
@@ -518,6 +531,21 @@ namespace ShareX.ImageEditor.Views
                         DuplicateSelectedAnnotation();
                         e.Handled = true;
                     }
+                    else if (e.Key == Key.S)
+                    {
+                        vm.SaveCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    else if (e.Key == Key.P)
+                    {
+                        vm.PinToScreenCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    else if (e.Key == Key.U)
+                    {
+                        vm.UploadCommand.Execute(null);
+                        e.Handled = true;
+                    }
                 }
                 else if (e.KeyModifiers == KeyModifiers.None || e.KeyModifiers == KeyModifiers.Shift)
                 {
@@ -543,17 +571,35 @@ namespace ShareX.ImageEditor.Views
                             case Key.V: vm.SelectToolCommand.Execute(EditorTool.Select); e.Handled = true; break;
                             case Key.R: vm.SelectToolCommand.Execute(EditorTool.Rectangle); e.Handled = true; break;
                             case Key.E: vm.SelectToolCommand.Execute(EditorTool.Ellipse); e.Handled = true; break;
-                            case Key.A: vm.SelectToolCommand.Execute(EditorTool.Arrow); e.Handled = true; break;
                             case Key.L: vm.SelectToolCommand.Execute(EditorTool.Line); e.Handled = true; break;
+                            case Key.A: vm.SelectToolCommand.Execute(EditorTool.Arrow); e.Handled = true; break;
+                            case Key.F: vm.SelectToolCommand.Execute(EditorTool.Freehand); e.Handled = true; break; // Freehand
                             case Key.T: vm.SelectToolCommand.Execute(EditorTool.Text); e.Handled = true; break;
+                            case Key.O: vm.SelectToolCommand.Execute(EditorTool.SpeechBalloon); e.Handled = true; break;
+                            case Key.N: vm.SelectToolCommand.Execute(EditorTool.Step); e.Handled = true; break;
+                            case Key.W: vm.SelectToolCommand.Execute(EditorTool.SmartEraser); e.Handled = true; break;
                             case Key.S: vm.SelectToolCommand.Execute(EditorTool.Spotlight); e.Handled = true; break;
                             case Key.B: vm.SelectToolCommand.Execute(EditorTool.Blur); e.Handled = true; break;
                             case Key.P: vm.SelectToolCommand.Execute(EditorTool.Pixelate); e.Handled = true; break;
                             case Key.I: vm.SelectToolCommand.Execute(EditorTool.Image); e.Handled = true; break;
-                            case Key.F: vm.SelectToolCommand.Execute(EditorTool.Freehand); e.Handled = true; break; // Freehand
                             case Key.H: vm.SelectToolCommand.Execute(EditorTool.Highlight); e.Handled = true; break;
                             case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
                             case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
+                            case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
+                        }
+
+                        if (!e.Handled)
+                        {
+                            if (e.Key == Key.Enter && vm.TaskMode)
+                            {
+                                vm.ContinueCommand.Execute(null);
+                                e.Handled = true;
+                            }
+                            else if (e.Key == Key.Escape && vm.TaskMode)
+                            {
+                                vm.CancelCommand.Execute(null);
+                                e.Handled = true;
+                            }
                         }
                     }
                 }

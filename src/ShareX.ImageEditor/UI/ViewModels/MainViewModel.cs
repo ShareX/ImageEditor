@@ -185,8 +185,6 @@ namespace ShareX.ImageEditor.ViewModels
         }
         public bool CanUpload() => _uploadRequested != null;
 
-        public event Func<Task<Bitmap?>>? SnapshotRequested;
-
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage
         {
@@ -1514,9 +1512,6 @@ namespace ShareX.ImageEditor.ViewModels
             // Clear annotations as well
             ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
         }
-
-        // Event for View to show error dialog
-        public event Func<string, string, Task>? ShowErrorDialog;
 
         [RelayCommand(CanExecute = nameof(CanCopy))]
         private void Copy()

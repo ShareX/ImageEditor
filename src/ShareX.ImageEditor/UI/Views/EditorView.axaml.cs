@@ -238,13 +238,6 @@ namespace ShareX.ImageEditor.Views
                 vm.DuplicateRequested += OnDuplicateRequested;
                 vm.ZoomToFitRequested += OnZoomToFitRequested;
 
-                vm.SnapshotRequested += async () =>
-                {
-                    // Render current state to bitmap
-                    if (vm.PreviewImage == null) return null;
-                    return await RenderSnapshot();
-                };
-
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
 

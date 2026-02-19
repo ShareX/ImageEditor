@@ -553,10 +553,23 @@ namespace ShareX.ImageEditor.Views
                                 }
                                 break;
                             case Key.Escape:
-                                if (vm.TaskMode)
+                                if (_selectionController.SelectedShape != null)
+                                {
+                                    _selectionController.ClearSelection();
+                                    e.Handled = true;
+                                }
+                                else if (vm.TaskMode)
                                 {
                                     vm.CancelCommand.Execute(null);
                                     e.Handled = true;
+                                }
+                                else
+                                {
+                                    if (TopLevel.GetTopLevel(this) is Avalonia.Controls.Window window)
+                                    {
+                                        window.Close();
+                                        e.Handled = true;
+                                    }
                                 }
                                 break;
                         }

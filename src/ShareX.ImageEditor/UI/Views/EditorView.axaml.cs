@@ -165,6 +165,7 @@ namespace ShareX.ImageEditor.Views
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
                         vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+                        vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
                     }
 
                     if (vm.SelectedAnnotation is NumberAnnotation num)
@@ -1131,6 +1132,11 @@ namespace ShareX.ImageEditor.Views
         {
             var selected = _selectionController.SelectedShape;
             if (selected == null) return;
+
+            if (selected.Tag is Annotation annotation)
+            {
+                annotation.StrokeWidth = width;
+            }
 
             switch (selected)
             {

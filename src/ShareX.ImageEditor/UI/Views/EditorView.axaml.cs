@@ -483,68 +483,26 @@ namespace ShareX.ImageEditor.Views
                 }
                 else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift))
                 {
-                    if (e.Key == Key.Z)
+                    switch (e.Key)
                     {
-                        vm.RedoCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.C)
-                    {
-                        vm.CopyCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.S)
-                    {
-                        vm.SaveAsCommand.Execute(null);
-                        e.Handled = true;
+                        case Key.Z: vm.RedoCommand.Execute(null); e.Handled = true; break;
+                        case Key.C: vm.CopyCommand.Execute(null); e.Handled = true; break;
+                        case Key.S: vm.SaveAsCommand.Execute(null); e.Handled = true; break;
                     }
                 }
                 else if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 {
-                    if (e.Key == Key.Z)
+                    switch (e.Key)
                     {
-                        vm.UndoCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.Y)
-                    {
-                        vm.RedoCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.X)
-                    {
-                        vm.CutAnnotationCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.C)
-                    {
-                        vm.CopyAnnotationCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.V)
-                    {
-                        vm.PasteCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.D)
-                    {
-                        DuplicateSelectedAnnotation();
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.S)
-                    {
-                        vm.SaveCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.P)
-                    {
-                        vm.PinToScreenCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.U)
-                    {
-                        vm.UploadCommand.Execute(null);
-                        e.Handled = true;
+                        case Key.Z: vm.UndoCommand.Execute(null); e.Handled = true; break;
+                        case Key.Y: vm.RedoCommand.Execute(null); e.Handled = true; break;
+                        case Key.X: vm.CutAnnotationCommand.Execute(null); e.Handled = true; break;
+                        case Key.C: vm.CopyAnnotationCommand.Execute(null); e.Handled = true; break;
+                        case Key.V: vm.PasteCommand.Execute(null); e.Handled = true; break;
+                        case Key.D: DuplicateSelectedAnnotation(); e.Handled = true; break;
+                        case Key.S: vm.SaveCommand.Execute(null); e.Handled = true; break;
+                        case Key.P: vm.PinToScreenCommand.Execute(null); e.Handled = true; break;
+                        case Key.U: vm.UploadCommand.Execute(null); e.Handled = true; break;
                     }
                 }
                 else if (e.KeyModifiers == KeyModifiers.None || e.KeyModifiers == KeyModifiers.Shift)
@@ -586,20 +544,21 @@ namespace ShareX.ImageEditor.Views
                             case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
                             case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
                             case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
-                        }
-
-                        if (!e.Handled)
-                        {
-                            if (e.Key == Key.Enter && vm.TaskMode)
-                            {
-                                vm.ContinueCommand.Execute(null);
-                                e.Handled = true;
-                            }
-                            else if (e.Key == Key.Escape && vm.TaskMode)
-                            {
-                                vm.CancelCommand.Execute(null);
-                                e.Handled = true;
-                            }
+                            
+                            case Key.Enter:
+                                if (vm.TaskMode)
+                                {
+                                    vm.ContinueCommand.Execute(null);
+                                    e.Handled = true;
+                                }
+                                break;
+                            case Key.Escape:
+                                if (vm.TaskMode)
+                                {
+                                    vm.CancelCommand.Execute(null);
+                                    e.Handled = true;
+                                }
+                                break;
                         }
                     }
                 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace ShareX.ImageEditor.UI.Adapters.Converters;
+namespace ShareX.ImageEditor.Converters;
 
 public class MathMultiplyConverter : IMultiValueConverter
 {

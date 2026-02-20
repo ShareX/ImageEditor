@@ -896,19 +896,22 @@ public class EditorInputController
         {
             Width = handleSize,
             Height = handleSize,
-            CornerRadius = new CornerRadius(10),
+            CornerRadius = new CornerRadius(handleSize / 2),
             Background = Brushes.White,
+            BorderBrush = new SolidColorBrush(Color.FromRgb(30, 144, 255)),
+            BorderThickness = new Thickness(2),
             Tag = tag,
             Cursor = cursor,
             BoxShadow = new BoxShadows(new BoxShadow
             {
                 OffsetX = 0,
                 OffsetY = 0,
-                Blur = 8,
-                Spread = 0,
-                Color = Color.FromArgb(100, 0, 0, 0)
+                Blur = 6,
+                Spread = 1,
+                Color = Color.FromArgb(160, 0, 0, 0)
             })
         };
+        handle.SetValue(Panel.ZIndexProperty, 9999);
 
         Canvas.SetLeft(handle, x - handleSize / 2);
         Canvas.SetTop(handle, y - handleSize / 2);

@@ -1285,25 +1285,9 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm && vm.PreviewImage != null)
             {
-                var dialog = new CropImageDialog();
-                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-
-                dialog.ApplyRequested += (s, args) =>
-                {
-                    // vm.CropImage(args.X, args.Y, args.Width, args.Height);
-                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                    _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
-
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                dialog.CancelRequested += (s, args) =>
-                {
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
+                // Activate the canvas-based Crop tool so the user can draw the crop region
+                // with 8 resize handles instead of using a numeric dialog.
+                vm.SelectToolCommand.Execute(EditorTool.Crop);
             }
         }
 

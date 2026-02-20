@@ -21,7 +21,6 @@
     </UserControl.DataTemplates>
 
     <UserControl.Resources>
-        <converters:MathMultiplyConverter x:Key="MathMultiplyConverter" />
         <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
         <converters:EqualsConverter x:Key="EqualsConverter" />
 
@@ -431,24 +430,12 @@
                               PointerPressed="OnScrollViewerPointerPressed"
                               PointerMoved="OnScrollViewerPointerMoved"
                               PointerReleased="OnScrollViewerPointerReleased">
-                    <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Panel.Width>
-                            <MultiBinding Converter="{StaticResource MathMultiplyConverter}">
-                                <Binding Path="Bounds.Width" ElementName="CanvasRootGrid" />
-                                <Binding Path="Zoom" />
-                            </MultiBinding>
-                        </Panel.Width>
-                        <Panel.Height>
-                            <MultiBinding Converter="{StaticResource MathMultiplyConverter}">
-                                <Binding Path="Bounds.Height" ElementName="CanvasRootGrid" />
-                                <Binding Path="Zoom" />
-                            </MultiBinding>
-                        </Panel.Height>
-
-                        <Grid Name="CanvasRootGrid" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0,0">
-                            <Grid.RenderTransform>
-                                <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
-                            </Grid.RenderTransform>
+                    <LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <LayoutTransformControl.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+                        </LayoutTransformControl.LayoutTransform>
+                        <!-- Main Canvas Container with Checkered Background and Shadow -->
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                             <!-- Checkered Background -->
                             <Border BorderThickness="1"
                                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
@@ -514,7 +501,7 @@
                                 </Border>
                             </Border>
                         </Grid>
-                    </Panel>
+                    </LayoutTransformControl>
                 </ScrollViewer>
             </Grid>
 

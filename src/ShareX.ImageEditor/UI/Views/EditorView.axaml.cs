@@ -1076,18 +1076,14 @@ namespace ShareX.ImageEditor.Views
 
                 if (rect.Width > 0 && rect.Height > 0)
                 {
-                    var scaling = 1.0;
-                    var topLevel = TopLevel.GetTopLevel(this);
-                    if (topLevel != null) scaling = topLevel.RenderScaling;
+                    // Canvas coordinates are already in image-pixel space (AnnotationCanvas
+                    // is sized to CanvasSize = bitmap.Width/Height). No DPI scaling needed.
+                    var cropX = (int)Math.Round(rect.Left);
+                    var cropY = (int)Math.Round(rect.Top);
+                    var cropW = (int)Math.Round(rect.Width);
+                    var cropH = (int)Math.Round(rect.Height);
 
-                    var physX = (int)(rect.Left * scaling);
-                    var physY = (int)(rect.Top * scaling);
-                    var physW = (int)(rect.Width * scaling);
-                    var physH = (int)(rect.Height * scaling);
-
-                    // vm.CropImage(physX, physY, physW, physH);
-                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                    _editorCore.Crop(new SKRect(physX, physY, physX + physW, physY + physH));
+                    _editorCore.Crop(new SKRect(cropX, cropY, cropX + cropW, cropY + cropH));
                 }
                 cropOverlay.IsVisible = false;
             }

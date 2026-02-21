@@ -922,6 +922,7 @@ public class EditorInputController
     private const double CropHandleEdgeShort = 14;
     private const double CropHandleLArmLength = 12;
     private const double CropHandleStrokeThickness = 2.75;
+    private const double CropHandleLInset = 2;
     private const double MinCropGuideSize = 24;
 
     private static readonly Color CropHandleFill = Color.FromRgb(255, 255, 255);
@@ -1067,6 +1068,30 @@ public class EditorInputController
         rect.IsVisible = rect.Width > 0 && rect.Height > 0;
     }
 
+    /// <summary>
+    /// Computes the anchor offset within a crop handle's hit area so the visual element
+    /// (L-vertex for corners, center for edge bars) aligns with the crop rectangle edge/corner.
+    /// </summary>
+    private static (double X, double Y) GetCropHandleAnchorOffset(string tag)
+    {
+        const double size = CropHandleCornerHitSize;
+        const double inset = CropHandleLInset;
+
+        if (tag.EndsWith("TopLeft", StringComparison.Ordinal))
+            return (inset, inset);
+        if (tag.EndsWith("TopRight", StringComparison.Ordinal))
+            return (size - inset, inset);
+        if (tag.EndsWith("BottomRight", StringComparison.Ordinal))
+            return (size - inset, size - inset);
+        if (tag.EndsWith("BottomLeft", StringComparison.Ordinal))
+            return (inset, size - inset);
+
+        // Edge handles: centered on the edge midpoint
+        if (tag.Contains("Top") || tag.Contains("Bottom"))
+            return (CropHandleEdgeLong / 2.0, CropHandleEdgeShort / 2.0);
+        return (CropHandleEdgeShort / 2.0, CropHandleEdgeLong / 2.0);
+    }
+
     private void UpdateCropHandlePositions(Canvas overlay, Rect cropRect)
     {
         // Order: TopLeft, TopCenter, TopRight, RightCenter, BottomRight, BottomCenter, BottomLeft, LeftCenter
@@ -1082,22 +1107,12 @@ public class EditorInputController
             (cropRect.Left,                          cropRect.Top + cropRect.Height / 2),
         };
 
-        var sizes = new (double W, double H)[]
+        for (int i = 0; i < _cropHandles.Count && i < positions.Length; i++)
         {
-            (CropHandleCornerHitSize, CropHandleCornerHitSize),
-            (CropHandleEdgeLong, CropHandleEdgeShort),
-            (CropHandleCornerHitSize, CropHandleCornerHitSize),
-            (CropHandleEdgeShort, CropHandleEdgeLong),
-            (CropHandleCornerHitSize, CropHandleCornerHitSize),
-            (CropHandleEdgeLong, CropHandleEdgeShort),
-            (CropHandleCornerHitSize, CropHandleCornerHitSize),
-            (CropHandleEdgeShort, CropHandleEdgeLong),
-        };
-
-        for (int i = 0; i < _cropHandles.Count && i < positions.Length && i < sizes.Length; i++)
-        {
-            Canvas.SetLeft(_cropHandles[i], positions[i].X - sizes[i].W / 2);
-            Canvas.SetTop(_cropHandles[i], positions[i].Y - sizes[i].H / 2);
+            var tag = _cropHandles[i].Tag as string ?? "";
+            var anchor = GetCropHandleAnchorOffset(tag);
+            Canvas.SetLeft(_cropHandles[i], positions[i].X - anchor.X);
+            Canvas.SetTop(_cropHandles[i], positions[i].Y - anchor.Y);
         }
     }
 
@@ -1142,8 +1157,9 @@ public class EditorInputController
         };
         handle.SetValue(Panel.ZIndexProperty, CropHandleZIndex);
 
-        Canvas.SetLeft(handle, x - width / 2);
-        Canvas.SetTop(handle, y - height / 2);
+        var anchor = GetCropHandleAnchorOffset(tag);
+        Canvas.SetLeft(handle, x - anchor.X);
+        Canvas.SetTop(handle, y - anchor.Y);
         overlay.Children.Add(handle);
         return handle;
     }
@@ -1155,7 +1171,7 @@ public class EditorInputController
     private static Control CreateCropCornerLShape(string tag)
     {
         const double size = CropHandleCornerHitSize;
-        const double inset = 2;
+        const double inset = CropHandleLInset;
         const double arm = CropHandleLArmLength;
         const double thickness = 2.5;
 
@@ -1345,16 +1361,15 @@ public class EditorInputController
             return;
         }
 
-        var scaling = 1.0;
-        var topLevel = TopLevel.GetTopLevel(_view);
-        if (topLevel != null) scaling = topLevel.RenderScaling;
+        // Canvas coordinates are already in image-pixel space (AnnotationCanvas is sized
+        // to CanvasSize = bitmap.Width/Height). No DPI scaling needed — RenderScaling
+        // only affects physical display pixels, not the logical layout coordinate space.
+        var cropX = (int)Math.Round(x);
+        var cropY = (int)Math.Round(y);
+        var cropW = (int)Math.Round(w);
+        var cropH = (int)Math.Round(h);
 
-        var physX = (int)(x * scaling);
-        var physY = (int)(y * scaling);
-        var physW = (int)(w * scaling);
-        var physH = (int)(h * scaling);
-
-        vm.CropImage(physX, physY, physW, physH);
+        vm.CropImage(cropX, cropY, cropW, cropH);
 
         cropOverlay.IsVisible = false;
         _currentShape = null; // Ensure we clear current shape

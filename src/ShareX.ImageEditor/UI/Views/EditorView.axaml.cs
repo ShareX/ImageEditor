@@ -875,6 +875,18 @@ namespace ShareX.ImageEditor.Views
                 annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
                 annotation.EndPoint = new SKPoint((float)(normalizedLeft + width), (float)(normalizedTop + height));
 
+                // Highlight uses a SolidColorBrush overlay from CreateVisual() — just sync dimensions.
+                // EditorCore.Render only draws the source image; all annotation visuals are Avalonia-owned.
+                if (annotation is HighlightAnnotation)
+                {
+                    if (shape is Shape highlightShape)
+                    {
+                        highlightShape.Width = width;
+                        highlightShape.Height = height;
+                    }
+                    return;
+                }
+
                 SKBitmap sourceBitmap = _editorCore.SourceImage ?? (previewBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage));
                 annotation.UpdateEffect(sourceBitmap);
 
@@ -883,7 +895,6 @@ namespace ShareX.ImageEditor.Views
                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
                     double bw = annotation.EffectBitmap.Width;
                     double bh = annotation.EffectBitmap.Height;
-                    // Match ShareX.ImageEditor reference: shape size = effect bitmap size so current image area fills the rectangle
                     shapeControl.Width = bw;
                     shapeControl.Height = bh;
                     shapeControl.Fill = new ImageBrush(avaloniaBitmap)
@@ -1136,8 +1147,8 @@ namespace ShareX.ImageEditor.Views
                 case Shape shape:
                     if (shape.Tag is HighlightAnnotation)
                     {
-                        // For highlighter, we must regenerate the effect bitmap with the new color
-                        OnRequestUpdateEffect(shape);
+                        // Highlight fill is a SolidColorBrush — update it directly with the new color
+                        shape.Fill = new SolidColorBrush(ApplyHighlightAlpha(Color.Parse(colorHex)));
                         break;
                     }
 

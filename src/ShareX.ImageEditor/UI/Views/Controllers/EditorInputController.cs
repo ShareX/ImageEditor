@@ -806,6 +806,10 @@ public class EditorInputController
         annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
         annotation.EndPoint = new SKPoint((float)(normalizedLeft + alignedW), (float)(normalizedTop + alignedH));
 
+        // Highlight uses a SolidColorBrush overlay set in CreateVisual() — position/size above is sufficient.
+        // No ImageBrush is needed; EditorCore.Render draws only the source image in the hybrid model.
+        if (annotation is HighlightAnnotation) return;
+
         try
         {
             annotation.UpdateEffect(_cachedSkBitmap);
@@ -814,7 +818,6 @@ public class EditorInputController
                 var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
                 double bw = annotation.EffectBitmap.Width;
                 double bh = annotation.EffectBitmap.Height;
-                // Match reference: Stretch.None and SourceRect so the current image area fills the highlight rectangle
                 shapeControl.Width = bw;
                 shapeControl.Height = bh;
                 shapeControl.Fill = new ImageBrush(avaloniaBitmap)

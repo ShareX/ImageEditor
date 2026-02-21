@@ -491,9 +491,8 @@
                                                     <Rectangle Name="CropOverlay"
                                                                IsVisible="False"
                                                                Stroke="White"
-                                                               StrokeThickness="2"
-                                                               StrokeDashArray="4,2"
-                                                               Fill="#80000000" />
+                                                               StrokeThickness="1.5"
+                                                               Fill="Transparent" />
                                                 </Canvas>
                                             </Grid>
                                         </Border>

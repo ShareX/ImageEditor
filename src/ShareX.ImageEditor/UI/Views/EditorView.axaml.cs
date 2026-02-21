@@ -843,6 +843,7 @@ namespace ShareX.ImageEditor.Views
             if (shape == null || shape.Tag is not BaseEffectAnnotation annotation) return;
             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
 
+            SKBitmap? previewBitmap = null;
             try
             {
                 double left = Canvas.GetLeft(shape);
@@ -851,24 +852,34 @@ namespace ShareX.ImageEditor.Views
                 double height = shape.Height;
                 if (double.IsNaN(width) || width <= 0) width = shape.Bounds.Width;
                 if (double.IsNaN(height) || height <= 0) height = shape.Bounds.Height;
-                if (width <= 0 || height <= 0)
-                {
-                    var bounds = annotation.GetBounds();
-                    width = bounds.Width;
-                    height = bounds.Height;
-                }
+                var bounds = annotation.GetBounds();
+                if (double.IsNaN(left)) left = bounds.Left;
+                if (double.IsNaN(top)) top = bounds.Top;
+                if (width <= 0 || height <= 0) { width = bounds.Width; height = bounds.Height; }
                 if (width <= 0 || height <= 0) return;
 
-                annotation.StartPoint = new SKPoint((float)left, (float)top);
-                annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
+                // Pixel-align bounds so effect bitmap dimensions remain stable while dragging.
+                double right = left + width;
+                double bottom = top + height;
+                double normalizedLeft = Math.Floor(Math.Min(left, right));
+                double normalizedTop = Math.Floor(Math.Min(top, bottom));
+                double normalizedRight = Math.Ceiling(Math.Max(left, right));
+                double normalizedBottom = Math.Ceiling(Math.Max(top, bottom));
 
-                // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
-                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                annotation.UpdateEffect(skBitmap);
+                width = Math.Max(1, normalizedRight - normalizedLeft);
+                height = Math.Max(1, normalizedBottom - normalizedTop);
+
+                Canvas.SetLeft(shape, normalizedLeft);
+                Canvas.SetTop(shape, normalizedTop);
+
+                annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
+                annotation.EndPoint = new SKPoint((float)(normalizedLeft + width), (float)(normalizedTop + height));
+
+                SKBitmap sourceBitmap = _editorCore.SourceImage ?? (previewBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage));
+                annotation.UpdateEffect(sourceBitmap);
 
                 if (annotation.EffectBitmap != null && shape is Shape shapeControl)
                 {
-                    // Ensure control size matches so the fill covers the full rectangle (fixes move not redrawing highlight over entire area).
                     shapeControl.Width = width;
                     shapeControl.Height = height;
                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
@@ -883,6 +894,10 @@ namespace ShareX.ImageEditor.Views
                 }
             }
             catch { }
+            finally
+            {
+                previewBitmap?.Dispose();
+            }
         }
 
         private void OnColorChanged(object? sender, IBrush color)

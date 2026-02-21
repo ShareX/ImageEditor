@@ -22,14 +22,21 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
         if (source == null) return;
 
         var rect = GetBounds();
-        var fullW = (int)rect.Width;
-        var fullH = (int)rect.Height;
+        // Use floor/ceiling so integer annotation rect and bitmap size always match.
+        // This prevents partial coverage after moving when bounds contain fractional values.
+        int annotationLeft = (int)Math.Floor(rect.Left);
+        int annotationTop = (int)Math.Floor(rect.Top);
+        int annotationRight = (int)Math.Ceiling(rect.Right);
+        int annotationBottom = (int)Math.Ceiling(rect.Bottom);
+
+        var fullW = annotationRight - annotationLeft;
+        var fullH = annotationBottom - annotationTop;
 
         if (fullW <= 0 || fullH <= 0) return;
 
         // Logical intersection with image
-        var skRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
-        var intersect = skRect;
+        var annotationRect = new SKRectI(annotationLeft, annotationTop, annotationRight, annotationBottom);
+        var intersect = annotationRect;
         intersect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
         // Create the FULL size bitmap (matching rect)
@@ -110,8 +117,8 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
 
             // Draw the processed crop into the result at the correct offset
             // Offset is difference between intersection left/top and annotation left/top
-            int dx = intersect.Left - skRect.Left;
-            int dy = intersect.Top - skRect.Top;
+            int dx = intersect.Left - annotationRect.Left;
+            int dy = intersect.Top - annotationRect.Top;
 
             using (var canvas = new SKCanvas(result))
             {

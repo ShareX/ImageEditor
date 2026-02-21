@@ -793,6 +793,11 @@ public class EditorInputController
         annotation.StartPoint = new SKPoint((float)(x * scaling), (float)(y * scaling));
         annotation.EndPoint = new SKPoint((float)((x + width) * scaling), (float)((y + height) * scaling));
 
+        // Highlight during drag: keep the simple semi-transparent rectangle from CreateVisual();
+        // skip expensive UpdateEffect + ImageBrush on every pointer move to avoid lag (regression fix).
+        if (annotation is HighlightAnnotation)
+            return;
+
         try
         {
             annotation.UpdateEffect(_cachedSkBitmap);
@@ -1193,9 +1198,17 @@ public class EditorInputController
         var vm = ViewModel;
         if (vm == null) return;
 
+        // Use a visible default when current color is transparent (user feedback: text was invisible).
+        string strokeColor = vm.SelectedColor;
+        if (Avalonia.Media.Color.TryParse(strokeColor, out var parsed) && parsed.A == 0)
+        {
+            var fallback = vm.Options?.TextColor ?? Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
+            strokeColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
+        }
+
         var textAnnotation = new TextAnnotation
         {
-            StrokeColor = vm.SelectedColor,
+            StrokeColor = strokeColor,
             StrokeWidth = (float)strokeWidth,
             FontSize = vm.FontSize,
             ShadowEnabled = vm.ShadowEnabled,
@@ -1203,9 +1216,10 @@ public class EditorInputController
             EndPoint = ToSKPoint(_startPoint) // Will be updated when text is finalized
         };
 
+        var textBrush = Avalonia.Media.Color.TryParse(strokeColor, out var c) ? new SolidColorBrush(c) : brush;
         var textBox = new TextBox
         {
-            Foreground = brush,
+            Foreground = textBrush,
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(1),
             BorderBrush = Brushes.White,

@@ -875,8 +875,8 @@ namespace ShareX.ImageEditor.Views
                 annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
                 annotation.EndPoint = new SKPoint((float)(normalizedLeft + width), (float)(normalizedTop + height));
 
-                // Highlight uses a SolidColorBrush overlay from CreateVisual() — just sync dimensions.
-                // EditorCore.Render only draws the source image; all annotation visuals are Avalonia-owned.
+                // Highlight is rendered in the Skia layer. Sync dimensions on the transparent
+                // hit-test Rectangle and trigger a Skia re-render at the new bounds.
                 if (annotation is HighlightAnnotation)
                 {
                     if (shape is Shape highlightShape)
@@ -884,6 +884,7 @@ namespace ShareX.ImageEditor.Views
                         highlightShape.Width = width;
                         highlightShape.Height = height;
                     }
+                    _editorCore.Invalidate();
                     return;
                 }
 
@@ -1147,8 +1148,9 @@ namespace ShareX.ImageEditor.Views
                 case Shape shape:
                     if (shape.Tag is HighlightAnnotation)
                     {
-                        // Highlight fill is a SolidColorBrush — update it directly with the new color
-                        shape.Fill = new SolidColorBrush(ApplyHighlightAlpha(Color.Parse(colorHex)));
+                        // Highlight is rendered in Skia using annotation.StrokeColor (already updated above).
+                        // Trigger a Skia re-render so the new color is immediately visible.
+                        _editorCore.Invalidate();
                         break;
                     }
 
@@ -1220,11 +1222,6 @@ namespace ShareX.ImageEditor.Views
                     }
                     break;
             }
-        }
-
-        private static Color ApplyHighlightAlpha(Color baseColor)
-        {
-            return Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
         }
 
         // --- Edit Menu Event Handlers ---

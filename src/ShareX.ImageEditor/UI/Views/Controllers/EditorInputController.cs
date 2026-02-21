@@ -708,6 +708,7 @@ public class EditorInputController
                             _cachedSkBitmap?.Dispose();
                             _cachedSkBitmap = null;
                             _isCreatingEffect = false;
+                            _view.EditorCore.PendingHighlight = null;
                             return;
                         }
                     }
@@ -749,6 +750,8 @@ public class EditorInputController
             _cachedSkBitmap?.Dispose();
             _cachedSkBitmap = null;
             _isCreatingEffect = false;
+            // Clear pending highlight — it is now in the annotation list (or was discarded).
+            _view.EditorCore.PendingHighlight = null;
         }
     }
 
@@ -806,9 +809,14 @@ public class EditorInputController
         annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
         annotation.EndPoint = new SKPoint((float)(normalizedLeft + alignedW), (float)(normalizedTop + alignedH));
 
-        // Highlight uses a SolidColorBrush overlay set in CreateVisual() — position/size above is sufficient.
-        // No ImageBrush is needed; EditorCore.Render draws only the source image in the hybrid model.
-        if (annotation is HighlightAnnotation) return;
+        // Highlight is rendered directly in the Skia layer (EditorCore.Render/DrawHighlightRect).
+        // Position/size above keeps the transparent hit-test Rectangle in sync with the annotation.
+        if (annotation is HighlightAnnotation highlightAnnotation)
+        {
+            _view.EditorCore.PendingHighlight = highlightAnnotation;
+            _view.EditorCore.Invalidate();
+            return;
+        }
 
         try
         {

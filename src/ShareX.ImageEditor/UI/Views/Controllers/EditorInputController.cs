@@ -127,25 +127,31 @@ public class EditorInputController
             var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
             var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
 
-            // Check if a crop resize/move handle was clicked
+            // Check if a crop resize/move handle was clicked (walk up from source so child Path/Rectangle still counts)
             if (overlayCanvas != null)
             {
-                var handleSource = e.Source as Control;
-                if (handleSource is Border cropBorder
-                    && cropBorder.Tag is string cropTag
-                    && cropTag.StartsWith("Crop_")
-                    && overlayCanvas.Children.Contains(handleSource))
+                var hitSource = e.Source as Control;
+                Control? cropBorder = null;
+                string? cropTag = null;
+                while (hitSource != null && hitSource != overlayCanvas)
                 {
-                    if (cropOverlay != null)
+                    if (hitSource.Tag is string tag && tag.StartsWith("Crop_"))
                     {
-                        _cropDragStartRect = new Rect(Canvas.GetLeft(cropOverlay), Canvas.GetTop(cropOverlay), cropOverlay.Width, cropOverlay.Height);
-                        _cropDragStartPoint = e.GetPosition(canvas);
-                        _draggedCropHandleTag = cropTag;
-                        _isDraggingCropHandle = true;
-                        e.Pointer.Capture(handleSource);
-                        e.Handled = true;
-                        return;
+                        cropBorder = hitSource;
+                        cropTag = tag;
+                        break;
                     }
+                    hitSource = hitSource.GetVisualParent() as Control;
+                }
+                if (cropBorder != null && cropTag != null && overlayCanvas.Children.Contains(cropBorder) && cropOverlay != null)
+                {
+                    _cropDragStartRect = new Rect(Canvas.GetLeft(cropOverlay), Canvas.GetTop(cropOverlay), cropOverlay.Width, cropOverlay.Height);
+                    _cropDragStartPoint = e.GetPosition(canvas);
+                    _draggedCropHandleTag = cropTag;
+                    _isDraggingCropHandle = true;
+                    e.Pointer.Capture(cropBorder);
+                    e.Handled = true;
+                    return;
                 }
             }
 
@@ -868,12 +874,16 @@ public class EditorInputController
         _cropHandles.Clear();
     }
 
-    // Crop handle dimensions (UX: match common image editors — L-shaped corners, visible edge bars)
-    private const double CropHandleCornerSize = 20;
-    private const double CropHandleEdgeLong = 20;
-    private const double CropHandleEdgeShort = 10;
-    private const double CropHandleLArmLength = 14;
+    // Crop handle dimensions: larger for better hit zones and visibility
+    private const double CropHandleCornerSize = 28;
+    private const double CropHandleEdgeLong = 28;
+    private const double CropHandleEdgeShort = 14;
+    private const double CropHandleLArmLength = 18;
     private const double CropHandleStrokeThickness = 2.5;
+
+    // Hi-vis colors for crop handles (solid yellow, dark outline for contrast on any background)
+    private static readonly Color CropHandleFill = Color.FromRgb(255, 235, 59);   // #FFEB3B
+    private static readonly Color CropHandleStroke = Color.FromRgb(30, 30, 30);
 
     private void UpdateCropHandlePositions(Canvas overlay, Rect cropRect)
     {
@@ -940,9 +950,9 @@ public class EditorInputController
         {
             Width = width,
             Height = height,
-            Background = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(30, 144, 255)),
-            BorderThickness = new Thickness(1),
+            Background = new SolidColorBrush(CropHandleFill),
+            BorderBrush = new SolidColorBrush(CropHandleStroke),
+            BorderThickness = new Thickness(1.5),
             Tag = tag,
             Cursor = cursor,
             Child = visual,
@@ -980,7 +990,7 @@ public class EditorInputController
             Data = data,
             Width = size,
             Height = size,
-            Stroke = new SolidColorBrush(Color.FromRgb(20, 20, 40)),
+            Stroke = new SolidColorBrush(CropHandleStroke),
             StrokeThickness = CropHandleStrokeThickness + 2,
             StrokeLineCap = PenLineCap.Square,
             Fill = null
@@ -990,7 +1000,7 @@ public class EditorInputController
             Data = data,
             Width = size,
             Height = size,
-            Stroke = new SolidColorBrush(Colors.White),
+            Stroke = new SolidColorBrush(CropHandleFill),
             StrokeThickness = CropHandleStrokeThickness,
             StrokeLineCap = PenLineCap.Square,
             Fill = null
@@ -1027,8 +1037,8 @@ public class EditorInputController
         {
             Width = rw,
             Height = rh,
-            Fill = new SolidColorBrush(Colors.White),
-            Stroke = new SolidColorBrush(Color.FromRgb(30, 144, 255)),
+            Fill = new SolidColorBrush(CropHandleFill),
+            Stroke = new SolidColorBrush(CropHandleStroke),
             StrokeThickness = 1.5
         };
         rect.Classes.Add("crop-handle-edge");
@@ -1051,6 +1061,8 @@ public class EditorInputController
         if (overlay != null)
             UpdateCropHandlePositions(overlay, newRect);
     }
+
+    private const double MinCropSize = 16;
 
     private static Rect ComputeCropHandleResizedRect(string handleTag, Point dragStart, Point current, Rect originalRect, double canvasW, double canvasH)
     {
@@ -1080,12 +1092,23 @@ public class EditorInputController
                 return new Rect(newLeft, newTop, originalRect.Width, originalRect.Height);
         }
 
-        // Normalize to valid rect, allowing inversion when dragging past opposite edge
-        return new Rect(
-            Math.Min(left, right),
-            Math.Min(top, bottom),
-            Math.Abs(right - left),
-            Math.Abs(bottom - top));
+        // Normalize to valid rect (allow inversion when dragging past opposite edge)
+        double x = Math.Min(left, right);
+        double y = Math.Min(top, bottom);
+        double w = Math.Abs(right - left);
+        double h = Math.Abs(bottom - top);
+
+        // Enforce minimum size so edge/corner drag stays responsive
+        if (w < MinCropSize) { double midX = x + w / 2; w = MinCropSize; x = midX - w / 2; }
+        if (h < MinCropSize) { double midY = y + h / 2; h = MinCropSize; y = midY - h / 2; }
+
+        // Clamp to canvas
+        if (x < 0) { w += x; x = 0; }
+        if (y < 0) { h += y; y = 0; }
+        if (x + w > canvasW) w = Math.Max(MinCropSize, canvasW - x);
+        if (y + h > canvasH) h = Math.Max(MinCropSize, canvasH - y);
+
+        return new Rect(x, y, w, h);
     }
 
     private void PerformCrop()

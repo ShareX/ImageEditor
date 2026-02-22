@@ -300,6 +300,10 @@ namespace ShareX.ImageEditor.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.ActiveTool))
                 {
+                    if (vm.ActiveTool == EditorTool.Crop)
+                        _inputController.ActivateCropToFullImage();
+                    else
+                        _inputController.CancelCrop();
                     _selectionController.ClearSelection();
                     UpdateCursorForTool(); // ISSUE-018 fix: Update cursor feedback for active tool
                 }
@@ -546,7 +550,11 @@ namespace ShareX.ImageEditor.Views
                             case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
 
                             case Key.Enter:
-                                if (vm.TaskMode)
+                                if (_inputController.TryConfirmCrop())
+                                {
+                                    e.Handled = true;
+                                }
+                                else if (vm.TaskMode)
                                 {
                                     vm.ContinueCommand.Execute(null);
                                     e.Handled = true;
@@ -567,7 +575,11 @@ namespace ShareX.ImageEditor.Views
                 switch (e.Key)
                 {
                     case Key.Escape:
-                        if (_selectionController.SelectedShape != null)
+                        if (_inputController.CancelCrop())
+                        {
+                            e.Handled = true;
+                        }
+                        else if (_selectionController.SelectedShape != null)
                         {
                             _selectionController.ClearSelection();
                             e.Handled = true;
@@ -611,6 +623,7 @@ namespace ShareX.ImageEditor.Views
 
         private void OnDeselectRequested(object? sender, EventArgs e)
         {
+            _inputController.CancelCrop();
             _selectionController.ClearSelection();
         }
 
@@ -1067,18 +1080,14 @@ namespace ShareX.ImageEditor.Views
 
                 if (rect.Width > 0 && rect.Height > 0)
                 {
-                    var scaling = 1.0;
-                    var topLevel = TopLevel.GetTopLevel(this);
-                    if (topLevel != null) scaling = topLevel.RenderScaling;
+                    // Canvas coordinates are already in image-pixel space (AnnotationCanvas
+                    // is sized to CanvasSize = bitmap.Width/Height). No DPI scaling needed.
+                    var cropX = (int)Math.Round(rect.Left);
+                    var cropY = (int)Math.Round(rect.Top);
+                    var cropW = (int)Math.Round(rect.Width);
+                    var cropH = (int)Math.Round(rect.Height);
 
-                    var physX = (int)(rect.Left * scaling);
-                    var physY = (int)(rect.Top * scaling);
-                    var physW = (int)(rect.Width * scaling);
-                    var physH = (int)(rect.Height * scaling);
-
-                    // vm.CropImage(physX, physY, physW, physH);
-                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                    _editorCore.Crop(new SKRect(physX, physY, physX + physW, physY + physH));
+                    _editorCore.Crop(new SKRect(cropX, cropY, cropX + cropW, cropY + cropH));
                 }
                 cropOverlay.IsVisible = false;
             }

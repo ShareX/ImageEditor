@@ -911,7 +911,7 @@ public class EditorCore : IDisposable
         }
     }
 
-    private string? SampleCanvasColor(SKPoint point)
+    public string? SampleCanvasColor(SKPoint point)
     {
         using var snapshot = GetSnapshot();
         if (snapshot == null) return null;

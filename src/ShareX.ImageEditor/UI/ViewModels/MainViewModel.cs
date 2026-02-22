@@ -409,9 +409,6 @@ namespace ShareX.ImageEditor.ViewModels
         {
             switch (ActiveTool)
             {
-                case EditorTool.Text:
-                    Options.TextColor = color;
-                    break;
                 case EditorTool.Step:
                     Options.StepBorderColor = color;
                     break;
@@ -627,12 +624,9 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(ShowStrength));
             OnPropertyChanged(nameof(ShowShadow));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
-            OnPropertyChanged(nameof(ColorPickerTooltip));
         }
 
         public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowThickness || ShowFontSize || ShowStrength || ShowShadow;
-
-        public string ColorPickerTooltip => ActiveTool == EditorTool.Highlight ? "Highlight Color" : "Border Color";
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -658,15 +652,9 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Line:
                 case EditorTool.Arrow:
                 case EditorTool.Freehand:
+                case EditorTool.Text:
                 case EditorTool.SpeechBalloon:
                     SelectedColorValue = Options.BorderColor;
-                    FillColorValue = Options.FillColor;
-                    StrokeWidth = Options.Thickness;
-                    ShadowEnabled = Options.Shadow;
-                    FontSize = Options.FontSize;
-                    break;
-                case EditorTool.Text:
-                    SelectedColorValue = Options.TextColor;
                     FillColorValue = Options.FillColor;
                     StrokeWidth = Options.Thickness;
                     ShadowEnabled = Options.Shadow;
@@ -678,10 +666,6 @@ namespace ShareX.ImageEditor.ViewModels
                     StrokeWidth = Options.Thickness; // Or specific step thickness? EditorOptions uses generic Thickness.
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.StepFontSize;
-                    break;
-                case EditorTool.SmartEraser:
-                    // SmartEraserAnnotation always uses StrokeWidth = 10 internally; keep UI in sync.
-                    StrokeWidth = 10;
                     break;
                 case EditorTool.Highlight:
                     SelectedColorValue = Options.HighlighterColor;
@@ -1939,44 +1923,18 @@ namespace ShareX.ImageEditor.ViewModels
             ApplySmartPaddingCrop();
         }
 
-        private System.Threading.CancellationTokenSource? _previewDebounceCts;
-
         /// <summary>
         /// Applies the effect function to the pre-effect image and updates the preview.
         /// </summary>
-        public async void PreviewEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect)
+        public void PreviewEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect)
         {
             if (_preEffectImage == null || effect == null) return;
 
-            _previewDebounceCts?.Cancel();
-            _previewDebounceCts?.Dispose();
-            _previewDebounceCts = new System.Threading.CancellationTokenSource();
-            var token = _previewDebounceCts.Token;
-
             try
             {
-                await System.Threading.Tasks.Task.Delay(50, token);
-                if (token.IsCancellationRequested) return;
-
-                var preEffect = _preEffectImage;
-                var result = await System.Threading.Tasks.Task.Run(() =>
-                {
-                    if (token.IsCancellationRequested) return null;
-                    return effect(preEffect);
-                }, token);
-
-                if (token.IsCancellationRequested || result == null)
-                {
-                    result?.Dispose();
-                    return;
-                }
-
+                var result = effect(_preEffectImage);
                 UpdatePreviewImageOnly(result, syncSourceState: false);
                 result.Dispose();
-            }
-            catch (System.Threading.Tasks.TaskCanceledException)
-            {
-                // Ignored
             }
             catch
             {

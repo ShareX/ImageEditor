@@ -226,10 +226,10 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AttachEditorCore(_editorCore);
-                vm.DeleteRequested += OnDeleteRequested;
-                vm.UndoRequested += OnUndoRequested;
-                vm.RedoRequested += OnRedoRequested;
-                vm.ClearAnnotationsRequested += OnClearAnnotationsRequested;
+                vm.DeleteRequested += (s, args) => PerformDelete();
+                vm.UndoRequested += (s, args) => PerformUndo();
+                vm.RedoRequested += (s, args) => PerformRedo();
+                vm.ClearAnnotationsRequested += (s, args) => ClearAllAnnotations();
 
                 // Subscribe to new context menu events
                 vm.CutAnnotationRequested += OnCutRequested;
@@ -261,19 +261,9 @@ namespace ShareX.ImageEditor.Views
 
             if (DataContext is MainViewModel vm)
             {
-                vm.DeleteRequested -= OnDeleteRequested;
-                vm.UndoRequested -= OnUndoRequested;
-                vm.RedoRequested -= OnRedoRequested;
-                vm.ClearAnnotationsRequested -= OnClearAnnotationsRequested;
-
-                vm.CutAnnotationRequested -= OnCutRequested;
-                vm.CopyAnnotationRequested -= OnCopyRequested;
-                vm.PasteRequested -= OnPasteRequested;
-                vm.DuplicateRequested -= OnDuplicateRequested;
-                vm.ZoomToFitRequested -= OnZoomToFitRequested;
-
                 vm.PropertyChanged -= OnViewModelPropertyChanged;
                 vm.DeselectRequested -= OnDeselectRequested;
+                vm.ZoomToFitRequested -= OnZoomToFitRequested;
             }
 
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
@@ -310,10 +300,6 @@ namespace ShareX.ImageEditor.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.ActiveTool))
                 {
-                    if (vm.ActiveTool == EditorTool.Crop)
-                        _inputController.ActivateCropToFullImage();
-                    else
-                        _inputController.CancelCrop();
                     _selectionController.ClearSelection();
                     UpdateCursorForTool(); // ISSUE-018 fix: Update cursor feedback for active tool
                 }
@@ -401,7 +387,40 @@ namespace ShareX.ImageEditor.Views
             _canvasControl.Draw(canvas => _editorCore.Render(canvas));
         }
 
-        // GetPixelColorFromRenderedCanvas removed for performance reasons. Use EditorCore.SampleCanvasColor instead.
+        /// <summary>
+        /// Sample pixel color from the rendered canvas (including annotations) at the specified canvas coordinates
+        /// </summary>
+        internal async System.Threading.Tasks.Task<string?> GetPixelColorFromRenderedCanvas(Point canvasPoint)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return null;
+
+            try
+            {
+                var container = this.FindControl<Grid>("CanvasContainer");
+                if (container == null || container.Width <= 0 || container.Height <= 0) return null;
+
+                var rtb = new global::Avalonia.Media.Imaging.RenderTargetBitmap(
+                    new PixelSize((int)container.Width, (int)container.Height),
+                    new Vector(96, 96));
+
+                rtb.Render(container);
+
+                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(rtb);
+
+                int x = (int)Math.Round(canvasPoint.X);
+                int y = (int)Math.Round(canvasPoint.Y);
+
+                if (x < 0 || y < 0 || x >= skBitmap.Width || y >= skBitmap.Height)
+                    return null;
+
+                var skColor = skBitmap.GetPixel(x, y);
+                return $"#{skColor.Red:X2}{skColor.Green:X2}{skColor.Blue:X2}";
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         // --- Event Handlers Delegated to Controllers ---
 
@@ -527,11 +546,7 @@ namespace ShareX.ImageEditor.Views
                             case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
 
                             case Key.Enter:
-                                if (_inputController.TryConfirmCrop())
-                                {
-                                    e.Handled = true;
-                                }
-                                else if (vm.TaskMode)
+                                if (vm.TaskMode)
                                 {
                                     vm.ContinueCommand.Execute(null);
                                     e.Handled = true;
@@ -552,11 +567,7 @@ namespace ShareX.ImageEditor.Views
                 switch (e.Key)
                 {
                     case Key.Escape:
-                        if (_inputController.CancelCrop())
-                        {
-                            e.Handled = true;
-                        }
-                        else if (_selectionController.SelectedShape != null)
+                        if (_selectionController.SelectedShape != null)
                         {
                             _selectionController.ClearSelection();
                             e.Handled = true;
@@ -581,11 +592,6 @@ namespace ShareX.ImageEditor.Views
 
         // --- Private Helpers (Undo/Redo, Delete, etc that involve view state) ---
 
-        private void OnDeleteRequested(object? sender, EventArgs e) => PerformDelete();
-        private void OnUndoRequested(object? sender, EventArgs e) => PerformUndo();
-        private void OnRedoRequested(object? sender, EventArgs e) => PerformRedo();
-        private void OnClearAnnotationsRequested(object? sender, EventArgs e) => ClearAllAnnotations();
-
         private void PerformUndo()
         {
             if (_editorCore.CanUndo)
@@ -605,7 +611,6 @@ namespace ShareX.ImageEditor.Views
 
         private void OnDeselectRequested(object? sender, EventArgs e)
         {
-            _inputController.CancelCrop();
             _selectionController.ClearSelection();
         }
 
@@ -843,74 +848,47 @@ namespace ShareX.ImageEditor.Views
             if (shape == null || shape.Tag is not BaseEffectAnnotation annotation) return;
             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
 
-            SKBitmap? previewBitmap = null;
+            // Logic to update effect bitmap
             try
             {
                 double left = Canvas.GetLeft(shape);
                 double top = Canvas.GetTop(shape);
+                // Use explicit Width/Height first, fallback to Bounds, then annotation bounds
                 double width = shape.Width;
                 double height = shape.Height;
                 if (double.IsNaN(width) || width <= 0) width = shape.Bounds.Width;
                 if (double.IsNaN(height) || height <= 0) height = shape.Bounds.Height;
-                var bounds = annotation.GetBounds();
-                if (double.IsNaN(left)) left = bounds.Left;
-                if (double.IsNaN(top)) top = bounds.Top;
-                if (width <= 0 || height <= 0) { width = bounds.Width; height = bounds.Height; }
+                // Final fallback to annotation's own bounds
+                if (width <= 0 || height <= 0)
+                {
+                    var bounds = annotation.GetBounds();
+                    width = bounds.Width;
+                    height = bounds.Height;
+                }
                 if (width <= 0 || height <= 0) return;
 
-                // Pixel-align bounds so effect bitmap dimensions remain stable while dragging.
-                double right = left + width;
-                double bottom = top + height;
-                double normalizedLeft = Math.Floor(Math.Min(left, right));
-                double normalizedTop = Math.Floor(Math.Min(top, bottom));
-                double normalizedRight = Math.Ceiling(Math.Max(left, right));
-                double normalizedBottom = Math.Ceiling(Math.Max(top, bottom));
+                // Map to SKPoint
+                annotation.StartPoint = new SKPoint((float)left, (float)top);
+                annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
 
-                width = Math.Max(1, normalizedRight - normalizedLeft);
-                height = Math.Max(1, normalizedBottom - normalizedTop);
-
-                Canvas.SetLeft(shape, normalizedLeft);
-                Canvas.SetTop(shape, normalizedTop);
-
-                annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
-                annotation.EndPoint = new SKPoint((float)(normalizedLeft + width), (float)(normalizedTop + height));
-
-                // Highlight is rendered in the Skia layer. Sync dimensions on the transparent
-                // hit-test Rectangle and trigger a Skia re-render at the new bounds.
-                if (annotation is HighlightAnnotation)
-                {
-                    if (shape is Shape highlightShape)
-                    {
-                        highlightShape.Width = width;
-                        highlightShape.Height = height;
-                    }
-                    _editorCore.Invalidate();
-                    return;
-                }
-
-                SKBitmap sourceBitmap = _editorCore.SourceImage ?? (previewBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage));
-                annotation.UpdateEffect(sourceBitmap);
+                // We don't have the cached bitmap here, create fresh or pass from controller?
+                // Original logic cached it. InputController caches it.
+                // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
+                // SelectionController doesn't have the cached bitmap.
+                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+                annotation.UpdateEffect(skBitmap);
 
                 if (annotation.EffectBitmap != null && shape is Shape shapeControl)
                 {
                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
-                    double bw = annotation.EffectBitmap.Width;
-                    double bh = annotation.EffectBitmap.Height;
-                    shapeControl.Width = bw;
-                    shapeControl.Height = bh;
                     shapeControl.Fill = new ImageBrush(avaloniaBitmap)
                     {
                         Stretch = Stretch.None,
-                        SourceRect = new RelativeRect(0, 0, bw, bh, RelativeUnit.Absolute)
+                        SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
                     };
-                    shapeControl.InvalidateVisual();
                 }
             }
             catch { }
-            finally
-            {
-                previewBitmap?.Dispose();
-            }
         }
 
         private void OnColorChanged(object? sender, IBrush color)
@@ -1089,14 +1067,18 @@ namespace ShareX.ImageEditor.Views
 
                 if (rect.Width > 0 && rect.Height > 0)
                 {
-                    // Canvas coordinates are already in image-pixel space (AnnotationCanvas
-                    // is sized to CanvasSize = bitmap.Width/Height). No DPI scaling needed.
-                    var cropX = (int)Math.Round(rect.Left);
-                    var cropY = (int)Math.Round(rect.Top);
-                    var cropW = (int)Math.Round(rect.Width);
-                    var cropH = (int)Math.Round(rect.Height);
+                    var scaling = 1.0;
+                    var topLevel = TopLevel.GetTopLevel(this);
+                    if (topLevel != null) scaling = topLevel.RenderScaling;
 
-                    _editorCore.Crop(new SKRect(cropX, cropY, cropX + cropW, cropY + cropH));
+                    var physX = (int)(rect.Left * scaling);
+                    var physY = (int)(rect.Top * scaling);
+                    var physW = (int)(rect.Width * scaling);
+                    var physH = (int)(rect.Height * scaling);
+
+                    // vm.CropImage(physX, physY, physW, physH);
+                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
+                    _editorCore.Crop(new SKRect(physX, physY, physX + physW, physY + physH));
                 }
                 cropOverlay.IsVisible = false;
             }
@@ -1148,9 +1130,8 @@ namespace ShareX.ImageEditor.Views
                 case Shape shape:
                     if (shape.Tag is HighlightAnnotation)
                     {
-                        // Highlight is rendered in Skia using annotation.StrokeColor (already updated above).
-                        // Trigger a Skia re-render so the new color is immediately visible.
-                        _editorCore.Invalidate();
+                        // For highlighter, we must regenerate the effect bitmap with the new color
+                        OnRequestUpdateEffect(shape);
                         break;
                     }
 
@@ -1224,6 +1205,11 @@ namespace ShareX.ImageEditor.Views
             }
         }
 
+        private static Color ApplyHighlightAlpha(Color baseColor)
+        {
+            return Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
+        }
+
         // --- Edit Menu Event Handlers ---
 
         private void OnResizeImageRequested(object? sender, EventArgs e)
@@ -1288,9 +1274,25 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm && vm.PreviewImage != null)
             {
-                // Activate the canvas-based Crop tool so the user can draw the crop region
-                // with 8 resize handles instead of using a numeric dialog.
-                vm.SelectToolCommand.Execute(EditorTool.Crop);
+                var dialog = new CropImageDialog();
+                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
+
+                dialog.ApplyRequested += (s, args) =>
+                {
+                    // vm.CropImage(args.X, args.Y, args.Width, args.Height);
+                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
+                    _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
+
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+
+                dialog.CancelRequested += (s, args) =>
+                {
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+
+                vm.EffectsPanelContent = dialog;
+                vm.IsEffectsPanelOpen = true;
             }
         }
 

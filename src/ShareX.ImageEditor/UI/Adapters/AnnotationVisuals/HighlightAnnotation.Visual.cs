@@ -7,14 +7,15 @@ public partial class HighlightAnnotation
 {
     /// <summary>
     /// Creates the Avalonia visual for this annotation.
-    /// The visual is a transparent rectangle used for hit-testing and selection handles only.
-    /// The actual highlight color is rendered in the Skia layer (see EditorCore.Render).
     /// </summary>
     public Control CreateVisual()
     {
+        var baseColor = Color.Parse(StrokeColor);
+        var highlightColor = Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
+
         return new Avalonia.Controls.Shapes.Rectangle
         {
-            Fill = Brushes.Transparent,
+            Fill = new SolidColorBrush(highlightColor),
             Stroke = Brushes.Transparent,
             StrokeThickness = 0,
             Tag = this

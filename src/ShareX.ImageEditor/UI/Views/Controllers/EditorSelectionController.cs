@@ -115,19 +115,14 @@ public class EditorSelectionController
         if (overlay != null)
         {
             var handleSource = e.Source as Control;
-            if (handleSource != null && overlay.Children.Contains(handleSource) && handleSource is Border handleBorder)
+            if (handleSource != null && overlay.Children.Contains(handleSource) && handleSource is Border)
             {
-                // Skip crop handles — they are managed by EditorInputController
-                var handleTag = handleBorder.Tag?.ToString();
-                if (handleTag == null || !handleTag.StartsWith("Crop_"))
-                {
-                    _isDraggingHandle = true;
-                    _draggedHandle = handleSource;
-                    _startPoint = point; // Capture start for resize delta
-                    e.Pointer.Capture(handleSource);
-                    e.Handled = true;
-                    return true;
-                }
+                _isDraggingHandle = true;
+                _draggedHandle = handleSource;
+                _startPoint = point; // Capture start for resize delta
+                e.Pointer.Capture(handleSource);
+                e.Handled = true;
+                return true;
             }
         }
 

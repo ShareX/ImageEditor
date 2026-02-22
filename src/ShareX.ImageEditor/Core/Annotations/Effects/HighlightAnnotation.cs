@@ -17,11 +17,6 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
 
 
 
-    /// <summary>
-    /// Updates the effect bitmap from the source image (matches ShareX.ImageEditor reference).
-    /// Renders the image region under the annotation bounds with highlight (min blend) applied
-    /// so that moving the rectangle shows the current area and the bitmap fills the shape.
-    /// </summary>
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
@@ -37,7 +32,7 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
         var intersect = skRect;
         intersect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
-        // Create the FULL size bitmap (matching rect) so the result fills the highlight rectangle
+        // Create the FULL size bitmap (matching rect)
         var result = new SKBitmap(fullW, fullH);
         result.Erase(SKColors.Transparent);
 
@@ -66,9 +61,13 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
                 // Handle standard formats using channel-independent Min logic
                 if (colorType == SKColorType.Bgra8888 || colorType == SKColorType.Rgba8888)
                 {
-                    // For both BGRA and RGBA, the channels are just bytes.
+                    // For both BGRA and RGBA, the channels are just bytes. 
+                    // Since specific channel order implies valid pointers, we can optimize:
+                    // We iterate all bytes 4 at a time.
                     // For BGRA: [0]=B, [1]=G, [2]=R.
                     // For RGBA: [0]=R, [1]=G, [2]=B.
+                    // To do this correctly without conditional loop:
+
                     if (colorType == SKColorType.Bgra8888)
                     {
                         for (int i = 0; i < count; i++)

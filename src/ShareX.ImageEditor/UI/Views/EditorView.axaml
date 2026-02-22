@@ -491,8 +491,9 @@
                                                     <Rectangle Name="CropOverlay"
                                                                IsVisible="False"
                                                                Stroke="White"
-                                                               StrokeThickness="1.5"
-                                                               Fill="Transparent" />
+                                                               StrokeThickness="2"
+                                                               StrokeDashArray="4,2"
+                                                               Fill="#80000000" />
                                                 </Canvas>
                                             </Grid>
                                         </Border>
@@ -677,13 +678,13 @@
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <!-- Border/Highlight Color Picker Dropdown -->
+                        <!-- Border Color Picker Dropdown -->
                         <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
                             SelectedColor="{Binding SelectedColorBrush}"
                             ColorChanged="OnColorChanged"
                             Height="40"
                             IsVisible="{Binding ShowBorderColor}"
-                            ToolTip.Tip="{Binding ColorPickerTooltip}"/>
+                            ToolTip.Tip="Border Color"/>
 
                         <!-- Fill Color Picker Dropdown -->
                         <controls:ColorPickerDropdown x:Name="FillColorPickerDropdown"

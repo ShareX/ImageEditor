@@ -119,13 +119,6 @@ public class EditorCore : IDisposable
     /// </summary>
     public int NumberCounter { get; set; } = 1;
 
-    /// <summary>
-    /// A highlight annotation currently being drawn (not yet finalized into the annotation list).
-    /// Set by the input controller while the user drags to create a highlight.
-    /// Cleared once the annotation is committed via AddAnnotation.
-    /// </summary>
-    public HighlightAnnotation? PendingHighlight { get; set; }
-
     #endregion
 
     #region Annotations
@@ -918,26 +911,20 @@ public class EditorCore : IDisposable
         }
     }
 
-    public string? SampleCanvasColor(SKPoint point)
+    private string? SampleCanvasColor(SKPoint point)
     {
-        if (SourceImage == null) return null;
+        using var snapshot = GetSnapshot();
+        if (snapshot == null) return null;
 
         int x = (int)Math.Round(point.X);
         int y = (int)Math.Round(point.Y);
 
-        if (x < 0 || y < 0 || x >= SourceImage.Width || y >= SourceImage.Height)
+        if (x < 0 || y < 0 || x >= snapshot.Width || y >= snapshot.Height)
         {
             return null;
         }
 
-        // Render just a 1x1 region for extreme performance
-        using var bitmap = new SKBitmap(1, 1);
-        using var canvas = new SKCanvas(bitmap);
-        canvas.Translate(-x, -y);
-        
-        Render(canvas);
-
-        var color = bitmap.GetPixel(0, 0);
+        var color = snapshot.GetPixel(x, y);
         return $"#{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
     }
 
@@ -1109,25 +1096,7 @@ public class EditorCore : IDisposable
         // Capture state BEFORE adding the new annotation (Undo will revert to this state)
         _history.CreateAnnotationsMemento();
 
-        // HighlightAnnotations are inserted before non-effect annotations so they render
-        // below vector shapes (arrows, rectangles, text) by default.
-        if (annotation is HighlightAnnotation)
-        {
-            int insertPos = _annotations.Count;
-            for (int i = 0; i < _annotations.Count; i++)
-            {
-                if (_annotations[i] is not BaseEffectAnnotation)
-                {
-                    insertPos = i;
-                    break;
-                }
-            }
-            _annotations.Insert(insertPos, annotation);
-        }
-        else
-        {
-            _annotations.Add(annotation);
-        }
+        _annotations.Add(annotation);
 
         HistoryChanged?.Invoke();
         // We don't necessarily need to render if the view already added the control,
@@ -1209,59 +1178,19 @@ public class EditorCore : IDisposable
     #region Rendering
 
     /// <summary>
-    /// Request a re-render of the Skia canvas without changing editor state.
-    /// </summary>
-    public void Invalidate() => InvalidateRequested?.Invoke();
-
-    /// <summary>
-    /// Render the source image and any highlight annotations to an SKCanvas.
-    /// All other annotations are rendered by the Avalonia visual tree (hybrid rendering).
+    /// Render the source image to an SKCanvas.
+    /// Annotations are rendered by the Avalonia visual tree (hybrid rendering).
     /// </summary>
     /// <param name="canvas">Target canvas</param>
     public void Render(SKCanvas canvas)
     {
         canvas.Clear(SKColors.Transparent);
 
-        // Draw source image
+        // Draw source image only — annotations are handled by Avalonia controls
         if (SourceImage != null)
         {
             canvas.DrawBitmap(SourceImage, 0, 0);
         }
-
-        // Draw finalized highlight annotations directly in Skia for reliable rendering.
-        // Highlights must render below other annotations (which use the Avalonia layer above).
-        foreach (var annotation in _annotations)
-        {
-            if (annotation is HighlightAnnotation highlight)
-            {
-                DrawHighlightRect(canvas, highlight);
-            }
-        }
-
-        // Draw the in-progress highlight being drawn (not yet in the annotation list).
-        if (PendingHighlight != null)
-        {
-            DrawHighlightRect(canvas, PendingHighlight);
-        }
-    }
-
-    private static void DrawHighlightRect(SKCanvas canvas, HighlightAnnotation annotation)
-    {
-        var bounds = annotation.GetBounds();
-        if (bounds.Width <= 0 || bounds.Height <= 0) return;
-
-        try
-        {
-            var baseColor = SKColor.Parse(annotation.StrokeColor);
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, 0x55),
-                Style = SKPaintStyle.Fill,
-                IsAntialias = false
-            };
-            canvas.DrawRect(bounds, paint);
-        }
-        catch { }
     }
 
     /// <summary>

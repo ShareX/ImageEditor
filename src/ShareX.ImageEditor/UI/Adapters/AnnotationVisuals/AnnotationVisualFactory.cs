@@ -290,10 +290,11 @@ public static class AnnotationVisualFactory
 
     private static Control CreateHighlightPreviewPlaceholder(HighlightAnnotation annotation)
     {
-        // Transparent placeholder for hit-testing only — rendering is in the Skia layer.
+        Color baseColor = Color.Parse(annotation.StrokeColor);
+        Color highlightColor = Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
         return new Rectangle
         {
-            Fill = Brushes.Transparent,
+            Fill = new SolidColorBrush(highlightColor),
             Stroke = Brushes.Transparent,
             StrokeThickness = 0,
             Tag = annotation

@@ -31,17 +31,20 @@ public class OutlineImageEffect : ImageEffect
         using SKCanvas canvas = new SKCanvas(result);
         canvas.Clear(SKColors.Transparent);
 
-        // Fast hardware-accelerated outline using Dilate filter
-        using var dilate = SKImageFilter.CreateDilate(Size, Size);
-        using var colorFilter = SKColorFilter.CreateBlendMode(Color, SKBlendMode.SrcIn);
-        
-        using SKPaint outlinePaint = new SKPaint
-        {
-            ImageFilter = SKImageFilter.CreateColorFilter(colorFilter, dilate)
-        };
+        // Create outline by drawing image multiple times offset in all directions
+        using SKPaint outlinePaint = new SKPaint { ColorFilter = SKColorFilter.CreateBlendMode(Color, SKBlendMode.SrcIn) };
 
-        // Draw dilated and colored outline
-        canvas.DrawBitmap(source, totalExpand, totalExpand, outlinePaint);
+        // Draw outline copies
+        for (int dx = -Size; dx <= Size; dx++)
+        {
+            for (int dy = -Size; dy <= Size; dy++)
+            {
+                if (dx * dx + dy * dy <= Size * Size) // Circular outline
+                {
+                    canvas.DrawBitmap(source, totalExpand + dx, totalExpand + dy, outlinePaint);
+                }
+            }
+        }
 
         // Draw original image on top
         canvas.DrawBitmap(source, totalExpand, totalExpand);

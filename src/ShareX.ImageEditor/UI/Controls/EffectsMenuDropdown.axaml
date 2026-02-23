@@ -33,6 +33,7 @@
         <x:String x:Key="IconSliders">&#xf1de;</x:String>
         <x:String x:Key="IconChevronDown">&#xf078;</x:String>
         <x:String x:Key="IconCube">&#xf1b2;</x:String>
+        <x:String x:Key="IconCubes">&#xf1b3;</x:String>
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -151,7 +152,7 @@
                         </MenuItem>
                         <MenuItem Header="3D Box / Extrude..." Click="OnRotate3DBoxClick">
                              <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCube}"/>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCubes}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         

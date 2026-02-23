@@ -37,9 +37,8 @@ namespace ShareX.ImageEditor.Views.Dialogs
             float rotateY = (float)(this.FindControl<Slider>("YAxisSlider")?.Value ?? 0);
             float rotateZ = (float)(this.FindControl<Slider>("ZAxisSlider")?.Value ?? 0);
             bool autoResize = this.FindControl<CheckBox>("AutoResizeCheckBox")?.IsChecked ?? true;
-            bool boxMode = this.FindControl<CheckBox>("BoxModeCheckBox")?.IsChecked ?? false;
             PreviewRequested?.Invoke(this, new EffectEventArgs(
-                img => new Rotate3DBoxImageEffect { Depth = depth, RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ, AutoResize = autoResize, BoxMode = boxMode }.Apply(img),
+                img => new Rotate3DBoxImageEffect { Depth = depth, RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ, AutoResize = autoResize }.Apply(img),
                 "3D Box / Extrude"));
         }
 
@@ -50,9 +49,8 @@ namespace ShareX.ImageEditor.Views.Dialogs
             float rotateY = (float)(this.FindControl<Slider>("YAxisSlider")?.Value ?? 0);
             float rotateZ = (float)(this.FindControl<Slider>("ZAxisSlider")?.Value ?? 0);
             bool autoResize = this.FindControl<CheckBox>("AutoResizeCheckBox")?.IsChecked ?? true;
-            bool boxMode = this.FindControl<CheckBox>("BoxModeCheckBox")?.IsChecked ?? false;
             ApplyRequested?.Invoke(this, new EffectEventArgs(
-                img => new Rotate3DBoxImageEffect { Depth = depth, RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ, AutoResize = autoResize, BoxMode = boxMode }.Apply(img),
+                img => new Rotate3DBoxImageEffect { Depth = depth, RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ, AutoResize = autoResize }.Apply(img),
                 "Applied 3D Box / Extrude"));
         }
 

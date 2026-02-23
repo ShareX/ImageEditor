@@ -887,14 +887,17 @@ public class EditorInputController
         HideCropHandles(overlay);
         EnsureCropAdorners(overlay);
         UpdateCropAdorners(overlay, cropRect);
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, cropRect.Top, "Crop_TopLeft"));
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left + cropRect.Width / 2, cropRect.Top, "Crop_TopCenter"));
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Right, cropRect.Top, "Crop_TopRight"));
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Right, cropRect.Top + cropRect.Height / 2, "Crop_RightCenter"));
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Right, cropRect.Bottom, "Crop_BottomRight"));
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left + cropRect.Width / 2, cropRect.Bottom, "Crop_BottomCenter"));
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, cropRect.Bottom, "Crop_BottomLeft"));
-        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, cropRect.Top + cropRect.Height / 2, "Crop_LeftCenter"));
+
+        // Corner handles (fixed size)
+        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, cropRect.Top, "Crop_TopLeft", cropRect));
+        _cropHandles.Add(CreateCropHandle(overlay, 0, cropRect.Top, "Crop_TopCenter", cropRect));
+        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Right, cropRect.Top, "Crop_TopRight", cropRect));
+        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Right, 0, "Crop_RightCenter", cropRect));
+        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Right, cropRect.Bottom, "Crop_BottomRight", cropRect));
+        _cropHandles.Add(CreateCropHandle(overlay, 0, cropRect.Bottom, "Crop_BottomCenter", cropRect));
+        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, cropRect.Bottom, "Crop_BottomLeft", cropRect));
+        _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, 0, "Crop_LeftCenter", cropRect));
+
         overlay.InvalidateArrange();
         overlay.InvalidateVisual();
     }
@@ -917,18 +920,79 @@ public class EditorInputController
     private const int CropOverlayZIndex = 6000;
     private const int CropGuideZIndex = 6500;
     private const int CropHandleZIndex = 7000;
-    private const double CropHandleCornerHitSize = 32;
-    private const double CropHandleEdgeLong = 30;
-    private const double CropHandleEdgeShort = 14;
-    private const double CropHandleLArmLength = 12;
-    private const double CropHandleStrokeThickness = 2.75;
-    private const double CropHandleLInset = 2;
+    private const double CropHandleCornerHitSize = 48;
+    private const double CropHandleEdgeShort = 20;
+    private const double CropHandleLArmLength = 24;
+    private const double CropHandleLArmWidth = 10;
+    private const double CropHandleEdgeGap = 4;
     private const double MinCropGuideSize = 24;
 
     private static readonly Color CropHandleFill = Color.FromRgb(255, 255, 255);
     private static readonly Color CropHandleStroke = Color.FromRgb(20, 20, 20);
+    private static readonly Color CropHandleHatchLine = Color.FromArgb(100, 0, 0, 0);
+    private static readonly Color CropHandleHoverBg = Color.FromRgb(180, 215, 255);
     private static readonly Color CropShadeFill = Color.FromArgb(140, 0, 0, 0);
     private static readonly Color CropGuideStroke = Color.FromArgb(210, 255, 255, 255);
+
+    private static IBrush? s_cropHatchNormalBrush;
+    private static IBrush? s_cropHatchHoverBrush;
+
+    /// <summary>
+    /// Gets the normal hatch fill brush (white + diagonal gray lines). Lazily created.
+    /// </summary>
+    private static IBrush CropHandleNormalBrush
+        => s_cropHatchNormalBrush ??= CreateCropHatchBrush(CropHandleFill, CropHandleHatchLine);
+
+    /// <summary>
+    /// Gets the hover fill brush (solid light blue). Lazily created.
+    /// </summary>
+    private static IBrush CropHandleHoverBrush
+        => s_cropHatchHoverBrush ??= new SolidColorBrush(CropHandleHoverBg);
+
+    /// <summary>
+    /// Creates a tiled diagonal-line hatch brush for crop handles.
+    /// </summary>
+    private static IBrush CreateCropHatchBrush(Color bgColor, Color lineColor)
+    {
+        const double tile = 5;
+        var canvas = new Canvas
+        {
+            Width = tile,
+            Height = tile,
+            Background = new SolidColorBrush(bgColor),
+            ClipToBounds = true
+        };
+        canvas.Children.Add(new Line
+        {
+            StartPoint = new Point(-1, tile + 1),
+            EndPoint = new Point(tile + 1, -1),
+            Stroke = new SolidColorBrush(lineColor),
+            StrokeThickness = 1,
+            IsHitTestVisible = false
+        });
+        return new VisualBrush
+        {
+            Visual = canvas,
+            TileMode = TileMode.Tile,
+            SourceRect = new RelativeRect(0, 0, tile, tile, RelativeUnit.Absolute),
+            DestinationRect = new RelativeRect(0, 0, tile, tile, RelativeUnit.Absolute)
+        };
+    }
+
+    /// <summary>
+    /// Updates the fill brush on all shape children inside a crop handle.
+    /// </summary>
+    private static void SetCropHandleChildFill(Border handle, IBrush brush)
+    {
+        if (handle.Child is Canvas c)
+        {
+            foreach (var child in c.Children)
+            {
+                if (child is Shape shape && !shape.IsHitTestVisible)
+                    shape.Fill = brush;
+            }
+        }
+    }
 
     private void EnsureCropAdorners(Canvas overlay)
     {
@@ -1070,53 +1134,27 @@ public class EditorInputController
 
     /// <summary>
     /// Computes the anchor offset within a crop handle's hit area so the visual element
-    /// (L-vertex for corners, center for edge bars) aligns with the crop rectangle edge/corner.
+    /// aligns with the crop rectangle edge/corner.
+    /// Corner handles are centered on their corner. Edge handles are positioned at their start.
     /// </summary>
     private static (double X, double Y) GetCropHandleAnchorOffset(string tag)
     {
-        const double size = CropHandleCornerHitSize;
-        const double inset = CropHandleLInset;
+        const double half = CropHandleCornerHitSize / 2.0;
 
         if (tag.EndsWith("TopLeft", StringComparison.Ordinal))
-            return (inset, inset);
+            return (half, half);
         if (tag.EndsWith("TopRight", StringComparison.Ordinal))
-            return (size - inset, inset);
+            return (half, half);
         if (tag.EndsWith("BottomRight", StringComparison.Ordinal))
-            return (size - inset, size - inset);
+            return (half, half);
         if (tag.EndsWith("BottomLeft", StringComparison.Ordinal))
-            return (inset, size - inset);
+            return (half, half);
 
-        // Edge handles: centered on the edge midpoint
-        if (tag.Contains("Top") || tag.Contains("Bottom"))
-            return (CropHandleEdgeLong / 2.0, CropHandleEdgeShort / 2.0);
-        return (CropHandleEdgeShort / 2.0, CropHandleEdgeLong / 2.0);
+        // Edge handles: positioned directly at their computed start
+        return (0, 0);
     }
 
-    private void UpdateCropHandlePositions(Canvas overlay, Rect cropRect)
-    {
-        // Order: TopLeft, TopCenter, TopRight, RightCenter, BottomRight, BottomCenter, BottomLeft, LeftCenter
-        var positions = new (double X, double Y)[]
-        {
-            (cropRect.Left,                          cropRect.Top),
-            (cropRect.Left + cropRect.Width / 2,     cropRect.Top),
-            (cropRect.Right,                         cropRect.Top),
-            (cropRect.Right,                         cropRect.Top + cropRect.Height / 2),
-            (cropRect.Right,                         cropRect.Bottom),
-            (cropRect.Left + cropRect.Width / 2,     cropRect.Bottom),
-            (cropRect.Left,                          cropRect.Bottom),
-            (cropRect.Left,                          cropRect.Top + cropRect.Height / 2),
-        };
-
-        for (int i = 0; i < _cropHandles.Count && i < positions.Length; i++)
-        {
-            var tag = _cropHandles[i].Tag as string ?? "";
-            var anchor = GetCropHandleAnchorOffset(tag);
-            Canvas.SetLeft(_cropHandles[i], positions[i].X - anchor.X);
-            Canvas.SetTop(_cropHandles[i], positions[i].Y - anchor.Y);
-        }
-    }
-
-    private Border CreateCropHandle(Canvas overlay, double x, double y, string tag)
+    private Border CreateCropHandle(Canvas overlay, double x, double y, string tag, Rect cropRect)
     {
         Cursor cursor = new Cursor(StandardCursorType.SizeNorthSouth);
         if (tag.Contains("TopLeft") || tag.Contains("BottomRight")) cursor = new Cursor(StandardCursorType.TopLeftCorner);
@@ -1128,19 +1166,41 @@ public class EditorInputController
             || tag.EndsWith("BottomRight", StringComparison.Ordinal) || tag.EndsWith("BottomLeft", StringComparison.Ordinal);
 
         double width, height;
+        double posX = x, posY = y;
         Control visual;
+
         if (isCorner)
         {
             width = height = CropHandleCornerHitSize;
             visual = CreateCropCornerLShape(tag);
+            var anchor = GetCropHandleAnchorOffset(tag);
+            posX = x - anchor.X;
+            posY = y - anchor.Y;
         }
         else
         {
-            if (tag.Contains("Top") || tag.Contains("Bottom"))
-            { width = CropHandleEdgeLong; height = CropHandleEdgeShort; }
+            // Edge handles span the full side minus corner areas minus gaps
+            double cornerHalf = CropHandleCornerHitSize / 2.0;
+            double gap = CropHandleEdgeGap;
+            double edgeShort = CropHandleEdgeShort;
+
+            bool isHorizontal = tag.Contains("Top") || tag.Contains("Bottom");
+            if (isHorizontal)
+            {
+                width = Math.Max(0, cropRect.Width - 2 * (cornerHalf + gap));
+                height = edgeShort;
+                posX = cropRect.Left + cornerHalf + gap;
+                posY = (tag.Contains("Top") ? cropRect.Top : cropRect.Bottom) - edgeShort / 2;
+            }
             else
-            { width = CropHandleEdgeShort; height = CropHandleEdgeLong; }
-            visual = CreateCropEdgeBar(width, height);
+            {
+                width = edgeShort;
+                height = Math.Max(0, cropRect.Height - 2 * (cornerHalf + gap));
+                posX = (tag.Contains("Right") ? cropRect.Right : cropRect.Left) - edgeShort / 2;
+                posY = cropRect.Top + cornerHalf + gap;
+            }
+
+            visual = (width > 0 && height > 0) ? CreateCropEdgeBar(width, height) : new Canvas();
         }
 
         var handle = new Border
@@ -1157,106 +1217,161 @@ public class EditorInputController
         };
         handle.SetValue(Panel.ZIndexProperty, CropHandleZIndex);
 
-        var anchor = GetCropHandleAnchorOffset(tag);
-        Canvas.SetLeft(handle, x - anchor.X);
-        Canvas.SetTop(handle, y - anchor.Y);
+        // Hover feedback: light blue on hover to signal draggability
+        handle.PointerEntered += (_, _) => SetCropHandleChildFill(handle, CropHandleHoverBrush);
+        handle.PointerExited += (_, _) => SetCropHandleChildFill(handle, CropHandleNormalBrush);
+
+        Canvas.SetLeft(handle, posX);
+        Canvas.SetTop(handle, posY);
         overlay.Children.Add(handle);
         return handle;
     }
 
     /// <summary>
-    /// Creates an L-shaped corner handle (like Photoshop/GIMP) for visibility and clear resize affordance.
-    /// Outline stroke ensures visibility on both light and dark image areas.
+    /// Creates an L-shaped corner handle as a single hollow polygon.
+    /// The L straddles the crop corner so it extends both inside and outside the crop rectangle.
+    /// Uses transparent fill with a stroke so the inside of the L is see-through.
     /// </summary>
     private static Control CreateCropCornerLShape(string tag)
     {
         const double size = CropHandleCornerHitSize;
-        const double inset = CropHandleLInset;
         const double arm = CropHandleLArmLength;
-        const double thickness = 2.5;
+        const double w = CropHandleLArmWidth;   // arm thickness
+        const double half = size / 2.0;
 
-        // Base orientation is BottomLeft (classic "L"): horizontal right, vertical up.
-        // Other corners are clockwise rotations.
-        double cornerX;
-        double cornerY;
-        double hx;
-        double vy;
+        // Build a 6-point polygon that forms a single connected L shape.
+        // The vertex of the L sits at (half, half), centered in the hit area.
+        // The polygon traces the outer boundary of the L clockwise.
+        //
+        // For TopLeft corner (arms extend right and down into the crop area):
+        //   P0 ──────── P1
+        //   │            │
+        //   │   P3 ── P2
+        //   │   │
+        //   │   │
+        //   P5  P4
+        //
+        Point[] points;
 
-        if (tag.EndsWith("BottomLeft", StringComparison.Ordinal))
+        if (tag.EndsWith("TopLeft", StringComparison.Ordinal))
         {
-            cornerX = inset;
-            cornerY = size - inset;
-            hx = arm;
-            vy = -arm;
-        }
-        else if (tag.EndsWith("TopLeft", StringComparison.Ordinal))
-        {
-            cornerX = inset;
-            cornerY = inset;
-            hx = arm;
-            vy = arm;
+            // Arms go right and down
+            points = new Point[]
+            {
+                new(half - w / 2, half - w / 2),        // P0: outer top-left
+                new(half + arm,   half - w / 2),        // P1: end of horiz arm (top)
+                new(half + arm,   half + w / 2),        // P2: end of horiz arm (bottom)
+                new(half + w / 2, half + w / 2),        // P3: inner corner
+                new(half + w / 2, half + arm),          // P4: end of vert arm (right)
+                new(half - w / 2, half + arm),          // P5: end of vert arm (left)
+            };
         }
         else if (tag.EndsWith("TopRight", StringComparison.Ordinal))
         {
-            cornerX = size - inset;
-            cornerY = inset;
-            hx = -arm;
-            vy = arm;
+            // Arms go left and down
+            points = new Point[]
+            {
+                new(half + w / 2, half - w / 2),        // P0: outer top-right
+                new(half - arm,   half - w / 2),        // P1: end of horiz arm (top)
+                new(half - arm,   half + w / 2),        // P2: end of horiz arm (bottom)
+                new(half - w / 2, half + w / 2),        // P3: inner corner
+                new(half - w / 2, half + arm),          // P4: end of vert arm (left)
+                new(half + w / 2, half + arm),          // P5: end of vert arm (right)
+            };
         }
-        else
+        else if (tag.EndsWith("BottomRight", StringComparison.Ordinal))
         {
-            cornerX = size - inset;
-            cornerY = size - inset;
-            hx = -arm;
-            vy = -arm;
+            // Arms go left and up
+            points = new Point[]
+            {
+                new(half + w / 2, half + w / 2),        // P0: outer bottom-right
+                new(half - arm,   half + w / 2),        // P1: end of horiz arm (bottom)
+                new(half - arm,   half - w / 2),        // P2: end of horiz arm (top)
+                new(half - w / 2, half - w / 2),        // P3: inner corner
+                new(half - w / 2, half - arm),          // P4: end of vert arm (left)
+                new(half + w / 2, half - arm),          // P5: end of vert arm (right)
+            };
+        }
+        else // BottomLeft
+        {
+            // Arms go right and up
+            points = new Point[]
+            {
+                new(half - w / 2, half + w / 2),        // P0: outer bottom-left
+                new(half + arm,   half + w / 2),        // P1: end of horiz arm (bottom)
+                new(half + arm,   half - w / 2),        // P2: end of horiz arm (top)
+                new(half + w / 2, half - w / 2),        // P3: inner corner
+                new(half + w / 2, half - arm),          // P4: end of vert arm (right)
+                new(half - w / 2, half - arm),          // P5: end of vert arm (left)
+            };
         }
 
-        Line BuildArmLine(double sx, double sy, double ex, double ey, IBrush stroke, double strokeThickness) => new()
+        var hatchBrush = CropHandleNormalBrush;
+        var outlineBrush = new SolidColorBrush(CropHandleStroke);
+
+        var panel = new Canvas { Width = size, Height = size, IsHitTestVisible = false, ClipToBounds = false };
+
+        // Hatched L with 1px black border
+        var poly = new Polygon
         {
-            StartPoint = new Point(sx, sy),
-            EndPoint = new Point(ex, ey),
-            Stroke = stroke,
-            StrokeThickness = strokeThickness,
-            StrokeLineCap = PenLineCap.Flat,
+            Points = new Avalonia.Collections.AvaloniaList<Point>(points),
+            Fill = hatchBrush,
+            Stroke = outlineBrush,
+            StrokeThickness = 1,
             IsHitTestVisible = false
         };
-
-        var fillBrush = new SolidColorBrush(CropHandleFill);
-        var outlineBrush = new SolidColorBrush(CropHandleStroke);
-        double outlineThickness = thickness + 2;
-
-        var panel = new Canvas { Width = size, Height = size, IsHitTestVisible = false };
-        panel.Children.Add(BuildArmLine(cornerX, cornerY, cornerX + hx, cornerY, outlineBrush, outlineThickness));
-        panel.Children.Add(BuildArmLine(cornerX, cornerY, cornerX, cornerY + vy, outlineBrush, outlineThickness));
-        panel.Children.Add(BuildArmLine(cornerX, cornerY, cornerX + hx, cornerY, fillBrush, thickness));
-        panel.Children.Add(BuildArmLine(cornerX, cornerY, cornerX, cornerY + vy, fillBrush, thickness));
+        panel.Children.Add(poly);
 
         return panel;
     }
 
     /// <summary>
-    /// Creates a short bar handle on the edge (top/right/bottom/left center) for single-edge resize.
+    /// Creates a hollow bar handle on the edge (top/right/bottom/left center) for single-edge resize.
+    /// The bar is centered on the crop edge with a transparent fill and visible stroke.
     /// </summary>
     private static Control CreateCropEdgeBar(double width, double height)
     {
-        double rw = Math.Max(2, width - 8);
-        double rh = Math.Max(2, height - 8);
+        const double barThickness = CropHandleLArmWidth;
+
+        // The visible bar is narrower than the hit area but longer
+        double rw, rh;
+        if (width > height)
+        {
+            // Horizontal edge (top/bottom): long horizontal bar
+            rw = Math.Max(4, width - 4);
+            rh = barThickness;
+        }
+        else
+        {
+            // Vertical edge (left/right): long vertical bar
+            rw = barThickness;
+            rh = Math.Max(4, height - 4);
+        }
+
+        var hatchBrush = CropHandleNormalBrush;
+        var outlineBrush = new SolidColorBrush(CropHandleStroke);
+
+        double cx = (width - rw) / 2;
+        double cy = (height - rh) / 2;
+
+        var canvas = new Canvas { Width = width, Height = height, IsHitTestVisible = false };
+
+        // Hatched bar with 1px black border, sharp corners
         var rect = new Rectangle
         {
             Width = rw,
             Height = rh,
-            Fill = new SolidColorBrush(CropHandleFill),
-            Stroke = new SolidColorBrush(CropHandleStroke),
-            StrokeThickness = 2,
-            RadiusX = 2,
-            RadiusY = 2,
+            Fill = hatchBrush,
+            Stroke = outlineBrush,
+            StrokeThickness = 1,
+            RadiusX = 0,
+            RadiusY = 0,
             IsHitTestVisible = false
         };
-        rect.Classes.Add("crop-handle-edge");
-        var canvas = new Canvas { Width = width, Height = height, IsHitTestVisible = false };
-        Canvas.SetLeft(rect, (width - rw) / 2);
-        Canvas.SetTop(rect, (height - rh) / 2);
+        Canvas.SetLeft(rect, cx);
+        Canvas.SetTop(rect, cy);
         canvas.Children.Add(rect);
+
         return canvas;
     }
 
@@ -1271,8 +1386,8 @@ public class EditorInputController
         var overlay = _view.FindControl<Canvas>("OverlayCanvas");
         if (overlay != null)
         {
-            UpdateCropHandlePositions(overlay, newRect);
-            UpdateCropAdorners(overlay, newRect);
+            // Recreate handles so edge handles resize to fill the full side
+            ShowCropHandles(overlay, newRect);
         }
     }
 

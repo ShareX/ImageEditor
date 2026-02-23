@@ -77,6 +77,7 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? RedoRequested;
         public event EventHandler? DeleteRequested;
         public event EventHandler? ClearAnnotationsRequested;
+        public event EventHandler? FlattenRequested;
         public event EventHandler? DeselectRequested;
         public event EventHandler? PasteRequested;
         public event EventHandler? DuplicateRequested;
@@ -241,6 +242,7 @@ namespace ShareX.ImageEditor.ViewModels
                 if (SetProperty(ref _hasAnnotations, value))
                 {
                     ClearAnnotationsCommand.NotifyCanExecuteChanged();
+                    FlattenImageCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -1461,6 +1463,12 @@ namespace ShareX.ImageEditor.ViewModels
         {
             ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
             ResetNumberCounter();
+        }
+
+        [RelayCommand(CanExecute = nameof(HasAnnotations))]
+        private void FlattenImage()
+        {
+            FlattenRequested?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]

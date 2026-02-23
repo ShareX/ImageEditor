@@ -237,6 +237,7 @@ namespace ShareX.ImageEditor.Views
                 vm.PasteRequested += OnPasteRequested;
                 vm.DuplicateRequested += OnDuplicateRequested;
                 vm.ZoomToFitRequested += OnZoomToFitRequested;
+                vm.FlattenRequested += OnFlattenRequested;
 
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
@@ -1879,6 +1880,28 @@ namespace ShareX.ImageEditor.Views
         private void OnZoomToFitRequested(object? sender, EventArgs e)
         {
             _zoomController.ZoomToFit();
+        }
+
+        private void OnFlattenRequested(object? sender, EventArgs e)
+        {
+            var snapshot = GetSnapshot();
+            if (snapshot == null) return;
+
+            if (_editorCore.FlattenImage(snapshot))
+            {
+                // Clear annotation visuals from the UI canvas
+                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                if (canvas != null)
+                {
+                    canvas.Children.Clear();
+                    _selectionController.ClearSelection();
+                }
+
+                if (DataContext is MainViewModel vm)
+                {
+                    vm.HasAnnotations = false;
+                }
+            }
         }
 
         public void OpenContextMenu(Control target)

@@ -86,6 +86,7 @@ namespace ShareX.ImageEditor.Controls
             // Draw text if present
             if (!string.IsNullOrEmpty(Annotation.Text))
             {
+                var textColor = Color.Parse(Annotation.TextColor);
                 var typeface = new Typeface(FontFamily.Default);
                 var formattedText = new FormattedText(
                     Annotation.Text,
@@ -93,7 +94,7 @@ namespace ShareX.ImageEditor.Controls
                     FlowDirection.LeftToRight,
                     typeface,
                     Annotation.FontSize,
-                    new SolidColorBrush(strokeColor)
+                    new SolidColorBrush(textColor)
                 );
 
                 // Calculate centered text position with padding

@@ -172,15 +172,21 @@ namespace ShareX.ImageEditor.Views
                     {
                         vm.FontSize = num.FontSize;
                         vm.FillColor = num.FillColor;
+                        if (!string.IsNullOrEmpty(num.TextColor))
+                            vm.TextColorValue = Avalonia.Media.Color.Parse(num.TextColor);
                     }
                     else if (vm.SelectedAnnotation is TextAnnotation text)
                     {
                         vm.FontSize = text.FontSize;
+                        if (!string.IsNullOrEmpty(text.TextColor))
+                            vm.TextColorValue = Avalonia.Media.Color.Parse(text.TextColor);
                     }
                     else if (vm.SelectedAnnotation is SpeechBalloonAnnotation balloon)
                     {
                         vm.FontSize = balloon.FontSize;
                         vm.FillColor = balloon.FillColor;
+                        if (!string.IsNullOrEmpty(balloon.TextColor))
+                            vm.TextColorValue = Avalonia.Media.Color.Parse(balloon.TextColor);
                     }
                     else if (vm.SelectedAnnotation is RectangleAnnotation rect)
                     {
@@ -285,6 +291,10 @@ namespace ShareX.ImageEditor.Views
                 else if (e.PropertyName == nameof(MainViewModel.FillColorValue))
                 {
                     ApplySelectedFillColor(vm.FillColor);
+                }
+                else if (e.PropertyName == nameof(MainViewModel.TextColorValue))
+                {
+                    ApplySelectedTextColor(vm.TextColor);
                 }
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
@@ -959,6 +969,54 @@ namespace ShareX.ImageEditor.Views
             }
         }
 
+        private void OnTextColorChanged(object? sender, IBrush color)
+        {
+            if (DataContext is MainViewModel vm && color is SolidColorBrush solidBrush)
+            {
+                var hexColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
+                vm.TextColor = hexColor;
+
+                // Apply to selected annotation if any
+                var selected = _selectionController.SelectedShape;
+                if (selected?.Tag is TextAnnotation annotation)
+                {
+                    annotation.TextColor = hexColor;
+
+                    // Update the UI control's view
+                    if (selected is OutlinedTextControl textBox)
+                    {
+                        textBox.InvalidateVisual();
+                    }
+
+                    // ISSUE-LIVE-UPDATE: Update active text editor if present
+                    _selectionController.UpdateActiveTextEditorProperties();
+                }
+                else if (selected?.Tag is SpeechBalloonAnnotation balloon)
+                {
+                    balloon.TextColor = hexColor;
+                    if (selected is SpeechBalloonControl control)
+                    {
+                        control.InvalidateVisual();
+                    }
+                    _selectionController.UpdateActiveTextEditorProperties();
+                }
+                else if (selected?.Tag is NumberAnnotation numberAnn)
+                {
+                    numberAnn.TextColor = hexColor;
+                    if (selected is Grid grid)
+                    {
+                        foreach (var child in grid.Children)
+                        {
+                            if (child is TextBlock textBlock)
+                            {
+                                textBlock.Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(hexColor));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void OnFontSizeChanged(object? sender, float fontSize)
         {
             if (DataContext is MainViewModel vm)
@@ -1212,6 +1270,49 @@ namespace ShareX.ImageEditor.Views
                 case SpeechBalloonControl balloonControl:
                     balloonControl.InvalidateVisual();
                     break;
+            }
+
+            // ISSUE-LIVE-UPDATE: Update active text editor if present
+            _selectionController.UpdateActiveTextEditorProperties();
+        }
+
+        private void ApplySelectedTextColor(string colorHex)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected == null) return;
+
+            if (selected.Tag is TextAnnotation textAnnotation)
+            {
+                textAnnotation.TextColor = colorHex;
+            }
+            else if (selected.Tag is SpeechBalloonAnnotation balloon)
+            {
+                balloon.TextColor = colorHex;
+            }
+            else if (selected.Tag is NumberAnnotation number)
+            {
+                number.TextColor = colorHex;
+            }
+
+            // Update UI
+            if (selected is OutlinedTextControl outText)
+            {
+                outText.InvalidateVisual();
+            }
+            else if (selected is SpeechBalloonControl balloonControl)
+            {
+                balloonControl.InvalidateVisual();
+            }
+            else if (selected is Grid grid)
+            {
+                // NumberAnnotation (Step) uses a Grid with a TextBlock
+                foreach (var child in grid.Children)
+                {
+                    if (child is TextBlock textBlock)
+                    {
+                        textBlock.Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(colorHex));
+                    }
+                }
             }
 
             // ISSUE-LIVE-UPDATE: Update active text editor if present

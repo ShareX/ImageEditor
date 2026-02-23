@@ -700,6 +700,14 @@
                             IsVisible="{Binding ShowFillColor}"
                             ToolTip.Tip="Fill Color"/>
 
+                        <!-- Text Color Picker Dropdown -->
+                        <controls:ColorPickerDropdown x:Name="TextColorPickerDropdown"
+                            SelectedColor="{Binding TextColorBrush}"
+                            ColorChanged="OnTextColorChanged"
+                            Height="40"
+                            IsVisible="{Binding ShowTextColor}"
+                            ToolTip.Tip="Text Color"/>
+
                         <!-- Thickness Picker Dropdown -->
                         <controls:WidthPickerDropdown
                             SelectedWidth="{Binding StrokeWidth}"

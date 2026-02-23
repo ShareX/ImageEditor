@@ -43,6 +43,11 @@ public partial class NumberAnnotation : Annotation
     public float FontSize { get; set; } = 24;
 
     /// <summary>
+    /// Text body color
+    /// </summary>
+    public string TextColor { get; set; } = "#FFFFFFFF";
+
+    /// <summary>
     /// Circle radius - auto-calculated based on FontSize if not explicitly set
     /// </summary>
     public float Radius

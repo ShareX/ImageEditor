@@ -972,10 +972,10 @@ public class EditorSelectionController
         }
 
         // Ensure text is visible during editing
-        IBrush foregroundBrush = new SolidColorBrush(Avalonia.Media.Color.Parse(annotation.StrokeColor));
+        IBrush foregroundBrush = new SolidColorBrush(Avalonia.Media.Color.Parse(annotation.TextColor));
         try
         {
-            var foreColor = Avalonia.Media.Color.Parse(annotation.StrokeColor);
+            var foreColor = Avalonia.Media.Color.Parse(annotation.TextColor);
             var backColor = Avalonia.Media.Color.Parse(annotation.FillColor);
 
             // Calculate relative luminance
@@ -1626,27 +1626,27 @@ public class EditorSelectionController
         textControl.IsVisible = false;
 
         // Create a temporary TextBox for editing
-        string fillColor = annotation.FillColor;
-        if (string.IsNullOrEmpty(fillColor) || fillColor == "#00000000")
+        string textColor = annotation.TextColor;
+        if (string.IsNullOrEmpty(textColor) || textColor == "#00000000")
         {
             // Fallback to black for editing if text is transparent
-            // Only if stroke isn't set. Actually if FillColor is transparent but StrokeColor is set, text is stroke-only.
-            // Using StrokeColor for the editor text if Fill is transparent makes sense so it's visible.
+            // Only if stroke isn't set. Actually if TextColor is transparent but StrokeColor is set, text is stroke-only.
+            // Using StrokeColor for the editor text if TextColor is transparent makes sense so it's visible.
             string strokeColor = annotation.StrokeColor;
             if (string.IsNullOrEmpty(strokeColor) || strokeColor == "#00000000")
             {
-                fillColor = "#FF000000";
+                textColor = "#FF000000";
             }
             else
             {
-                fillColor = strokeColor;
+                textColor = strokeColor;
             }
         }
 
         var textBox = new TextBox
         {
             Text = annotation.Text,
-            Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(fillColor)),
+            Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(textColor)),
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(1),
             BorderBrush = Brushes.Gray,

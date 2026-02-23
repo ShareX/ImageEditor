@@ -85,16 +85,16 @@ namespace ShareX.ImageEditor.Controls
             if (textGeometry == null) return;
 
             // Setup brushes based on the annotation's color properties.
-            // Text color is now FillColor, Outline color is StrokeColor.
+            // Text color is now TextColor, Outline color is StrokeColor.
             
             // Standard behavior in many editors is that transparent fill means no fill.
             IBrush? fillBrush = null;
-            if (!string.IsNullOrEmpty(Annotation.FillColor))
+            if (!string.IsNullOrEmpty(Annotation.TextColor))
             {
-                var fillColor = Color.Parse(Annotation.FillColor);
-                if (fillColor.A > 0)
+                var textColor = Color.Parse(Annotation.TextColor);
+                if (textColor.A > 0)
                 {
-                    fillBrush = new SolidColorBrush(fillColor);
+                    fillBrush = new SolidColorBrush(textColor);
                 }
             }
             

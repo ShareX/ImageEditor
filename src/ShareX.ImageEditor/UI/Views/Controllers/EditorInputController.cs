@@ -1547,22 +1547,24 @@ public class EditorInputController
         if (vm == null) return;
 
         // For Text, FillColor is the text color, StrokeColor is the outline.
-        // If FillColor is transparent, set it to the default text color (often black/white or Options.TextColor)
-        string fillColor = vm.FillColor;
-        if (Avalonia.Media.Color.TryParse(fillColor, out var parsedFill) && parsedFill.A == 0)
+        // If TextColor is transparent, set it to the default text color (often black/white or Options.TextColor)
+        string textColor = vm.TextColor;
+        if (Avalonia.Media.Color.TryParse(textColor, out var parsedText) && parsedText.A == 0)
         {
             var fallback = vm.Options?.TextColor ?? Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
-            fillColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
-            vm.FillColorValue = fallback; // Sync back to the UI so the user sees it
+            textColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
+            vm.TextColorValue = fallback; // Sync back to the UI so the user sees it
         }
         
         // Stroke is the outline color. If stroke width is 0, outline is effectively disabled.
         string strokeColor = vm.SelectedColor;
+        string fillColor = vm.FillColor;
 
         var textAnnotation = new TextAnnotation
         {
             StrokeColor = strokeColor,
             FillColor = fillColor,
+            TextColor = textColor,
             StrokeWidth = (float)strokeWidth,
             FontSize = vm.FontSize,
             ShadowEnabled = vm.ShadowEnabled,
@@ -1570,7 +1572,7 @@ public class EditorInputController
             EndPoint = ToSKPoint(_startPoint) // Will be updated when text is finalized
         };
 
-        var textBrush = Avalonia.Media.Color.TryParse(fillColor, out var c) ? new SolidColorBrush(c) : brush;
+        var textBrush = Avalonia.Media.Color.TryParse(textColor, out var c) ? new SolidColorBrush(c) : brush;
         var textBox = new TextBox
         {
             Foreground = textBrush,

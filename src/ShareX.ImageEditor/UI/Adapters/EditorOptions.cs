@@ -29,17 +29,22 @@ namespace ShareX.ImageEditor
 {
     public class EditorOptions
     {
-        public Color BorderColor { get; set; } = Color.FromArgb(255, 255, 67, 67);
+        public Color BorderColor { get; set; } = Color.FromArgb(255, 242, 60, 60);
         public Color FillColor { get; set; } = Colors.Transparent;
-        public Color TextColor { get; set; } = Color.FromArgb(255, 0, 0, 0);
+        public Color TextColor { get; set; } = Color.FromArgb(255, 250, 250, 250);
         public int Thickness { get; set; } = 4;
         public float FontSize { get; set; } = 48;
         public bool Shadow { get; set; } = true;
+        public float ShadowBlur { get; set; } = 30;
+        public Color ShadowColor { get; set; } = Color.FromArgb(128, 0, 0, 0);
 
         public Color StepBorderColor { get; set; } = Colors.Transparent;
-        public Color StepFillColor { get; set; } = Color.FromArgb(255, 255, 67, 67);
+        public Color StepFillColor { get; set; } = Color.FromArgb(255, 242, 60, 60);
+        public Color StepTextColor { get; set; } = Color.FromArgb(255, 250, 250, 250);
         public float StepFontSize { get; set; } = 30;
+
         public Color HighlighterColor { get; set; } = Colors.Yellow;
+
         public float BlurStrength { get; set; } = 30;
         public float PixelateStrength { get; set; } = 20;
         public float MagnifierStrength { get; set; } = 2;

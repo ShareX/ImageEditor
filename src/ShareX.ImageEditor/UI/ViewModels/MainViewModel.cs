@@ -420,9 +420,6 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Text:
                     Options.TextBorderColor = color;
                     break;
-                case EditorTool.Highlight:
-                    Options.HighlighterColor = color;
-                    break;
                 default:
                     Options.BorderColor = color;
                     break;
@@ -505,6 +502,9 @@ namespace ShareX.ImageEditor.ViewModels
                     break;
                 case EditorTool.SpeechBalloon:
                     Options.SpeechBalloonFillColor = color;
+                    break;
+                case EditorTool.Highlight:
+                    Options.HighlightFillColor = color;
                     break;
                 default:
                     Options.FillColor = color;
@@ -637,19 +637,19 @@ namespace ShareX.ImageEditor.ViewModels
         {
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step or EditorTool.Highlight => true,
+                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step => true,
                 _ => false
             },
-            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step or EditorTool.Highlight => true,
+            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step => true,
             _ => false
         };
 
         public bool ShowFillColor => ActiveTool switch
         {
-            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step => true,
+            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.Highlight => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step => true,
+                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.Highlight => true,
                 _ => false
             },
             _ => false
@@ -796,7 +796,7 @@ namespace ShareX.ImageEditor.ViewModels
                     FontSize = Options.StepFontSize;
                     break;
                 case EditorTool.Highlight:
-                    SelectedColorValue = Options.HighlighterColor;
+                    FillColorValue = Options.HighlightFillColor;
                     break;
                 case EditorTool.SmartEraser:
                     StrokeWidth = Options.SmartEraserThickness;

@@ -161,7 +161,7 @@ namespace ShareX.ImageEditor.Views
 
                     // Don't sync stroke properties from ImageAnnotation — it has StrokeWidth=0
                     // which would clobber Options.Thickness and break other tools
-                    if (vm.SelectedAnnotation is not ImageAnnotation)
+                    if (vm.SelectedAnnotation is not ImageAnnotation && vm.SelectedAnnotation is not HighlightAnnotation)
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
                         
@@ -205,6 +205,10 @@ namespace ShareX.ImageEditor.Views
                     else if (vm.SelectedAnnotation is BaseEffectAnnotation effect)
                     {
                         vm.EffectStrength = (int)effect.Amount;
+                        if (effect is HighlightAnnotation highlight)
+                        {
+                            vm.FillColor = highlight.FillColor;
+                        }
                     }
                 }
             }

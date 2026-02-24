@@ -63,8 +63,8 @@ namespace ShareX.ImageEditor
         // Smart Eraser
         public int SmartEraserThickness { get; set; } = 10;
 
-        // Highlighter
-        public Color HighlighterColor { get; set; } = Colors.Yellow;
+        // Highlight
+        public Color HighlightFillColor { get; set; } = Colors.Yellow;
 
         // Effects
         public float BlurStrength { get; set; } = 30;

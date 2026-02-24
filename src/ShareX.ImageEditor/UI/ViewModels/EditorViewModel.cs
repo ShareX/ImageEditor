@@ -169,7 +169,7 @@ public partial class EditorViewModel : ObservableObject
                     Options.StepFillColor = color;
                     break;
                 case EditorTool.Highlight:
-                    Options.HighlighterColor = color;
+                    Options.HighlightFillColor = color;
                     break;
                 default:
                     Options.BorderColor = color;
@@ -208,7 +208,7 @@ public partial class EditorViewModel : ObservableObject
                 StrokeWidth = Options.Thickness;
                 break;
             case EditorTool.Highlight:
-                SelectedColor = $"#{Options.HighlighterColor.A:X2}{Options.HighlighterColor.R:X2}{Options.HighlighterColor.G:X2}{Options.HighlighterColor.B:X2}";
+                SelectedColor = $"#{Options.HighlightFillColor.A:X2}{Options.HighlightFillColor.R:X2}{Options.HighlightFillColor.G:X2}{Options.HighlightFillColor.B:X2}";
                 StrokeWidth = Options.Thickness;
                 break;
         }

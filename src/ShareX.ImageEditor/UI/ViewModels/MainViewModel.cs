@@ -414,6 +414,9 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Step:
                     Options.StepBorderColor = color;
                     break;
+                case EditorTool.SpeechBalloon:
+                    Options.SpeechBalloonBorderColor = color;
+                    break;
                 case EditorTool.Highlight:
                     Options.HighlighterColor = color;
                     break;
@@ -470,6 +473,9 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Step:
                     Options.StepFillColor = color;
                     break;
+                case EditorTool.SpeechBalloon:
+                    Options.SpeechBalloonFillColor = color;
+                    break;
                 default:
                     Options.FillColor = color;
                     break;
@@ -513,7 +519,11 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 Options.StepTextColor = color;
             }
-            else if (ActiveTool == EditorTool.Text || ActiveTool == EditorTool.SpeechBalloon)
+            else if (ActiveTool == EditorTool.SpeechBalloon)
+            {
+                Options.SpeechBalloonTextColor = color;
+            }
+            else if (ActiveTool == EditorTool.Text)
             {
                 Options.TextColor = color;
             }
@@ -523,7 +533,11 @@ namespace ShareX.ImageEditor.ViewModels
                 {
                     Options.StepTextColor = color;
                 }
-                else if (SelectedAnnotation is TextAnnotation or SpeechBalloonAnnotation)
+                else if (SelectedAnnotation is SpeechBalloonAnnotation)
+                {
+                    Options.SpeechBalloonTextColor = color;
+                }
+                else if (SelectedAnnotation is TextAnnotation)
                 {
                     Options.TextColor = color;
                 }
@@ -536,19 +550,25 @@ namespace ShareX.ImageEditor.ViewModels
         partial void OnFontSizeChanged(float value)
         {
             bool isStep = ActiveTool == EditorTool.Step;
+            bool isSpeechBalloon = ActiveTool == EditorTool.SpeechBalloon;
 
-            if (ActiveTool == EditorTool.Select && SelectedAnnotation is NumberAnnotation)
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
             {
-                isStep = true;
+                if (SelectedAnnotation is NumberAnnotation) isStep = true;
+                if (SelectedAnnotation is SpeechBalloonAnnotation) isSpeechBalloon = true;
             }
 
             if (isStep)
             {
                 Options.StepFontSize = value;
             }
+            else if (isSpeechBalloon)
+            {
+                Options.SpeechBalloonFontSize = value;
+            }
             else
             {
-                Options.FontSize = value;
+                Options.TextFontSize = value;
             }
         }
 
@@ -720,22 +740,22 @@ namespace ShareX.ImageEditor.ViewModels
                     FillColorValue = Options.FillColor;
                     StrokeWidth = Options.Thickness;
                     ShadowEnabled = Options.Shadow;
-                    FontSize = Options.FontSize;
+                    FontSize = Options.TextFontSize;
                     break;
                 case EditorTool.Text:
                     SelectedColorValue = Options.BorderColor;
                     TextColorValue = Options.TextColor;
                     StrokeWidth = Options.Thickness;
                     ShadowEnabled = Options.Shadow;
-                    FontSize = Options.FontSize;
+                    FontSize = Options.TextFontSize;
                     break;
                 case EditorTool.SpeechBalloon:
-                    SelectedColorValue = Options.BorderColor;
-                    FillColorValue = Options.FillColor;
-                    TextColorValue = Options.TextColor;
+                    SelectedColorValue = Options.SpeechBalloonBorderColor;
+                    FillColorValue = Options.SpeechBalloonFillColor;
+                    TextColorValue = Options.SpeechBalloonTextColor;
                     StrokeWidth = Options.Thickness;
                     ShadowEnabled = Options.Shadow;
-                    FontSize = Options.FontSize;
+                    FontSize = Options.SpeechBalloonFontSize;
                     break;
                 case EditorTool.Step:
                     SelectedColorValue = Options.StepBorderColor;
@@ -978,7 +998,7 @@ namespace ShareX.ImageEditor.ViewModels
             _fillColor = $"#{_options.FillColor.A:X2}{_options.FillColor.R:X2}{_options.FillColor.G:X2}{_options.FillColor.B:X2}";
             _selectedColor = $"#{_options.BorderColor.A:X2}{_options.BorderColor.R:X2}{_options.BorderColor.G:X2}{_options.BorderColor.B:X2}";
             _strokeWidth = _options.Thickness;
-            _fontSize = _options.FontSize;
+            _fontSize = _options.TextFontSize;
             _shadowEnabled = _options.Shadow;
             _shadowBlur = _options.ShadowBlur;
 

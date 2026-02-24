@@ -417,6 +417,9 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.SpeechBalloon:
                     Options.SpeechBalloonBorderColor = color;
                     break;
+                case EditorTool.Text:
+                    Options.TextBorderColor = color;
+                    break;
                 case EditorTool.Highlight:
                     Options.HighlighterColor = color;
                     break;
@@ -431,7 +434,29 @@ namespace ShareX.ImageEditor.ViewModels
 
         partial void OnStrokeWidthChanged(int value)
         {
-            Options.Thickness = value;
+            if (ActiveTool == EditorTool.Step)
+            {
+                Options.StepThickness = value;
+            }
+            else if (ActiveTool == EditorTool.SpeechBalloon)
+            {
+                Options.SpeechBalloonThickness = value;
+            }
+            else if (ActiveTool == EditorTool.Text)
+            {
+                Options.TextThickness = value;
+            }
+            else if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                if (SelectedAnnotation is NumberAnnotation) Options.StepThickness = value;
+                else if (SelectedAnnotation is SpeechBalloonAnnotation) Options.SpeechBalloonThickness = value;
+                else if (SelectedAnnotation is TextAnnotation) Options.TextThickness = value;
+                else Options.Thickness = value;
+            }
+            else
+            {
+                Options.Thickness = value;
+            }
         }
 
         // Tool-specific options
@@ -525,7 +550,7 @@ namespace ShareX.ImageEditor.ViewModels
             }
             else if (ActiveTool == EditorTool.Text)
             {
-                Options.TextColor = color;
+                Options.TextTextColor = color;
             }
             else if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
             {
@@ -539,7 +564,7 @@ namespace ShareX.ImageEditor.ViewModels
                 }
                 else if (SelectedAnnotation is TextAnnotation)
                 {
-                    Options.TextColor = color;
+                    Options.TextTextColor = color;
                 }
             }
         }
@@ -743,9 +768,9 @@ namespace ShareX.ImageEditor.ViewModels
                     FontSize = Options.TextFontSize;
                     break;
                 case EditorTool.Text:
-                    SelectedColorValue = Options.BorderColor;
-                    TextColorValue = Options.TextColor;
-                    StrokeWidth = Options.Thickness;
+                    SelectedColorValue = Options.TextBorderColor;
+                    TextColorValue = Options.TextTextColor;
+                    StrokeWidth = Options.TextThickness;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.TextFontSize;
                     break;
@@ -753,7 +778,7 @@ namespace ShareX.ImageEditor.ViewModels
                     SelectedColorValue = Options.SpeechBalloonBorderColor;
                     FillColorValue = Options.SpeechBalloonFillColor;
                     TextColorValue = Options.SpeechBalloonTextColor;
-                    StrokeWidth = Options.Thickness;
+                    StrokeWidth = Options.SpeechBalloonThickness;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.SpeechBalloonFontSize;
                     break;
@@ -761,7 +786,7 @@ namespace ShareX.ImageEditor.ViewModels
                     SelectedColorValue = Options.StepBorderColor;
                     FillColorValue = Options.StepFillColor;
                     TextColorValue = Options.StepTextColor;
-                    StrokeWidth = Options.Thickness; // Or specific step thickness? EditorOptions uses generic Thickness.
+                    StrokeWidth = Options.StepThickness;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.StepFontSize;
                     break;
@@ -993,7 +1018,7 @@ namespace ShareX.ImageEditor.ViewModels
             _canvasBackground = CopyBrush(GradientPresets[0].Brush);
 
             // Initialize values from options
-            _textColor = $"#{_options.TextColor.A:X2}{_options.TextColor.R:X2}{_options.TextColor.G:X2}{_options.TextColor.B:X2}";
+            _textColor = $"#{_options.TextTextColor.A:X2}{_options.TextTextColor.R:X2}{_options.TextTextColor.G:X2}{_options.TextTextColor.B:X2}";
             _fillColor = $"#{_options.FillColor.A:X2}{_options.FillColor.R:X2}{_options.FillColor.G:X2}{_options.FillColor.B:X2}";
             _selectedColor = $"#{_options.BorderColor.A:X2}{_options.BorderColor.R:X2}{_options.BorderColor.G:X2}{_options.BorderColor.B:X2}";
             _strokeWidth = _options.Thickness;

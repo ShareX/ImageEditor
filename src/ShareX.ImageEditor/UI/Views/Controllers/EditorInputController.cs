@@ -1552,7 +1552,7 @@ public class EditorInputController
         string textColor = vm.TextColor;
         if (Avalonia.Media.Color.TryParse(textColor, out var parsedText) && parsedText.A == 0)
         {
-            var fallback = vm.Options?.TextColor ?? Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
+            var fallback = vm.Options?.TextTextColor ?? Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
             textColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
             vm.TextColorValue = fallback; // Sync back to the UI so the user sees it
         }

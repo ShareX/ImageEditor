@@ -1478,24 +1478,25 @@ public class EditorInputController
         {
             if (cutOverlay.Width > 0 && cutOverlay.Height > 0 && _cutOutDirection.HasValue)
             {
-                var scaling = 1.0;
-                var topLevel = TopLevel.GetTopLevel(_view);
-                if (topLevel != null) scaling = topLevel.RenderScaling;
-
+                // XIP0039 Guardrail 1: Annotation model coordinates are logical image pixels.
+                // AnnotationCanvas is sized 1:1 with the source bitmap in logical pixels,
+                // so no RenderScaling factor is needed — consistent with the Crop path.
+                // The previous code incorrectly multiplied by RenderScaling, which caused
+                // CutOut bounds to be scaled by the display DPI factor on high-DPI screens.
                 if (_cutOutDirection.Value) // Vertical
                 {
                     var left = Canvas.GetLeft(cutOverlay);
                     var w = cutOverlay.Width;
-                    int startX = (int)(left * scaling);
-                    int endX = (int)((left + w) * scaling);
+                    int startX = (int)Math.Round(left);
+                    int endX = (int)Math.Round(left + w);
                     vm.CutOutImage(startX, endX, true);
                 }
                 else // Horizontal
                 {
                     var top = Canvas.GetTop(cutOverlay);
                     var h = cutOverlay.Height;
-                    int startY = (int)(top * scaling);
-                    int endY = (int)((top + h) * scaling);
+                    int startY = (int)Math.Round(top);
+                    int endY = (int)Math.Round(top + h);
                     vm.CutOutImage(startY, endY, false);
                 }
             }

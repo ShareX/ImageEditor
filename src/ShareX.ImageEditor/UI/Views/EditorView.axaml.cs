@@ -161,26 +161,38 @@ namespace ShareX.ImageEditor.Views
 
                     // Don't sync stroke properties from ImageAnnotation — it has StrokeWidth=0
                     // which would clobber Options.Thickness and break other tools
-                    if (vm.SelectedAnnotation is not ImageAnnotation)
+                    if (vm.SelectedAnnotation is not ImageAnnotation && vm.SelectedAnnotation is not HighlightAnnotation)
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
-                        vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
-                        vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
+
+                        // Effect annotations have StrokeWidth = 0 and no shadows
+                        // Don't sync them, otherwise they'll clobber global options
+                        if (vm.SelectedAnnotation is not BaseEffectAnnotation)
+                        {
+                            vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+                            vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
+                        }
                     }
 
                     if (vm.SelectedAnnotation is NumberAnnotation num)
                     {
                         vm.FontSize = num.FontSize;
                         vm.FillColor = num.FillColor;
+                        if (!string.IsNullOrEmpty(num.TextColor))
+                            vm.TextColorValue = Avalonia.Media.Color.Parse(num.TextColor);
                     }
                     else if (vm.SelectedAnnotation is TextAnnotation text)
                     {
                         vm.FontSize = text.FontSize;
+                        if (!string.IsNullOrEmpty(text.TextColor))
+                            vm.TextColorValue = Avalonia.Media.Color.Parse(text.TextColor);
                     }
                     else if (vm.SelectedAnnotation is SpeechBalloonAnnotation balloon)
                     {
                         vm.FontSize = balloon.FontSize;
                         vm.FillColor = balloon.FillColor;
+                        if (!string.IsNullOrEmpty(balloon.TextColor))
+                            vm.TextColorValue = Avalonia.Media.Color.Parse(balloon.TextColor);
                     }
                     else if (vm.SelectedAnnotation is RectangleAnnotation rect)
                     {
@@ -193,6 +205,10 @@ namespace ShareX.ImageEditor.Views
                     else if (vm.SelectedAnnotation is BaseEffectAnnotation effect)
                     {
                         vm.EffectStrength = (int)effect.Amount;
+                        if (effect is HighlightAnnotation highlight)
+                        {
+                            vm.FillColor = highlight.FillColor;
+                        }
                     }
                 }
             }
@@ -237,6 +253,7 @@ namespace ShareX.ImageEditor.Views
                 vm.PasteRequested += OnPasteRequested;
                 vm.DuplicateRequested += OnDuplicateRequested;
                 vm.ZoomToFitRequested += OnZoomToFitRequested;
+                vm.FlattenRequested += OnFlattenRequested;
 
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
@@ -281,6 +298,14 @@ namespace ShareX.ImageEditor.Views
                 {
                     ApplySelectedStrokeWidth(vm.StrokeWidth);
                 }
+                else if (e.PropertyName == nameof(MainViewModel.FillColorValue))
+                {
+                    ApplySelectedFillColor(vm.FillColor);
+                }
+                else if (e.PropertyName == nameof(MainViewModel.TextColorValue))
+                {
+                    ApplySelectedTextColor(vm.TextColor);
+                }
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
                     _zoomController.ResetScrollViewerOffset();
@@ -300,6 +325,10 @@ namespace ShareX.ImageEditor.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.ActiveTool))
                 {
+                    if (vm.ActiveTool == EditorTool.Crop)
+                        _inputController.ActivateCropToFullImage();
+                    else
+                        _inputController.CancelCrop();
                     _selectionController.ClearSelection();
                     UpdateCursorForTool(); // ISSUE-018 fix: Update cursor feedback for active tool
                 }
@@ -546,7 +575,11 @@ namespace ShareX.ImageEditor.Views
                             case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
 
                             case Key.Enter:
-                                if (vm.TaskMode)
+                                if (_inputController.TryConfirmCrop())
+                                {
+                                    e.Handled = true;
+                                }
+                                else if (vm.TaskMode)
                                 {
                                     vm.ContinueCommand.Execute(null);
                                     e.Handled = true;
@@ -567,7 +600,11 @@ namespace ShareX.ImageEditor.Views
                 switch (e.Key)
                 {
                     case Key.Escape:
-                        if (_selectionController.SelectedShape != null)
+                        if (_inputController.CancelCrop())
+                        {
+                            e.Handled = true;
+                        }
+                        else if (_selectionController.SelectedShape != null)
                         {
                             _selectionController.ClearSelection();
                             e.Handled = true;
@@ -611,6 +648,7 @@ namespace ShareX.ImageEditor.Views
 
         private void OnDeselectRequested(object? sender, EventArgs e)
         {
+            _inputController.CancelCrop();
             _selectionController.ClearSelection();
         }
 
@@ -906,38 +944,15 @@ namespace ShareX.ImageEditor.Views
             {
                 var hexColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
                 vm.FillColor = hexColor;
+            }
+        }
 
-                // Apply to selected annotation if any
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is Annotation annotation)
-                {
-                    annotation.FillColor = hexColor;
-
-                    // Update the UI control's Fill property
-                    if (selected is Shape shape)
-                    {
-                        shape.Fill = hexColor == "#00000000" ? Brushes.Transparent : solidBrush;
-                    }
-                    else if (selected is Grid grid)
-                    {
-                        // For NumberAnnotation, update the Ellipse fill
-                        foreach (var child in grid.Children)
-                        {
-                            if (child is Avalonia.Controls.Shapes.Ellipse ellipse)
-                            {
-                                ellipse.Fill = hexColor == "#00000000" ? Brushes.Transparent : solidBrush;
-                            }
-                        }
-                    }
-                    else if (selected is SpeechBalloonControl balloon)
-                    {
-                        // For speech balloon, trigger visual invalidation to redraw filling
-                        balloon.InvalidateVisual();
-                    }
-
-                    // ISSUE-LIVE-UPDATE: Update active text editor if present
-                    _selectionController.UpdateActiveTextEditorProperties();
-                }
+        private void OnTextColorChanged(object? sender, IBrush color)
+        {
+            if (DataContext is MainViewModel vm && color is SolidColorBrush solidBrush)
+            {
+                var hexColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
+                vm.TextColor = hexColor;
             }
         }
 
@@ -1067,18 +1082,14 @@ namespace ShareX.ImageEditor.Views
 
                 if (rect.Width > 0 && rect.Height > 0)
                 {
-                    var scaling = 1.0;
-                    var topLevel = TopLevel.GetTopLevel(this);
-                    if (topLevel != null) scaling = topLevel.RenderScaling;
+                    // Canvas coordinates are already in image-pixel space (AnnotationCanvas
+                    // is sized to CanvasSize = bitmap.Width/Height). No DPI scaling needed.
+                    var cropX = (int)Math.Round(rect.Left);
+                    var cropY = (int)Math.Round(rect.Top);
+                    var cropW = (int)Math.Round(rect.Width);
+                    var cropH = (int)Math.Round(rect.Height);
 
-                    var physX = (int)(rect.Left * scaling);
-                    var physY = (int)(rect.Top * scaling);
-                    var physW = (int)(rect.Width * scaling);
-                    var physH = (int)(rect.Height * scaling);
-
-                    // vm.CropImage(physX, physY, physW, physH);
-                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                    _editorCore.Crop(new SKRect(physX, physY, physX + physW, physY + physH));
+                    _editorCore.Crop(new SKRect(cropX, cropY, cropX + cropW, cropY + cropH));
                 }
                 cropOverlay.IsVisible = false;
             }
@@ -1128,13 +1139,6 @@ namespace ShareX.ImageEditor.Views
             switch (selected)
             {
                 case Shape shape:
-                    if (shape.Tag is HighlightAnnotation)
-                    {
-                        // For highlighter, we must regenerate the effect bitmap with the new color
-                        OnRequestUpdateEffect(shape);
-                        break;
-                    }
-
                     shape.Stroke = brush;
 
                     if (shape is global::Avalonia.Controls.Shapes.Path path)
@@ -1146,8 +1150,8 @@ namespace ShareX.ImageEditor.Views
                         balloon.InvalidateVisual();
                     }
                     break;
-                case TextBox textBox:
-                    textBox.Foreground = brush;
+                case OutlinedTextControl textBox:
+                    textBox.InvalidateVisual();
                     break;
                 case Grid grid:
                     foreach (var child in grid.Children)
@@ -1161,6 +1165,101 @@ namespace ShareX.ImageEditor.Views
                 case SpeechBalloonControl balloonControl:
                     balloonControl.InvalidateVisual();
                     break;
+            }
+
+            // ISSUE-LIVE-UPDATE: Update active text editor if present
+            _selectionController.UpdateActiveTextEditorProperties();
+        }
+
+        private void ApplySelectedFillColor(string colorHex)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected == null) return;
+
+            // Ensure the annotation model property is updated so changes persist and effects render correctly
+            if (selected.Tag is Annotation annotation)
+            {
+                annotation.FillColor = colorHex;
+            }
+
+            var brush = new SolidColorBrush(Color.Parse(colorHex));
+
+            switch (selected)
+            {
+                case Shape shape:
+                    if (shape.Tag is HighlightAnnotation)
+                    {
+                        OnRequestUpdateEffect(shape);
+                        break;
+                    }
+
+                    if (shape is global::Avalonia.Controls.Shapes.Path path)
+                    {
+                        path.Fill = brush;
+                    }
+                    else if (shape is global::Avalonia.Controls.Shapes.Rectangle || shape is global::Avalonia.Controls.Shapes.Ellipse)
+                    {
+                        shape.Fill = brush;
+                    }
+                    break;
+                case OutlinedTextControl textBox:
+                    textBox.InvalidateVisual();
+                    break;
+                case SpeechBalloonControl balloonControl:
+                    balloonControl.InvalidateVisual();
+                    break;
+                case Grid grid:
+                    foreach (var child in grid.Children)
+                    {
+                        if (child is global::Avalonia.Controls.Shapes.Ellipse ellipse)
+                        {
+                            ellipse.Fill = colorHex == "#00000000" ? Brushes.Transparent : brush;
+                        }
+                    }
+                    break;
+            }
+
+            // ISSUE-LIVE-UPDATE: Update active text editor if present
+            _selectionController.UpdateActiveTextEditorProperties();
+        }
+
+        private void ApplySelectedTextColor(string colorHex)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected == null) return;
+
+            if (selected.Tag is TextAnnotation textAnnotation)
+            {
+                textAnnotation.TextColor = colorHex;
+            }
+            else if (selected.Tag is SpeechBalloonAnnotation balloon)
+            {
+                balloon.TextColor = colorHex;
+            }
+            else if (selected.Tag is NumberAnnotation number)
+            {
+                number.TextColor = colorHex;
+            }
+
+            // Update UI
+            if (selected is OutlinedTextControl outText)
+            {
+                outText.InvalidateVisual();
+            }
+            else if (selected is SpeechBalloonControl balloonControl)
+            {
+                balloonControl.InvalidateVisual();
+            }
+            else if (selected is Grid grid)
+            {
+                // NumberAnnotation (Step) uses a Grid with a TextBlock
+                foreach (var child in grid.Children)
+                {
+                    if (child is TextBlock textBlock)
+                    {
+                        textBlock.Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(colorHex));
+                    }
+                }
             }
 
             // ISSUE-LIVE-UPDATE: Update active text editor if present
@@ -1182,9 +1281,9 @@ namespace ShareX.ImageEditor.Views
                 case Shape shape:
                     shape.StrokeThickness = width;
                     break;
-                case TextBox textBox:
-                    textBox.FontSize = Math.Max(12, width * 4);
-                    textBox.BorderThickness = new Thickness(Math.Max(1, width / 2));
+                case OutlinedTextControl textBox:
+                    textBox.InvalidateMeasure();
+                    textBox.InvalidateVisual();
                     break;
                 case Grid grid:
                     foreach (var child in grid.Children)
@@ -1386,6 +1485,7 @@ namespace ShareX.ImageEditor.Views
         private void OnRoundedCornersRequested(object? sender, EventArgs e) => ShowEffectDialog(new RoundedCornersDialog());
         private void OnSkewRequested(object? sender, EventArgs e) => ShowEffectDialog(new SkewDialog());
         private void OnRotate3DRequested(object? sender, EventArgs e) => ShowEffectDialog(new Rotate3DDialog());
+        private void OnRotate3DBoxRequested(object? sender, EventArgs e) => ShowEffectDialog(new Rotate3DBoxDialog());
         private void OnBlurRequested(object? sender, EventArgs e) => ShowEffectDialog(new BlurDialog());
         private void OnPixelateRequested(object? sender, EventArgs e) => ShowEffectDialog(new PixelateDialog());
         private void OnSharpenRequested(object? sender, EventArgs e) => ShowEffectDialog(new SharpenDialog());
@@ -1869,6 +1969,28 @@ namespace ShareX.ImageEditor.Views
         private void OnZoomToFitRequested(object? sender, EventArgs e)
         {
             _zoomController.ZoomToFit();
+        }
+
+        private void OnFlattenRequested(object? sender, EventArgs e)
+        {
+            var snapshot = GetSnapshot();
+            if (snapshot == null) return;
+
+            if (_editorCore.FlattenImage(snapshot))
+            {
+                // Clear annotation visuals from the UI canvas
+                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                if (canvas != null)
+                {
+                    canvas.Children.Clear();
+                    _selectionController.ClearSelection();
+                }
+
+                if (DataContext is MainViewModel vm)
+                {
+                    vm.HasAnnotations = false;
+                }
+            }
         }
 
         public void OpenContextMenu(Control target)

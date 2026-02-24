@@ -77,6 +77,7 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? RedoRequested;
         public event EventHandler? DeleteRequested;
         public event EventHandler? ClearAnnotationsRequested;
+        public event EventHandler? FlattenRequested;
         public event EventHandler? DeselectRequested;
         public event EventHandler? PasteRequested;
         public event EventHandler? DuplicateRequested;
@@ -241,6 +242,7 @@ namespace ShareX.ImageEditor.ViewModels
                 if (SetProperty(ref _hasAnnotations, value))
                 {
                     ClearAnnotationsCommand.NotifyCanExecuteChanged();
+                    FlattenImageCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -412,8 +414,11 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Step:
                     Options.StepBorderColor = color;
                     break;
-                case EditorTool.Highlight:
-                    Options.HighlighterColor = color;
+                case EditorTool.SpeechBalloon:
+                    Options.SpeechBalloonBorderColor = color;
+                    break;
+                case EditorTool.Text:
+                    Options.TextBorderColor = color;
                     break;
                 default:
                     Options.BorderColor = color;
@@ -426,7 +431,34 @@ namespace ShareX.ImageEditor.ViewModels
 
         partial void OnStrokeWidthChanged(int value)
         {
-            Options.Thickness = value;
+            if (ActiveTool == EditorTool.Step)
+            {
+                Options.StepThickness = value;
+            }
+            else if (ActiveTool == EditorTool.SpeechBalloon)
+            {
+                Options.SpeechBalloonThickness = value;
+            }
+            else if (ActiveTool == EditorTool.Text)
+            {
+                Options.TextThickness = value;
+            }
+            else if (ActiveTool == EditorTool.SmartEraser)
+            {
+                Options.SmartEraserThickness = value;
+            }
+            else if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                if (SelectedAnnotation is NumberAnnotation) Options.StepThickness = value;
+                else if (SelectedAnnotation is SpeechBalloonAnnotation) Options.SpeechBalloonThickness = value;
+                else if (SelectedAnnotation is TextAnnotation) Options.TextThickness = value;
+                else if (SelectedAnnotation is SmartEraserAnnotation) Options.SmartEraserThickness = value;
+                else Options.Thickness = value;
+            }
+            else
+            {
+                Options.Thickness = value;
+            }
         }
 
         // Tool-specific options
@@ -468,9 +500,77 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Step:
                     Options.StepFillColor = color;
                     break;
+                case EditorTool.SpeechBalloon:
+                    Options.SpeechBalloonFillColor = color;
+                    break;
+                case EditorTool.Highlight:
+                    Options.HighlightFillColor = color;
+                    break;
                 default:
                     Options.FillColor = color;
                     break;
+            }
+        }
+
+        [ObservableProperty]
+        private string _textColor = "#FF000000"; // Black by default
+
+        public IBrush TextColorBrush
+        {
+            get => new SolidColorBrush(Color.Parse(TextColor));
+            set
+            {
+                if (value is SolidColorBrush solidBrush)
+                {
+                    TextColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
+                }
+            }
+        }
+
+        public Color TextColorValue
+        {
+            get => Color.Parse(TextColor);
+            set => TextColor = $"#{value.A:X2}{value.R:X2}{value.G:X2}{value.B:X2}";
+        }
+
+        partial void OnTextColorChanged(string value)
+        {
+            OnPropertyChanged(nameof(TextColorBrush));
+            OnPropertyChanged(nameof(TextColorValue));
+            UpdateOptionsFromTextColor();
+        }
+
+        private void UpdateOptionsFromTextColor()
+        {
+            var color = TextColorValue;
+
+            // Determine which option to update based on active tool or selected annotation
+            if (ActiveTool == EditorTool.Step)
+            {
+                Options.StepTextColor = color;
+            }
+            else if (ActiveTool == EditorTool.SpeechBalloon)
+            {
+                Options.SpeechBalloonTextColor = color;
+            }
+            else if (ActiveTool == EditorTool.Text)
+            {
+                Options.TextTextColor = color;
+            }
+            else if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                if (SelectedAnnotation is NumberAnnotation)
+                {
+                    Options.StepTextColor = color;
+                }
+                else if (SelectedAnnotation is SpeechBalloonAnnotation)
+                {
+                    Options.SpeechBalloonTextColor = color;
+                }
+                else if (SelectedAnnotation is TextAnnotation)
+                {
+                    Options.TextTextColor = color;
+                }
             }
         }
 
@@ -480,19 +580,25 @@ namespace ShareX.ImageEditor.ViewModels
         partial void OnFontSizeChanged(float value)
         {
             bool isStep = ActiveTool == EditorTool.Step;
+            bool isSpeechBalloon = ActiveTool == EditorTool.SpeechBalloon;
 
-            if (ActiveTool == EditorTool.Select && SelectedAnnotation is NumberAnnotation)
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
             {
-                isStep = true;
+                if (SelectedAnnotation is NumberAnnotation) isStep = true;
+                if (SelectedAnnotation is SpeechBalloonAnnotation) isSpeechBalloon = true;
             }
 
             if (isStep)
             {
                 Options.StepFontSize = value;
             }
+            else if (isSpeechBalloon)
+            {
+                Options.SpeechBalloonFontSize = value;
+            }
             else
             {
-                Options.FontSize = value;
+                Options.TextFontSize = value;
             }
         }
 
@@ -529,25 +635,32 @@ namespace ShareX.ImageEditor.ViewModels
         // Visibility computed properties based on ActiveTool
         public bool ShowBorderColor => ActiveTool switch
         {
-            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                or EditorTool.Freehand or EditorTool.Highlight or EditorTool.Text
-                or EditorTool.SpeechBalloon or EditorTool.Step => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                    or EditorTool.Freehand or EditorTool.Highlight or EditorTool.Text
-                    or EditorTool.SpeechBalloon or EditorTool.Step => true,
+                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step => true,
                 _ => false
             },
+            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step => true,
             _ => false
         };
 
         public bool ShowFillColor => ActiveTool switch
         {
-            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step => true,
+            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.Highlight => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step => true,
+                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.Highlight => true,
+                _ => false
+            },
+            _ => false
+        };
+
+        public bool ShowTextColor => ActiveTool switch
+        {
+            EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
+            EditorTool.Select => SelectedAnnotation?.ToolType switch
+            {
+                EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
                 _ => false
             },
             _ => false
@@ -556,11 +669,11 @@ namespace ShareX.ImageEditor.ViewModels
         public bool ShowThickness => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser => true,
+                or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser or EditorTool.Text => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
                 EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                    or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser => true,
+                    or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser or EditorTool.Text => true,
                 _ => false
             },
             _ => false
@@ -619,6 +732,7 @@ namespace ShareX.ImageEditor.ViewModels
         {
             OnPropertyChanged(nameof(ShowBorderColor));
             OnPropertyChanged(nameof(ShowFillColor));
+            OnPropertyChanged(nameof(ShowTextColor));
             OnPropertyChanged(nameof(ShowThickness));
             OnPropertyChanged(nameof(ShowFontSize));
             OnPropertyChanged(nameof(ShowStrength));
@@ -626,7 +740,7 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 
-        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowThickness || ShowFontSize || ShowStrength || ShowShadow;
+        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowStrength || ShowShadow;
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -652,24 +766,40 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Line:
                 case EditorTool.Arrow:
                 case EditorTool.Freehand:
-                case EditorTool.Text:
-                case EditorTool.SpeechBalloon:
                     SelectedColorValue = Options.BorderColor;
                     FillColorValue = Options.FillColor;
                     StrokeWidth = Options.Thickness;
                     ShadowEnabled = Options.Shadow;
-                    FontSize = Options.FontSize;
+                    FontSize = Options.TextFontSize;
+                    break;
+                case EditorTool.Text:
+                    SelectedColorValue = Options.TextBorderColor;
+                    TextColorValue = Options.TextTextColor;
+                    StrokeWidth = Options.TextThickness;
+                    ShadowEnabled = Options.Shadow;
+                    FontSize = Options.TextFontSize;
+                    break;
+                case EditorTool.SpeechBalloon:
+                    SelectedColorValue = Options.SpeechBalloonBorderColor;
+                    FillColorValue = Options.SpeechBalloonFillColor;
+                    TextColorValue = Options.SpeechBalloonTextColor;
+                    StrokeWidth = Options.SpeechBalloonThickness;
+                    ShadowEnabled = Options.Shadow;
+                    FontSize = Options.SpeechBalloonFontSize;
                     break;
                 case EditorTool.Step:
                     SelectedColorValue = Options.StepBorderColor;
                     FillColorValue = Options.StepFillColor;
-                    StrokeWidth = Options.Thickness; // Or specific step thickness? EditorOptions uses generic Thickness.
+                    TextColorValue = Options.StepTextColor;
+                    StrokeWidth = Options.StepThickness;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.StepFontSize;
                     break;
                 case EditorTool.Highlight:
-                    SelectedColorValue = Options.HighlighterColor;
-                    StrokeWidth = Options.Thickness;
+                    FillColorValue = Options.HighlightFillColor;
+                    break;
+                case EditorTool.SmartEraser:
+                    StrokeWidth = Options.SmartEraserThickness;
                     break;
                 case EditorTool.Blur:
                     EffectStrength = Options.BlurStrength;
@@ -894,6 +1024,15 @@ namespace ShareX.ImageEditor.ViewModels
             Current = this;
             GradientPresets = BuildGradientPresets();
             _canvasBackground = CopyBrush(GradientPresets[0].Brush);
+
+            // Initialize values from options
+            _textColor = $"#{_options.TextTextColor.A:X2}{_options.TextTextColor.R:X2}{_options.TextTextColor.G:X2}{_options.TextTextColor.B:X2}";
+            _fillColor = $"#{_options.FillColor.A:X2}{_options.FillColor.R:X2}{_options.FillColor.G:X2}{_options.FillColor.B:X2}";
+            _selectedColor = $"#{_options.BorderColor.A:X2}{_options.BorderColor.R:X2}{_options.BorderColor.G:X2}{_options.BorderColor.B:X2}";
+            _strokeWidth = _options.Thickness;
+            _fontSize = _options.TextFontSize;
+            _shadowEnabled = _options.Shadow;
+            _shadowBlur = _options.ShadowBlur;
 
             // Get version from assembly
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -1461,6 +1600,12 @@ namespace ShareX.ImageEditor.ViewModels
         {
             ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
             ResetNumberCounter();
+        }
+
+        [RelayCommand(CanExecute = nameof(HasAnnotations))]
+        private void FlattenImage()
+        {
+            FlattenRequested?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]

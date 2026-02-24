@@ -13,8 +13,8 @@
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
 
-            <Color x:Key="ShareX.Color.Text">#E7E9EA</Color>
-            <Color x:Key="ShareX.Color.Text.Secondary">#9CA3AF</Color>
+            <Color x:Key="ShareX.Color.Text">#DEE0E1</Color>
+            <Color x:Key="ShareX.Color.Text.Secondary">#DEE0E1</Color>
 
             <Color x:Key="ShareX.Color.Background.Main">#272727</Color>
             <Color x:Key="ShareX.Color.Background.Panel">#242424</Color>
@@ -94,8 +94,8 @@
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
 
-            <Color x:Key="ShareX.Color.Text">#454545</Color>
-            <Color x:Key="ShareX.Color.Text.Secondary">#86868B</Color>
+            <Color x:Key="ShareX.Color.Text">#4E4E4E</Color>
+            <Color x:Key="ShareX.Color.Text.Secondary">#4E4E4E</Color>
 
             <!-- Base Colors with Transparency -->
             <Color x:Key="ShareX.Color.Background.Main">#F5F5F7</Color>

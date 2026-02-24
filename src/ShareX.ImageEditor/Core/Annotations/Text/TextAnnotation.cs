@@ -38,6 +38,11 @@ public partial class TextAnnotation : Annotation
     public string Text { get; set; } = string.Empty;
 
     /// <summary>
+    /// Text body color
+    /// </summary>
+    public string TextColor { get; set; } = "#FF000000";
+
+    /// <summary>
     /// Font size in pixels
     /// </summary>
     public float FontSize { get; set; } = 48;

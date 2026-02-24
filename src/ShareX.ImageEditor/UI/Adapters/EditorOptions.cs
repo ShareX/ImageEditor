@@ -29,16 +29,44 @@ namespace ShareX.ImageEditor
 {
     public class EditorOptions
     {
-        public Color BorderColor { get; set; } = Color.FromArgb(255, 255, 67, 67);
+        public static readonly Color PrimaryColor = Color.FromArgb(255, 242, 60, 60);
+        public static readonly Color SecondaryColor = Color.FromArgb(255, 250, 250, 250);
+
+        // Shared
+        public Color BorderColor { get; set; } = PrimaryColor;
         public Color FillColor { get; set; } = Colors.Transparent;
         public int Thickness { get; set; } = 4;
-        public float FontSize { get; set; } = 48;
         public bool Shadow { get; set; } = true;
+        public float ShadowBlur { get; set; } = 30;
+        public Color ShadowColor { get; set; } = Color.FromArgb(128, 0, 0, 0);
 
+        // Text
+        public Color TextBorderColor { get; set; } = PrimaryColor;
+        public Color TextTextColor { get; set; } = SecondaryColor;
+        public int TextThickness { get; set; } = 8;
+        public float TextFontSize { get; set; } = 48;
+
+        // Speech Balloon
+        public Color SpeechBalloonBorderColor { get; set; } = Colors.Transparent;
+        public Color SpeechBalloonFillColor { get; set; } = PrimaryColor;
+        public Color SpeechBalloonTextColor { get; set; } = SecondaryColor;
+        public int SpeechBalloonThickness { get; set; } = 4;
+        public float SpeechBalloonFontSize { get; set; } = 48;
+
+        // Step
         public Color StepBorderColor { get; set; } = Colors.Transparent;
-        public Color StepFillColor { get; set; } = Color.FromArgb(255, 255, 67, 67);
+        public Color StepFillColor { get; set; } = PrimaryColor;
+        public Color StepTextColor { get; set; } = SecondaryColor;
+        public int StepThickness { get; set; } = 4;
         public float StepFontSize { get; set; } = 30;
-        public Color HighlighterColor { get; set; } = Colors.Yellow;
+
+        // Smart Eraser
+        public int SmartEraserThickness { get; set; } = 10;
+
+        // Highlight
+        public Color HighlightFillColor { get; set; } = Colors.Yellow;
+
+        // Effects
         public float BlurStrength { get; set; } = 30;
         public float PixelateStrength { get; set; } = 20;
         public float MagnifierStrength { get; set; } = 2;

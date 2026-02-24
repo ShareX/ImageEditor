@@ -10,7 +10,7 @@ public partial class HighlightAnnotation
     /// </summary>
     public Control CreateVisual()
     {
-        var baseColor = Color.Parse(StrokeColor);
+        var baseColor = Color.Parse(FillColor ?? "#FFFF00");
         var highlightColor = Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
 
         return new Avalonia.Controls.Shapes.Rectangle

@@ -322,6 +322,22 @@ public class EditorCore : IDisposable
         return ApplyImageOperation(ImageHelpers.FlipVertical, clearAnnotations: true);
     }
 
+    /// <summary>
+    /// Flatten (merge) all annotations into the source image.
+    /// The composite snapshot is provided by the View layer which renders image + annotations together.
+    /// </summary>
+    /// <param name="compositeSnapshot">Pre-rendered bitmap containing the source image with all annotations baked in.</param>
+    /// <returns>True if the operation succeeded.</returns>
+    public bool FlattenImage(SKBitmap compositeSnapshot)
+    {
+        if (compositeSnapshot == null || _annotations.Count == 0)
+        {
+            return false;
+        }
+
+        return ApplyImageOperation(_ => compositeSnapshot, clearAnnotations: true);
+    }
+
     public bool AutoCrop(int tolerance = 10)
     {
         if (SourceImage == null)
@@ -911,7 +927,7 @@ public class EditorCore : IDisposable
         }
     }
 
-    private string? SampleCanvasColor(SKPoint point)
+    public string? SampleCanvasColor(SKPoint point)
     {
         using var snapshot = GetSnapshot();
         if (snapshot == null) return null;

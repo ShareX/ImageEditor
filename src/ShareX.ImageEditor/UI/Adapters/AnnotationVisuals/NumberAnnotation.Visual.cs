@@ -42,6 +42,7 @@ public partial class NumberAnnotation
             : new SolidColorBrush(Color.Parse(FillColor));
 
         var strokeColor = Color.Parse(StrokeColor);
+        var textColor = Color.Parse(TextColor);
 
         var grid = new Grid
         {
@@ -60,7 +61,7 @@ public partial class NumberAnnotation
         var numText = new TextBlock
         {
             Text = Number.ToString(),
-            Foreground = Brushes.White,
+            Foreground = new SolidColorBrush(textColor),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             FontWeight = FontWeight.Bold,

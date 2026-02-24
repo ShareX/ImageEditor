@@ -10,7 +10,8 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
     public HighlightAnnotation()
     {
         ToolType = EditorTool.Highlight;
-        StrokeColor = "#FFFF00"; // Default yellow (opaque for logic, transparency comes from blend)
+        StrokeColor = "Transparent";
+        FillColor = "#FFFF00"; // Default yellow (opaque for logic, transparency comes from blend)
         StrokeWidth = 0; // No border by default
     }
 
@@ -46,7 +47,7 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
             // We will modify a copy of the crop (so we don't affect source)
             using var processedCrop = crop.Copy();
 
-            var highlightColor = ParseColor(StrokeColor);
+            var highlightColor = ParseColor(FillColor ?? "#FFFF00");
             byte r = highlightColor.Red;
             byte g = highlightColor.Green;
             byte b = highlightColor.Blue;

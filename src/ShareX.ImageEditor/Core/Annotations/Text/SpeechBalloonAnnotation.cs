@@ -22,6 +22,11 @@ public partial class SpeechBalloonAnnotation : Annotation
     /// </summary>
     public float FontSize { get; set; } = 20;
 
+    /// <summary>
+    /// Text body color
+    /// </summary>
+    public string TextColor { get; set; } = "#FF000000";
+
 
     /// <summary>
     /// Background color (hex) - defaults to white for speech balloon

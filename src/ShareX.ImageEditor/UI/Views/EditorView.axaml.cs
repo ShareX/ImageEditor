@@ -899,30 +899,25 @@ namespace ShareX.ImageEditor.Views
                 // Final fallback to annotation's own bounds
                 if (width <= 0 || height <= 0)
                 {
-                    var bounds = annotation.GetBounds();
-                    width = bounds.Width;
-                    height = bounds.Height;
+                    var b = annotation.GetBounds();
+                    width = b.Width;
+                    height = b.Height;
                 }
                 if (width <= 0 || height <= 0) return;
 
-                // Map to SKPoint
                 annotation.StartPoint = new SKPoint((float)left, (float)top);
                 annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
 
-                // We don't have the cached bitmap here, create fresh or pass from controller?
-                // Original logic cached it. InputController caches it.
-                // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
-                // SelectionController doesn't have the cached bitmap.
                 using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                annotation.UpdateEffect(skBitmap);
+                if (skBitmap != null)
+                    annotation.UpdateEffect(skBitmap);
 
                 if (annotation.EffectBitmap != null && shape is Shape shapeControl)
                 {
-                    var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
-                    shapeControl.Fill = new ImageBrush(avaloniaBitmap)
+                    shapeControl.Fill = new ImageBrush(BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap))
                     {
-                        Stretch = Stretch.None,
-                        SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                        Stretch = Stretch.Fill,
+                        SourceRect = new RelativeRect(0, 0, 1, 1, RelativeUnit.Relative)
                     };
                 }
             }

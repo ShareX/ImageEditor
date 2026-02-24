@@ -164,7 +164,7 @@ namespace ShareX.ImageEditor.Views
                     if (vm.SelectedAnnotation is not ImageAnnotation && vm.SelectedAnnotation is not HighlightAnnotation)
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
-                        
+
                         // Effect annotations have StrokeWidth = 0 and no shadows
                         // Don't sync them, otherwise they'll clobber global options
                         if (vm.SelectedAnnotation is not BaseEffectAnnotation)
@@ -944,38 +944,6 @@ namespace ShareX.ImageEditor.Views
             {
                 var hexColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
                 vm.FillColor = hexColor;
-
-                // Apply to selected annotation if any
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is Annotation annotation)
-                {
-                    annotation.FillColor = hexColor;
-
-                    // Update the UI control's Fill property
-                    if (selected is Shape shape)
-                    {
-                        shape.Fill = hexColor == "#00000000" ? Brushes.Transparent : solidBrush;
-                    }
-                    else if (selected is Grid grid)
-                    {
-                        // For NumberAnnotation, update the Ellipse fill
-                        foreach (var child in grid.Children)
-                        {
-                            if (child is Avalonia.Controls.Shapes.Ellipse ellipse)
-                            {
-                                ellipse.Fill = hexColor == "#00000000" ? Brushes.Transparent : solidBrush;
-                            }
-                        }
-                    }
-                    else if (selected is SpeechBalloonControl balloon)
-                    {
-                        // For speech balloon, trigger visual invalidation to redraw filling
-                        balloon.InvalidateVisual();
-                    }
-
-                    // ISSUE-LIVE-UPDATE: Update active text editor if present
-                    _selectionController.UpdateActiveTextEditorProperties();
-                }
             }
         }
 
@@ -985,45 +953,6 @@ namespace ShareX.ImageEditor.Views
             {
                 var hexColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
                 vm.TextColor = hexColor;
-
-                // Apply to selected annotation if any
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is TextAnnotation annotation)
-                {
-                    annotation.TextColor = hexColor;
-
-                    // Update the UI control's view
-                    if (selected is OutlinedTextControl textBox)
-                    {
-                        textBox.InvalidateVisual();
-                    }
-
-                    // ISSUE-LIVE-UPDATE: Update active text editor if present
-                    _selectionController.UpdateActiveTextEditorProperties();
-                }
-                else if (selected?.Tag is SpeechBalloonAnnotation balloon)
-                {
-                    balloon.TextColor = hexColor;
-                    if (selected is SpeechBalloonControl control)
-                    {
-                        control.InvalidateVisual();
-                    }
-                    _selectionController.UpdateActiveTextEditorProperties();
-                }
-                else if (selected?.Tag is NumberAnnotation numberAnn)
-                {
-                    numberAnn.TextColor = hexColor;
-                    if (selected is Grid grid)
-                    {
-                        foreach (var child in grid.Children)
-                        {
-                            if (child is TextBlock textBlock)
-                            {
-                                textBlock.Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(hexColor));
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -1210,13 +1139,6 @@ namespace ShareX.ImageEditor.Views
             switch (selected)
             {
                 case Shape shape:
-                    if (shape.Tag is HighlightAnnotation)
-                    {
-                        // For highlighter, we must regenerate the effect bitmap with the new color
-                        OnRequestUpdateEffect(shape);
-                        break;
-                    }
-
                     shape.Stroke = brush;
 
                     if (shape is global::Avalonia.Controls.Shapes.Path path)
@@ -1265,6 +1187,12 @@ namespace ShareX.ImageEditor.Views
             switch (selected)
             {
                 case Shape shape:
+                    if (shape.Tag is HighlightAnnotation)
+                    {
+                        OnRequestUpdateEffect(shape);
+                        break;
+                    }
+
                     if (shape is global::Avalonia.Controls.Shapes.Path path)
                     {
                         path.Fill = brush;
@@ -1279,6 +1207,15 @@ namespace ShareX.ImageEditor.Views
                     break;
                 case SpeechBalloonControl balloonControl:
                     balloonControl.InvalidateVisual();
+                    break;
+                case Grid grid:
+                    foreach (var child in grid.Children)
+                    {
+                        if (child is global::Avalonia.Controls.Shapes.Ellipse ellipse)
+                        {
+                            ellipse.Fill = colorHex == "#00000000" ? Brushes.Transparent : brush;
+                        }
+                    }
                     break;
             }
 

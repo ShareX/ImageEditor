@@ -635,6 +635,14 @@ public class EditorInputController
             }
             balloon.InvalidateVisual();
         }
+        else if (_currentShape is Grid && _currentShape.Tag is NumberAnnotation numberAnn)
+        {
+            // Allow dragging the step shape immediately after inserting it
+            var numberRadius = numberAnn.Radius;
+            Canvas.SetLeft(_currentShape, currentPoint.X - numberRadius);
+            Canvas.SetTop(_currentShape, currentPoint.Y - numberRadius);
+            numberAnn.StartPoint = ToSKPoint(currentPoint);
+        }
     }
 
     public void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)

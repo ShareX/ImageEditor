@@ -260,6 +260,10 @@ namespace ShareX.ImageEditor.Views
                 {
                     LoadImageFromViewModel(vm);
                 }
+
+                // Reset dirty flag after initial load — loading the image fires HistoryChanged
+                // and OnPreviewImageChanged which both set IsDirty=true as a side-effect.
+                vm.IsDirty = false;
             }
         }
 

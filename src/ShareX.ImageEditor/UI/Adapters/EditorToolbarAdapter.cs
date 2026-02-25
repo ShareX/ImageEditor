@@ -156,6 +156,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         set => _viewModel.TextColorBrush = value;
     }
 
+    public string ActiveToolIcon => _viewModel.ActiveToolIcon;
+
     public bool IsSettingsPanelOpen
     {
         get => _viewModel.IsSettingsPanelOpen;

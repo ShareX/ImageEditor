@@ -594,18 +594,24 @@ public class EditorInputController
         }
         else if (_currentShape is global::Avalonia.Controls.Shapes.Line line)
         {
-            line.EndPoint = currentPoint;
-            if (line.Tag is LineAnnotation lineAnn) lineAnn.EndPoint = ToSKPoint(currentPoint);
+            var lineEnd = e.KeyModifiers.HasFlag(KeyModifiers.Shift)
+                ? SnapTo45Degrees(_startPoint, currentPoint)
+                : currentPoint;
+            line.EndPoint = lineEnd;
+            if (line.Tag is LineAnnotation lineAnn) lineAnn.EndPoint = ToSKPoint(lineEnd);
         }
         else if (_currentShape is global::Avalonia.Controls.Shapes.Path path) // Arrow
         {
+            var arrowEnd = e.KeyModifiers.HasFlag(KeyModifiers.Shift)
+                ? SnapTo45Degrees(_startPoint, currentPoint)
+                : currentPoint;
             if (path.Tag is ArrowAnnotation arrowAnn)
             {
-                arrowAnn.EndPoint = ToSKPoint(currentPoint);
+                arrowAnn.EndPoint = ToSKPoint(arrowEnd);
                 AnnotationVisualFactory.UpdateVisualControl(path, arrowAnn);
             }
 
-            _selectionController.RegisterArrowEndpoint(path, _startPoint, currentPoint);
+            _selectionController.RegisterArrowEndpoint(path, _startPoint, arrowEnd);
         }
         else if (_currentShape is ShareX.ImageEditor.Controls.SpotlightControl spotlight)
         {
@@ -1698,4 +1704,24 @@ public class EditorInputController
 
     private static SKPoint ToSKPoint(Point point) => new((float)point.X, (float)point.Y);
     private static SKSize ToSKSize(Size size) => new((float)size.Width, (float)size.Height);
+
+    /// <summary>
+    /// Snaps the endpoint so the line from <paramref name="start"/> to <paramref name="end"/>
+    /// is locked to the nearest 45-degree increment (0°, 45°, 90°, 135°, etc.).
+    /// The distance from start to end is preserved.
+    /// </summary>
+    internal static Point SnapTo45Degrees(Point start, Point end)
+    {
+        double dx = end.X - start.X;
+        double dy = end.Y - start.Y;
+        double distance = Math.Sqrt(dx * dx + dy * dy);
+        if (distance < 0.001) return end;
+
+        double angle = Math.Atan2(dy, dx);
+        double snapped = Math.Round(angle / (Math.PI / 4)) * (Math.PI / 4);
+
+        return new Point(
+            start.X + distance * Math.Cos(snapped),
+            start.Y + distance * Math.Sin(snapped));
+    }
 }

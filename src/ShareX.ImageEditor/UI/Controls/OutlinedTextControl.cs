@@ -63,10 +63,6 @@ namespace ShareX.ImageEditor.Controls
 
             if (Annotation == null || string.IsNullOrEmpty(Annotation.Text)) return;
 
-            // Match generic padding used by the TextBox (4px)
-            var padding = new Thickness(4);
-            var bounds = new Rect(padding.Left, padding.Top, Bounds.Width - padding.Left - padding.Right, Bounds.Height - padding.Top - padding.Bottom);
-
             var typeface = new Typeface(
                 Annotation.FontFamily,
                 Annotation.IsItalic ? FontStyle.Italic : FontStyle.Normal,
@@ -80,8 +76,13 @@ namespace ShareX.ImageEditor.Controls
                 Annotation.FontSize,
                 Brushes.Black); // Avalonia requires a brush to properly construct text extents in some backends
 
-            // Create geometry from formatted text
-            var textGeometry = formattedText.BuildGeometry(new Point(padding.Left, padding.Top));
+            // Create geometry from formatted text, centered within the control bounds
+            double textWidth = formattedText.Width;
+            double textHeight = formattedText.Height;
+            double originX = (Bounds.Width - textWidth) / 2.0;
+            double originY = (Bounds.Height - textHeight) / 2.0;
+
+            var textGeometry = formattedText.BuildGeometry(new Point(originX, originY));
             if (textGeometry == null) return;
 
             // Setup brushes based on the annotation's color properties.
@@ -97,13 +98,6 @@ namespace ShareX.ImageEditor.Controls
                     fillBrush = new SolidColorBrush(textColor);
                 }
             }
-            
-            // If fill is completely transparent and stroke is set, we just want to draw the stroke.
-            // Wait, actually, the user wants FillColor = text color, StrokeColor = outline color.
-            // If fill brush is null, the text body will be invisible. If that's what they set, respect it.
-            // However, default fill was transparent "#00000000" in TextAnnotation.
-            // So if they create a default text with no fill, it might be invisible if we don't handle it.
-            // BUT wait, EditorInputController already forces StrokeColor as text color if transparent. We'll fix EditorInputController later.
 
             IPen? strokePen = null;
             if (Annotation.StrokeWidth > 0 && !string.IsNullOrEmpty(Annotation.StrokeColor))
@@ -116,7 +110,6 @@ namespace ShareX.ImageEditor.Controls
             }
 
             // Draw main text (Stroke then Fill, so fill is on top of stroke)
-            // Avalonia's DrawGeometry draws stroke on top of fill by default.
             // To get the stroke BEHIND the fill (standard typography outline), we must draw the stroke geometry first, then fill geometry.
             if (strokePen != null)
             {
@@ -133,11 +126,11 @@ namespace ShareX.ImageEditor.Controls
             {
                 var underlineBrush = fillBrush ?? (strokePen?.Brush) ?? Brushes.Black;
                 var underlineThickness = Math.Max(1.0, Annotation.FontSize / 14.0);
-                var underlineY = padding.Top + formattedText.Height * 0.95;
+                var underlineY = originY + textHeight * 0.95;
                 var underlinePen = new Pen(underlineBrush, underlineThickness);
                 context.DrawLine(underlinePen,
-                    new Point(padding.Left, underlineY),
-                    new Point(padding.Left + formattedText.Width, underlineY));
+                    new Point(originX, underlineY),
+                    new Point(originX + textWidth, underlineY));
             }
         }
 

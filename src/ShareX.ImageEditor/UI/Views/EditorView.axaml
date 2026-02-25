@@ -65,6 +65,9 @@
         <x:String x:Key="IconThumbtack">&#xf08d;</x:String>
         <x:String x:Key="IconPlay">&#xf04b;</x:String>
         <x:String x:Key="IconCancel">&#xf00d;</x:String>
+        <x:String x:Key="IconBold">&#xf032;</x:String>
+        <x:String x:Key="IconItalic">&#xf033;</x:String>
+        <x:String x:Key="IconUnderline">&#xf0cd;</x:String>
 
         <ContextMenu x:Key="EditorContextMenu"
                      Placement="Pointer"
@@ -715,7 +718,7 @@
                                 Click="OnBoldButtonClick"
                                 IsVisible="{Binding ShowTextStyle}"
                                 ToolTip.Tip="Toggle Bold"
-                                FontWeight="Black" FontSize="16" Content="B"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBold}"/>
 
                         <!-- Italic Toggle Button -->
                         <Button Classes="editor-button" Width="40"
@@ -723,7 +726,7 @@
                                 Click="OnItalicButtonClick"
                                 IsVisible="{Binding ShowTextStyle}"
                                 ToolTip.Tip="Toggle Italic"
-                                FontStyle="Italic" FontSize="16" Content="I"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconItalic}"/>
 
                         <!-- Underline Toggle Button -->
                         <Button Classes="editor-button" Width="40"
@@ -731,9 +734,7 @@
                                 Click="OnUnderlineButtonClick"
                                 IsVisible="{Binding ShowTextStyle}"
                                 ToolTip.Tip="Toggle Underline"
-                                FontSize="16">
-                            <TextBlock Text="U" TextDecorations="Underline"/>
-                        </Button>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconUnderline}"/>
 
                         <!-- Shadow Toggle Button -->
                         <Button Classes="editor-button" Width="40"

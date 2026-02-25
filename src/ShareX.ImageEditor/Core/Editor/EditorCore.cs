@@ -1396,6 +1396,15 @@ public class EditorCore : IDisposable
                 }
             }
 
+            // XIP0039 Guardrail 2: Adjust SpeechBalloon tail point so it stays
+            // anchored to the same visual position relative to the new canvas origin.
+            if (annotation is SpeechBalloonAnnotation balloon)
+            {
+                balloon.TailPoint = new SKPoint(
+                    balloon.TailPoint.X + offsetX,
+                    balloon.TailPoint.Y + offsetY);
+            }
+
             // Update effect annotations with new bounds
             if (annotation is BaseEffectAnnotation effect)
             {
@@ -1611,6 +1620,17 @@ public class EditorCore : IDisposable
                     }
                 }
 
+                // XIP0039 Guardrail 2: Adjust SpeechBalloon tail for vertical cut
+                if (annotation is SpeechBalloonAnnotation balloon)
+                {
+                    float tailX = balloon.TailPoint.X;
+                    if (tailX >= cutEnd)
+                        tailX -= cutWidth;
+                    else if (tailX > cutX)
+                        tailX = cutX;
+                    balloon.TailPoint = new SKPoint(tailX, balloon.TailPoint.Y);
+                }
+
                 // Update effect annotations
                 if (annotation is BaseEffectAnnotation effect && SourceImage != null)
                 {
@@ -1683,6 +1703,17 @@ public class EditorCore : IDisposable
                             freehand.Points[j] = new SKPoint(pt.X, cutY);
                         }
                     }
+                }
+
+                // XIP0039 Guardrail 2: Adjust SpeechBalloon tail for horizontal cut
+                if (annotation is SpeechBalloonAnnotation balloon)
+                {
+                    float tailY = balloon.TailPoint.Y;
+                    if (tailY >= cutEnd)
+                        tailY -= cutHeight;
+                    else if (tailY > cutY)
+                        tailY = cutY;
+                    balloon.TailPoint = new SKPoint(balloon.TailPoint.X, tailY);
                 }
 
                 // Update effect annotations

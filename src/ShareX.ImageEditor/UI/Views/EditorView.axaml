@@ -673,7 +673,8 @@
                                    VerticalAlignment="Center"
                                    TextAlignment="Center"
                                    Width="20"
-                                   Margin="6,0"/>
+                                   Margin="6,0"
+                                   ToolTip.Tip="{Binding ActiveToolName}"/>
 
                         <!-- Border Color Picker Dropdown -->
                         <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"

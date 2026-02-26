@@ -473,6 +473,43 @@ namespace ShareX.ImageEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Returns the display name of the active tool (or selected shape's tool in Select mode).
+        /// </summary>
+        public string ActiveToolName
+        {
+            get
+            {
+                var tool = ActiveTool;
+                if (tool == EditorTool.Select && _selectedAnnotation != null)
+                {
+                    tool = _selectedAnnotation.ToolType;
+                }
+
+                return tool switch
+                {
+                    EditorTool.Select => "Select",
+                    EditorTool.Rectangle => "Rectangle",
+                    EditorTool.Ellipse => "Ellipse",
+                    EditorTool.Line => "Line",
+                    EditorTool.Arrow => "Arrow",
+                    EditorTool.Freehand => "Freehand",
+                    EditorTool.Text => "Text",
+                    EditorTool.SpeechBalloon => "Speech Balloon",
+                    EditorTool.Step => "Step",
+                    EditorTool.Blur => "Blur",
+                    EditorTool.Pixelate => "Pixelate",
+                    EditorTool.Magnify => "Magnify",
+                    EditorTool.Spotlight => "Spotlight",
+                    EditorTool.SmartEraser => "Smart Eraser",
+                    EditorTool.Highlight => "Highlight",
+                    EditorTool.Crop => "Crop",
+                    EditorTool.CutOut => "Cut Out",
+                    _ => "Select"
+                };
+            }
+        }
+
         // Track selected annotation for Select tool visibility logic
         private Annotation? _selectedAnnotation;
         public Annotation? SelectedAnnotation
@@ -498,6 +535,7 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(ShowTextStyle));
             OnPropertyChanged(nameof(ShowShadow));
             OnPropertyChanged(nameof(ActiveToolIcon));
+            OnPropertyChanged(nameof(ActiveToolName));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 

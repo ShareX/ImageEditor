@@ -121,8 +121,8 @@ namespace ShareX.ImageEditor.Controls
         private void UpdateIconForeground(Color color)
         {
             IconForeground = IsLightColor(color)
-                ? new SolidColorBrush(Color.FromArgb(128, 0, 0, 0))
-                : new SolidColorBrush(Color.FromArgb(128, 255, 255, 255));
+                ? new SolidColorBrush(Color.FromArgb(255, 78, 78, 78))
+                : new SolidColorBrush(Color.FromArgb(255, 222, 224, 225));
         }
 
         public static bool IsLightColor(Color color)

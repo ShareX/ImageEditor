@@ -99,7 +99,7 @@
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconClear}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Flatten" Command="{Binding FlattenImageCommand}" ToolTip.Tip="Merge all annotations into the image">
+            <MenuItem Header="Flatten" Command="{Binding FlattenImageCommand}" InputGesture="Ctrl+Shift+F">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xf5fd;"/>
                 </MenuItem.Icon>

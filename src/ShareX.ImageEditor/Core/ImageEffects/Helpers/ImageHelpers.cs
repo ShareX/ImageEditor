@@ -300,9 +300,9 @@ public static class ImageHelpers
         return new OutlineImageEffect(size, padding, outlineOnly, color).Apply(source);
     }
 
-    public static SKBitmap ApplyShadow(SKBitmap source, float opacity, int size, float darkness, SKColor color, int offsetX, int offsetY, bool autoResize)
+    public static SKBitmap ApplyShadow(SKBitmap source, float opacity, int size, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
-        return new ShadowImageEffect(opacity, size, darkness, color, offsetX, offsetY, autoResize).Apply(source);
+        return new ShadowImageEffect(opacity, size, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
     public static SKBitmap ApplyGlow(SKBitmap source, int size, float strength, SKColor color, int offsetX, int offsetY)

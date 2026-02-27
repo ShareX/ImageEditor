@@ -48,7 +48,6 @@ public partial class ShadowDialog : UserControl, IEffectDialog
     // Control references
     private Slider? _opacitySlider;
     private Slider? _sizeSlider;
-    private Slider? _darknessSlider;
     private Slider? _offsetXSlider;
     private Slider? _offsetYSlider;
     private CheckBox? _autoResizeCheckBox;
@@ -67,7 +66,6 @@ public partial class ShadowDialog : UserControl, IEffectDialog
 
         _opacitySlider = this.FindControl<Slider>("OpacitySlider");
         _sizeSlider = this.FindControl<Slider>("SizeSlider");
-        _darknessSlider = this.FindControl<Slider>("DarknessSlider");
         _offsetXSlider = this.FindControl<Slider>("OffsetXSlider");
         _offsetYSlider = this.FindControl<Slider>("OffsetYSlider");
         _autoResizeCheckBox = this.FindControl<CheckBox>("AutoResizeCheckBox");
@@ -91,7 +89,6 @@ public partial class ShadowDialog : UserControl, IEffectDialog
 
     private float GetOpacity() => (float)(_opacitySlider?.Value ?? 80);
     private int GetSize() => (int)(_sizeSlider?.Value ?? 20);
-    private float GetDarkness() => (float)(_darknessSlider?.Value ?? 50) / 100f;
     private int GetOffsetX() => (int)(_offsetXSlider?.Value ?? 5);
     private int GetOffsetY() => (int)(_offsetYSlider?.Value ?? 5);
     private bool GetAutoResize() => _autoResizeCheckBox?.IsChecked ?? true;
@@ -137,14 +134,14 @@ public partial class ShadowDialog : UserControl, IEffectDialog
     private void RaisePreview()
     {
         PreviewRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyShadow(img, GetOpacity(), GetSize(), GetDarkness(), _color, GetOffsetX(), GetOffsetY(), GetAutoResize()),
+            img => ImageHelpers.ApplyShadow(img, GetOpacity(), GetSize(), _color, GetOffsetX(), GetOffsetY(), GetAutoResize()),
             "Shadow applied"));
     }
 
     private void OnApplyClick(object? sender, RoutedEventArgs e)
     {
         ApplyRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyShadow(img, GetOpacity(), GetSize(), GetDarkness(), _color, GetOffsetX(), GetOffsetY(), GetAutoResize()),
+            img => ImageHelpers.ApplyShadow(img, GetOpacity(), GetSize(), _color, GetOffsetX(), GetOffsetY(), GetAutoResize()),
             "Shadow applied"));
     }
 

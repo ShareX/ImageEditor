@@ -6,7 +6,6 @@ public class ShadowImageEffect : ImageEffect
 {
     public float Opacity { get; set; }
     public int Size { get; set; }
-    public float Darkness { get; set; }
     public SKColor Color { get; set; }
     public int OffsetX { get; set; }
     public int OffsetY { get; set; }
@@ -15,11 +14,10 @@ public class ShadowImageEffect : ImageEffect
     public override string Name => "Shadow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
-    public ShadowImageEffect(float opacity, int size, float darkness, SKColor color, int offsetX, int offsetY, bool autoResize)
+    public ShadowImageEffect(float opacity, int size, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
         Opacity = opacity;
         Size = size;
-        Darkness = darkness;
         Color = color;
         OffsetX = offsetX;
         OffsetY = offsetY;
@@ -53,13 +51,8 @@ public class ShadowImageEffect : ImageEffect
         int shadowX = imageX + OffsetX;
         int shadowY = imageY + OffsetY;
 
-        // Shadow color: mix the user's chosen Color toward black based on Darkness,
-        // then apply Opacity as alpha. This makes Darkness work even when Color = Black.
-        byte r = (byte)(Color.Red   * (1f - Darkness));
-        byte g = (byte)(Color.Green * (1f - Darkness));
-        byte b = (byte)(Color.Blue  * (1f - Darkness));
-        byte a = (byte)(255 * Opacity / 100f);
-        SKColor shadowColor = new SKColor(r, g, b, a);
+        // Shadow color: chosen Color with Opacity as alpha.
+        SKColor shadowColor = new SKColor(Color.Red, Color.Green, Color.Blue, (byte)(255 * Opacity / 100f));
 
         using SKPaint shadowPaint = new SKPaint
         {

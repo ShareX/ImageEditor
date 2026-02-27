@@ -41,19 +41,6 @@
                         Background="#374151"/>
             </StackPanel>
 
-            <!-- Darkness -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Darkness" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=DarknessSlider, Path=Value, StringFormat='{}{0:0}%'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="DarknessSlider" Minimum="0" Maximum="100" Value="50" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
-            </StackPanel>
-
             <!-- Offset X/Y -->
             <!-- We'll stack them vertically for sidebar width constraint -->
             <StackPanel Spacing="0">

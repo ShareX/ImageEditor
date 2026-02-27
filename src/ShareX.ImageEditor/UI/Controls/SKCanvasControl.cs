@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
 using ShareX.ImageEditor.ImageEffects.Adjustments;
 using ShareX.ImageEditor.Services;
@@ -19,9 +20,8 @@ public class SKCanvasControl : Control
     private WriteableBitmap? _bitmap;
     private object _lock = new object();
 
-    // Cached lease feature and provider — registered once on first GPU-backed render.
-    private ISkiaSharpApiLeaseFeature? _cachedLeaseFeature;
-    private IEffectGpuLeaseProvider? _cachedLeaseProvider;
+    // Inserted into the scene graph each frame until GPU registration succeeds.
+    private readonly GpuLeaseCapture _gpuCapture = new GpuLeaseCapture();
 
     /// <summary>
     /// Initializes or resizes the backing store.
@@ -44,17 +44,12 @@ public class SKCanvasControl : Control
 
     public override void Render(DrawingContext context)
     {
-        // Capture the GPU lease feature on the first render that exposes one.
-        // ISkiaSharpApiLeaseFeature is backed by the long-lived GPU backend; each
-        // Lease() call acquires the GL context lock and makes the context current
-        // on the calling thread for the duration of the lease — safe from any thread.
-        var leaseFeature = (context as IOptionalFeatureProvider)?.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-        if (leaseFeature != null && leaseFeature != _cachedLeaseFeature)
-        {
-            _cachedLeaseFeature = leaseFeature;
-            _cachedLeaseProvider = new SkiaSharpLeaseProvider(leaseFeature);
-            ImageEffect.SetGpuLeaseProvider(_cachedLeaseProvider);
-        }
+        // Control.Render() receives a *recording* DrawingContext in Avalonia's deferred
+        // renderer — it does NOT expose ISkiaSharpApiLeaseFeature.
+        // ICustomDrawOperation.Render(ImmediateDrawingContext) IS called on the render
+        // thread with the real GPU-backed context. We use it to capture the feature once.
+        if (!_gpuCapture.IsRegistered)
+            context.Custom(_gpuCapture);
 
         if (_bitmap != null)
             context.DrawImage(_bitmap, new Rect(0, 0, Bounds.Width, Bounds.Height));
@@ -93,15 +88,50 @@ public class SKCanvasControl : Control
     /// </summary>
     public void Dispose()
     {
+        _gpuCapture.Dispose();
         _bitmap?.Dispose();
         _bitmap = null;
     }
 
     /// <summary>
+    /// Scene-graph node that captures <see cref="ISkiaSharpApiLeaseFeature"/> on the first
+    /// render-thread invocation. Once captured, registers a <see cref="SkiaSharpLeaseProvider"/>
+    /// with <see cref="ImageEffect"/> so that large-image color-filter effects use the GPU path.
+    /// Becomes a no-op after successful registration.
+    /// </summary>
+    private sealed class GpuLeaseCapture : ICustomDrawOperation
+    {
+        // Written once on render thread; read on UI thread. Volatile prevents stale reads.
+        internal volatile bool IsRegistered;
+
+        // Non-empty so Avalonia's scene graph does not cull this node.
+        public Rect Bounds => new Rect(0, 0, 1, 1);
+
+        public bool HitTest(Point p) => false;
+
+        public bool Equals(ICustomDrawOperation? other) => ReferenceEquals(this, other);
+
+        public void Render(ImmediateDrawingContext context)
+        {
+            if (IsRegistered) return;
+
+            // ImmediateDrawingContext implements IOptionalFeatureProvider and exposes
+            // ISkiaSharpApiLeaseFeature when a GPU backend (GL/Vulkan) is active.
+            var feature = (context as IOptionalFeatureProvider)?.TryGetFeature<ISkiaSharpApiLeaseFeature>();
+            if (feature != null)
+            {
+                ImageEffect.SetGpuLeaseProvider(new SkiaSharpLeaseProvider(feature));
+                IsRegistered = true;
+            }
+        }
+
+        public void Dispose() { }
+    }
+
+    /// <summary>
     /// Adapts <see cref="ISkiaSharpApiLeaseFeature"/> to <see cref="IEffectGpuLeaseProvider"/>.
-    /// Each <see cref="TryWithGrContext"/> call acquires a fresh GL context lease via
-    /// <see cref="ISkiaSharpApiLeaseFeature.Lease()"/>, which makes the context current on
-    /// the calling thread and releases it on dispose.
+    /// Each <see cref="TryWithGrContext"/> call acquires a fresh GL context lease, making the
+    /// context current on the calling thread and releasing it on dispose.
     /// </summary>
     private sealed class SkiaSharpLeaseProvider : IEffectGpuLeaseProvider
     {

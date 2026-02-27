@@ -26,6 +26,7 @@
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Services;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor;
@@ -238,9 +239,10 @@ public class EditorCore : IDisposable
                 result = copy;
             }
         }
-        catch
+        catch (Exception ex)
         {
             result?.Dispose();
+            EditorServices.ReportError(nameof(EditorCore), "Image operation failed.", ex);
             return false;
         }
 

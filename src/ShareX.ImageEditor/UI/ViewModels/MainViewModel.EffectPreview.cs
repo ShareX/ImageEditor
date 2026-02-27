@@ -27,6 +27,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.ImageEffects.Adjustments;
 using ShareX.ImageEditor.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Services;
 
 namespace ShareX.ImageEditor.ViewModels
 {
@@ -317,8 +318,9 @@ namespace ShareX.ImageEditor.ViewModels
                 UpdatePreviewImageOnly(result, syncSourceState: false);
                 result.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
+                EditorServices.ReportError(nameof(MainViewModel), "Failed to render live effect preview.", ex);
             }
         }
 

@@ -43,6 +43,57 @@ public interface IClipboardService
     SKBitmap? GetImage();
 }
 
+public enum EditorDiagnosticLevel
+{
+    Information,
+    Warning,
+    Error
+}
+
+/// <summary>
+/// Immutable diagnostic payload emitted by ImageEditor and consumed by host apps.
+/// </summary>
+public sealed class EditorDiagnosticEvent
+{
+    public EditorDiagnosticEvent(EditorDiagnosticLevel level, string source, string message, Exception? exception = null)
+    {
+        Level = level;
+        Source = source;
+        Message = message;
+        ExceptionText = exception?.ToString();
+        TimestampUtc = DateTimeOffset.UtcNow;
+    }
+
+    public EditorDiagnosticLevel Level { get; }
+    public string Source { get; }
+    public string Message { get; }
+    public string? ExceptionText { get; }
+    public DateTimeOffset TimestampUtc { get; }
+}
+
+/// <summary>
+/// Host-provided sink for ImageEditor diagnostics and exception telemetry.
+/// </summary>
+public interface IEditorDiagnosticsSink
+{
+    void Report(EditorDiagnosticEvent diagnosticEvent);
+}
+
+public sealed class DelegateEditorDiagnosticsSink : IEditorDiagnosticsSink
+{
+    private readonly Action<EditorDiagnosticEvent> _handler;
+
+    public DelegateEditorDiagnosticsSink(Action<EditorDiagnosticEvent> handler)
+    {
+        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+    }
+
+    public void Report(EditorDiagnosticEvent diagnosticEvent)
+    {
+        _handler(diagnosticEvent);
+    }
+}
+
 /// <summary>
 /// Service locator for Editor services that must be provided by the host application.
 /// </summary>
@@ -53,4 +104,44 @@ public static class EditorServices
     /// Host applications should set this before using clipboard functionality.
     /// </summary>
     public static IClipboardService? Clipboard { get; set; }
+
+    /// <summary>
+    /// Optional diagnostics sink for exception/messages emitted by ImageEditor.
+    /// </summary>
+    public static IEditorDiagnosticsSink? Diagnostics { get; set; }
+
+    public static void ReportInformation(string source, string message)
+    {
+        ReportDiagnostic(EditorDiagnosticLevel.Information, source, message, null);
+    }
+
+    public static void ReportWarning(string source, string message, Exception? exception = null)
+    {
+        ReportDiagnostic(EditorDiagnosticLevel.Warning, source, message, exception);
+    }
+
+    public static void ReportError(string source, string message, Exception? exception = null)
+    {
+        ReportDiagnostic(EditorDiagnosticLevel.Error, source, message, exception);
+    }
+
+    public static void ReportDiagnostic(EditorDiagnosticLevel level, string source, string message, Exception? exception = null)
+    {
+        IEditorDiagnosticsSink? sink = Diagnostics;
+        if (sink == null)
+        {
+            return;
+        }
+
+        var diagnosticEvent = new EditorDiagnosticEvent(level, source, message, exception);
+
+        try
+        {
+            sink.Report(diagnosticEvent);
+        }
+        catch
+        {
+            // Diagnostics must never break editor functionality.
+        }
+    }
 }

@@ -35,6 +35,7 @@ using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
 using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
 using ShareX.ImageEditor.Views.Controllers;
 using ShareX.ImageEditor.Views.Dialogs;
@@ -66,7 +67,10 @@ namespace ShareX.ImageEditor.Views
                         await topLevel.Clipboard.ClearAsync();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    EditorServices.ReportWarning(nameof(EditorView), "Failed to clear system clipboard during cut operation.", ex);
+                }
 
                 // Delete original using ViewModel command to ensure undo history is recorded
                 if (DataContext is MainViewModel vm)
@@ -99,7 +103,10 @@ namespace ShareX.ImageEditor.Views
                         await topLevel.Clipboard.ClearAsync();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    EditorServices.ReportWarning(nameof(EditorView), "Failed to clear system clipboard during copy operation.", ex);
+                }
             }
         }
 
@@ -139,8 +146,9 @@ namespace ShareX.ImageEditor.Views
                     return;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                EditorServices.ReportWarning(nameof(EditorView), "Failed to handle paste request.", ex);
             }
         }
 
@@ -251,7 +259,10 @@ namespace ShareX.ImageEditor.Views
                                         return;
                                     }
                                 }
-                                catch { }
+                                catch (Exception ex)
+                                {
+                                    EditorServices.ReportWarning(nameof(EditorView), $"Failed to decode clipboard image file '{storageFile.Name}'.", ex);
+                                }
                             }
                         }
                     }
@@ -269,8 +280,9 @@ namespace ShareX.ImageEditor.Views
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                EditorServices.ReportWarning(nameof(EditorView), "Failed to paste image content from clipboard.", ex);
             }
         }
 
@@ -316,7 +328,10 @@ namespace ShareX.ImageEditor.Views
                             }
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        EditorServices.ReportWarning(nameof(EditorView), "Failed to query system clipboard formats.", ex);
+                    }
                 }
             }
 

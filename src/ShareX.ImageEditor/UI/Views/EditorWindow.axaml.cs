@@ -27,6 +27,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
 using SkiaSharp;
 
@@ -127,8 +128,9 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);
                 _viewModel.IsDirty = false;
             }
-            catch
+            catch (Exception ex)
             {
+                EditorServices.ReportError(nameof(EditorWindow), $"Failed to load image file '{filePath}'.", ex);
             }
         }
 
@@ -151,8 +153,9 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);
                 _viewModel.IsDirty = false;
             }
-            catch
+            catch (Exception ex)
             {
+                EditorServices.ReportError(nameof(EditorWindow), "Failed to load image from stream.", ex);
             }
         }
 

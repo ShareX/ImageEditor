@@ -35,6 +35,7 @@ using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.ImageEffects.Adjustments;
 using ShareX.ImageEditor.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Services;
 using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.ViewModels
@@ -328,8 +329,9 @@ namespace ShareX.ImageEditor.ViewModels
                     var topLeftColor = SamplePixelColor(PreviewImage, 0, 0);
                     return new SolidColorBrush(topLeftColor);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    EditorServices.ReportWarning(nameof(MainViewModel), "Failed to sample smart padding color. Falling back to transparent.", ex);
                     return Brushes.Transparent;
                 }
             }

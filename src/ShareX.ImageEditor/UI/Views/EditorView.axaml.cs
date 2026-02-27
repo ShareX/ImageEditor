@@ -35,6 +35,7 @@ using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
 using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
 using ShareX.ImageEditor.Views.Controllers;
 using ShareX.ImageEditor.Views.Dialogs;
@@ -826,8 +827,9 @@ namespace ShareX.ImageEditor.Views
                                     InsertImageAnnotation(skBitmap, centeredPos);
                                 }
                             }
-                            catch
+                            catch (Exception ex)
                             {
+                                EditorServices.ReportWarning(nameof(EditorView), $"Failed to decode dropped image '{file.Name}'.", ex);
                             }
                         }
                     }

@@ -75,18 +75,6 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm && vm.PreviewImage != null)
             {
                 var dialog = new ResizeCanvasDialog();
-                SKColor? edgeColor = null;
-                try
-                {
-                    using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                    if (skBitmap != null)
-                    {
-                        edgeColor = skBitmap.GetPixel(0, 0);
-                    }
-                }
-                catch { }
-
-                dialog.Initialize(edgeColor);
 
                 dialog.ApplyRequested += (s, args) =>
                 {

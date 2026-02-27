@@ -40,10 +40,13 @@ public class ReflectionImageEffect : ImageEffect
         canvas.DrawBitmap(source, 0, 0);
 
         // Create reflection (flipped vertically)
+        // We want the bottom of the source (y = source.Height) to become y = 0.
+        // So matrix transform: y' = source.Height - y
         using SKBitmap flipped = new SKBitmap(source.Width, reflectionHeight);
         using (SKCanvas fc = new SKCanvas(flipped))
         {
-            fc.Scale(1, -1, 0, reflectionHeight / 2f);
+            fc.Translate(0, source.Height);
+            fc.Scale(1, -1);
             fc.DrawBitmap(source, 0, 0);
         }
 

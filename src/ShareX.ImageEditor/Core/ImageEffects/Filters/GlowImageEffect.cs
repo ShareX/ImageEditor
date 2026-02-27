@@ -26,15 +26,27 @@ public class GlowImageEffect : ImageEffect
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
-        if (Size <= 0) return source.Copy();
 
-        int expand = Size + Math.Max(Math.Abs(OffsetX), Math.Abs(OffsetY));
-        int newWidth = source.Width + expand * 2;
-        int newHeight = source.Height + expand * 2;
+        // Compute one-sided canvas expansion based on offset direction:
+        // Size is used as padding for the blur.
+        int pad = Size;
+
+        int expandLeft   = Math.Max(0, -OffsetX) + pad;
+        int expandRight  = Math.Max(0,  OffsetX) + pad;
+        int expandTop    = Math.Max(0, -OffsetY) + pad;
+        int expandBottom = Math.Max(0,  OffsetY) + pad;
+
+        int newWidth  = source.Width  + expandLeft + expandRight;
+        int newHeight = source.Height + expandTop  + expandBottom;
 
         SKBitmap result = new SKBitmap(newWidth, newHeight);
         using SKCanvas canvas = new SKCanvas(result);
         canvas.Clear(SKColors.Transparent);
+
+        int imageX = expandLeft;
+        int imageY = expandTop;
+        int glowX = imageX + OffsetX;
+        int glowY = imageY + OffsetY;
 
         SKColor glowColor = Color.WithAlpha((byte)(255 * Strength / 100f));
 
@@ -45,9 +57,9 @@ public class GlowImageEffect : ImageEffect
         };
 
         // Draw glow
-        canvas.DrawBitmap(source, expand + OffsetX, expand + OffsetY, glowPaint);
+        canvas.DrawBitmap(source, glowX, glowY, glowPaint);
         // Draw original
-        canvas.DrawBitmap(source, expand, expand);
+        canvas.DrawBitmap(source, imageX, imageY);
 
         return result;
     }

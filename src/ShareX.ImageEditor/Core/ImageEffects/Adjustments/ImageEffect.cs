@@ -8,9 +8,12 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
     public override ImageEffectCategory Category => ImageEffectCategory.Adjustments;
     public override bool HasParameters => true;
 
-    // --- GPU context (set by SKCanvasControl during Render) ---
+    // Diagnostic: records whether the host has an active GPU backend.
+    // Off-screen GPU effect processing is deferred (see XIP0042 §1.3 Option A / Option B).
+    // ApplyColorFilter always runs on the CPU path until the scoped-resource approach
+    // (IPlatformGraphics.TryGetGrContext or a dedicated offscreen context) is implemented.
     private static GRContext? _gpuContext;
-    private const int GpuPixelThreshold = 160_000; // ≈ 400×400 px
+    private const int GpuPixelThreshold = 160_000; // reserved for future GPU path (≈ 400×400 px)
 
     public static void SetGpuContext(GRContext? context)
     {
@@ -35,63 +38,8 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        int pixels = source.Width * source.Height;
-
-        // GPU path — only for images above the pixel threshold
-        var grContext = pixels >= GpuPixelThreshold ? _gpuContext : null;
-        if (grContext != null && !grContext.IsAbandoned)
-        {
-            EditorServices.ReportInformation(nameof(ImageEffect), $"ApplyColorFilter GPU path ({source.Width}x{source.Height}, {pixels:N0} px).");
-            try
-            {
-                var info = new SKImageInfo(source.Width, source.Height, source.ColorType, source.AlphaType);
-                using var surface = SKSurface.Create(grContext, budgeted: true, info);
-                if (surface != null)
-                {
-                    surface.Canvas.Clear(SKColors.Transparent);
-                    using var gpuPaint = new SKPaint { ColorFilter = filter };
-                    surface.Canvas.DrawBitmap(source, 0, 0, gpuPaint);
-                    surface.Canvas.Flush();
-
-                    // Use Snapshot() → SKBitmap.FromImage() for the GPU→CPU download.
-                    // SKSurface.ReadPixels fails on Intel UHD (i915/GL) for BGRA surfaces;
-                    // SKImage.ReadPixels handles format conversion internally.
-                    using var gpuImage = surface.Snapshot();
-                    if (gpuImage != null)
-                    {
-                        var result = SKBitmap.FromImage(gpuImage);
-                        if (result != null)
-                            return result;
-                    }
-                    EditorServices.ReportWarning(nameof(ImageEffect), "ApplyColorFilter GPU Snapshot/FromImage failed; falling back to CPU.");
-                    // fall through to CPU path
-                }
-                else
-                {
-                    EditorServices.ReportWarning(nameof(ImageEffect), "ApplyColorFilter GPU surface creation failed; falling back to CPU.");
-                }
-            }
-            catch (Exception ex)
-            {
-                EditorServices.ReportWarning(nameof(ImageEffect), "ApplyColorFilter GPU exception; falling back to CPU.", ex);
-            }
-        }
-        else if (_gpuContext == null)
-        {
-            EditorServices.ReportInformation(nameof(ImageEffect), $"ApplyColorFilter CPU path: no GRContext ({source.Width}x{source.Height}).");
-        }
-        else if (pixels < GpuPixelThreshold)
-        {
-            EditorServices.ReportInformation(nameof(ImageEffect), $"ApplyColorFilter CPU path: below threshold ({pixels:N0} px < {GpuPixelThreshold:N0}, {source.Width}x{source.Height}).");
-        }
-        else
-        {
-            EditorServices.ReportInformation(nameof(ImageEffect), $"ApplyColorFilter CPU path: GRContext abandoned ({source.Width}x{source.Height}).");
-        }
-
-        // CPU path (original)
-        SKBitmap cpuResult = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-        using (SKCanvas canvas = new SKCanvas(cpuResult))
+        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
         {
             canvas.Clear(SKColors.Transparent);
             using (SKPaint paint = new SKPaint())
@@ -100,7 +48,7 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
                 canvas.DrawBitmap(source, 0, 0, paint);
             }
         }
-        return cpuResult;
+        return result;
     }
 
     protected unsafe static SKBitmap ApplyPixelOperation(SKBitmap source, Func<SKColor, SKColor> operation)
@@ -129,11 +77,10 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
             {
                 dstPixels[i] = operation(srcPixels[i]);
             }
-            
+
             result.Pixels = dstPixels;
         }
 
         return result;
     }
 }
-

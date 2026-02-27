@@ -57,9 +57,16 @@ public class OutlineImageEffect : ImageEffect
             canvas.DrawBitmap(source, totalExpand, totalExpand, erasePaint);
         }
 
-        // Step 3: Draw the original image on top (unless Outline Only mode).
-        if (!OutlineOnly)
+        // Step 3a (Outline Only): punch out the original image's area using DstOut.
+        //          This erases the pixels where the image sits, leaving only the ring.
+        if (OutlineOnly)
         {
+            using SKPaint holeErasePaint = new SKPaint { BlendMode = SKBlendMode.DstOut };
+            canvas.DrawBitmap(source, totalExpand, totalExpand, holeErasePaint);
+        }
+        else
+        {
+            // Step 3b (Normal): draw the original image on top.
             canvas.DrawBitmap(source, totalExpand, totalExpand);
         }
 

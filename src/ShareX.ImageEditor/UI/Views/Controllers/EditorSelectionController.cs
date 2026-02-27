@@ -1693,8 +1693,9 @@ public class EditorSelectionController
             textBox.RenderTransform = new RotateTransform(annotation.RotationAngle);
         }
 
-        Canvas.SetLeft(textBox, annotation.StartPoint.X);
-        Canvas.SetTop(textBox, annotation.StartPoint.Y);
+        var annotationBounds = annotation.GetBounds();
+        Canvas.SetLeft(textBox, annotationBounds.Left);
+        Canvas.SetTop(textBox, annotationBounds.Top);
 
         EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
         EventHandler<KeyEventArgs>? keyDownHandler = null;

@@ -295,9 +295,9 @@ public static class ImageHelpers
         return new BorderImageEffect(type, size, dashStyle, color).Apply(source);
     }
 
-    public static SKBitmap ApplyOutline(SKBitmap source, int size, int padding, SKColor color)
+    public static SKBitmap ApplyOutline(SKBitmap source, int size, int padding, bool outlineOnly, SKColor color)
     {
-        return new OutlineImageEffect(size, padding, color).Apply(source);
+        return new OutlineImageEffect(size, padding, outlineOnly, color).Apply(source);
     }
 
     public static SKBitmap ApplyShadow(SKBitmap source, float opacity, int size, float darkness, SKColor color, int offsetX, int offsetY, bool autoResize)

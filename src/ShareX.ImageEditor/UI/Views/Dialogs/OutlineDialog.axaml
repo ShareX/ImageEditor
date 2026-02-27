@@ -108,6 +108,12 @@
                     </Popup>
                 </Grid>
             </StackPanel>
+
+            <!-- Outline Only -->
+            <CheckBox x:Name="OutlineOnlyCheckBox"
+                      Content="Outline only"
+                      Foreground="#9CA3AF"
+                      IsCheckedChanged="OnOutlineOnlyChanged"/>
         </StackPanel>
 
         <!-- Buttons -->

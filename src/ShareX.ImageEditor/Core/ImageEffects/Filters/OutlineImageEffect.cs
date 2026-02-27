@@ -6,15 +6,17 @@ public class OutlineImageEffect : ImageEffect
 {
     public int Size { get; set; }
     public int Padding { get; set; }
+    public bool OutlineOnly { get; set; }
     public SKColor Color { get; set; }
 
     public override string Name => "Outline";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
-    public OutlineImageEffect(int size, int padding, SKColor color)
+    public OutlineImageEffect(int size, int padding, bool outlineOnly, SKColor color)
     {
         Size = size;
         Padding = padding;
+        OutlineOnly = outlineOnly;
         Color = color;
     }
 
@@ -23,6 +25,7 @@ public class OutlineImageEffect : ImageEffect
         if (source is null) throw new ArgumentNullException(nameof(source));
         if (Size <= 0) return source.Copy();
 
+        // totalExpand covers outline + gap between image and outline
         int totalExpand = Size + Padding;
         int newWidth = source.Width + totalExpand * 2;
         int newHeight = source.Height + totalExpand * 2;
@@ -31,25 +34,34 @@ public class OutlineImageEffect : ImageEffect
         using SKCanvas canvas = new SKCanvas(result);
         canvas.Clear(SKColors.Transparent);
 
-        // --- Optimised outline: single-pass morphological dilation ---
-        // SKImageFilter.CreateDilate expands every opaque pixel by (Size) in all
-        // directions entirely on the GPU / CPU via Skia's own convolution, replacing
-        // the old O(Size²) loop that re-drew the full bitmap for every offset pixel.
-        using SKImageFilter dilateFilter = SKImageFilter.CreateDilate(Size, Size);
-        using SKImageFilter colorFilter = SKImageFilter.CreateColorFilter(
+        // Step 1: Dilate by (Size + Padding), then tint → big colored blob covering
+        //         both the outline ring AND the gap area.
+        using SKImageFilter outerDilate = SKImageFilter.CreateDilate(Size + Padding, Size + Padding);
+        using SKImageFilter tintFilter = SKImageFilter.CreateColorFilter(
             SKColorFilter.CreateBlendMode(Color, SKBlendMode.SrcIn));
-        using SKImageFilter outlineFilter = SKImageFilter.CreateCompose(colorFilter, dilateFilter);
-
-        using SKPaint outlinePaint = new SKPaint
-        {
-            ImageFilter = outlineFilter
-        };
-
-        // Draw the dilated + tinted outline first…
+        using SKImageFilter outlineFilter = SKImageFilter.CreateCompose(tintFilter, outerDilate);
+        using SKPaint outlinePaint = new SKPaint { ImageFilter = outlineFilter };
         canvas.DrawBitmap(source, totalExpand, totalExpand, outlinePaint);
 
-        // …then the original on top.
-        canvas.DrawBitmap(source, totalExpand, totalExpand);
+        // Step 2: If Padding > 0, erase the inner gap strip (DstOut erases pixels
+        //         where the dilated-by-Padding mask is opaque, punching a hole
+        //         between the image edge and the start of the outline ring).
+        if (Padding > 0)
+        {
+            using SKImageFilter gapDilate = SKImageFilter.CreateDilate(Padding, Padding);
+            using SKPaint erasePaint = new SKPaint
+            {
+                ImageFilter = gapDilate,
+                BlendMode = SKBlendMode.DstOut
+            };
+            canvas.DrawBitmap(source, totalExpand, totalExpand, erasePaint);
+        }
+
+        // Step 3: Draw the original image on top (unless Outline Only mode).
+        if (!OutlineOnly)
+        {
+            canvas.DrawBitmap(source, totalExpand, totalExpand);
+        }
 
         return result;
     }

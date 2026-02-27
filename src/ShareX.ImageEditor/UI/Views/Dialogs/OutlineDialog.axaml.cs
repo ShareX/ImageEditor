@@ -44,6 +44,7 @@ public partial class OutlineDialog : UserControl, IEffectDialog
 
     private SKColor _color = SKColors.Black;
     private bool _isLoaded = false;
+    private bool _outlineOnly = false;
 
     // Control references
     private Slider? _sizeSlider;
@@ -89,6 +90,12 @@ public partial class OutlineDialog : UserControl, IEffectDialog
         if (_isLoaded) RaisePreview();
     }
 
+    private void OnOutlineOnlyChanged(object? sender, RoutedEventArgs e)
+    {
+        _outlineOnly = this.FindControl<CheckBox>("OutlineOnlyCheckBox")?.IsChecked == true;
+        if (_isLoaded) RaisePreview();
+    }
+
     private void OnOutlineColorValueChanged()
     {
         var color = OutlineColorValue;
@@ -121,9 +128,10 @@ public partial class OutlineDialog : UserControl, IEffectDialog
     {
         var size = GetSize();
         var padding = GetPadding();
+        var outlineOnly = _outlineOnly;
 
         PreviewRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyOutline(img, size, padding, _color),
+            img => ImageHelpers.ApplyOutline(img, size, padding, outlineOnly, _color),
             "Outline applied"));
     }
 
@@ -131,9 +139,10 @@ public partial class OutlineDialog : UserControl, IEffectDialog
     {
         var size = GetSize();
         var padding = GetPadding();
+        var outlineOnly = _outlineOnly;
 
         ApplyRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyOutline(img, size, padding, _color),
+            img => ImageHelpers.ApplyOutline(img, size, padding, outlineOnly, _color),
             "Outline applied"));
     }
 

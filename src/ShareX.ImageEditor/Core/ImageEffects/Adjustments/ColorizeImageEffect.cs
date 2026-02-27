@@ -12,11 +12,10 @@ public class ColorizeImageEffect : ImageEffect
 
     public override SKBitmap Apply(SKBitmap source)
     {
-        float strength = Strength;
-        if (strength <= 0) return source.Copy();
-        if (strength > 100) strength = 100;
+        if (source is null) throw new ArgumentNullException(nameof(source));
 
-        using var paint = new SKPaint();
+        float strength = Math.Clamp(Strength, 0, 100);
+        if (strength <= 0) return source.Copy();
 
         var grayscaleMatrix = new float[] {
             0.2126f, 0.7152f, 0.0722f, 0, 0,
@@ -28,23 +27,21 @@ public class ColorizeImageEffect : ImageEffect
         using var tint = SKColorFilter.CreateBlendMode(Color, SKBlendMode.Modulate);
         using var composed = SKColorFilter.CreateCompose(tint, grayscale);
 
-        paint.ColorFilter = composed;
+        if (strength >= 100)
+            return ApplyColorFilter(source, composed);
 
-        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-        using (SKCanvas canvas = new SKCanvas(result))
+        // Partial strength: blend colorized result over original at reduced opacity
+        using var colorized = ApplyColorFilter(source, composed);
+        var result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using (var canvas = new SKCanvas(result))
         {
             canvas.Clear(SKColors.Transparent);
-
-            if (strength >= 100)
+            canvas.DrawBitmap(source, 0, 0);
+            using var blendPaint = new SKPaint
             {
-                canvas.DrawBitmap(source, 0, 0, paint);
-            }
-            else
-            {
-                canvas.DrawBitmap(source, 0, 0);
-                paint.Color = new SKColor(255, 255, 255, (byte)(255 * (strength / 100f)));
-                canvas.DrawBitmap(source, 0, 0, paint);
-            }
+                Color = new SKColor(255, 255, 255, (byte)(255 * strength / 100f))
+            };
+            canvas.DrawBitmap(colorized, 0, 0, blendPaint);
         }
         return result;
     }

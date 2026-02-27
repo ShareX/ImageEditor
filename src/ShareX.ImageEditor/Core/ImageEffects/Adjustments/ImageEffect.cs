@@ -1,5 +1,6 @@
 using SkiaSharp;
 using ShareX.ImageEditor.Services;
+using System.Threading;
 
 namespace ShareX.ImageEditor.ImageEffects.Adjustments;
 
@@ -17,6 +18,9 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
     // Images below this pixel count always use CPU — GPU upload + readback overhead
     // exceeds the rendering cost for small bitmaps.
     private const int GpuPixelThreshold = 160_000; // ≈ 400×400 px
+    private static int _cpuNoProviderDiagnosticSent;
+    private static int _cpuSmallImageDiagnosticSent;
+    private static int _gpuSuccessDiagnosticSent;
 
     /// <summary>
     /// Registers the GPU lease provider. Called by the host (EditorView) when loaded.
@@ -29,9 +33,15 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
         _gpuLeaseProvider = provider;
 
         if (wasNull && !isNull)
+        {
+            Interlocked.Exchange(ref _gpuSuccessDiagnosticSent, 0);
             EditorServices.ReportInformation(nameof(ImageEffect), "GPU lease provider registered; GPU path active.");
+        }
         else if (!wasNull && isNull)
+        {
+            Interlocked.Exchange(ref _cpuNoProviderDiagnosticSent, 0);
             EditorServices.ReportInformation(nameof(ImageEffect), "GPU lease provider removed; effects using CPU path.");
+        }
     }
 
     protected static SKBitmap ApplyColorMatrix(SKBitmap source, float[] matrix)
@@ -45,17 +55,18 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
         if (source is null) throw new ArgumentNullException(nameof(source));
 
         int pixels = source.Width * source.Height;
+        IEffectGpuLeaseProvider? leaseProvider = _gpuLeaseProvider;
 
         // GPU path — attempted when a provider is registered and the image is large enough.
-        if (_gpuLeaseProvider != null && pixels >= GpuPixelThreshold)
+        if (leaseProvider != null && pixels >= GpuPixelThreshold)
         {
             EditorServices.ReportInformation(nameof(ImageEffect),
-                $"ApplyColorFilter GPU path ({source.Width}x{source.Height}, {pixels:N0} px).");
+                $"ApplyColorFilter attempting GPU path ({source.Width}x{source.Height}, {pixels:N0} px).");
 
             try
             {
                 // TryWithGrContext acquires the GL context lock, runs the delegate, then releases.
-                var gpuResult = _gpuLeaseProvider.TryWithGrContext(grContext =>
+                var gpuResult = leaseProvider.TryWithGrContext(grContext =>
                 {
                     if (grContext.IsAbandoned)
                         return null;
@@ -75,7 +86,11 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
                 });
 
                 if (gpuResult != null)
+                {
+                    ReportInformationOnce(ref _gpuSuccessDiagnosticSent,
+                        "ApplyColorFilter GPU path succeeded; effects are being processed with GPU acceleration.");
                     return gpuResult;
+                }
 
                 EditorServices.ReportWarning(nameof(ImageEffect),
                     "ApplyColorFilter GPU path returned null; falling back to CPU.");
@@ -85,6 +100,16 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
                 EditorServices.ReportWarning(nameof(ImageEffect),
                     "ApplyColorFilter GPU exception; falling back to CPU.", ex);
             }
+        }
+        else if (leaseProvider == null)
+        {
+            ReportInformationOnce(ref _cpuNoProviderDiagnosticSent,
+                "ApplyColorFilter using CPU path because no GPU lease provider is registered.");
+        }
+        else
+        {
+            ReportInformationOnce(ref _cpuSmallImageDiagnosticSent,
+                $"ApplyColorFilter using CPU path for small images below {GpuPixelThreshold:N0} px.");
         }
 
         // CPU path
@@ -96,6 +121,14 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
             canvas.DrawBitmap(source, 0, 0, paint);
         }
         return cpuResult;
+    }
+
+    private static void ReportInformationOnce(ref int gate, string message)
+    {
+        if (Interlocked.CompareExchange(ref gate, 1, 0) == 0)
+        {
+            EditorServices.ReportInformation(nameof(ImageEffect), message);
+        }
     }
 
     protected unsafe static SKBitmap ApplyPixelOperation(SKBitmap source, Func<SKColor, SKColor> operation)

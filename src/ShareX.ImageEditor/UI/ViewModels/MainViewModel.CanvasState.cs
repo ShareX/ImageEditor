@@ -35,6 +35,7 @@ using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.ImageEffects.Adjustments;
 using ShareX.ImageEditor.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Services;
 using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.ViewModels
@@ -325,8 +326,9 @@ namespace ShareX.ImageEditor.ViewModels
                 PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(cropped);
                 ImageDimensions = $"{cropped.Width} x {cropped.Height}";
             }
-            catch
+            catch (Exception ex)
             {
+                EditorServices.ReportError(nameof(MainViewModel), "Failed to apply smart padding crop.", ex);
             }
             finally
             {

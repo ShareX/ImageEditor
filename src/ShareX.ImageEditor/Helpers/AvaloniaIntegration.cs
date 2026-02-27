@@ -28,6 +28,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
+using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
 using ShareX.ImageEditor.Views;
 
@@ -59,6 +60,7 @@ namespace ShareX.ImageEditor
         public Action<byte[]>? SaveImageAsRequested { get; set; }
         public Action<byte[]>? PinImageRequested { get; set; }
         public Action<byte[]>? UploadImageRequested { get; set; }
+        public Action<EditorDiagnosticEvent>? DiagnosticReported { get; set; }
     }
 
     public static class AvaloniaIntegration
@@ -119,6 +121,39 @@ namespace ShareX.ImageEditor
         public static byte[]? ShowEditorDialog(Stream imageStream, EditorEvents? events = null, bool taskMode = false)
         {
             byte[]? result = null;
+            IEditorDiagnosticsSink? previousDiagnosticsSink = null;
+            bool restoreScopedDiagnostics = false;
+
+            if (events?.DiagnosticReported != null)
+            {
+                var diagnosticHandler = events.DiagnosticReported;
+                previousDiagnosticsSink = EditorServices.Diagnostics;
+                restoreScopedDiagnostics = true;
+
+                EditorServices.Diagnostics = new DelegateEditorDiagnosticsSink(diagnosticEvent =>
+                {
+                    try
+                    {
+                        diagnosticHandler(diagnosticEvent);
+                    }
+                    catch
+                    {
+                        // Host diagnostics callback failures must not break the editor.
+                    }
+
+                    if (previousDiagnosticsSink != null)
+                    {
+                        try
+                        {
+                            previousDiagnosticsSink.Report(diagnosticEvent);
+                        }
+                        catch
+                        {
+                            // Ignore downstream sink failures.
+                        }
+                    }
+                });
+            }
 
             Initialize();
             EditorWindow window = new EditorWindow();
@@ -155,7 +190,15 @@ namespace ShareX.ImageEditor
             window.Show();
 
             DispatcherFrame frame = new DispatcherFrame();
-            window.Closed += (s, e) => frame.Continue = false;
+            window.Closed += (s, e) =>
+            {
+                frame.Continue = false;
+
+                if (restoreScopedDiagnostics)
+                {
+                    EditorServices.Diagnostics = previousDiagnosticsSink;
+                }
+            };
             Dispatcher.UIThread.PushFrame(frame);
 
             return result;
@@ -173,7 +216,10 @@ namespace ShareX.ImageEditor
                 vm.CopyRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) events.CopyImageRequested(bytes);
+                    if (bytes != null)
+                    {
+                        InvokeHostCallback(bytes, events.CopyImageRequested, nameof(EditorEvents.CopyImageRequested));
+                    }
                 };
             }
 
@@ -182,7 +228,10 @@ namespace ShareX.ImageEditor
                 vm.SaveRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) events.SaveImageRequested(bytes);
+                    if (bytes != null)
+                    {
+                        InvokeHostCallback(bytes, events.SaveImageRequested, nameof(EditorEvents.SaveImageRequested));
+                    }
                 };
             }
 
@@ -191,7 +240,10 @@ namespace ShareX.ImageEditor
                 vm.SaveAsRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) events.SaveImageAsRequested(bytes);
+                    if (bytes != null)
+                    {
+                        InvokeHostCallback(bytes, events.SaveImageAsRequested, nameof(EditorEvents.SaveImageAsRequested));
+                    }
                 };
             }
 
@@ -200,7 +252,10 @@ namespace ShareX.ImageEditor
                 vm.PinRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) events.PinImageRequested(bytes);
+                    if (bytes != null)
+                    {
+                        InvokeHostCallback(bytes, events.PinImageRequested, nameof(EditorEvents.PinImageRequested));
+                    }
                 };
             }
 
@@ -209,14 +264,36 @@ namespace ShareX.ImageEditor
                 vm.UploadRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
-                    if (bytes != null) events.UploadImageRequested(bytes);
+                    if (bytes != null)
+                    {
+                        InvokeHostCallback(bytes, events.UploadImageRequested, nameof(EditorEvents.UploadImageRequested));
+                    }
                 };
             }
 
             window.Closed += (s, e) =>
             {
-                onResult();
+                try
+                {
+                    onResult();
+                }
+                catch (Exception ex)
+                {
+                    EditorServices.ReportError(nameof(AvaloniaIntegration), "Failed to process editor dialog result.", ex);
+                }
             };
+        }
+
+        private static void InvokeHostCallback(byte[] bytes, Action<byte[]> callback, string callbackName)
+        {
+            try
+            {
+                callback(bytes);
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportError(nameof(AvaloniaIntegration), $"Host callback '{callbackName}' failed.", ex);
+            }
         }
     }
 }

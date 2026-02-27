@@ -35,6 +35,7 @@ using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
 using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
 using ShareX.ImageEditor.Views.Controllers;
 using ShareX.ImageEditor.Views.Dialogs;
@@ -172,7 +173,10 @@ namespace ShareX.ImageEditor.Views
                     };
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                EditorServices.ReportWarning(nameof(EditorView), "Failed to update effect annotation preview.", ex);
+            }
         }
 
         private void OnAnnotationsRestored()
@@ -305,8 +309,9 @@ namespace ShareX.ImageEditor.Views
                 var skColor = skBitmap.GetPixel(x, y);
                 return $"#{skColor.Red:X2}{skColor.Green:X2}{skColor.Blue:X2}";
             }
-            catch
+            catch (Exception ex)
             {
+                EditorServices.ReportWarning(nameof(EditorView), "Failed to sample pixel color from rendered canvas.", ex);
                 return null;
             }
         }

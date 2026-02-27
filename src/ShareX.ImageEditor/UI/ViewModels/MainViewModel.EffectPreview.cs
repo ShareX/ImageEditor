@@ -403,7 +403,16 @@ namespace ShareX.ImageEditor.ViewModels
                 return;
             }
 
-            float angle = (float)Math.Clamp(RotateAngleDegrees, -180, 180);
+            float angle = (float)Math.Clamp(RotateAngleDegrees, -360, 360);
+
+            // Restore the original (pre-preview) bitmap to EditorCore before applying,
+            // so the rotation is only applied once (preview had already rotated the display).
+            var cleanState = _rotateCustomAngleOriginalBitmap.Copy();
+            if (cleanState != null)
+            {
+                _editorCore.UpdateSourceImage(cleanState);
+            }
+
             _editorCore.RotateCustomAngle(angle, RotateAutoResize);
 
             IsRotateCustomAngleDialogOpen = false;
@@ -417,19 +426,18 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         public void CancelRotateCustomAngle()
         {
-            SkiaSharp.SKBitmap? source = GetBestAvailableSourceBitmap();
-            if (source != null)
+            if (_rotateCustomAngleOriginalBitmap != null)
             {
-                UpdatePreviewImageOnly(source, syncSourceState: true);
-            }
-            else if (_rotateCustomAngleOriginalBitmap != null)
-            {
-                UpdatePreview(_rotateCustomAngleOriginalBitmap, clearAnnotations: false);
-                _rotateCustomAngleOriginalBitmap = null;
-            }
-            else
-            {
-                _rotateCustomAngleOriginalBitmap?.Dispose();
+                // Restore the original (pre-rotation) bitmap to both display and EditorCore
+                UpdatePreviewImageOnly(_rotateCustomAngleOriginalBitmap, syncSourceState: true);
+
+                var cleanState = _rotateCustomAngleOriginalBitmap.Copy();
+                if (cleanState != null)
+                {
+                    _editorCore?.UpdateSourceImage(cleanState);
+                }
+
+                _rotateCustomAngleOriginalBitmap.Dispose();
                 _rotateCustomAngleOriginalBitmap = null;
             }
 

@@ -667,8 +667,10 @@
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <!-- Active Tool Icon -->
                         <Border Background="Transparent"
+                                Width="40"
+                                Height="40"
                                 VerticalAlignment="Center"
-                                Padding="6,0"
+                                HorizontalAlignment="Center"
                                 ToolTip.Tip="{Binding ActiveToolName}">
                             <TextBlock Text="{Binding ActiveToolIcon}"
                                        FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
@@ -676,6 +678,7 @@
                                        Foreground="{DynamicResource ShareX.Brush.Separator}"
                                        VerticalAlignment="Center"
                                        TextAlignment="Center"
+                                       HorizontalAlignment="Center"
                                        Width="20"/>
                         </Border>
 

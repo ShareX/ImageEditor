@@ -96,13 +96,12 @@ namespace ShareX.ImageEditor.Views.Dialogs
             UpdateReplaceColorBrush();
             UpdateReplaceColorText();
 
-            // We'll request preview once loaded to ensure VM is ready
-            this.AttachedToVisualTree += (s, e) => RequestPreview();
+            this.Loaded += (s, e) => RequestPreview();
         }
 
         private void OnValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            if (_suppressPreview || !this.IsLoaded) return;
+            if (_suppressPreview) return;
             RequestPreview();
         }
 
@@ -112,7 +111,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
             _targetColor = new SKColor(color.R, color.G, color.B, color.A);
             UpdateTargetColorBrush();
             UpdateTargetColorText();
-            if (!_suppressPreview && this.IsLoaded) RequestPreview();
+            if (!_suppressPreview) RequestPreview();
         }
 
         private void OnReplaceColorValueChanged()
@@ -121,7 +120,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
             _replaceColor = new SKColor(color.R, color.G, color.B, color.A);
             UpdateReplaceColorBrush();
             UpdateReplaceColorText();
-            if (!_suppressPreview && this.IsLoaded) RequestPreview();
+            if (!_suppressPreview) RequestPreview();
         }
 
         private void OnTargetColorButtonClick(object? sender, RoutedEventArgs e)
@@ -180,8 +179,6 @@ namespace ShareX.ImageEditor.Views.Dialogs
 
         private void RequestPreview()
         {
-            if (!this.IsLoaded) return;
-
             float tolerance = (float)(this.FindControl<Slider>("ToleranceSlider")?.Value ?? 0);
 
             PreviewRequested?.Invoke(this, new EffectEventArgs(img => new ReplaceColorImageEffect { TargetColor = _targetColor, ReplaceColor = _replaceColor, Tolerance = tolerance }.Apply(img), $"Replace Color"));

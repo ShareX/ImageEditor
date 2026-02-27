@@ -13,7 +13,6 @@ public class TornEdgeImageEffect : ImageEffect
     public bool Curved { get; set; }
 
     public override string Name => "Torn edge";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
     public TornEdgeImageEffect(int depth, int range, bool top, bool right, bool bottom, bool left, bool curved)
     {
@@ -41,7 +40,7 @@ public class TornEdgeImageEffect : ImageEffect
         }
 
         List<SKPoint> points = new List<SKPoint>();
-        Random rand = new Random();
+        var rand = Random.Shared;
 
         // Top edge
         if (Top && horizontalTornCount > 1)

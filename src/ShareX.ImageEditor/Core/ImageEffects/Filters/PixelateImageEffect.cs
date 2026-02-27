@@ -27,7 +27,7 @@ public class PixelateImageEffect : ImageEffect
         SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
         using (SKCanvas canvas = new SKCanvas(result))
         {
-            using SKPaint paint = new SKPaint { FilterQuality = SKFilterQuality.None };
+            using SKPaint paint = new SKPaint { SamplingOptions = new SKSamplingOptions(SKFilterMode.Nearest) };
             canvas.DrawBitmap(small, new SKRect(0, 0, source.Width, source.Height), paint);
         }
         small.Dispose();

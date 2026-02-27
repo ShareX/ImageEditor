@@ -10,7 +10,6 @@ public class SliceImageEffect : ImageEffect
     public int MaxShift { get; set; }
 
     public override string Name => "Slice";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
     public SliceImageEffect(int minHeight, int maxHeight, int minShift, int maxShift)
     {
@@ -31,7 +30,7 @@ public class SliceImageEffect : ImageEffect
         int minSliceShift = Math.Min(Math.Abs(MinShift), Math.Abs(MaxShift));
         int maxSliceShift = Math.Max(Math.Abs(MinShift), Math.Abs(MaxShift));
 
-        Random rand = new Random();
+        var rand = Random.Shared;
         int maxAbsShift = maxSliceShift;
         int newWidth = source.Width + maxAbsShift * 2;
 

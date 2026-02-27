@@ -53,11 +53,17 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
                     surface.Canvas.DrawBitmap(source, 0, 0, gpuPaint);
                     surface.Canvas.Flush();
 
-                    var result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-                    if (surface.ReadPixels(result.Info, result.GetPixels(), result.RowBytes, 0, 0))
-                        return result;
-                    result.Dispose();
-                    EditorServices.ReportWarning(nameof(ImageEffect), "ApplyColorFilter GPU ReadPixels failed; falling back to CPU.");
+                    // Use Snapshot() → SKBitmap.FromImage() for the GPU→CPU download.
+                    // SKSurface.ReadPixels fails on Intel UHD (i915/GL) for BGRA surfaces;
+                    // SKImage.ReadPixels handles format conversion internally.
+                    using var gpuImage = surface.Snapshot();
+                    if (gpuImage != null)
+                    {
+                        var result = SKBitmap.FromImage(gpuImage);
+                        if (result != null)
+                            return result;
+                    }
+                    EditorServices.ReportWarning(nameof(ImageEffect), "ApplyColorFilter GPU Snapshot/FromImage failed; falling back to CPU.");
                     // fall through to CPU path
                 }
                 else

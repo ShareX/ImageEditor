@@ -6,7 +6,7 @@ using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
 using SkiaSharp;
-using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Services;
 
 namespace ShareX.ImageEditor.Controls;
 
@@ -85,9 +85,9 @@ public class SKCanvasControl : Control
             bool hasGpu = grContext != null;
             if (hasGpu != _owner._lastRenderHadGpu)
             {
-                ImageEditorLog.WriteLine(hasGpu
-                    ? "[SKCanvasControl] GPU backend detected — GRContext assigned to ImageEffect pipeline"
-                    : "[SKCanvasControl] No GPU backend (software renderer) — ImageEffect pipeline will use CPU path");
+                EditorServices.ReportInformation(nameof(SKCanvasControl), hasGpu
+                    ? "GPU backend detected; GRContext assigned to ImageEffect pipeline."
+                    : "No GPU backend (software renderer); ImageEffect pipeline will use CPU path.");
                 _owner._lastRenderHadGpu = hasGpu;
             }
         }

@@ -258,6 +258,10 @@ public class EditorCore : IDisposable
         {
             transformAnnotations?.Invoke();
             RefreshAnnotationsForCurrentImage();
+            if (transformAnnotations != null)
+            {
+                AnnotationsRestored?.Invoke();
+            }
         }
 
         ImageChanged?.Invoke();
@@ -646,6 +650,7 @@ public class EditorCore : IDisposable
             AdjustAnnotationsForHorizontalCut(cutY, cutHeight, newHeight);
         }
 
+        AnnotationsRestored?.Invoke();
         ImageChanged?.Invoke();
         HistoryChanged?.Invoke();
         InvalidateRequested?.Invoke();
@@ -1619,6 +1624,7 @@ public class EditorCore : IDisposable
         SourceImage = croppedBitmap;
         CanvasSize = new SKSize(width, height);
 
+        AnnotationsRestored?.Invoke();
         ImageChanged?.Invoke();
         HistoryChanged?.Invoke();
         InvalidateRequested?.Invoke();

@@ -75,6 +75,8 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["shadow"] = () => new ShadowDialog(),
                 ["glow"] = () => new GlowDialog(),
                 ["reflection"] = () => new ReflectionDialog(),
+                ["oil_paint"] = () => new OilPaintDialog(),
+                ["sobel_edge"] = () => new SobelEdgeDialog(),
                 ["torn_edge"] = () => new TornEdgeDialog(),
                 ["wave_edge"] = () => new WaveEdgeDialog(),
                 ["slice"] = () => new SliceDialog(),

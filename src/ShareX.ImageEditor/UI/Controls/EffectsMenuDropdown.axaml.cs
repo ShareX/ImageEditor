@@ -135,7 +135,9 @@ namespace ShareX.ImageEditor.Controls
         private void OnMeanRemovalClick(object? sender, RoutedEventArgs e) => Raise(MeanRemovalRequested);
         private void OnMedianFilterClick(object? sender, RoutedEventArgs e) => RaiseDialog("median_filter");
         private void OnMotionBlurClick(object? sender, RoutedEventArgs e) => RaiseDialog("motion_blur");
+        private void OnOilPaintClick(object? sender, RoutedEventArgs e) => RaiseDialog("oil_paint");
         private void OnRgbSplitClick(object? sender, RoutedEventArgs e) => RaiseDialog("rgb_split");
+        private void OnSobelEdgeClick(object? sender, RoutedEventArgs e) => RaiseDialog("sobel_edge");
         private void OnSmoothClick(object? sender, RoutedEventArgs e) => Raise(SmoothRequested);
         private void OnUnsharpMaskClick(object? sender, RoutedEventArgs e) => RaiseDialog("unsharp_mask");
         private void OnVignetteClick(object? sender, RoutedEventArgs e) => RaiseDialog("vignette");

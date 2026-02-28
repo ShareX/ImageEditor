@@ -87,7 +87,7 @@ namespace ShareX.ImageEditor.Controls
 
             // Setup brushes based on the annotation's color properties.
             // Text color is now TextColor, Outline color is StrokeColor.
-            
+
             // Standard behavior in many editors is that transparent fill means no fill.
             IBrush? fillBrush = null;
             if (!string.IsNullOrEmpty(Annotation.TextColor))
@@ -157,7 +157,7 @@ namespace ShareX.ImageEditor.Controls
             // Add padding (4px all sides) + stroke width padding to avoid clipping
             double strokePadding = Annotation.StrokeWidth;
             double padding = 8; // 4 * 2
-            
+
             double width = formattedText.Width + padding + strokePadding;
             double height = formattedText.Height + padding + strokePadding;
 

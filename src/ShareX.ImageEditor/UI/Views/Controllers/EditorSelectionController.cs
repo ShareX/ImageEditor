@@ -1,4 +1,3 @@
-using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -783,7 +782,7 @@ public class EditorSelectionController
             var tbTop = Canvas.GetTop(textBox);
             var tbWidth = textBox.Bounds.Width;
             var tbHeight = textBox.Bounds.Height;
-            
+
             if (tbWidth <= 0) tbWidth = textBox.DesiredSize.Width;
             if (tbHeight <= 0) tbHeight = textBox.DesiredSize.Height;
 
@@ -1706,10 +1705,10 @@ public class EditorSelectionController
             if (keyDownHandler != null) textBox.KeyDown -= keyDownHandler;
 
             annotation.Text = textBox.Text ?? string.Empty;
-            
+
             // Remove from overlay
             overlay.Children.Remove(textBox);
-            
+
             // Unhide the original control and measure it to compute correct sizes
             textControl.IsVisible = true;
             textControl.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -1732,7 +1731,7 @@ public class EditorSelectionController
         }
 
         lostFocusHandler = (s, args) => CompleteEditing();
-        
+
         keyDownHandler = (s, args) =>
         {
             if (args.Key == Key.Enter)

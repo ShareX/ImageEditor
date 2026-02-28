@@ -56,7 +56,7 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
             {
                 dstPixels[i] = operation(srcPixels[i]);
             }
-            
+
             result.Pixels = dstPixels;
         }
 

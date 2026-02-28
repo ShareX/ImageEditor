@@ -33,13 +33,13 @@ public class ShadowImageEffect : ImageEffect
         // Negative offset → shadow extends left/up  → expand left/top.
         int blurPad = Size;  // room needed for blur to not get clipped
 
-        int expandLeft   = AutoResize ? Math.Max(0, -OffsetX) + blurPad : 0;
-        int expandRight  = AutoResize ? Math.Max(0,  OffsetX) + blurPad : 0;
-        int expandTop    = AutoResize ? Math.Max(0, -OffsetY) + blurPad : 0;
-        int expandBottom = AutoResize ? Math.Max(0,  OffsetY) + blurPad : 0;
+        int expandLeft = AutoResize ? Math.Max(0, -OffsetX) + blurPad : 0;
+        int expandRight = AutoResize ? Math.Max(0, OffsetX) + blurPad : 0;
+        int expandTop = AutoResize ? Math.Max(0, -OffsetY) + blurPad : 0;
+        int expandBottom = AutoResize ? Math.Max(0, OffsetY) + blurPad : 0;
 
-        int newWidth  = source.Width  + expandLeft + expandRight;
-        int newHeight = source.Height + expandTop  + expandBottom;
+        int newWidth = source.Width + expandLeft + expandRight;
+        int newHeight = source.Height + expandTop + expandBottom;
 
         SKBitmap result = new SKBitmap(newWidth, newHeight);
         using SKCanvas canvas = new SKCanvas(result);

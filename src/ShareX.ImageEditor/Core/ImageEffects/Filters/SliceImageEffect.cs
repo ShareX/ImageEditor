@@ -27,7 +27,7 @@ public class SliceImageEffect : ImageEffect
 
         int minSliceHeight = Math.Max(1, Math.Min(MinHeight, MaxHeight));
         int maxSliceHeight = Math.Max(minSliceHeight, Math.Max(MinHeight, MaxHeight));
-        
+
         int minSliceShift = Math.Min(Math.Abs(MinShift), Math.Abs(MaxShift));
         int maxSliceShift = Math.Max(Math.Abs(MinShift), Math.Abs(MaxShift));
 

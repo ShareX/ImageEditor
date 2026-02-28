@@ -273,6 +273,17 @@ namespace ShareX.ImageEditor.Views
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
         }
 
+        private void OnEffectBrowserOverlayPointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (DataContext is MainViewModel vm && vm.IsEffectBrowserVisible)
+            {
+                if (vm.CloseEffectsPanelCommand.CanExecute(null))
+                {
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                }
+            }
+        }
+
         private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is MainViewModel vm)

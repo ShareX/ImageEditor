@@ -652,7 +652,11 @@
                             FlipVerticalRequested="OnFlipVerticalRequested"
                             InvertRequested="OnInvertRequested"
                             BlackAndWhiteRequested="OnBlackAndWhiteRequested"
-                            PolaroidRequested="OnPolaroidRequested"/>
+                            PolaroidRequested="OnPolaroidRequested"
+                            EdgeDetectRequested="OnEdgeDetectRequested"
+                            EmbossRequested="OnEmbossRequested"
+                            MeanRemovalRequested="OnMeanRemovalRequested"
+                            SmoothRequested="OnSmoothRequested"/>
 
                     </StackPanel>
                 </ScrollViewer>

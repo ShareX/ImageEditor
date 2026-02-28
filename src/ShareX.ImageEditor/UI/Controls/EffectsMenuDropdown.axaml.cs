@@ -29,6 +29,10 @@ namespace ShareX.ImageEditor.Controls
         public event EventHandler? InvertRequested;
         public event EventHandler? BlackAndWhiteRequested;
         public event EventHandler? PolaroidRequested;
+        public event EventHandler? EdgeDetectRequested;
+        public event EventHandler? EmbossRequested;
+        public event EventHandler? MeanRemovalRequested;
+        public event EventHandler? SmoothRequested;
 
         public event EventHandler? ResizeImageRequested;
         public event EventHandler? ResizeCanvasRequested;
@@ -106,6 +110,14 @@ namespace ShareX.ImageEditor.Controls
         private void OnReflectionClick(object? sender, RoutedEventArgs e)       => RaiseDialog("reflection");
         private void OnTornEdgeClick(object? sender, RoutedEventArgs e)         => RaiseDialog("torn_edge");
         private void OnSliceClick(object? sender, RoutedEventArgs e)            => RaiseDialog("slice");
+        private void OnColorDepthClick(object? sender, RoutedEventArgs e)       => RaiseDialog("color_depth");
+        private void OnConvolutionMatrixClick(object? sender, RoutedEventArgs e) => RaiseDialog("convolution_matrix");
+        private void OnEdgeDetectClick(object? sender, RoutedEventArgs e)       => Raise(EdgeDetectRequested);
+        private void OnEmbossClick(object? sender, RoutedEventArgs e)           => Raise(EmbossRequested);
+        private void OnGaussianBlurClick(object? sender, RoutedEventArgs e)     => RaiseDialog("gaussian_blur");
+        private void OnMeanRemovalClick(object? sender, RoutedEventArgs e)      => Raise(MeanRemovalRequested);
+        private void OnRgbSplitClick(object? sender, RoutedEventArgs e)         => RaiseDialog("rgb_split");
+        private void OnSmoothClick(object? sender, RoutedEventArgs e)           => Raise(SmoothRequested);
 
         // --- Quality (dialog effects → aggregate event) ---
 

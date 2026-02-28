@@ -37,7 +37,15 @@ public static class ImageEffectRegistry
             new SelectiveColorImageEffect(),
             new ReplaceColorImageEffect(),
             
-            // Filters (parameterless)
+            // Filters
+            new ColorDepthImageEffect(),
+            new ConvolutionMatrixImageEffect(),
+            new EdgeDetectImageEffect(),
+            new EmbossImageEffect(),
+            new GaussianBlurImageEffect(),
+            new MeanRemovalImageEffect(),
+            new RGBSplitImageEffect(),
+            new SmoothImageEffect(),
             new BlurImageEffect(),
             new PixelateImageEffect(),
             new SharpenImageEffect(),

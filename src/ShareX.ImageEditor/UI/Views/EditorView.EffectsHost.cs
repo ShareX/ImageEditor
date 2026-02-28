@@ -192,6 +192,26 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null);
         }
 
+        private void OnEdgeDetectRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.EdgeDetectCommand.Execute(null);
+        }
+
+        private void OnEmbossRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.EmbossCommand.Execute(null);
+        }
+
+        private void OnMeanRemovalRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.MeanRemovalCommand.Execute(null);
+        }
+
+        private void OnSmoothRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.SmoothCommand.Execute(null);
+        }
+
         // --- XIP0039 Pain Point 3: Registry-driven dialog dispatch ---
 
         /// <summary>

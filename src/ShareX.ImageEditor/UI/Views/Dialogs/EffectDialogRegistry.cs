@@ -66,6 +66,10 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["reflection"]      = () => new ReflectionDialog(),
                 ["torn_edge"]       = () => new TornEdgeDialog(),
                 ["slice"]           = () => new SliceDialog(),
+                ["color_depth"]     = () => new ColorDepthDialog(),
+                ["convolution_matrix"] = () => new ConvolutionMatrixDialog(),
+                ["gaussian_blur"]   = () => new GaussianBlurDialog(),
+                ["rgb_split"]       = () => new RGBSplitDialog(),
 
                 // --- Transforms ---
                 ["rounded_corners"] = () => new RoundedCornersDialog(),

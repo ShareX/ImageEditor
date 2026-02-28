@@ -49,6 +49,7 @@ public static class ImageEffectRegistry
             new BlurImageEffect(),
             new PixelateImageEffect(),
             new SharpenImageEffect(),
+            new WaveEdgeImageEffect(),
             
             // Adjustments - Color Filters
             new InvertImageEffect(),

@@ -65,6 +65,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["glow"]            = () => new GlowDialog(),
                 ["reflection"]      = () => new ReflectionDialog(),
                 ["torn_edge"]       = () => new TornEdgeDialog(),
+                ["wave_edge"]       = () => new WaveEdgeDialog(),
                 ["slice"]           = () => new SliceDialog(),
                 ["color_depth"]     = () => new ColorDepthDialog(),
                 ["convolution_matrix"] = () => new ConvolutionMatrixDialog(),

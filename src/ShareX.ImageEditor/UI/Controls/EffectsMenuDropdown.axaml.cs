@@ -124,5 +124,6 @@ namespace ShareX.ImageEditor.Controls
         private void OnBlurClick(object? sender, RoutedEventArgs e)             => RaiseDialog("blur");
         private void OnPixelateClick(object? sender, RoutedEventArgs e)         => RaiseDialog("pixelate");
         private void OnSharpenClick(object? sender, RoutedEventArgs e)          => RaiseDialog("sharpen");
+        private void OnWaveEdgeClick(object? sender, RoutedEventArgs e)         => RaiseDialog("wave_edge");
     }
 }

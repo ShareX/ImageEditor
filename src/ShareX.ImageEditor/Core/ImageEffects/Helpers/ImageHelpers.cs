@@ -320,6 +320,11 @@ public static class ImageHelpers
         return new TornEdgeImageEffect(depth, range, top, right, bottom, left, curved).Apply(source);
     }
 
+    public static SKBitmap ApplyWaveEdge(SKBitmap source, int depth, int range, bool top, bool right, bool bottom, bool left)
+    {
+        return new WaveEdgeImageEffect(depth, range, top, right, bottom, left).Apply(source);
+    }
+
     public static SKBitmap ApplySlice(SKBitmap source, int minHeight, int maxHeight, int minShift, int maxShift)
     {
         return new SliceImageEffect(minHeight, maxHeight, minShift, maxShift).Apply(source);

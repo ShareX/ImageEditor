@@ -364,6 +364,11 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Wave edge..." Click="OnWaveEdgeClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotate}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuItem>
 
                 </MenuFlyout>

@@ -25,6 +25,10 @@ public static class ImageEffectRegistry
             // Manipulations - Resize (parameterized)
             new ResizeImageEffect(),
             new ScaleImageEffect(),
+            new PerspectiveWarpImageEffect(),
+            new PinchBulgeImageEffect(),
+            new TwirlImageEffect(),
+            new DisplacementMapImageEffect(),
             new AutoCropImageEffect(),
             new Rotate3DBoxImageEffect(),
             

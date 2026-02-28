@@ -86,8 +86,11 @@ namespace ShareX.ImageEditor.Controls
 
         private void OnResizeImageClick(object? sender, RoutedEventArgs e) => Raise(ResizeImageRequested);
         private void OnResizeCanvasClick(object? sender, RoutedEventArgs e) => Raise(ResizeCanvasRequested);
+        private void OnDisplacementMapClick(object? sender, RoutedEventArgs e) => RaiseDialog("displacement_map");
         private void OnScaleClick(object? sender, RoutedEventArgs e) => RaiseDialog("scale");
         private void OnFlipClick(object? sender, RoutedEventArgs e) => RaiseDialog("flip");
+        private void OnPerspectiveWarpClick(object? sender, RoutedEventArgs e) => RaiseDialog("perspective_warp");
+        private void OnPinchBulgeClick(object? sender, RoutedEventArgs e) => RaiseDialog("pinch_bulge");
         private void OnCropImageClick(object? sender, RoutedEventArgs e) => Raise(CropImageRequested);
         private void OnAutoCropImageClick(object? sender, RoutedEventArgs e) => Raise(AutoCropImageRequested);
         private void OnRotate90CWClick(object? sender, RoutedEventArgs e) => Raise(Rotate90CWRequested);
@@ -96,6 +99,7 @@ namespace ShareX.ImageEditor.Controls
         private void OnRotateCustomAngleClick(object? sender, RoutedEventArgs e) => Raise(RotateCustomAngleRequested);
         private void OnFlipHorizontalClick(object? sender, RoutedEventArgs e) => Raise(FlipHorizontalRequested);
         private void OnFlipVerticalClick(object? sender, RoutedEventArgs e) => Raise(FlipVerticalRequested);
+        private void OnTwirlClick(object? sender, RoutedEventArgs e) => RaiseDialog("twirl");
 
         // --- Transforms (dialog effects → aggregate event) ---
 

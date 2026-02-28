@@ -80,6 +80,10 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["rotate_3d_box"] = () => new Rotate3DBoxDialog(),
                 ["flip"] = () => new FlipDialog(),
                 ["scale"] = () => new ScaleDialog(),
+                ["displacement_map"] = () => new DisplacementMapDialog(),
+                ["perspective_warp"] = () => new PerspectiveWarpDialog(),
+                ["pinch_bulge"] = () => new PinchBulgeDialog(),
+                ["twirl"] = () => new TwirlDialog(),
 
                 // --- Quality ---
                 ["blur"] = () => new BlurDialog(),

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -99,102 +99,109 @@
                         <MenuItem.Icon>
                             <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
                         </MenuItem.Icon>
-                        
-                        <MenuItem Header="Resize..." Click="OnResizeImageClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Canvas..." Click="OnResizeCanvasClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResizeCanvas}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Scale..." Click="OnScaleClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        
-                        <Separator/>
-                        
-                        <MenuItem Header="Crop..." Click="OnCropImageClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCropAlt}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Auto crop" Click="OnAutoCropImageClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconMagic}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        
-                        <Separator/>
-                        
-                        <MenuItem Header="Rotate 90° clockwise" Click="OnRotate90CWClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotateCW}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Rotate 90° counter clockwise" Click="OnRotate90CCWClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotateCCW}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Rotate 180°" Click="OnRotate180Click">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Rotate..." Click="OnRotateCustomAngleClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSliders}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Rotate 3D..." Click="OnRotate3DClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCube}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
+
                         <MenuItem Header="3D Box / Extrude..." Click="OnRotate3DBoxClick">
-                             <MenuItem.Icon>
+                            <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconCubes}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        
-                         <Separator/>
-                         
-                        <MenuItem Header="Flip horizontal" Click="OnFlipHorizontalClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
+                        <MenuItem Header="Auto crop image" Click="OnAutoCropImageClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconMagic}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Flip vertical" Click="OnFlipVerticalClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsV}"/>
+                        <MenuItem Header="Crop image..." Click="OnCropImageClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCropAlt}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Displacement map..." Click="OnDisplacementMapClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCloud}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Flip..." Click="OnFlipClick">
                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconTableCells}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Flip horizontal" Click="OnFlipHorizontalClick">
+                            <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        
-                        <Separator/>
-                        
-                        <MenuItem Header="Rounded Corners..." Click="OnRoundedCornersClick">
-                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                        <MenuItem Header="Flip vertical" Click="OnFlipVerticalClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsV}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Skew..." Click="OnSkewClick">
-                             <MenuItem.Icon>
+                        <MenuItem Header="Perspective warp..." Click="OnPerspectiveWarpClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconPalette}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Pinch / bulge..." Click="OnPinchBulgeClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconEyeDropper}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Resize canvas..." Click="OnResizeCanvasClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResizeCanvas}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Resize image..." Click="OnResizeImageClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rotate..." Click="OnRotateCustomAngleClick">
+                            <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconSliders}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        
-                    </MenuItem>
+                        <MenuItem Header="Rotate 180°" Click="OnRotate180Click">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rotate 3D..." Click="OnRotate3DClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCube}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rotate 90° clockwise" Click="OnRotate90CWClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotateCW}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rotate 90° counter clockwise" Click="OnRotate90CCWClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotateCCW}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rounded Corners..." Click="OnRoundedCornersClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Scale..." Click="OnScaleClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSun}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Skew..." Click="OnSkewClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotate}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Twirl..." Click="OnTwirlClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconTint}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
 
+                    </MenuItem>
                     <!-- Adjustments Submenu -->
                     <MenuItem Header="Adjustments">
                          <MenuItem.Icon>
@@ -407,3 +414,4 @@
         </Button>
     </Grid>
 </UserControl>
+

@@ -71,8 +71,10 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
                     if (grContext.IsAbandoned)
                         return null;
 
-                    var info = new SKImageInfo(source.Width, source.Height, source.ColorType, source.AlphaType);
-                    using var surface = SKSurface.Create(grContext, budgeted: true, info);
+                    // Rgba8888 is universally supported across GL and GLES backends.
+                    // Bgra8888 is not a valid GPU render target on GLES (e.g. Intel UHD/Mesa).
+                    var gpuInfo = new SKImageInfo(source.Width, source.Height, SKColorType.Rgba8888, source.AlphaType);
+                    using var surface = SKSurface.Create(grContext, budgeted: true, gpuInfo);
                     if (surface == null)
                         return null;
 
@@ -82,7 +84,15 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
                     surface.Canvas.Flush();
 
                     using var gpuImage = surface.Snapshot();
-                    return gpuImage != null ? SKBitmap.FromImage(gpuImage) : null;
+                    if (gpuImage == null) return null;
+
+                    // Read back into the source's original color type so the rest of the
+                    // pipeline receives the expected format (e.g. Bgra8888 for the canvas).
+                    var result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+                    if (gpuImage.ReadPixels(result.Info, result.GetPixels(), result.RowBytes, 0, 0))
+                        return result;
+                    result.Dispose();
+                    return null;
                 });
 
                 if (gpuResult != null)

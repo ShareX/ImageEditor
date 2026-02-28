@@ -20,7 +20,7 @@
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             
-            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Style Selector="^:pointerover">
                 <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
             </Style>
         </Style>

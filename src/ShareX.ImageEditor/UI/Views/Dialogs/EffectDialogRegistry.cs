@@ -62,6 +62,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["levels"] = () => new LevelsDialog(),
                 ["shadows_highlights"] = () => new ShadowsHighlightsDialog(),
                 ["temperature_tint"] = () => new TemperatureTintDialog(),
+                ["vibrance"] = () => new VibranceDialog(),
 
                 // --- Filters ---
                 ["border"] = () => new BorderDialog(),
@@ -75,7 +76,11 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["color_depth"] = () => new ColorDepthDialog(),
                 ["convolution_matrix"] = () => new ConvolutionMatrixDialog(),
                 ["gaussian_blur"] = () => new GaussianBlurDialog(),
+                ["median_filter"] = () => new MedianFilterDialog(),
+                ["motion_blur"] = () => new MotionBlurDialog(),
                 ["rgb_split"] = () => new RGBSplitDialog(),
+                ["unsharp_mask"] = () => new UnsharpMaskDialog(),
+                ["vignette"] = () => new VignetteDialog(),
 
                 // --- Transforms ---
                 ["rounded_corners"] = () => new RoundedCornersDialog(),

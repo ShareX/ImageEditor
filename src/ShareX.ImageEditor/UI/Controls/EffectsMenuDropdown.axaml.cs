@@ -123,8 +123,12 @@ namespace ShareX.ImageEditor.Controls
         private void OnEmbossClick(object? sender, RoutedEventArgs e) => Raise(EmbossRequested);
         private void OnGaussianBlurClick(object? sender, RoutedEventArgs e) => RaiseDialog("gaussian_blur");
         private void OnMeanRemovalClick(object? sender, RoutedEventArgs e) => Raise(MeanRemovalRequested);
+        private void OnMedianFilterClick(object? sender, RoutedEventArgs e) => RaiseDialog("median_filter");
+        private void OnMotionBlurClick(object? sender, RoutedEventArgs e) => RaiseDialog("motion_blur");
         private void OnRgbSplitClick(object? sender, RoutedEventArgs e) => RaiseDialog("rgb_split");
         private void OnSmoothClick(object? sender, RoutedEventArgs e) => Raise(SmoothRequested);
+        private void OnUnsharpMaskClick(object? sender, RoutedEventArgs e) => RaiseDialog("unsharp_mask");
+        private void OnVignetteClick(object? sender, RoutedEventArgs e) => RaiseDialog("vignette");
 
         // --- Quality (dialog effects → aggregate event) ---
 
@@ -137,5 +141,6 @@ namespace ShareX.ImageEditor.Controls
         private void OnLevelsClick(object? sender, RoutedEventArgs e) => RaiseDialog("levels");
         private void OnShadowsHighlightsClick(object? sender, RoutedEventArgs e) => RaiseDialog("shadows_highlights");
         private void OnTemperatureTintClick(object? sender, RoutedEventArgs e) => RaiseDialog("temperature_tint");
+        private void OnVibranceClick(object? sender, RoutedEventArgs e) => RaiseDialog("vibrance");
     }
 }

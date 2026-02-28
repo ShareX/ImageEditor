@@ -47,6 +47,7 @@ public static class ImageEffectRegistry
             new ColorizeImageEffect(),
             new SelectiveColorImageEffect(),
             new ReplaceColorImageEffect(),
+            new VibranceImageEffect(),
             
             // Filters
             new ColorDepthImageEffect(),
@@ -55,11 +56,15 @@ public static class ImageEffectRegistry
             new EmbossImageEffect(),
             new GaussianBlurImageEffect(),
             new MeanRemovalImageEffect(),
+            new MedianFilterImageEffect(),
+            new MotionBlurImageEffect(),
             new RGBSplitImageEffect(),
             new SmoothImageEffect(),
             new BlurImageEffect(),
             new PixelateImageEffect(),
             new SharpenImageEffect(),
+            new UnsharpMaskImageEffect(),
+            new VignetteImageEffect(),
             new WaveEdgeImageEffect(),
             
             // Adjustments - Color Filters

@@ -46,6 +46,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
             new(StringComparer.OrdinalIgnoreCase)
             {
                 // --- Adjustments ---
+                ["auto_contrast"] = () => new AutoContrastDialog(),
                 ["brightness"] = () => new BrightnessDialog(),
                 ["contrast"] = () => new ContrastDialog(),
                 ["hue"] = () => new HueDialog(),
@@ -57,14 +58,18 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["selective_color"] = () => new SelectiveColorDialog(),
                 ["replace_color"] = () => new ReplaceColorDialog(),
                 ["grayscale"] = () => new GrayscaleDialog(),
+                ["posterize"] = () => new PosterizeDialog(),
                 ["sepia"] = () => new SepiaDialog(),
+                ["solarize"] = () => new SolarizeDialog(),
                 ["exposure"] = () => new ExposureDialog(),
                 ["levels"] = () => new LevelsDialog(),
                 ["shadows_highlights"] = () => new ShadowsHighlightsDialog(),
                 ["temperature_tint"] = () => new TemperatureTintDialog(),
+                ["threshold"] = () => new ThresholdDialog(),
                 ["vibrance"] = () => new VibranceDialog(),
 
                 // --- Filters ---
+                ["add_noise"] = () => new AddNoiseDialog(),
                 ["border"] = () => new BorderDialog(),
                 ["outline"] = () => new OutlineDialog(),
                 ["shadow"] = () => new ShadowDialog(),

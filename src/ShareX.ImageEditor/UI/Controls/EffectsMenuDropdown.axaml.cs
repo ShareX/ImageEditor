@@ -63,18 +63,27 @@ namespace ShareX.ImageEditor.Controls
 
         // --- Adjustments (dialog effects → aggregate event) ---
 
+        private void OnAlphaClick(object? sender, RoutedEventArgs e) => RaiseDialog("alpha");
+        private void OnAutoContrastClick(object? sender, RoutedEventArgs e) => RaiseDialog("auto_contrast");
         private void OnBrightnessClick(object? sender, RoutedEventArgs e) => RaiseDialog("brightness");
         private void OnContrastClick(object? sender, RoutedEventArgs e) => RaiseDialog("contrast");
-        private void OnHueClick(object? sender, RoutedEventArgs e) => RaiseDialog("hue");
-        private void OnSaturationClick(object? sender, RoutedEventArgs e) => RaiseDialog("saturation");
+        private void OnExposureClick(object? sender, RoutedEventArgs e) => RaiseDialog("exposure");
         private void OnGammaClick(object? sender, RoutedEventArgs e) => RaiseDialog("gamma");
-        private void OnAlphaClick(object? sender, RoutedEventArgs e) => RaiseDialog("alpha");
+        private void OnGrayscaleClick(object? sender, RoutedEventArgs e) => RaiseDialog("grayscale");
+        private void OnHueClick(object? sender, RoutedEventArgs e) => RaiseDialog("hue");
+        private void OnLevelsClick(object? sender, RoutedEventArgs e) => RaiseDialog("levels");
+        private void OnPosterizeClick(object? sender, RoutedEventArgs e) => RaiseDialog("posterize");
+        private void OnReplaceColorClick(object? sender, RoutedEventArgs e) => RaiseDialog("replace_color");
+        private void OnSaturationClick(object? sender, RoutedEventArgs e) => RaiseDialog("saturation");
+        private void OnSelectiveColorClick(object? sender, RoutedEventArgs e) => RaiseDialog("selective_color");
+        private void OnSepiaClick(object? sender, RoutedEventArgs e) => RaiseDialog("sepia");
+        private void OnShadowsHighlightsClick(object? sender, RoutedEventArgs e) => RaiseDialog("shadows_highlights");
+        private void OnSolarizeClick(object? sender, RoutedEventArgs e) => RaiseDialog("solarize");
+        private void OnTemperatureTintClick(object? sender, RoutedEventArgs e) => RaiseDialog("temperature_tint");
+        private void OnThresholdClick(object? sender, RoutedEventArgs e) => RaiseDialog("threshold");
+        private void OnVibranceClick(object? sender, RoutedEventArgs e) => RaiseDialog("vibrance");
         private void OnColorMatrixClick(object? sender, RoutedEventArgs e) => RaiseDialog("color_matrix");
         private void OnColorizeClick(object? sender, RoutedEventArgs e) => RaiseDialog("colorize");
-        private void OnSelectiveColorClick(object? sender, RoutedEventArgs e) => RaiseDialog("selective_color");
-        private void OnReplaceColorClick(object? sender, RoutedEventArgs e) => RaiseDialog("replace_color");
-        private void OnGrayscaleClick(object? sender, RoutedEventArgs e) => RaiseDialog("grayscale");
-        private void OnSepiaClick(object? sender, RoutedEventArgs e) => RaiseDialog("sepia");
 
         // --- Immediate adjustments (no dialog) ---
 
@@ -110,6 +119,7 @@ namespace ShareX.ImageEditor.Controls
 
         // --- Filters (dialog effects → aggregate event) ---
 
+        private void OnAddNoiseClick(object? sender, RoutedEventArgs e) => RaiseDialog("add_noise");
         private void OnBorderClick(object? sender, RoutedEventArgs e) => RaiseDialog("border");
         private void OnOutlineClick(object? sender, RoutedEventArgs e) => RaiseDialog("outline");
         private void OnShadowClick(object? sender, RoutedEventArgs e) => RaiseDialog("shadow");
@@ -136,11 +146,5 @@ namespace ShareX.ImageEditor.Controls
         private void OnPixelateClick(object? sender, RoutedEventArgs e) => RaiseDialog("pixelate");
         private void OnSharpenClick(object? sender, RoutedEventArgs e) => RaiseDialog("sharpen");
         private void OnWaveEdgeClick(object? sender, RoutedEventArgs e) => RaiseDialog("wave_edge");
-
-        private void OnExposureClick(object? sender, RoutedEventArgs e) => RaiseDialog("exposure");
-        private void OnLevelsClick(object? sender, RoutedEventArgs e) => RaiseDialog("levels");
-        private void OnShadowsHighlightsClick(object? sender, RoutedEventArgs e) => RaiseDialog("shadows_highlights");
-        private void OnTemperatureTintClick(object? sender, RoutedEventArgs e) => RaiseDialog("temperature_tint");
-        private void OnVibranceClick(object? sender, RoutedEventArgs e) => RaiseDialog("vibrance");
     }
 }

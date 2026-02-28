@@ -34,13 +34,17 @@ public static class ImageEffectRegistry
             
             // Adjustments
             new BrightnessImageEffect(),
+            new AutoContrastImageEffect(),
             new ContrastImageEffect(),
             new ExposureImageEffect(),
             new HueImageEffect(),
             new LevelsImageEffect(),
+            new PosterizeImageEffect(),
             new SaturationImageEffect(),
+            new SolarizeImageEffect(),
             new ShadowsHighlightsImageEffect(),
             new TemperatureTintImageEffect(),
+            new ThresholdImageEffect(),
             new GammaImageEffect(),
             new AlphaImageEffect(),
             new ColorMatrixImageEffect(),
@@ -50,6 +54,7 @@ public static class ImageEffectRegistry
             new VibranceImageEffect(),
             
             // Filters
+            new AddNoiseImageEffect(),
             new ColorDepthImageEffect(),
             new ConvolutionMatrixImageEffect(),
             new EdgeDetectImageEffect(),

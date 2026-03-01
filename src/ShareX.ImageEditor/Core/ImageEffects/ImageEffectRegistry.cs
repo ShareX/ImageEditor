@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.ImageEffects.Adjustments;
+using ShareX.ImageEditor.ImageEffects.Drawings;
 using ShareX.ImageEditor.ImageEffects.Filters;
 using ShareX.ImageEditor.ImageEffects.Manipulations;
 
@@ -79,7 +80,15 @@ public static class ImageEffectRegistry
             new GrayscaleImageEffect(),
             new BlackAndWhiteImageEffect(),
             new SepiaImageEffect(),
-            new PolaroidImageEffect()
+            new PolaroidImageEffect(),
+
+            // Drawings
+            new DrawBackgroundEffect(),
+            new DrawBackgroundImageEffect(),
+            new DrawCheckerboardEffect(),
+            new DrawImageEffect(),
+            new DrawParticlesEffect(),
+            new DrawTextEffect()
         };
 
         Effects = effects.AsReadOnly();

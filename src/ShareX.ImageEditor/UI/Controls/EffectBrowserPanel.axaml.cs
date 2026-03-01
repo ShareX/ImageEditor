@@ -242,7 +242,13 @@ namespace ShareX.ImageEditor.Controls
             Categories.Add(fil);
 
             var drawings = new EffectCategory("Drawings");
+            drawings.AddEffect("Background...", "\uf302", "Fills transparent regions using a solid color or gradient background.", () => RaiseDialog("draw_background"));
+            drawings.AddEffect("Background image...", "\uf03e", "Draws an image behind the current canvas.", () => RaiseDialog("draw_background_image"));
+            drawings.AddEffect("Checkerboard...", "\uf0db", "Draws a checkerboard background behind the image.", () => RaiseDialog("draw_checkerboard"));
             drawings.AddEffect("Border...", "\uf565", "Adds a border to the image.", () => RaiseDialog("border"));
+            drawings.AddEffect("Image...", "\uf1c5", "Draws an image overlay with placement, sizing and opacity controls.", () => RaiseDialog("draw_image"));
+            drawings.AddEffect("Particles...", "\uf06d", "Draws random particles from an image folder.", () => RaiseDialog("draw_particles"));
+            drawings.AddEffect("Text...", "\uf031", "Draws stylized text with gradient, outline and shadow options.", () => RaiseDialog("draw_text"));
             Categories.Add(drawings);
         }
     }

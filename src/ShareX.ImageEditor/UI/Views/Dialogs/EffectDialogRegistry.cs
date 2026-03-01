@@ -89,6 +89,14 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["unsharp_mask"] = () => new UnsharpMaskDialog(),
                 ["vignette"] = () => new VignetteDialog(),
 
+                // --- Drawings ---
+                ["draw_background"] = () => new DrawBackgroundDialog(),
+                ["draw_background_image"] = () => new DrawBackgroundImageDialog(),
+                ["draw_checkerboard"] = () => new DrawCheckerboardDialog(),
+                ["draw_image"] = () => new DrawImageDialog(),
+                ["draw_particles"] = () => new DrawParticlesDialog(),
+                ["draw_text"] = () => new DrawTextDialog(),
+
                 // --- Transforms ---
                 ["rounded_corners"] = () => new RoundedCornersDialog(),
                 ["skew"] = () => new SkewDialog(),

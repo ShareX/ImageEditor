@@ -31,11 +31,19 @@ namespace ShareX.ImageEditor.Controls
             Name = name;
         }
 
+        public string HeaderText => $"{Name} ({AllEffects.Count})";
+
+        partial void OnNameChanged(string value)
+        {
+            OnPropertyChanged(nameof(HeaderText));
+        }
+
         public void AddEffect(string name, string icon, string description, Action execute)
         {
             var effect = new EffectItem(name, icon, description, execute);
             InsertSorted(AllEffects, effect);
             InsertSorted(VisibleEffects, effect);
+            OnPropertyChanged(nameof(HeaderText));
         }
 
         private static void InsertSorted(ObservableCollection<EffectItem> target, EffectItem effect)

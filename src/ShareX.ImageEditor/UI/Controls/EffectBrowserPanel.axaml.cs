@@ -34,8 +34,20 @@ namespace ShareX.ImageEditor.Controls
         public void AddEffect(string name, string icon, string description, Action execute)
         {
             var effect = new EffectItem(name, icon, description, execute);
-            AllEffects.Add(effect);
-            VisibleEffects.Add(effect);
+            InsertSorted(AllEffects, effect);
+            InsertSorted(VisibleEffects, effect);
+        }
+
+        private static void InsertSorted(ObservableCollection<EffectItem> target, EffectItem effect)
+        {
+            int index = 0;
+            while (index < target.Count &&
+                   string.Compare(target[index].Name, effect.Name, StringComparison.OrdinalIgnoreCase) <= 0)
+            {
+                index++;
+            }
+
+            target.Insert(index, effect);
         }
 
         public void Filter(string searchText)
@@ -163,81 +175,81 @@ namespace ShareX.ImageEditor.Controls
         private void InitializeEffects()
         {
             var manip = new EffectCategory("Manipulations");
-            manip.AddEffect("3D Box / Extrude...", "\uf1b3", "Applies a 3D box or extrude effect.", () => RaiseDialog("rotate_3d_box"));
+            manip.AddEffect("3D Box / Extrude...", "\uf1b2", "Applies a 3D box or extrude effect.", () => RaiseDialog("rotate_3d_box"));
             manip.AddEffect("Auto crop image", "\uf0d0", "Automatically crops the image by finding its edges.", () => Raise(AutoCropImageRequested));
-            manip.AddEffect("Crop image...", "\uf565", "Crops the image.", () => Raise(CropImageRequested));
-            manip.AddEffect("Displacement map...", "\uf0c2", "Applies a displacement map.", () => RaiseDialog("displacement_map"));
-            manip.AddEffect("Flip...", "\uf00a", "Flip the image.", () => RaiseDialog("flip"));
+            manip.AddEffect("Crop image...", "\uf125", "Crops the image.", () => Raise(CropImageRequested));
+            manip.AddEffect("Displacement map...", "\uf03e", "Applies a displacement map.", () => RaiseDialog("displacement_map"));
+            manip.AddEffect("Flip...", "\uf021", "Flip the image.", () => RaiseDialog("flip"));
             manip.AddEffect("Flip horizontal", "\uf337", "Flips the image horizontally.", () => Raise(FlipHorizontalRequested));
             manip.AddEffect("Flip vertical", "\uf338", "Flips the image vertically.", () => Raise(FlipVerticalRequested));
-            manip.AddEffect("Perspective warp...", "\uf53f", "Warps the image perspective.", () => RaiseDialog("perspective_warp"));
-            manip.AddEffect("Pinch / bulge...", "\uf1fb", "Applies a pinch or bulge effect.", () => RaiseDialog("pinch_bulge"));
-            manip.AddEffect("Resize canvas...", "\uf853", "Resizes the canvas.", () => Raise(ResizeCanvasRequested));
-            manip.AddEffect("Resize image...", "\uf31e", "Resizes the image.", () => Raise(ResizeImageRequested));
+            manip.AddEffect("Perspective warp...", "\uf061", "Warps the image perspective.", () => RaiseDialog("perspective_warp"));
+            manip.AddEffect("Pinch / bulge...", "\uf00e", "Applies a pinch or bulge effect.", () => RaiseDialog("pinch_bulge"));
+            manip.AddEffect("Resize canvas...", "\uf0c8", "Resizes the canvas.", () => Raise(ResizeCanvasRequested));
+            manip.AddEffect("Resize image...", "\uf03e", "Resizes the image.", () => Raise(ResizeImageRequested));
             manip.AddEffect("Rotate...", "\uf1de", "Rotates the image by a custom angle.", () => Raise(RotateCustomAngleRequested));
             manip.AddEffect("Rotate 180°", "\uf021", "Rotates the image by 180 degrees.", () => Raise(Rotate180Requested));
             manip.AddEffect("Rotate 3D...", "\uf1b2", "Rotates the image in 3D space.", () => RaiseDialog("rotate_3d"));
             manip.AddEffect("Rotate 90° clockwise", "\uf01e", "Rotates the image 90 degrees clockwise.", () => Raise(Rotate90CWRequested));
             manip.AddEffect("Rotate 90° counter clockwise", "\uf0e2", "Rotates the image 90 degrees counter-clockwise.", () => Raise(Rotate90CCWRequested));
-            manip.AddEffect("Rounded Corners...", "\uf042", "Rounds the corners of the image.", () => RaiseDialog("rounded_corners"));
-            manip.AddEffect("Scale...", "\uf185", "Scales the image.", () => RaiseDialog("scale"));
-            manip.AddEffect("Skew...", "\uf2ea", "Skews the image.", () => RaiseDialog("skew"));
-            manip.AddEffect("Twirl...", "\uf043", "Applies a twirl effect.", () => RaiseDialog("twirl"));
+            manip.AddEffect("Rounded Corners...", "\uf0c8", "Rounds the corners of the image.", () => RaiseDialog("rounded_corners"));
+            manip.AddEffect("Scale...", "\uf00e", "Scales the image.", () => RaiseDialog("scale"));
+            manip.AddEffect("Skew...", "\uf068", "Skews the image.", () => RaiseDialog("skew"));
+            manip.AddEffect("Twirl...", "\uf021", "Applies a twirl effect.", () => RaiseDialog("twirl"));
             Categories.Add(manip);
 
             var adj = new EffectCategory("Adjustments");
-            adj.AddEffect("Alpha...", "\uf1fb", "Adjusts the alpha transparency.", () => RaiseDialog("alpha"));
+            adj.AddEffect("Alpha...", "\uf042", "Adjusts the alpha transparency.", () => RaiseDialog("alpha"));
             adj.AddEffect("Auto contrast...", "\uf042", "Automatically adjusts the contrast.", () => RaiseDialog("auto_contrast"));
-            adj.AddEffect("Black & White", "\uf1b2", "Converts the image to black and white.", () => Raise(BlackAndWhiteRequested));
+            adj.AddEffect("Black & White", "\uf111", "Converts the image to black and white.", () => Raise(BlackAndWhiteRequested));
             adj.AddEffect("Brightness...", "\uf185", "Adjusts image brightness.", () => RaiseDialog("brightness"));
             adj.AddEffect("Color matrix...", "\uf00a", "Applies a color matrix transformation.", () => RaiseDialog("color_matrix"));
             adj.AddEffect("Colorize...", "\uf043", "Colorizes the image.", () => RaiseDialog("colorize"));
             adj.AddEffect("Contrast...", "\uf042", "Adjusts image contrast.", () => RaiseDialog("contrast"));
-            adj.AddEffect("Exposure...", "\uf01e", "Adjusts the exposure level.", () => RaiseDialog("exposure"));
-            adj.AddEffect("Gamma...", "\uf2ea", "Adjusts the gamma level.", () => RaiseDialog("gamma"));
-            adj.AddEffect("Grayscale...", "\uf0c2", "Converts the image to grayscale.", () => RaiseDialog("grayscale"));
-            adj.AddEffect("Hue...", "\uf53f", "Adjusts the hue of the image.", () => RaiseDialog("hue"));
+            adj.AddEffect("Exposure...", "\uf185", "Adjusts the exposure level.", () => RaiseDialog("exposure"));
+            adj.AddEffect("Gamma...", "\uf1de", "Adjusts the gamma level.", () => RaiseDialog("gamma"));
+            adj.AddEffect("Grayscale...", "\uf03e", "Converts the image to grayscale.", () => RaiseDialog("grayscale"));
+            adj.AddEffect("Hue...", "\uf043", "Adjusts the hue of the image.", () => RaiseDialog("hue"));
             adj.AddEffect("Invert", "\uf362", "Inverts image colors.", () => Raise(InvertRequested));
-            adj.AddEffect("Levels...", "\uf853", "Adjusts image color levels.", () => RaiseDialog("levels"));
+            adj.AddEffect("Levels...", "\uf1de", "Adjusts image color levels.", () => RaiseDialog("levels"));
             adj.AddEffect("Polaroid", "\uf03e", "Applies a Polaroid effect.", () => Raise(PolaroidRequested));
-            adj.AddEffect("Posterize...", "\uf00a", "Reduces the number of colors to create a poster-like effect.", () => RaiseDialog("posterize"));
-            adj.AddEffect("Replace Color...", "\uf021", "Replaces a specific color.", () => RaiseDialog("replace_color"));
+            adj.AddEffect("Posterize...", "\uf009", "Reduces the number of colors to create a poster-like effect.", () => RaiseDialog("posterize"));
+            adj.AddEffect("Replace Color...", "\uf1fb", "Replaces a specific color.", () => RaiseDialog("replace_color"));
             adj.AddEffect("Saturation...", "\uf591", "Adjusts the color saturation.", () => RaiseDialog("saturation"));
-            adj.AddEffect("Selective Color...", "\uf0d0", "Adjusts selective color channels.", () => RaiseDialog("selective_color"));
+            adj.AddEffect("Selective Color...", "\uf1de", "Adjusts selective color channels.", () => RaiseDialog("selective_color"));
             adj.AddEffect("Sepia...", "\uf0f4", "Applies a sepia tone effect.", () => RaiseDialog("sepia"));
-            adj.AddEffect("Shadows / Highlights...", "\uf338", "Adjusts shadows and highlights.", () => RaiseDialog("shadows_highlights"));
+            adj.AddEffect("Shadows / Highlights...", "\uf186", "Adjusts shadows and highlights.", () => RaiseDialog("shadows_highlights"));
             adj.AddEffect("Solarize...", "\uf185", "Applies a solarize effect.", () => RaiseDialog("solarize"));
-            adj.AddEffect("Temperature / Tint...", "\uf337", "Adjusts the color temperature and tint.", () => RaiseDialog("temperature_tint"));
-            adj.AddEffect("Threshold...", "\uf591", "Applies a contrast threshold.", () => RaiseDialog("threshold"));
-            adj.AddEffect("Vibrance...", "\uf043", "Adjusts the color vibrance.", () => RaiseDialog("vibrance"));
+            adj.AddEffect("Temperature / Tint...", "\uf1de", "Adjusts the color temperature and tint.", () => RaiseDialog("temperature_tint"));
+            adj.AddEffect("Threshold...", "\uf042", "Applies a contrast threshold.", () => RaiseDialog("threshold"));
+            adj.AddEffect("Vibrance...", "\uf0eb", "Adjusts the color vibrance.", () => RaiseDialog("vibrance"));
             Categories.Add(adj);
 
             var fil = new EffectCategory("Filters");
-            fil.AddEffect("Add noise...", "\uf0c2", "Adds noise to the image.", () => RaiseDialog("add_noise"));
-            fil.AddEffect("Blur...", "\uf0c2", "Applies a blur effect.", () => RaiseDialog("blur"));
-            fil.AddEffect("Color depth...", "\uf53f", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
-            fil.AddEffect("Convolution matrix...", "\uf1de", "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
-            fil.AddEffect("Edge detect", "\uf591", "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
-            fil.AddEffect("Emboss", "\uf1b2", "Applies an emboss effect.", () => Raise(EmbossRequested));
-            fil.AddEffect("Gaussian blur...", "\uf185", "Applies a Gaussian blur effect.", () => RaiseDialog("gaussian_blur"));
-            fil.AddEffect("Glow...", "\uf043", "Applies a glowing effect.", () => RaiseDialog("glow"));
-            fil.AddEffect("Mean removal", "\uf853", "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
-            fil.AddEffect("Median filter...", "\uf00a", "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
-            fil.AddEffect("Motion blur...", "\uf01e", "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));
-            fil.AddEffect("Oil paint...", "\uf53f", "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
-            fil.AddEffect("Outline...", "\uf042", "Applies an outline effect.", () => RaiseDialog("outline"));
+            fil.AddEffect("Add noise...", "\uf111", "Adds noise to the image.", () => RaiseDialog("add_noise"));
+            fil.AddEffect("Blur...", "\uf1fc", "Applies a blur effect.", () => RaiseDialog("blur"));
+            fil.AddEffect("Color depth...", "\uf009", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
+            fil.AddEffect("Convolution matrix...", "\uf00a", "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
+            fil.AddEffect("Edge detect", "\uf061", "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
+            fil.AddEffect("Emboss", "\uf0c8", "Applies an emboss effect.", () => Raise(EmbossRequested));
+            fil.AddEffect("Gaussian blur...", "\uf1fc", "Applies a Gaussian blur effect.", () => RaiseDialog("gaussian_blur"));
+            fil.AddEffect("Glow...", "\uf0eb", "Applies a glowing effect.", () => RaiseDialog("glow"));
+            fil.AddEffect("Mean removal", "\uf1de", "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
+            fil.AddEffect("Median filter...", "\uf1de", "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
+            fil.AddEffect("Motion blur...", "\uf068", "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));
+            fil.AddEffect("Oil paint...", "\uf304", "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
+            fil.AddEffect("Outline...", "\uf0c8", "Applies an outline effect.", () => RaiseDialog("outline"));
             fil.AddEffect("Pixelate...", "\uf1b3", "Pixelates the image.", () => RaiseDialog("pixelate"));
             fil.AddEffect("Reflection...", "\uf338", "Adds a reflection to the bottom of the image.", () => RaiseDialog("reflection"));
             fil.AddEffect("RGB split...", "\uf03e", "Splits the red, green, and blue color channels.", () => RaiseDialog("rgb_split"));
-            fil.AddEffect("Shadow...", "\uf1fb", "Adds a drop shadow to the image.", () => RaiseDialog("shadow"));
-            fil.AddEffect("Sharpen...", "\uf0d0", "Sharpens the image.", () => RaiseDialog("sharpen"));
-            fil.AddEffect("Slice...", "\uf337", "Slices the image.", () => RaiseDialog("slice"));
-            fil.AddEffect("Sobel edge...", "\uf591", "Applies a Sobel edge detection filter.", () => RaiseDialog("sobel_edge"));
-            fil.AddEffect("Smooth", "\uf0f4", "Applies a smoothing effect.", () => Raise(SmoothRequested));
-            fil.AddEffect("Torn edge...", "\uf021", "Adds a torn edge border effect.", () => RaiseDialog("torn_edge"));
-            fil.AddEffect("Unsharp mask...", "\uf0d0", "Applies an unsharp mask filter.", () => RaiseDialog("unsharp_mask"));
-            fil.AddEffect("Vignette...", "\uf1fb", "Applies a vignette effect.", () => RaiseDialog("vignette"));
-            fil.AddEffect("Wave edge...", "\uf2ea", "Adds a wavy edge to the image.", () => RaiseDialog("wave_edge"));
+            fil.AddEffect("Shadow...", "\uf186", "Adds a drop shadow to the image.", () => RaiseDialog("shadow"));
+            fil.AddEffect("Sharpen...", "\uf0eb", "Sharpens the image.", () => RaiseDialog("sharpen"));
+            fil.AddEffect("Slice...", "\uf0c4", "Slices the image.", () => RaiseDialog("slice"));
+            fil.AddEffect("Sobel edge...", "\uf061", "Applies a Sobel edge detection filter.", () => RaiseDialog("sobel_edge"));
+            fil.AddEffect("Smooth", "\uf1fc", "Applies a smoothing effect.", () => Raise(SmoothRequested));
+            fil.AddEffect("Torn edge...", "\uf12d", "Adds a torn edge border effect.", () => RaiseDialog("torn_edge"));
+            fil.AddEffect("Unsharp mask...", "\uf0eb", "Applies an unsharp mask filter.", () => RaiseDialog("unsharp_mask"));
+            fil.AddEffect("Vignette...", "\uf111", "Applies a vignette effect.", () => RaiseDialog("vignette"));
+            fil.AddEffect("Wave edge...", "\uf068", "Adds a wavy edge to the image.", () => RaiseDialog("wave_edge"));
             Categories.Add(fil);
 
             var drawings = new EffectCategory("Drawings");

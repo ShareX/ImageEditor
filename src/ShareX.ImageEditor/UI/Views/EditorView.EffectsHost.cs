@@ -176,8 +176,8 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                 vm.InvertColorsCommand.Execute(null);
-                 vm.CloseEffectsPanelCommand.Execute(null);
+                vm.InvertColorsCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -185,8 +185,8 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                 vm.BlackAndWhiteCommand.Execute(null);
-                 vm.CloseEffectsPanelCommand.Execute(null);
+                vm.BlackAndWhiteCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -194,8 +194,8 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                 vm.PolaroidCommand.Execute(null);
-                 vm.CloseEffectsPanelCommand.Execute(null);
+                vm.PolaroidCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -203,8 +203,8 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                 vm.EdgeDetectCommand.Execute(null);
-                 vm.CloseEffectsPanelCommand.Execute(null);
+                vm.EdgeDetectCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -212,8 +212,8 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                 vm.EmbossCommand.Execute(null);
-                 vm.CloseEffectsPanelCommand.Execute(null);
+                vm.EmbossCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -221,8 +221,8 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                 vm.MeanRemovalCommand.Execute(null);
-                 vm.CloseEffectsPanelCommand.Execute(null);
+                vm.MeanRemovalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -230,8 +230,8 @@ namespace ShareX.ImageEditor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                 vm.SmoothCommand.Execute(null);
-                 vm.CloseEffectsPanelCommand.Execute(null);
+                vm.SmoothCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 

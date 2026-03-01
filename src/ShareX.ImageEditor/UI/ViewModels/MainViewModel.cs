@@ -508,7 +508,7 @@ namespace ShareX.ImageEditor.ViewModels
         private object? _effectsPanelContent;
 
         public bool IsEffectBrowserVisible => EffectsPanelContent == null && IsEffectsPanelOpen;
-        
+
         public bool IsRightEffectsSidebarVisible => EffectsPanelContent != null && IsEffectsPanelOpen;
 
         [RelayCommand]

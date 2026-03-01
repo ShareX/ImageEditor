@@ -3,7 +3,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.Controls
@@ -117,7 +116,7 @@ namespace ShareX.ImageEditor.Controls
         {
             AvaloniaXamlLoader.Load(this);
             InitializeEffects();
-            
+
             var categoriesControl = this.FindControl<ItemsControl>("CategoriesControl");
             if (categoriesControl != null)
             {

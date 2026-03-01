@@ -1,5 +1,3 @@
-using SkiaSharp;
-
 namespace ShareX.ImageEditor.ImageEffects.Drawings;
 
 public enum DrawingPlacement
@@ -49,35 +47,3 @@ public enum DrawingCompositingMode
     SourceOver,
     SourceCopy
 }
-
-public enum DrawingGradientMode
-{
-    Vertical,
-    Horizontal,
-    ForwardDiagonal,
-    BackwardDiagonal
-}
-
-public sealed class DrawingGradientStop
-{
-    private float _location;
-
-    public SKColor Color { get; set; } = SKColors.Black;
-
-    public float Location
-    {
-        get => _location;
-        set => _location = Math.Clamp(value, 0f, 100f);
-    }
-
-    public DrawingGradientStop()
-    {
-    }
-
-    public DrawingGradientStop(SKColor color, float location)
-    {
-        Color = color;
-        Location = location;
-    }
-}
-

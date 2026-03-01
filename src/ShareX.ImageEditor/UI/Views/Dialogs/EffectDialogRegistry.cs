@@ -82,10 +82,12 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["slice"] = () => new SliceDialog(),
                 ["color_depth"] = () => new ColorDepthDialog(),
                 ["convolution_matrix"] = () => new ConvolutionMatrixDialog(),
+                ["crt"] = () => new CRTDialog(),
                 ["gaussian_blur"] = () => new GaussianBlurDialog(),
                 ["median_filter"] = () => new MedianFilterDialog(),
                 ["motion_blur"] = () => new MotionBlurDialog(),
                 ["rgb_split"] = () => new RGBSplitDialog(),
+                ["stained_glass"] = () => new StainedGlassDialog(),
                 ["unsharp_mask"] = () => new UnsharpMaskDialog(),
                 ["vignette"] = () => new VignetteDialog(),
 

@@ -229,6 +229,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Blur...", "\uf1fc", "Applies a blur effect.", () => RaiseDialog("blur"));
             fil.AddEffect("Color depth...", "\uf009", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
             fil.AddEffect("Convolution matrix...", "\uf00a", "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
+            fil.AddEffect("CRT...", "\uf26c", "Applies a retro CRT monitor effect.", () => RaiseDialog("crt"));
             fil.AddEffect("Edge detect", "\uf061", "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
             fil.AddEffect("Emboss", "\uf0c8", "Applies an emboss effect.", () => Raise(EmbossRequested));
             fil.AddEffect("Gaussian blur...", "\uf1fc", "Applies a Gaussian blur effect.", () => RaiseDialog("gaussian_blur"));
@@ -246,6 +247,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Slice...", "\uf0c4", "Slices the image.", () => RaiseDialog("slice"));
             fil.AddEffect("Sobel edge...", "\uf061", "Applies a Sobel edge detection filter.", () => RaiseDialog("sobel_edge"));
             fil.AddEffect("Smooth", "\uf1fc", "Applies a smoothing effect.", () => Raise(SmoothRequested));
+            fil.AddEffect("Stained glass...", "\uf0db", "Turns the image into stained glass-style tiles.", () => RaiseDialog("stained_glass"));
             fil.AddEffect("Torn edge...", "\uf12d", "Adds a torn edge border effect.", () => RaiseDialog("torn_edge"));
             fil.AddEffect("Unsharp mask...", "\uf0eb", "Applies an unsharp mask filter.", () => RaiseDialog("unsharp_mask"));
             fil.AddEffect("Vignette...", "\uf111", "Applies a vignette effect.", () => RaiseDialog("vignette"));

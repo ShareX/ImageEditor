@@ -93,6 +93,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["crystal_prism"] = () => new CrystalPrismDialog(),
                 ["hologram_scan"] = () => new HologramScanDialog(),
                 ["liquid_glass"] = () => new LiquidGlassDialog(),
+                ["neon_edge_glow"] = () => new NeonEdgeGlowDialog(),
                 ["rainy_window"] = () => new RainyWindowDialog(),
                 ["stained_glass"] = () => new StainedGlassDialog(),
                 ["unsharp_mask"] = () => new UnsharpMaskDialog(),

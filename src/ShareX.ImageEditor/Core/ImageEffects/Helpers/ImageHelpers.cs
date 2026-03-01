@@ -344,6 +344,26 @@ public static class ImageHelpers
         }.Apply(source);
     }
 
+    public static SKBitmap ApplyNeonEdgeGlow(
+        SKBitmap source,
+        float edgeStrength,
+        int threshold,
+        float glowRadius,
+        float glowIntensity,
+        float baseDim,
+        SKColor neonColor)
+    {
+        return new NeonEdgeGlowImageEffect
+        {
+            EdgeStrength = edgeStrength,
+            Threshold = threshold,
+            GlowRadius = glowRadius,
+            GlowIntensity = glowIntensity,
+            BaseDim = baseDim,
+            NeonColor = neonColor
+        }.Apply(source);
+    }
+
     public static SKBitmap ApplyReflection(SKBitmap source, int percentage, int maxAlpha, int minAlpha, int offset, bool skew, int skewSize)
     {
         return new ReflectionImageEffect(percentage, maxAlpha, minAlpha, offset, skew, skewSize).Apply(source);

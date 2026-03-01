@@ -310,6 +310,40 @@ public static class ImageHelpers
         return new GlowImageEffect(size, strength, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
+    public static SKBitmap ApplyBloom(SKBitmap source, float threshold, float softKnee, float radius, float intensity)
+    {
+        return new BloomImageEffect
+        {
+            Threshold = threshold,
+            SoftKnee = softKnee,
+            Radius = radius,
+            Intensity = intensity
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyHalation(SKBitmap source, float threshold, float radius, float strength, float warmth)
+    {
+        return new HalationImageEffect
+        {
+            Threshold = threshold,
+            Radius = radius,
+            Strength = strength,
+            Warmth = warmth
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyLiquidGlass(SKBitmap source, float distortion, float refraction, int chromaShift, float gloss, float flowScale)
+    {
+        return new LiquidGlassImageEffect
+        {
+            Distortion = distortion,
+            Refraction = refraction,
+            ChromaShift = chromaShift,
+            Gloss = gloss,
+            FlowScale = flowScale
+        }.Apply(source);
+    }
+
     public static SKBitmap ApplyReflection(SKBitmap source, int percentage, int maxAlpha, int minAlpha, int offset, bool skew, int skewSize)
     {
         return new ReflectionImageEffect(percentage, maxAlpha, minAlpha, offset, skew, skewSize).Apply(source);

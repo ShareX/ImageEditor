@@ -235,6 +235,7 @@ namespace ShareX.ImageEditor.Controls
 
             var fil = new EffectCategory("Filters");
             fil.AddEffect("Add noise...", "\uf111", "Adds noise to the image.", () => RaiseDialog("add_noise"));
+            fil.AddEffect("Bloom...", "\uf06e", "Creates a soft glow around bright regions.", () => RaiseDialog("bloom"));
             fil.AddEffect("Blur...", "\uf1fc", "Applies a blur effect.", () => RaiseDialog("blur"));
             fil.AddEffect("Color depth...", "\uf009", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
             fil.AddEffect("Convolution matrix...", "\uf00a", "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
@@ -244,7 +245,9 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Emboss", "\uf0c8", "Applies an emboss effect.", () => Raise(EmbossRequested));
             fil.AddEffect("Gaussian blur...", "\uf1fc", "Applies a Gaussian blur effect.", () => RaiseDialog("gaussian_blur"));
             fil.AddEffect("Glow...", "\uf0eb", "Applies a glowing effect.", () => RaiseDialog("glow"));
+            fil.AddEffect("Halation...", "\uf185", "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
             fil.AddEffect("Hologram scan...", "\uf233", "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
+            fil.AddEffect("Liquid glass...", "\uf043", "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
             fil.AddEffect("Mean removal", "\uf1de", "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
             fil.AddEffect("Median filter...", "\uf1de", "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
             fil.AddEffect("Motion blur...", "\uf068", "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));

@@ -216,7 +216,6 @@ namespace ShareX.ImageEditor.Controls
             var fil = new EffectCategory("Filters");
             fil.AddEffect("Add noise...", "\uf0c2", "Adds noise to the image.", () => RaiseDialog("add_noise"));
             fil.AddEffect("Blur...", "\uf0c2", "Applies a blur effect.", () => RaiseDialog("blur"));
-            fil.AddEffect("Border...", "\uf565", "Adds a border to the image.", () => RaiseDialog("border"));
             fil.AddEffect("Color depth...", "\uf53f", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
             fil.AddEffect("Convolution matrix...", "\uf1de", "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
             fil.AddEffect("Edge detect", "\uf591", "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
@@ -241,6 +240,10 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Vignette...", "\uf1fb", "Applies a vignette effect.", () => RaiseDialog("vignette"));
             fil.AddEffect("Wave edge...", "\uf2ea", "Adds a wavy edge to the image.", () => RaiseDialog("wave_edge"));
             Categories.Add(fil);
+
+            var drawings = new EffectCategory("Drawings");
+            drawings.AddEffect("Border...", "\uf565", "Adds a border to the image.", () => RaiseDialog("border"));
+            Categories.Add(drawings);
         }
     }
 }

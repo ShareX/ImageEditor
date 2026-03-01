@@ -11,7 +11,7 @@ public class BorderImageEffect : ImageEffect
     public SKColor Color { get; set; }
 
     public override string Name => "Border";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
 
     public BorderImageEffect(ImageHelpers.BorderType type, int size, ImageHelpers.DashStyle dashStyle, SKColor color)
     {

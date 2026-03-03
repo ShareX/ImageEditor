@@ -512,8 +512,10 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("ASCII art...", "\uf031", "Converts luminance to configurable ASCII glyph shading.", () => RaiseDialog("ascii_art"));
             fil.AddEffect("Block glitch / databending...", "\uf1c9", "Displaces rectangular chunks and misaligns color channels like corrupted files.", () => RaiseDialog("block_glitch"));
             fil.AddEffect("Bloom...", "\uf06e", "Creates a soft glow around bright regions.", () => RaiseDialog("bloom"));
+            fil.AddEffect("Blueprint drawing...", "\uf1fc", "Converts image structure into cyan technical lines over blueprint paper.", () => RaiseDialog("blueprint_drawing"), "blueprint_drawing");
             fil.AddEffect("Blur...", "\uf1fc", "Applies a blur effect.", () => RaiseDialog("blur"));
             fil.AddEffect("Cartoon sticker cutout...", "\uf249", "Posterizes colors, inks edges and adds a white sticker-like border glow.", () => RaiseDialog("cartoon_sticker_cutout"), "cartoon_sticker_cutout");
+            fil.AddEffect("Claymation texture...", "\uf1b2", "Builds chunky plasticine-like color lumps with tactile relief grain.", () => RaiseDialog("claymation_texture"), "claymation_texture");
             fil.AddEffect("Color depth...", "\uf009", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
             fil.AddEffect("Convolution matrix...", "\uf00a", "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
             fil.AddEffect("CRT...", "\uf26c", "Applies a retro CRT monitor effect.", () => RaiseDialog("crt"));
@@ -530,6 +532,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Halation...", "\uf185", "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
             fil.AddEffect("Hologram scan...", "\uf233", "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
             fil.AddEffect("Holographic foil shimmer...", "\uf06e", "Adds iridescent foil rainbow shimmer with specular sparkle.", () => RaiseDialog("holographic_foil_shimmer"), "holographic_foil_shimmer");
+            fil.AddEffect("Ink splatter + drips...", "\uf5aa", "Adds expressive ink blotches with gravity drips and paper stain fade.", () => RaiseDialog("ink_splatter_drips"), "ink_splatter_drips");
             fil.AddEffect("Lens blur (bokeh)...", "\uf06e", "Simulates circular aperture blur with weighted highlight bloom.", () => RaiseDialog("lens_blur"), "lens_blur");
             fil.AddEffect("Liquid glass...", "\uf043", "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
             fil.AddEffect("Matrix digital rain...", "\uf233", "Rebuilds the image with glowing falling terminal glyphs.", () => RaiseDialog("matrix_digital_rain"));
@@ -539,12 +542,14 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Motion blur...", "\uf068", "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));
             fil.AddEffect("Spin blur...", "\uf021", "Blurs pixels along an arc around a custom center point.", () => RaiseDialog("spin_blur"), "spin_blur");
             fil.AddEffect("Neon edge glow...", "\uf0e7", "Detects edges and renders a neon glow around them.", () => RaiseDialog("neon_edge_glow"));
+            fil.AddEffect("Old camera flash burn...", "\uf0e7", "Simulates overexposed flash, warm frame burn and analog grain.", () => RaiseDialog("old_camera_flash_burn"), "old_camera_flash_burn");
             fil.AddEffect("Oil paint...", "\uf304", "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
             fil.AddEffect("Outline...", "\uf0c8", "Applies an outline effect.", () => RaiseDialog("outline"));
             fil.AddEffect("Pencil sketch...", "\uf040", "Simulates graphite sketch using dodge-blur and edge darkening.", () => RaiseDialog("pencil_sketch"));
             fil.AddEffect("Pixel sorting...", "\uf0dc", "Sorts horizontal or vertical pixel spans by brightness or hue for glitch cascades.", () => RaiseDialog("pixel_sorting"));
             fil.AddEffect("Pixelate...", "\uf1b3", "Pixelates the image.", () => RaiseDialog("pixelate"));
             fil.AddEffect("Pointillism...", "\uf111", "Re-renders the image as overlapping colored dots.", () => RaiseDialog("pointillism"));
+            fil.AddEffect("Rain reflection puddles...", "\uf73d", "Mirrors skyline into rippled ground puddles with wet surface sheen.", () => RaiseDialog("rain_reflection_puddles"), "rain_reflection_puddles");
             fil.AddEffect("Rainy window...", "\uf73d", "Simulates water streaks, droplets and foggy glass.", () => RaiseDialog("rainy_window"));
             fil.AddEffect("Reflection...", "\uf338", "Adds a reflection to the bottom of the image.", () => RaiseDialog("reflection"));
             fil.AddEffect("RGB split...", "\uf03e", "Splits the red, green, and blue color channels.", () => RaiseDialog("rgb_split"));
@@ -552,6 +557,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Sharpen...", "\uf0eb", "Sharpens the image.", () => RaiseDialog("sharpen"));
             fil.AddEffect("Slice...", "\uf0c4", "Slices the image.", () => RaiseDialog("slice"));
             fil.AddEffect("Sobel edge...", "\uf061", "Applies a Sobel edge detection filter.", () => RaiseDialog("sobel_edge"));
+            fil.AddEffect("Snowfall + depth fog...", "\uf2dc", "Overlays procedural snowfall layers with atmospheric distance fog.", () => RaiseDialog("snowfall_depth_fog"), "snowfall_depth_fog");
             fil.AddEffect("Smooth", "\uf1fc", "Applies a smoothing effect.", () => Raise(SmoothRequested));
             fil.AddEffect("Stained glass...", "\uf0db", "Turns the image into stained glass-style tiles.", () => RaiseDialog("stained_glass"));
             fil.AddEffect("Surface blur...", "\uf1fc", "Softens regions while preserving stronger local edges.", () => RaiseDialog("surface_blur"), "surface_blur");

@@ -277,13 +277,6 @@ namespace ShareX.ImageEditor.Views
             vm.IsEffectsPanelOpen = true;
         }
 
-        /// <summary>
-        /// Convenience overload that accepts a strongly-typed combined dialog/control.
-        /// Kept for any internal call sites that construct dialogs directly.
-        /// </summary>
-        private void ShowEffectDialog<T>(T dialog) where T : UserControl, IEffectDialog
-            => ShowEffectDialog(dialog, dialog);
-
         private void OnModalBackgroundPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
             // Only close if clicking on the background, not the dialog content

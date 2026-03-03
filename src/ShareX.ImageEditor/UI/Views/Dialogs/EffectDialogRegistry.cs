@@ -68,15 +68,19 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["temperature_tint"] = () => new TemperatureTintDialog(),
                 ["threshold"] = () => new ThresholdDialog(),
                 ["vibrance"] = () => new VibranceDialog(),
+                ["duotone_gradient_map"] = () => new DuotoneGradientMapDialog(),
 
                 // --- Filters ---
                 ["add_noise"] = () => new AddNoiseDialog(),
+                ["ascii_art"] = () => new ASCIIArtDialog(),
                 ["border"] = () => new BorderDialog(),
                 ["outline"] = () => new OutlineDialog(),
                 ["shadow"] = () => new ShadowDialog(),
                 ["glow"] = () => new GlowDialog(),
                 ["reflection"] = () => new ReflectionDialog(),
+                ["crosshatch"] = () => new CrosshatchDialog(),
                 ["oil_paint"] = () => new OilPaintDialog(),
+                ["halftone"] = () => new HalftoneDialog(),
                 ["sobel_edge"] = () => new SobelEdgeDialog(),
                 ["torn_edge"] = () => new TornEdgeDialog(),
                 ["wave_edge"] = () => new WaveEdgeDialog(),
@@ -99,6 +103,12 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["unsharp_mask"] = () => new UnsharpMaskDialog(),
                 ["vintage_print_damage"] = () => new VintagePrintDamageDialog(),
                 ["vignette"] = () => new VignetteDialog(),
+                ["mosaic_polygon"] = () => new MosaicPolygonDialog(),
+                ["pencil_sketch"] = () => new PencilSketchDialog(),
+                ["pointillism"] = () => new PointillismDialog(),
+                ["thermal_vision"] = () => new ThermalVisionDialog(),
+                ["tilt_shift"] = () => new TiltShiftDialog(),
+                ["watercolor_kuwahara"] = () => new WatercolorKuwaharaDialog(),
 
                 // --- Drawings ---
                 ["draw_background"] = () => new DrawBackgroundDialog(),

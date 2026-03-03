@@ -213,6 +213,7 @@ namespace ShareX.ImageEditor.Controls
             adj.AddEffect("Color matrix...", "\uf00a", "Applies a color matrix transformation.", () => RaiseDialog("color_matrix"));
             adj.AddEffect("Colorize...", "\uf043", "Colorizes the image.", () => RaiseDialog("colorize"));
             adj.AddEffect("Contrast...", "\uf042", "Adjusts image contrast.", () => RaiseDialog("contrast"));
+            adj.AddEffect("Duotone / Gradient map...", "\uf5fd", "Maps grayscale tones to a custom multi-color gradient.", () => RaiseDialog("duotone_gradient_map"));
             adj.AddEffect("Exposure...", "\uf185", "Adjusts the exposure level.", () => RaiseDialog("exposure"));
             adj.AddEffect("Film emulation...", "\uf008", "Applies cinematic analog film looks with grain and fade.", () => RaiseDialog("film_emulation"));
             adj.AddEffect("Gamma...", "\uf1de", "Adjusts the gamma level.", () => RaiseDialog("gamma"));
@@ -235,26 +236,32 @@ namespace ShareX.ImageEditor.Controls
 
             var fil = new EffectCategory("Filters");
             fil.AddEffect("Add noise...", "\uf111", "Adds noise to the image.", () => RaiseDialog("add_noise"));
+            fil.AddEffect("ASCII art...", "\uf031", "Converts luminance to configurable ASCII glyph shading.", () => RaiseDialog("ascii_art"));
             fil.AddEffect("Bloom...", "\uf06e", "Creates a soft glow around bright regions.", () => RaiseDialog("bloom"));
             fil.AddEffect("Blur...", "\uf1fc", "Applies a blur effect.", () => RaiseDialog("blur"));
             fil.AddEffect("Color depth...", "\uf009", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
             fil.AddEffect("Convolution matrix...", "\uf00a", "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
             fil.AddEffect("CRT...", "\uf26c", "Applies a retro CRT monitor effect.", () => RaiseDialog("crt"));
             fil.AddEffect("Crystal prism...", "\uf5db", "Creates refracted crystal facets with RGB dispersion.", () => RaiseDialog("crystal_prism"));
+            fil.AddEffect("Crosshatch...", "\uf550", "Builds shading from layered hatch lines.", () => RaiseDialog("crosshatch"));
             fil.AddEffect("Edge detect", "\uf061", "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
             fil.AddEffect("Emboss", "\uf0c8", "Applies an emboss effect.", () => Raise(EmbossRequested));
             fil.AddEffect("Gaussian blur...", "\uf1fc", "Applies a Gaussian blur effect.", () => RaiseDialog("gaussian_blur"));
             fil.AddEffect("Glow...", "\uf0eb", "Applies a glowing effect.", () => RaiseDialog("glow"));
+            fil.AddEffect("Halftone...", "\uf111", "Creates a comic-style CMYK dot print pattern.", () => RaiseDialog("halftone"));
             fil.AddEffect("Halation...", "\uf185", "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
             fil.AddEffect("Hologram scan...", "\uf233", "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
             fil.AddEffect("Liquid glass...", "\uf043", "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
             fil.AddEffect("Mean removal", "\uf1de", "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
             fil.AddEffect("Median filter...", "\uf1de", "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
+            fil.AddEffect("Mosaic polygon...", "\uf5ee", "Pixelates with tessellated hexagon or triangle polygons.", () => RaiseDialog("mosaic_polygon"));
             fil.AddEffect("Motion blur...", "\uf068", "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));
             fil.AddEffect("Neon edge glow...", "\uf0e7", "Detects edges and renders a neon glow around them.", () => RaiseDialog("neon_edge_glow"));
             fil.AddEffect("Oil paint...", "\uf304", "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
             fil.AddEffect("Outline...", "\uf0c8", "Applies an outline effect.", () => RaiseDialog("outline"));
+            fil.AddEffect("Pencil sketch...", "\uf040", "Simulates graphite sketch using dodge-blur and edge darkening.", () => RaiseDialog("pencil_sketch"));
             fil.AddEffect("Pixelate...", "\uf1b3", "Pixelates the image.", () => RaiseDialog("pixelate"));
+            fil.AddEffect("Pointillism...", "\uf111", "Re-renders the image as overlapping colored dots.", () => RaiseDialog("pointillism"));
             fil.AddEffect("Rainy window...", "\uf73d", "Simulates water streaks, droplets and foggy glass.", () => RaiseDialog("rainy_window"));
             fil.AddEffect("Reflection...", "\uf338", "Adds a reflection to the bottom of the image.", () => RaiseDialog("reflection"));
             fil.AddEffect("RGB split...", "\uf03e", "Splits the red, green, and blue color channels.", () => RaiseDialog("rgb_split"));
@@ -264,10 +271,13 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Sobel edge...", "\uf061", "Applies a Sobel edge detection filter.", () => RaiseDialog("sobel_edge"));
             fil.AddEffect("Smooth", "\uf1fc", "Applies a smoothing effect.", () => Raise(SmoothRequested));
             fil.AddEffect("Stained glass...", "\uf0db", "Turns the image into stained glass-style tiles.", () => RaiseDialog("stained_glass"));
+            fil.AddEffect("Thermal vision...", "\uf06d", "Maps image intensity to an infrared heatmap gradient.", () => RaiseDialog("thermal_vision"));
+            fil.AddEffect("Tilt-shift (miniature)...", "\uf030", "Adds selective blur and saturation for toy-like miniature scenes.", () => RaiseDialog("tilt_shift"));
             fil.AddEffect("Torn edge...", "\uf12d", "Adds a torn edge border effect.", () => RaiseDialog("torn_edge"));
             fil.AddEffect("Unsharp mask...", "\uf0eb", "Applies an unsharp mask filter.", () => RaiseDialog("unsharp_mask"));
             fil.AddEffect("Vintage print damage...", "\uf56d", "Adds film grain, scratches, dust and faded paper burn.", () => RaiseDialog("vintage_print_damage"));
             fil.AddEffect("Vignette...", "\uf111", "Applies a vignette effect.", () => RaiseDialog("vignette"));
+            fil.AddEffect("Watercolor / Kuwahara...", "\uf53f", "Simplifies local color regions for watercolor-like strokes.", () => RaiseDialog("watercolor_kuwahara"));
             fil.AddEffect("Wave edge...", "\uf068", "Adds a wavy edge to the image.", () => RaiseDialog("wave_edge"));
             Categories.Add(fil);
 

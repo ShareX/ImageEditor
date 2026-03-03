@@ -237,6 +237,7 @@ namespace ShareX.ImageEditor.Controls
             var fil = new EffectCategory("Filters");
             fil.AddEffect("Add noise...", "\uf111", "Adds noise to the image.", () => RaiseDialog("add_noise"));
             fil.AddEffect("ASCII art...", "\uf031", "Converts luminance to configurable ASCII glyph shading.", () => RaiseDialog("ascii_art"));
+            fil.AddEffect("Block glitch / databending...", "\uf1c9", "Displaces rectangular chunks and misaligns color channels like corrupted files.", () => RaiseDialog("block_glitch"));
             fil.AddEffect("Bloom...", "\uf06e", "Creates a soft glow around bright regions.", () => RaiseDialog("bloom"));
             fil.AddEffect("Blur...", "\uf1fc", "Applies a blur effect.", () => RaiseDialog("blur"));
             fil.AddEffect("Color depth...", "\uf009", "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
@@ -244,6 +245,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("CRT...", "\uf26c", "Applies a retro CRT monitor effect.", () => RaiseDialog("crt"));
             fil.AddEffect("Crystal prism...", "\uf5db", "Creates refracted crystal facets with RGB dispersion.", () => RaiseDialog("crystal_prism"));
             fil.AddEffect("Crosshatch...", "\uf550", "Builds shading from layered hatch lines.", () => RaiseDialog("crosshatch"));
+            fil.AddEffect("Dithering...", "\uf00a", "Reduces palette with Floyd-Steinberg or Bayer dot diffusion.", () => RaiseDialog("dithering"));
             fil.AddEffect("Edge detect", "\uf061", "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
             fil.AddEffect("Emboss", "\uf0c8", "Applies an emboss effect.", () => Raise(EmbossRequested));
             fil.AddEffect("Gaussian blur...", "\uf1fc", "Applies a Gaussian blur effect.", () => RaiseDialog("gaussian_blur"));
@@ -252,6 +254,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Halation...", "\uf185", "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
             fil.AddEffect("Hologram scan...", "\uf233", "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
             fil.AddEffect("Liquid glass...", "\uf043", "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
+            fil.AddEffect("Matrix digital rain...", "\uf233", "Rebuilds the image with glowing falling terminal glyphs.", () => RaiseDialog("matrix_digital_rain"));
             fil.AddEffect("Mean removal", "\uf1de", "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
             fil.AddEffect("Median filter...", "\uf1de", "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
             fil.AddEffect("Mosaic polygon...", "\uf5ee", "Pixelates with tessellated hexagon or triangle polygons.", () => RaiseDialog("mosaic_polygon"));
@@ -260,6 +263,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Oil paint...", "\uf304", "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
             fil.AddEffect("Outline...", "\uf0c8", "Applies an outline effect.", () => RaiseDialog("outline"));
             fil.AddEffect("Pencil sketch...", "\uf040", "Simulates graphite sketch using dodge-blur and edge darkening.", () => RaiseDialog("pencil_sketch"));
+            fil.AddEffect("Pixel sorting...", "\uf0dc", "Sorts horizontal or vertical pixel spans by brightness or hue for glitch cascades.", () => RaiseDialog("pixel_sorting"));
             fil.AddEffect("Pixelate...", "\uf1b3", "Pixelates the image.", () => RaiseDialog("pixelate"));
             fil.AddEffect("Pointillism...", "\uf111", "Re-renders the image as overlapping colored dots.", () => RaiseDialog("pointillism"));
             fil.AddEffect("Rainy window...", "\uf73d", "Simulates water streaks, droplets and foggy glass.", () => RaiseDialog("rainy_window"));

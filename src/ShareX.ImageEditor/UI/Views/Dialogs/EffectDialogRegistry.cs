@@ -113,7 +113,6 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["liquid_glass"] = () => new LiquidGlassDialog(),
                 ["neon_edge_glow"] = () => new NeonEdgeGlowDialog(),
                 ["old_camera_flash_burn"] = () => new OldCameraFlashBurnDialog(),
-                ["rain_reflection_puddles"] = () => new RainReflectionPuddlesDialog(),
                 ["rainy_window"] = () => new RainyWindowDialog(),
                 ["frosted_glass_ice_edges"] = () => new FrostedGlassIceEdgesDialog(),
                 ["snowfall_depth_fog"] = () => new SnowfallDepthFogDialog(),

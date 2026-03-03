@@ -549,7 +549,6 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Pixel sorting...", "\uf0dc", "Sorts horizontal or vertical pixel spans by brightness or hue for glitch cascades.", () => RaiseDialog("pixel_sorting"));
             fil.AddEffect("Pixelate...", "\uf1b3", "Pixelates the image.", () => RaiseDialog("pixelate"));
             fil.AddEffect("Pointillism...", "\uf111", "Re-renders the image as overlapping colored dots.", () => RaiseDialog("pointillism"));
-            fil.AddEffect("Rain reflection puddles...", "\uf73d", "Mirrors skyline into rippled ground puddles with wet surface sheen.", () => RaiseDialog("rain_reflection_puddles"), "rain_reflection_puddles");
             fil.AddEffect("Rainy window...", "\uf73d", "Simulates water streaks, droplets and foggy glass.", () => RaiseDialog("rainy_window"));
             fil.AddEffect("Reflection...", "\uf338", "Adds a reflection to the bottom of the image.", () => RaiseDialog("reflection"));
             fil.AddEffect("RGB split...", "\uf03e", "Splits the red, green, and blue color channels.", () => RaiseDialog("rgb_split"));

@@ -31,6 +31,18 @@ namespace ShareX.ImageEditor
     {
         public static readonly Color PrimaryColor = Color.FromArgb(255, 242, 60, 60);
         public static readonly Color SecondaryColor = Color.FromArgb(255, 250, 250, 250);
+        public static readonly IReadOnlyList<string> DefaultFavoriteEffects = new[]
+        {
+            "resize_image",
+            "resize_canvas",
+            "crop_image",
+            "auto_crop_image",
+            "rotate_90_clockwise",
+            "rotate_90_counter_clockwise",
+            "rotate_180",
+            "flip_horizontal",
+            "flip_vertical"
+        };
 
         // Shared
         public Color BorderColor { get; set; } = PrimaryColor;
@@ -72,5 +84,7 @@ namespace ShareX.ImageEditor
         public float PixelateStrength { get; set; } = 20;
         public float MagnifierStrength { get; set; } = 2;
         public float SpotlightStrength { get; set; } = 15;
+
+        public List<string> FavoriteEffects { get; set; } = new(DefaultFavoriteEffects);
     }
 }

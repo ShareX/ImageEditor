@@ -53,6 +53,7 @@
                                     <DataTemplate DataType="{x:Type controls:EffectItem}">
                                         <Button Classes="effect-item" 
                                                 Command="{Binding ExecuteCommand}"
+                                                PointerPressed="OnEffectItemPointerPressed"
                                                 ToolTip.Tip="{Binding Description}">
                                             <StackPanel Orientation="Horizontal" Spacing="8">
                                                 <TextBlock Text="{Binding Icon}" 

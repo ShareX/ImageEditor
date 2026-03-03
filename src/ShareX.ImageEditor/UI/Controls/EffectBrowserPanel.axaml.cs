@@ -1,9 +1,14 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ShareX.ImageEditor;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 
 namespace ShareX.ImageEditor.Controls
 {
@@ -18,6 +23,10 @@ namespace ShareX.ImageEditor.Controls
         [ObservableProperty]
         private string _name = string.Empty;
 
+        private readonly bool _showCount;
+        private readonly bool _keepVisibleWhenEmpty;
+        private readonly string? _headerHint;
+
         public ObservableCollection<EffectItem> AllEffects { get; } = new();
 
         [ObservableProperty]
@@ -26,28 +35,84 @@ namespace ShareX.ImageEditor.Controls
         [ObservableProperty]
         private bool _isVisible = true;
 
-        public EffectCategory(string name)
+        public EffectCategory(string name, bool showCount = true, bool keepVisibleWhenEmpty = false, string? headerHint = null)
         {
             Name = name;
+            _showCount = showCount;
+            _keepVisibleWhenEmpty = keepVisibleWhenEmpty;
+            _headerHint = headerHint;
         }
 
-        public string HeaderText => $"{Name} ({AllEffects.Count})";
+        public string HeaderText
+        {
+            get
+            {
+                string header = _showCount ? $"{Name} ({AllEffects.Count})" : Name;
+                return string.IsNullOrWhiteSpace(_headerHint) ? header : $"{header} - {_headerHint}";
+            }
+        }
 
         partial void OnNameChanged(string value)
         {
             OnPropertyChanged(nameof(HeaderText));
         }
 
-        public void AddEffect(string name, string icon, string description, Action execute)
+        public EffectItem AddEffect(string name, string icon, string description, Action execute, string? effectId = null, bool keepSorted = true)
         {
-            var effect = new EffectItem(name, icon, description, execute);
-            InsertSorted(AllEffects, effect);
-            InsertSorted(VisibleEffects, effect);
+            var effect = new EffectItem(name, icon, description, execute, effectId);
+            Insert(AllEffects, effect, keepSorted);
+            Insert(VisibleEffects, effect, keepSorted);
+            OnPropertyChanged(nameof(HeaderText));
+            return effect;
+        }
+
+        public EffectItem AddEffectCopy(EffectItem effect, bool keepSorted = true)
+            => AddEffect(effect.Name, effect.Icon, effect.Description, effect.ExecuteAction, effect.EffectId, keepSorted);
+
+        public void ClearEffects()
+        {
+            AllEffects.Clear();
+            VisibleEffects.Clear();
             OnPropertyChanged(nameof(HeaderText));
         }
 
-        private static void InsertSorted(ObservableCollection<EffectItem> target, EffectItem effect)
+        public bool RemoveEffectsById(string effectId)
         {
+            bool removed = false;
+
+            for (int i = AllEffects.Count - 1; i >= 0; i--)
+            {
+                if (string.Equals(AllEffects[i].EffectId, effectId, StringComparison.OrdinalIgnoreCase))
+                {
+                    AllEffects.RemoveAt(i);
+                    removed = true;
+                }
+            }
+
+            for (int i = VisibleEffects.Count - 1; i >= 0; i--)
+            {
+                if (string.Equals(VisibleEffects[i].EffectId, effectId, StringComparison.OrdinalIgnoreCase))
+                {
+                    VisibleEffects.RemoveAt(i);
+                }
+            }
+
+            if (removed)
+            {
+                OnPropertyChanged(nameof(HeaderText));
+            }
+
+            return removed;
+        }
+
+        private static void Insert(ObservableCollection<EffectItem> target, EffectItem effect, bool keepSorted)
+        {
+            if (!keepSorted)
+            {
+                target.Add(effect);
+                return;
+            }
+
             int index = 0;
             while (index < target.Count &&
                    string.Compare(target[index].Name, effect.Name, StringComparison.OrdinalIgnoreCase) <= 0)
@@ -75,12 +140,16 @@ namespace ShareX.ImageEditor.Controls
                     }
                 }
             }
-            IsVisible = VisibleEffects.Count > 0;
+
+            IsVisible = VisibleEffects.Count > 0 || (_keepVisibleWhenEmpty && string.IsNullOrWhiteSpace(searchText));
         }
     }
 
     public partial class EffectItem : ObservableObject
     {
+        [ObservableProperty]
+        private string _effectId;
+
         [ObservableProperty]
         private string _name;
 
@@ -92,12 +161,52 @@ namespace ShareX.ImageEditor.Controls
 
         public Action ExecuteAction { get; }
 
-        public EffectItem(string name, string icon, string description, Action executeAction)
+        public EffectItem(string name, string icon, string description, Action executeAction, string? effectId = null)
         {
+            EffectId = string.IsNullOrWhiteSpace(effectId) ? NormalizeEffectId(name) : effectId;
             Name = name;
             Icon = icon;
             Description = description;
             ExecuteAction = executeAction;
+        }
+
+        public static string NormalizeEffectId(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder(value.Length);
+            bool lastWasUnderscore = false;
+
+            foreach (char c in value)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    sb.Append(char.ToLowerInvariant(c));
+                    lastWasUnderscore = false;
+                    continue;
+                }
+
+                if (!lastWasUnderscore)
+                {
+                    sb.Append('_');
+                    lastWasUnderscore = true;
+                }
+            }
+
+            while (sb.Length > 0 && sb[0] == '_')
+            {
+                sb.Remove(0, 1);
+            }
+
+            while (sb.Length > 0 && sb[^1] == '_')
+            {
+                sb.Length--;
+            }
+
+            return sb.ToString();
         }
 
         [RelayCommand]
@@ -109,6 +218,18 @@ namespace ShareX.ImageEditor.Controls
 
     public partial class EffectBrowserPanel : UserControl
     {
+        private const string FavoritesHeaderHint = "Right click to favorite";
+
+        private static readonly Dictionary<string, string> FavoriteAliases = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["resize"] = "resize_image",
+            ["canvas"] = "resize_canvas",
+            ["crop"] = "crop_image",
+            ["auto_crop"] = "auto_crop_image",
+            ["rotate_90"] = "rotate_90_clockwise",
+            ["rotate_90_cc"] = "rotate_90_counter_clockwise"
+        };
+
         public event EventHandler<EffectDialogRequestedEventArgs>? EffectDialogRequested;
 
         public event EventHandler? InvertRequested;
@@ -132,10 +253,17 @@ namespace ShareX.ImageEditor.Controls
 
         public ObservableCollection<EffectCategory> Categories { get; } = new();
 
+        private readonly EffectCategory _favoritesCategory = new("Favorites", keepVisibleWhenEmpty: true, headerHint: FavoritesHeaderHint);
+        private readonly Dictionary<string, EffectItem> _allEffectsById = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _favoriteEffectIds = new(StringComparer.OrdinalIgnoreCase);
+        private EditorOptions? _options;
+
         public EffectBrowserPanel()
         {
             AvaloniaXamlLoader.Load(this);
             InitializeEffects();
+            BuildEffectLookup();
+            LoadFavoriteEffects(EditorOptions.DefaultFavoriteEffects, persistToOptions: false);
 
             var categoriesControl = this.FindControl<ItemsControl>("CategoriesControl");
             if (categoriesControl != null)
@@ -144,14 +272,15 @@ namespace ShareX.ImageEditor.Controls
             }
         }
 
+        public void SetOptions(EditorOptions options)
+        {
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            LoadFavoriteEffects(options.FavoriteEffects, persistToOptions: true);
+        }
+
         private void OnSearchTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
         {
-            var searchBox = sender as TextBox;
-            string searchText = searchBox?.Text ?? string.Empty;
-            foreach (var category in Categories)
-            {
-                category.Filter(searchText);
-            }
+            ApplyCurrentFilter();
         }
 
         public void FocusSearchBox()
@@ -180,8 +309,151 @@ namespace ShareX.ImageEditor.Controls
             Dispatcher.UIThread.Post(() => EffectDialogRequested?.Invoke(this, args));
         }
 
+        private void OnEffectItemPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (sender is not Button button || button.DataContext is not EffectItem effect)
+            {
+                return;
+            }
+
+            var point = e.GetCurrentPoint(button);
+            if (!point.Properties.IsRightButtonPressed)
+            {
+                return;
+            }
+
+            if (TryToggleFavorite(effect))
+            {
+                ApplyCurrentFilter();
+                PersistFavoritesToOptions();
+            }
+
+            e.Handled = true;
+        }
+
+        private void BuildEffectLookup()
+        {
+            _allEffectsById.Clear();
+
+            foreach (var category in Categories)
+            {
+                if (ReferenceEquals(category, _favoritesCategory))
+                {
+                    continue;
+                }
+
+                foreach (var effect in category.AllEffects)
+                {
+                    if (!string.IsNullOrWhiteSpace(effect.EffectId))
+                    {
+                        _allEffectsById[effect.EffectId] = effect;
+                    }
+                }
+            }
+        }
+
+        private void LoadFavoriteEffects(IEnumerable<string>? favoriteEffectIds, bool persistToOptions)
+        {
+            _favoriteEffectIds.Clear();
+            _favoritesCategory.ClearEffects();
+
+            if (favoriteEffectIds != null)
+            {
+                foreach (string favoriteEffectId in favoriteEffectIds)
+                {
+                    if (TryResolveEffect(favoriteEffectId, out EffectItem effect))
+                    {
+                        TryAddFavorite(effect);
+                    }
+                }
+            }
+
+            ApplyCurrentFilter();
+
+            if (persistToOptions)
+            {
+                PersistFavoritesToOptions();
+            }
+        }
+
+        private bool TryResolveEffect(string value, out EffectItem effect)
+        {
+            effect = null!;
+
+            string normalizedId = EffectItem.NormalizeEffectId(value);
+            if (string.IsNullOrWhiteSpace(normalizedId))
+            {
+                return false;
+            }
+
+            if (FavoriteAliases.TryGetValue(normalizedId, out string? alias))
+            {
+                normalizedId = alias;
+            }
+
+            return _allEffectsById.TryGetValue(normalizedId, out effect);
+        }
+
+        private bool TryAddFavorite(EffectItem effect)
+        {
+            if (!_favoriteEffectIds.Add(effect.EffectId))
+            {
+                return false;
+            }
+
+            _favoritesCategory.AddEffectCopy(effect, keepSorted: false);
+            return true;
+        }
+
+        private bool TryToggleFavorite(EffectItem effect)
+        {
+            if (_favoriteEffectIds.Contains(effect.EffectId))
+            {
+                return RemoveFavorite(effect.EffectId);
+            }
+
+            return TryAddFavorite(effect);
+        }
+
+        private bool RemoveFavorite(string effectId)
+        {
+            if (!_favoriteEffectIds.Remove(effectId))
+            {
+                return false;
+            }
+
+            _favoritesCategory.RemoveEffectsById(effectId);
+            return true;
+        }
+
+        private void ApplyCurrentFilter()
+        {
+            var searchBox = this.FindControl<TextBox>("SearchBox");
+            string searchText = searchBox?.Text ?? string.Empty;
+
+            foreach (var category in Categories)
+            {
+                category.Filter(searchText);
+            }
+        }
+
+        private void PersistFavoritesToOptions()
+        {
+            if (_options == null)
+            {
+                return;
+            }
+
+            _options.FavoriteEffects = _favoritesCategory.AllEffects
+                .Select(effect => effect.EffectId)
+                .Where(effectId => !string.IsNullOrWhiteSpace(effectId))
+                .ToList();
+        }
+
         private void InitializeEffects()
         {
+            Categories.Add(_favoritesCategory);
+
             var manip = new EffectCategory("Manipulations");
             manip.AddEffect("3D Box / Extrude...", "\uf1b2", "Applies a 3D box or extrude effect.", () => RaiseDialog("rotate_3d_box"));
             manip.AddEffect("Auto crop image", "\uf0d0", "Automatically crops the image by finding its edges.", () => Raise(AutoCropImageRequested));

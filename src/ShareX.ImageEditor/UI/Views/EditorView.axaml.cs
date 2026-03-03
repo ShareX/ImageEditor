@@ -225,6 +225,10 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AttachEditorCore(_editorCore);
+
+                var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
+                effectPanel?.SetOptions(vm.Options);
+
                 vm.DeleteRequested += (s, args) => PerformDelete();
                 vm.UndoRequested += (s, args) => PerformUndo();
                 vm.RedoRequested += (s, args) => PerformRedo();

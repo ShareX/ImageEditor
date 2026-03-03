@@ -160,8 +160,8 @@ namespace ShareX.ImageEditor.Views
                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
                     shapeControl.Fill = new ImageBrush(avaloniaBitmap)
                     {
-                        Stretch = Stretch.None,
-                        SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                        Stretch = Stretch.Fill,
+                        SourceRect = new RelativeRect(0, 0, 1, 1, RelativeUnit.Relative)
                     };
                 }
             }

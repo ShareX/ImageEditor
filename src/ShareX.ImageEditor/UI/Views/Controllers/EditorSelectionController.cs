@@ -440,12 +440,11 @@ public class EditorSelectionController
         {
             if (rotateTextBox.Tag is TextAnnotation rotateTextAnn)
             {
-                var tbLeft = Canvas.GetLeft(rotateTextBox);
-                var tbTop = Canvas.GetTop(rotateTextBox);
-                var tbWidth = rotateTextBox.Bounds.Width;
-                var tbHeight = rotateTextBox.Bounds.Height;
-                if (double.IsNaN(tbWidth) || tbWidth <= 0) tbWidth = rotateTextBox.Width;
-                if (double.IsNaN(tbHeight) || tbHeight <= 0) tbHeight = rotateTextBox.Height;
+                var textRect = GetLogicalRect(rotateTextBox);
+                var tbLeft = textRect.Left;
+                var tbTop = textRect.Top;
+                var tbWidth = textRect.Width;
+                var tbHeight = textRect.Height;
 
                 double cx = tbLeft + tbWidth / 2;
                 double cy = tbTop + tbHeight / 2;
@@ -466,12 +465,11 @@ public class EditorSelectionController
         }
 
         // Regular shapes
-        var left = Canvas.GetLeft(_selectedShape);
-        var top = Canvas.GetTop(_selectedShape);
-        var width = _selectedShape.Bounds.Width;
-        var height = _selectedShape.Bounds.Height;
-        if (double.IsNaN(width)) width = _selectedShape.Width;
-        if (double.IsNaN(height)) height = _selectedShape.Height;
+        var shapeRect = GetLogicalRect(_selectedShape);
+        var left = shapeRect.Left;
+        var top = shapeRect.Top;
+        var width = shapeRect.Width;
+        var height = shapeRect.Height;
 
         // Special handling for SpeechBalloonControl resizing
         if (_selectedShape is SpeechBalloonControl resizeBalloonControl && resizeBalloonControl.Annotation is SpeechBalloonAnnotation resizeBalloon)
@@ -737,12 +735,11 @@ public class EditorSelectionController
 
         if (_selectedShape is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloon)
         {
-            var balloonLeft = Canvas.GetLeft(_selectedShape);
-            var balloonTop = Canvas.GetTop(_selectedShape);
-            var balloonWidth = _selectedShape.Bounds.Width;
-            var balloonHeight = _selectedShape.Bounds.Height;
-            if (double.IsNaN(balloonWidth)) balloonWidth = _selectedShape.Width;
-            if (double.IsNaN(balloonHeight)) balloonHeight = _selectedShape.Height;
+            var balloonRect = GetLogicalRect(_selectedShape);
+            var balloonLeft = balloonRect.Left;
+            var balloonTop = balloonRect.Top;
+            var balloonWidth = balloonRect.Width;
+            var balloonHeight = balloonRect.Height;
 
             CreateHandle(balloonLeft, balloonTop, "TopLeft");
             CreateHandle(balloonLeft + balloonWidth / 2, balloonTop, "TopCenter");
@@ -778,13 +775,11 @@ public class EditorSelectionController
         // OutlinedTextControl (Text annotation): resize handles + rotation handle
         if (_selectedShape is OutlinedTextControl textBox)
         {
-            var tbLeft = Canvas.GetLeft(textBox);
-            var tbTop = Canvas.GetTop(textBox);
-            var tbWidth = textBox.Bounds.Width;
-            var tbHeight = textBox.Bounds.Height;
-
-            if (tbWidth <= 0) tbWidth = textBox.DesiredSize.Width;
-            if (tbHeight <= 0) tbHeight = textBox.DesiredSize.Height;
+            var textRect = GetLogicalRect(textBox);
+            var tbLeft = textRect.Left;
+            var tbTop = textRect.Top;
+            var tbWidth = textRect.Width;
+            var tbHeight = textRect.Height;
 
             if (double.IsNaN(tbWidth) || tbWidth <= 0) tbWidth = 20;
             if (double.IsNaN(tbHeight) || tbHeight <= 0) tbHeight = 20;
@@ -878,21 +873,14 @@ public class EditorSelectionController
             return;
         }
 
-        // Fallback to explicit Width/Height if Bounds are not yet calculated (e.g. before layout pass)
-        var width = _selectedShape.Bounds.Width;
-        var height = _selectedShape.Bounds.Height;
-        if (width <= 0 || height <= 0)
-        {
-            width = _selectedShape.Width;
-            height = _selectedShape.Height;
-        }
+        var boundsRect = GetLogicalRect(_selectedShape);
+        var width = boundsRect.Width;
+        var height = boundsRect.Height;
 
         if (width <= 0 || height <= 0) return;
 
-        var shapeLeft = Canvas.GetLeft(_selectedShape);
-        var shapeTop = Canvas.GetTop(_selectedShape);
-        if (double.IsNaN(width)) width = _selectedShape.Width;
-        if (double.IsNaN(height)) height = _selectedShape.Height;
+        var shapeLeft = boundsRect.Left;
+        var shapeTop = boundsRect.Top;
 
         CreateHandle(shapeLeft, shapeTop, "TopLeft");
         CreateHandle(shapeLeft + width / 2, shapeTop, "TopCenter");
@@ -1226,13 +1214,7 @@ public class EditorSelectionController
             }
 
             // Check if point is within the bounds of this control
-            var bounds = child.Bounds;
-            var left = Canvas.GetLeft(child);
-            var top = Canvas.GetTop(child);
-            if (double.IsNaN(left)) left = 0;
-            if (double.IsNaN(top)) top = 0;
-
-            var shapeBounds = new Rect(left, top, bounds.Width, bounds.Height);
+            var shapeBounds = GetLogicalRect(child);
 
             // Special handling for Line
             if (child is global::Avalonia.Controls.Shapes.Line line)
@@ -1420,14 +1402,11 @@ public class EditorSelectionController
         }
         else
         {
-            left = Canvas.GetLeft(_hoveredShape);
-            top = Canvas.GetTop(_hoveredShape);
-            if (double.IsNaN(left)) left = 0;
-            if (double.IsNaN(top)) top = 0;
-            width = _hoveredShape.Bounds.Width;
-            height = _hoveredShape.Bounds.Height;
-            if (width <= 0) width = _hoveredShape.Width;
-            if (height <= 0) height = _hoveredShape.Height;
+            var hoveredRect = GetLogicalRect(_hoveredShape);
+            left = hoveredRect.Left;
+            top = hoveredRect.Top;
+            width = hoveredRect.Width;
+            height = hoveredRect.Height;
         }
 
         if (width <= 0 || height <= 0) return;
@@ -1550,9 +1529,10 @@ public class EditorSelectionController
                     textAnn.Text = tb.Text ?? string.Empty;
 
                     // Sync Bounds
+                    var textBoxRect = GetLogicalRect(tb);
                     textAnn.EndPoint = new SKPoint(
-                        (float)(Canvas.GetLeft(tb) + tb.Bounds.Width),
-                        (float)(Canvas.GetTop(tb) + tb.Bounds.Height)
+                        (float)(textBoxRect.Left + textBoxRect.Width),
+                        (float)(textBoxRect.Top + textBoxRect.Height)
                     );
 
                     UpdateSelectionHandles();
@@ -1764,17 +1744,17 @@ public class EditorSelectionController
             {
                 if (args.Property == Visual.BoundsProperty)
                 {
-                    var bounds = tb.Bounds;
+                    var textRect = GetLogicalRect(tb);
                     // Handle valid size (ignore 0x0 or uninitialized)
-                    if (bounds.Width > 0 && bounds.Height > 0)
+                    if (textRect.Width > 0 && textRect.Height > 0)
                     {
-                        var left = Canvas.GetLeft(tb);
-                        var top = Canvas.GetTop(tb);
+                        var left = textRect.Left;
+                        var top = textRect.Top;
 
                         // Sync visual bounds to annotation model
                         // This ensures hit tests (which rely on annotation start/end points) are accurate
                         textAnn.StartPoint = new SKPoint((float)left, (float)top);
-                        textAnn.EndPoint = new SKPoint((float)(left + bounds.Width), (float)(top + bounds.Height));
+                        textAnn.EndPoint = new SKPoint((float)(left + textRect.Width), (float)(top + textRect.Height));
 
                         // Refresh selection handles to match new bounds
                         UpdateSelectionHandles();
@@ -1784,5 +1764,53 @@ public class EditorSelectionController
             _observedShape.PropertyChanged += _boundsHandler;
         }
     }
+
+    private static Rect GetLogicalRect(Control control)
+    {
+        if (control is SpotlightControl spotlight && spotlight.Annotation is SpotlightAnnotation spotlightAnnotation)
+        {
+            return ToRect(spotlightAnnotation.GetBounds());
+        }
+
+        if (control is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloonAnnotation)
+        {
+            return ToRect(balloonAnnotation.GetBounds());
+        }
+
+        if (control.Tag is Annotation annotation)
+        {
+            var annotationRect = ToRect(annotation.GetBounds());
+            if (annotationRect.Width > 0 && annotationRect.Height > 0)
+            {
+                return annotationRect;
+            }
+        }
+
+        var left = Canvas.GetLeft(control);
+        var top = Canvas.GetTop(control);
+        if (double.IsNaN(left)) left = 0;
+        if (double.IsNaN(top)) top = 0;
+
+        var width = control.Width;
+        var height = control.Height;
+
+        if (double.IsNaN(width) || width <= 0) width = control.DesiredSize.Width;
+        if (double.IsNaN(height) || height <= 0) height = control.DesiredSize.Height;
+
+        // Last-resort fallback for controls that have not been initialized with explicit size.
+        if (width <= 0 || height <= 0)
+        {
+            width = control.Bounds.Width;
+            height = control.Bounds.Height;
+        }
+
+        if (double.IsNaN(width) || width < 0) width = 0;
+        if (double.IsNaN(height) || height < 0) height = 0;
+
+        return new Rect(left, top, width, height);
+    }
+
+    private static Rect ToRect(SKRect rect)
+        => new Rect(rect.Left, rect.Top, rect.Width, rect.Height);
 }
 

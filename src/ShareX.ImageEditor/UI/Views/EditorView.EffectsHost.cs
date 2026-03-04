@@ -23,74 +23,18 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
-using Avalonia.Input;
-using Avalonia.Input.Platform;
-using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
-using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.ViewModels;
-using ShareX.ImageEditor.Views.Controllers;
 using ShareX.ImageEditor.Views.Dialogs;
 using SkiaSharp;
-using System.ComponentModel;
 
 namespace ShareX.ImageEditor.Views
 {
     public partial class EditorView : UserControl
     {
         // --- Edit Menu Event Handlers ---
-
-        private void OnResizeImageRequested(object? sender, EventArgs e)
-        {
-            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
-            {
-                var dialog = new ResizeImageDialog();
-                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-
-                dialog.ApplyRequested += (s, args) =>
-                {
-                    vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                dialog.CancelRequested += (s, args) =>
-                {
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
-            }
-        }
-
-        private void OnResizeCanvasRequested(object? sender, EventArgs e)
-        {
-            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
-            {
-                var dialog = new ResizeCanvasDialog();
-
-                dialog.ApplyRequested += (s, args) =>
-                {
-                    vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                dialog.CancelRequested += (s, args) =>
-                {
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
-            }
-        }
 
         private void OnCropImageRequested(object? sender, EventArgs e)
         {
@@ -121,6 +65,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AutoCropImageCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -129,6 +74,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.Rotate90ClockwiseCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -137,6 +83,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.Rotate90CounterClockwiseCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -145,6 +92,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.Rotate180Command.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -164,6 +112,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.FlipHorizontalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -172,6 +121,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.FlipVerticalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -179,17 +129,65 @@ namespace ShareX.ImageEditor.Views
 
         private void OnInvertRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.InvertColorsCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                vm.InvertColorsCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnBlackAndWhiteRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.BlackAndWhiteCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                vm.BlackAndWhiteCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnPolaroidRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                vm.PolaroidCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            }
+        }
+
+        private void OnEdgeDetectRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.EdgeDetectCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            }
+        }
+
+        private void OnEmbossRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.EmbossCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            }
+        }
+
+        private void OnMeanRemovalRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.MeanRemovalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            }
+        }
+
+        private void OnSmoothRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.SmoothCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         // --- XIP0039 Pain Point 3: Registry-driven dialog dispatch ---
@@ -204,8 +202,18 @@ namespace ShareX.ImageEditor.Views
             if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
 
-            if (dialog is IEffectDialog effectDialog)
-                ShowEffectDialog(dialog, effectDialog);
+            switch (dialog)
+            {
+                case IEffectDialog effectDialog:
+                    ShowEffectDialog(dialog, effectDialog);
+                    break;
+                case ResizeImageDialog resizeImageDialog:
+                    ShowResizeImageDialog(resizeImageDialog);
+                    break;
+                case ResizeCanvasDialog resizeCanvasDialog:
+                    ShowResizeCanvasDialog(resizeCanvasDialog);
+                    break;
+            }
         }
 
         /// <summary>
@@ -234,12 +242,44 @@ namespace ShareX.ImageEditor.Views
             vm.IsEffectsPanelOpen = true;
         }
 
-        /// <summary>
-        /// Convenience overload that accepts a strongly-typed combined dialog/control.
-        /// Kept for any internal call sites that construct dialogs directly.
-        /// </summary>
-        private void ShowEffectDialog<T>(T dialog) where T : UserControl, IEffectDialog
-            => ShowEffectDialog(dialog, dialog);
+        private void ShowResizeImageDialog(ResizeImageDialog dialog)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
+                return;
+
+            dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
+            dialog.ApplyRequested += (s, args) =>
+            {
+                vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+            dialog.CancelRequested += (s, args) =>
+            {
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+
+            vm.EffectsPanelContent = dialog;
+            vm.IsEffectsPanelOpen = true;
+        }
+
+        private void ShowResizeCanvasDialog(ResizeCanvasDialog dialog)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
+                return;
+
+            dialog.ApplyRequested += (s, args) =>
+            {
+                vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+            dialog.CancelRequested += (s, args) =>
+            {
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+
+            vm.EffectsPanelContent = dialog;
+            vm.IsEffectsPanelOpen = true;
+        }
 
         private void OnModalBackgroundPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {

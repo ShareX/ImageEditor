@@ -309,7 +309,7 @@ public class EditorCore : IDisposable
         int oldW = SourceImage?.Width ?? 0;
         int oldH = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.Rotate90Clockwise, 
+            ImageHelpers.Rotate90Clockwise,
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsOrthogonal(90, oldW, oldH));
     }
@@ -319,7 +319,7 @@ public class EditorCore : IDisposable
         int oldW = SourceImage?.Width ?? 0;
         int oldH = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.Rotate90CounterClockwise, 
+            ImageHelpers.Rotate90CounterClockwise,
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsOrthogonal(270, oldW, oldH));
     }
@@ -329,7 +329,7 @@ public class EditorCore : IDisposable
         int oldW = SourceImage?.Width ?? 0;
         int oldH = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.Rotate180, 
+            ImageHelpers.Rotate180,
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsOrthogonal(180, oldW, oldH));
     }
@@ -342,13 +342,14 @@ public class EditorCore : IDisposable
         int newH = -1;
 
         return ApplyImageOperation(
-            img => {
+            img =>
+            {
                 var effect = RotateImageEffect.Custom(angle, autoResize);
                 var result = effect.Apply(img);
                 newW = result.Width;
                 newH = result.Height;
                 return result;
-            }, 
+            },
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsArbitrary(angle, oldW, oldH, newW, newH, autoResize));
     }
@@ -357,7 +358,7 @@ public class EditorCore : IDisposable
     {
         int w = SourceImage?.Width ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.FlipHorizontal, 
+            ImageHelpers.FlipHorizontal,
             clearAnnotations: false,
             transformAnnotations: () => FlipAnnotations(true, false, w, 0));
     }
@@ -366,7 +367,7 @@ public class EditorCore : IDisposable
     {
         int h = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.FlipVertical, 
+            ImageHelpers.FlipVertical,
             clearAnnotations: false,
             transformAnnotations: () => FlipAnnotations(false, true, 0, h));
     }
@@ -419,7 +420,7 @@ public class EditorCore : IDisposable
         if (!hasContent) minX = minY = 0;
 
         return ApplyImageOperation(
-            img => ImageHelpers.AutoCrop(img, topLeft, tolerance), 
+            img => ImageHelpers.AutoCrop(img, topLeft, tolerance),
             clearAnnotations: false,
             transformAnnotations: () => TranslateAnnotations(-minX, -minY));
     }

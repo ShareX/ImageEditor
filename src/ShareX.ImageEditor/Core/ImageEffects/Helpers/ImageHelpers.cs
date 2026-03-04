@@ -310,6 +310,60 @@ public static class ImageHelpers
         return new GlowImageEffect(size, strength, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
+    public static SKBitmap ApplyBloom(SKBitmap source, float threshold, float softKnee, float radius, float intensity)
+    {
+        return new BloomImageEffect
+        {
+            Threshold = threshold,
+            SoftKnee = softKnee,
+            Radius = radius,
+            Intensity = intensity
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyHalation(SKBitmap source, float threshold, float radius, float strength, float warmth)
+    {
+        return new HalationImageEffect
+        {
+            Threshold = threshold,
+            Radius = radius,
+            Strength = strength,
+            Warmth = warmth
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyLiquidGlass(SKBitmap source, float distortion, float refraction, int chromaShift, float gloss, float flowScale)
+    {
+        return new LiquidGlassImageEffect
+        {
+            Distortion = distortion,
+            Refraction = refraction,
+            ChromaShift = chromaShift,
+            Gloss = gloss,
+            FlowScale = flowScale
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyNeonEdgeGlow(
+        SKBitmap source,
+        float edgeStrength,
+        int threshold,
+        float glowRadius,
+        float glowIntensity,
+        float baseDim,
+        SKColor neonColor)
+    {
+        return new NeonEdgeGlowImageEffect
+        {
+            EdgeStrength = edgeStrength,
+            Threshold = threshold,
+            GlowRadius = glowRadius,
+            GlowIntensity = glowIntensity,
+            BaseDim = baseDim,
+            NeonColor = neonColor
+        }.Apply(source);
+    }
+
     public static SKBitmap ApplyReflection(SKBitmap source, int percentage, int maxAlpha, int minAlpha, int offset, bool skew, int skewSize)
     {
         return new ReflectionImageEffect(percentage, maxAlpha, minAlpha, offset, skew, skewSize).Apply(source);
@@ -318,6 +372,11 @@ public static class ImageHelpers
     public static SKBitmap ApplyTornEdge(SKBitmap source, int depth, int range, bool top, bool right, bool bottom, bool left, bool curved)
     {
         return new TornEdgeImageEffect(depth, range, top, right, bottom, left, curved).Apply(source);
+    }
+
+    public static SKBitmap ApplyWaveEdge(SKBitmap source, int depth, int range, bool top, bool right, bool bottom, bool left)
+    {
+        return new WaveEdgeImageEffect(depth, range, top, right, bottom, left).Apply(source);
     }
 
     public static SKBitmap ApplySlice(SKBitmap source, int minHeight, int maxHeight, int minShift, int maxShift)

@@ -23,19 +23,9 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor.Abstractions;
-using ShareX.ImageEditor.Adapters;
 using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.ImageEffects.Adjustments;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
-using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.ViewModels
 {
@@ -460,7 +450,7 @@ namespace ShareX.ImageEditor.ViewModels
                     EditorTool.Text => "\uf031",
                     EditorTool.SpeechBalloon => "\uf4ad",
                     EditorTool.Step => "\uf0cb",
-                    EditorTool.Blur => "\uf1fc",
+                    EditorTool.Blur => "\uf043",
                     EditorTool.Pixelate => "\uf009",
                     EditorTool.Magnify => "\uf00e",
                     EditorTool.Spotlight => "\uf0eb",

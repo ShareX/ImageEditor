@@ -23,9 +23,7 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Media;
 
 namespace ShareX.ImageEditor.Annotations;
 

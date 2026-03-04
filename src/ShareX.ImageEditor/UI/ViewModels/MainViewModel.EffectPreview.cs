@@ -26,6 +26,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.ImageEffects.Adjustments;
+using ShareX.ImageEditor.ImageEffects.Filters;
 using ShareX.ImageEditor.ImageEffects.Manipulations;
 using ShareX.ImageEditor.Services;
 
@@ -116,6 +117,30 @@ namespace ShareX.ImageEditor.ViewModels
         private void Polaroid()
         {
             ApplyOneShotEffect(img => new PolaroidImageEffect().Apply(img), "Applied Polaroid filter");
+        }
+
+        [RelayCommand]
+        private void EdgeDetect()
+        {
+            ApplyOneShotEffect(img => new EdgeDetectImageEffect().Apply(img), "Applied Edge detect filter");
+        }
+
+        [RelayCommand]
+        private void Emboss()
+        {
+            ApplyOneShotEffect(img => new EmbossImageEffect().Apply(img), "Applied Emboss filter");
+        }
+
+        [RelayCommand]
+        private void MeanRemoval()
+        {
+            ApplyOneShotEffect(img => new MeanRemovalImageEffect().Apply(img), "Applied Mean removal filter");
+        }
+
+        [RelayCommand]
+        private void Smooth()
+        {
+            ApplyOneShotEffect(img => new SmoothImageEffect().Apply(img), "Applied Smooth filter");
         }
 
         private void ApplyOneShotEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect, string statusMessage)

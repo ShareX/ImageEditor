@@ -25,12 +25,9 @@
 
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Input;
-using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
@@ -39,7 +36,6 @@ using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
 using ShareX.ImageEditor.Views.Controllers;
-using ShareX.ImageEditor.Views.Dialogs;
 using SkiaSharp;
 using System.ComponentModel;
 
@@ -230,6 +226,10 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AttachEditorCore(_editorCore);
+
+                var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
+                effectPanel?.SetOptions(vm.Options);
+
                 vm.DeleteRequested += (s, args) => PerformDelete();
                 vm.UndoRequested += (s, args) => PerformUndo();
                 vm.RedoRequested += (s, args) => PerformRedo();
@@ -280,6 +280,17 @@ namespace ShareX.ImageEditor.Views
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
         }
 
+        private void OnEffectBrowserOverlayPointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (DataContext is MainViewModel vm && vm.IsEffectBrowserVisible)
+            {
+                if (vm.CloseEffectsPanelCommand.CanExecute(null))
+                {
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                }
+            }
+        }
+
         private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is MainViewModel vm)
@@ -325,6 +336,14 @@ namespace ShareX.ImageEditor.Views
                         _inputController.CancelCrop();
                     _selectionController.ClearSelection();
                     UpdateCursorForTool(); // ISSUE-018 fix: Update cursor feedback for active tool
+                }
+                else if (e.PropertyName == nameof(MainViewModel.IsEffectBrowserVisible))
+                {
+                    if (vm.IsEffectBrowserVisible)
+                    {
+                        var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
+                        effectPanel?.FocusSearchBox();
+                    }
                 }
             }
         }

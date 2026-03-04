@@ -1,5 +1,4 @@
 using SkiaSharp;
-using System;
 
 namespace ShareX.ImageEditor.ImageEffects.Manipulations;
 
@@ -54,7 +53,7 @@ public class Rotate3DBoxImageEffect : ImageEffect
             if (RotateX != 0) tzMat.PostConcat(SKMatrix44.CreateRotationDegrees(1, 0, 0, RotateX));
             if (RotateY != 0) tzMat.PostConcat(SKMatrix44.CreateRotationDegrees(0, 1, 0, RotateY));
             if (RotateZ != 0) tzMat.PostConcat(SKMatrix44.CreateRotationDegrees(0, 0, 1, RotateZ));
-            
+
             SKMatrix44 perspective = SKMatrix44.CreateIdentity();
             perspective[3, 2] = -1f / depthFactor;
             tzMat.PostConcat(perspective);
@@ -64,24 +63,25 @@ public class Rotate3DBoxImageEffect : ImageEffect
 
         // --- Solid Box Mode ---
         // Draw a solid 3D box using geometric planes and edge-sampled colors
-        
+
         var frontMat44 = CreateTransform(0);
         var backMat44 = CreateTransform(-Depth);
-        
+
         var frontMat = frontMat44.Matrix;
         var backMat = backMat44.Matrix;
-        
+
         SKPoint[] cornersP = { new SKPoint(0, 0), new SKPoint(width, 0), new SKPoint(width, height), new SKPoint(0, height) };
         SKPoint[] frontPoints = new SKPoint[4];
         SKPoint[] backPoints = new SKPoint[4];
-        
+
         float minX = float.MaxValue, minY = float.MaxValue;
         float maxX = float.MinValue, maxY = float.MinValue;
-        
-        for(int i = 0; i < 4; i++) {
+
+        for (int i = 0; i < 4; i++)
+        {
             frontPoints[i] = frontMat.MapPoint(cornersP[i]);
             backPoints[i] = backMat.MapPoint(cornersP[i]);
-            
+
             minX = Math.Min(minX, Math.Min(frontPoints[i].X, backPoints[i].X));
             minY = Math.Min(minY, Math.Min(frontPoints[i].Y, backPoints[i].Y));
             maxX = Math.Max(maxX, Math.Max(frontPoints[i].X, backPoints[i].X));
@@ -97,7 +97,7 @@ public class Rotate3DBoxImageEffect : ImageEffect
         using (SKCanvas canvas = new SKCanvas(result))
         {
             canvas.Clear(SKColors.Transparent);
-            
+
             if (AutoResize) canvas.Translate(-minX, -minY);
 
             // Sample edge average colors
@@ -114,12 +114,12 @@ public class Rotate3DBoxImageEffect : ImageEffect
                 path.LineTo(b2);
                 path.LineTo(b1);
                 path.Close();
-                
+
                 byte r = (byte)(color.Red * shade);
                 byte g = (byte)(color.Green * shade);
                 byte b = (byte)(color.Blue * shade);
                 using SKPaint p = new SKPaint { Color = new SKColor(r, g, b, 255), IsAntialias = true };
-                
+
                 // Minor stroke to prevent subpixel bleeding
                 p.Style = SKPaintStyle.Fill;
                 canvas.DrawPath(path, p);
@@ -128,7 +128,8 @@ public class Rotate3DBoxImageEffect : ImageEffect
                 canvas.DrawPath(path, p);
             }
 
-            bool IsVisible(SKPoint f1, SKPoint f2, SKPoint b1) {
+            bool IsVisible(SKPoint f1, SKPoint f2, SKPoint b1)
+            {
                 float vx1 = f2.X - f1.X;
                 float vy1 = f2.Y - f1.Y;
                 float vx2 = b1.X - f1.X;
@@ -137,13 +138,13 @@ public class Rotate3DBoxImageEffect : ImageEffect
             }
 
             // Top / Bottom Face
-            if (!IsVisible(frontPoints[0], frontPoints[1], backPoints[0])) 
+            if (!IsVisible(frontPoints[0], frontPoints[1], backPoints[0]))
                 DrawFace(frontPoints[0], frontPoints[1], backPoints[0], backPoints[1], topColor, 0.85f);
-            else 
+            else
                 DrawFace(frontPoints[3], frontPoints[2], backPoints[3], backPoints[2], bottomColor, 0.85f);
-            
+
             // Left / Right Face
-            if (IsVisible(frontPoints[0], frontPoints[3], backPoints[0])) 
+            if (IsVisible(frontPoints[0], frontPoints[3], backPoints[0]))
                 DrawFace(frontPoints[0], frontPoints[3], backPoints[0], backPoints[3], leftColor, 0.7f);
             else
                 DrawFace(frontPoints[1], frontPoints[2], backPoints[1], backPoints[2], rightColor, 0.7f);
@@ -152,7 +153,7 @@ public class Rotate3DBoxImageEffect : ImageEffect
             canvas.ResetMatrix();
             if (AutoResize) canvas.Translate(-minX, -minY);
             canvas.Concat(ref frontMat);
-            
+
             using SKPaint frontPaint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High };
             canvas.DrawBitmap(source, 0, 0, frontPaint);
         }

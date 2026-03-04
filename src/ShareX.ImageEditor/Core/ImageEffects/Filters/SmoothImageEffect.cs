@@ -1,0 +1,23 @@
+using ShareX.ImageEditor.ImageEffects.Helpers;
+using SkiaSharp;
+
+namespace ShareX.ImageEditor.ImageEffects.Filters;
+
+public class SmoothImageEffect : ImageEffect
+{
+    public override string Name => "Smooth";
+    public override string IconKey => "IconMagic";
+
+    private static readonly float[] Kernel =
+    {
+        1f / 9f, 1f / 9f, 1f / 9f,
+        1f / 9f, 1f / 9f, 1f / 9f,
+        1f / 9f, 1f / 9f, 1f / 9f
+    };
+
+    public override SKBitmap Apply(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+        return ConvolutionHelper.Apply3x3(source, Kernel);
+    }
+}

@@ -4,5 +4,6 @@ public enum ImageEffectCategory
 {
     Manipulations,
     Adjustments,
-    Filters
+    Filters,
+    Drawings
 }

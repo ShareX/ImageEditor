@@ -26,15 +26,8 @@
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor.Abstractions;
-using ShareX.ImageEditor.Adapters;
-using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.ImageEffects.Adjustments;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
 using ShareX.ImageEditor.Services;
 using System.Collections.ObjectModel;
 

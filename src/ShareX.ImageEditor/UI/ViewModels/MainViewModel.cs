@@ -33,10 +33,9 @@ using ShareX.ImageEditor.Abstractions;
 using ShareX.ImageEditor.Adapters;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.ImageEffects.Adjustments;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
 using ShareX.ImageEditor.Services;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace ShareX.ImageEditor.ViewModels
 {
@@ -204,7 +203,13 @@ namespace ShareX.ImageEditor.ViewModels
         public bool HasPreviewImage
         {
             get => _hasPreviewImage;
-            set => SetProperty(ref _hasPreviewImage, value);
+            set
+            {
+                if (SetProperty(ref _hasPreviewImage, value))
+                {
+                    ToggleEffectsPanelCommand.NotifyCanExecuteChanged();
+                }
+            }
         }
 
         private bool _hasSelectedAnnotation;
@@ -277,7 +282,7 @@ namespace ShareX.ImageEditor.ViewModels
                     ApplySmartPaddingCrop();
                 }
 
-                var ver = ShareX.ImageEditor.Helpers.AppVersion.GetVersionString();
+                var ver = GetVersionString();
                 WindowTitle = string.IsNullOrEmpty(ver)
                     ? $"ShareX - Image Editor - {ImageWidth}x{ImageHeight}"
                     : $"ShareX - Image Editor - v{ver} - {ImageWidth}x{ImageHeight}";
@@ -499,13 +504,59 @@ namespace ShareX.ImageEditor.ViewModels
         private bool _isEffectsPanelOpen;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsEffectBrowserVisible))]
+        [NotifyPropertyChangedFor(nameof(IsRightEffectsSidebarVisible))]
         private object? _effectsPanelContent;
+
+        public bool IsEffectBrowserVisible => EffectsPanelContent == null && IsEffectsPanelOpen;
+
+        public bool IsRightEffectsSidebarVisible => EffectsPanelContent != null && IsEffectsPanelOpen;
+
+        private void CancelPendingEffectPreviewIfAny()
+        {
+            if (_preEffectImage != null)
+            {
+                // Ensure dialog preview is reverted when switching away from the dialog host.
+                CancelEffectPreview();
+            }
+        }
 
         [RelayCommand]
         private void CloseEffectsPanel()
         {
+            CancelPendingEffectPreviewIfAny();
             IsEffectsPanelOpen = false;
             EffectsPanelContent = null;
+            OnPropertyChanged(nameof(IsEffectBrowserVisible));
+            OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+        }
+
+        [RelayCommand(CanExecute = nameof(HasPreviewImage))]
+        private void ToggleEffectsPanel()
+        {
+            if (IsEffectsPanelOpen && EffectsPanelContent == null)
+            {
+                IsEffectsPanelOpen = false;
+                OnPropertyChanged(nameof(IsEffectBrowserVisible));
+                OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+            }
+            else if (IsEffectsPanelOpen && EffectsPanelContent != null)
+            {
+                // Switching from dialog sidebar back to browser should cancel live preview.
+                CancelPendingEffectPreviewIfAny();
+
+                EffectsPanelContent = null;
+                IsEffectsPanelOpen = true;
+                OnPropertyChanged(nameof(IsEffectBrowserVisible));
+                OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+            }
+            else
+            {
+                EffectsPanelContent = null;
+                IsEffectsPanelOpen = true;
+                OnPropertyChanged(nameof(IsEffectBrowserVisible));
+                OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+            }
         }
 
         // Modal Overlay Properties
@@ -584,6 +635,20 @@ namespace ShareX.ImageEditor.ViewModels
             _appVersion = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.0.0";
 
             UpdateCanvasProperties();
+        }
+
+        private static string GetVersionString()
+        {
+            var asm = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+            var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (!string.IsNullOrEmpty(info?.InformationalVersion))
+            {
+                return info.InformationalVersion;
+            }
+
+            var version = asm.GetName().Version;
+            return version?.ToString() ?? string.Empty;
         }
 
         public void AttachEditorCore(EditorCore editorCore)

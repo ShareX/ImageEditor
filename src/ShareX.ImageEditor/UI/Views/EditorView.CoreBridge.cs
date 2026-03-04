@@ -26,21 +26,13 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
-using Avalonia.Input;
-using Avalonia.Input.Platform;
-using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Controls;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
-using ShareX.ImageEditor.Views.Controllers;
-using ShareX.ImageEditor.Views.Dialogs;
 using SkiaSharp;
-using System.ComponentModel;
 
 namespace ShareX.ImageEditor.Views
 {
@@ -168,8 +160,8 @@ namespace ShareX.ImageEditor.Views
                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
                     shapeControl.Fill = new ImageBrush(avaloniaBitmap)
                     {
-                        Stretch = Stretch.None,
-                        SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                        Stretch = Stretch.Fill,
+                        SourceRect = new RelativeRect(0, 0, 1, 1, RelativeUnit.Relative)
                     };
                 }
             }

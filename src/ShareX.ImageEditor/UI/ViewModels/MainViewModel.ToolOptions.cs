@@ -279,8 +279,10 @@ namespace ShareX.ImageEditor.ViewModels
             }
         }
 
+        private bool _isLoadingOptions;
+
         [ObservableProperty]
-        private float _effectStrength = 10;
+        private float _effectStrength = 1;
 
         private const float MinEffectStrength = 1;
         private const float MaxBlurStrength = 200;
@@ -315,6 +317,13 @@ namespace ShareX.ImageEditor.ViewModels
             if (Math.Abs(clamped - value) > float.Epsilon)
             {
                 EffectStrength = clamped;
+                return;
+            }
+
+            // Don't write back to Options while we're loading values for a tool switch,
+            // otherwise the clamped stale value overwrites the correct stored option.
+            if (_isLoadingOptions)
+            {
                 return;
             }
 
@@ -571,8 +580,23 @@ namespace ShareX.ImageEditor.ViewModels
 
         partial void OnActiveToolChanged(EditorTool value)
         {
-            UpdateToolOptionsVisibility();
-            LoadOptionsForTool(value);
+            _isLoadingOptions = true;
+            try
+            {
+                // Update the maximum FIRST so the UI control (slider/numeric)
+                // accepts the new tool's value range before we set the value.
+                // Without this, the control clamps the new value to the OLD maximum
+                // via its two-way binding (e.g. Spotlight default 15 clamped to
+                // Magnify's old max of 10).
+                OnPropertyChanged(nameof(EffectStrengthMaximum));
+
+                LoadOptionsForTool(value);
+                UpdateToolOptionsVisibility();
+            }
+            finally
+            {
+                _isLoadingOptions = false;
+            }
         }
 
         private void LoadOptionsForTool(EditorTool tool)

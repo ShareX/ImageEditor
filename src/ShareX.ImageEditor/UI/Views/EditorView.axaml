@@ -748,7 +748,7 @@
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ShadowEnabled}"
                                 Click="OnShadowButtonClick"
-                                IsVisible="{Binding ShowShadow}"
+                                IsVisible="False"
                                 ToolTip.Tip="Toggle Shadow"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMoon}"/>
                     </StackPanel>

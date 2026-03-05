@@ -44,11 +44,14 @@ namespace ShareX.ImageEditor
             "flip_vertical"
         };
 
+        // Editor
+        public List<string> FavoriteEffects { get; set; } = new List<string>(DefaultFavoriteEffects);
+
         // Shared
         public Color BorderColor { get; set; } = PrimaryColor;
         public Color FillColor { get; set; } = Colors.Transparent;
         public int Thickness { get; set; } = 4;
-        public bool Shadow { get; set; } = true;
+        public bool Shadow { get; set; } = false;
 
         // Text
         public Color TextBorderColor { get; set; } = PrimaryColor;
@@ -84,7 +87,5 @@ namespace ShareX.ImageEditor
         public float PixelateStrength { get; set; } = 20;
         public float MagnifierStrength { get; set; } = 2;
         public float SpotlightStrength { get; set; } = 15;
-
-        public List<string> FavoriteEffects { get; set; } = new(DefaultFavoriteEffects);
     }
 }

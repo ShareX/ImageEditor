@@ -125,6 +125,7 @@ namespace ShareX.ImageEditor.Views
                 var bitmap = new Bitmap(stream);
                 _viewModel.PreviewImage = bitmap;
                 _viewModel.LastSavedPath = filePath;
+                _viewModel.ImageFilePath = filePath;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
                 _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);
                 _viewModel.IsDirty = false;
@@ -162,11 +163,9 @@ namespace ShareX.ImageEditor.Views
 
         private static string GetWindowTitle(string? dimensions)
         {
-            var ver = GetVersionString();
-            var versionPart = string.IsNullOrEmpty(ver) ? "" : $" - v{ver}";
             return string.IsNullOrEmpty(dimensions)
-                ? $"ShareX - Image Editor{versionPart}"
-                : $"ShareX - Image Editor{versionPart} - {dimensions}";
+                ? "ShareX - Image Editor"
+                : $"ShareX - Image Editor - {dimensions}";
         }
 
         private static string GetVersionString()

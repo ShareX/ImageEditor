@@ -56,11 +56,12 @@ namespace ShareX.ImageEditor
     public class EditorEvents
     {
         public Action<byte[]>? CopyImageRequested { get; set; }
-        public Action<byte[]>? SaveImageRequested { get; set; }
-        public Action<byte[]>? SaveImageAsRequested { get; set; }
+        public Func<byte[], string?>? SaveImageRequested { get; set; }
+        public Func<byte[], string?>? SaveImageAsRequested { get; set; }
         public Action<byte[]>? PinImageRequested { get; set; }
         public Action<byte[]>? UploadImageRequested { get; set; }
         public Action<EditorDiagnosticEvent>? DiagnosticReported { get; set; }
+        public string? ImageFilePath { get; set; }
     }
 
     public static class AvaloniaIntegration
@@ -118,7 +119,7 @@ namespace ShareX.ImageEditor
             window.Show();
         }
 
-        public static byte[]? ShowEditorDialog(Stream imageStream, ImageEditorOptions options, EditorEvents? events = null, bool taskMode = false)
+        public static byte[]? ShowEditorDialog(Stream imageStream, ImageEditorOptions options, EditorEvents? events = null, bool taskMode = false, string? imageFilePath = null)
         {
             byte[]? result = null;
             IEditorDiagnosticsSink? previousDiagnosticsSink = null;
@@ -161,6 +162,13 @@ namespace ShareX.ImageEditor
             if (imageStream != null)
             {
                 window.LoadImage(imageStream);
+            }
+
+            // Set file path from events or parameter
+            string? filePath = imageFilePath ?? events?.ImageFilePath;
+            if (!string.IsNullOrEmpty(filePath) && window.DataContext is MainViewModel vmForPath)
+            {
+                vmForPath.ImageFilePath = filePath;
             }
 
             if (taskMode && window.DataContext is MainViewModel vm)
@@ -230,7 +238,11 @@ namespace ShareX.ImageEditor
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null)
                     {
-                        InvokeHostCallback(bytes, events.SaveImageRequested, nameof(EditorEvents.SaveImageRequested));
+                        string? savedPath = InvokeHostSaveCallback(bytes, events.SaveImageRequested, nameof(EditorEvents.SaveImageRequested));
+                        if (!string.IsNullOrEmpty(savedPath))
+                        {
+                            vm.ImageFilePath = savedPath;
+                        }
                     }
                 };
             }
@@ -242,7 +254,11 @@ namespace ShareX.ImageEditor
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null)
                     {
-                        InvokeHostCallback(bytes, events.SaveImageAsRequested, nameof(EditorEvents.SaveImageAsRequested));
+                        string? savedPath = InvokeHostSaveCallback(bytes, events.SaveImageAsRequested, nameof(EditorEvents.SaveImageAsRequested));
+                        if (!string.IsNullOrEmpty(savedPath))
+                        {
+                            vm.ImageFilePath = savedPath;
+                        }
                     }
                 };
             }
@@ -293,6 +309,19 @@ namespace ShareX.ImageEditor
             catch (Exception ex)
             {
                 EditorServices.ReportError(nameof(AvaloniaIntegration), $"Host callback '{callbackName}' failed.", ex);
+            }
+        }
+
+        private static string? InvokeHostSaveCallback(byte[] bytes, Func<byte[], string?> callback, string callbackName)
+        {
+            try
+            {
+                return callback(bytes);
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportError(nameof(AvaloniaIntegration), $"Host callback '{callbackName}' failed.", ex);
+                return null;
             }
         }
     }

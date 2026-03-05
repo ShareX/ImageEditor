@@ -35,7 +35,6 @@ using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Services;
 using System.Collections.ObjectModel;
-using System.Reflection;
 
 namespace ShareX.ImageEditor.ViewModels
 {
@@ -282,10 +281,8 @@ namespace ShareX.ImageEditor.ViewModels
                     ApplySmartPaddingCrop();
                 }
 
-                var ver = GetVersionString();
-                WindowTitle = string.IsNullOrEmpty(ver)
-                    ? $"ShareX - Image Editor - {ImageWidth}x{ImageHeight}"
-                    : $"ShareX - Image Editor - v{ver} - {ImageWidth}x{ImageHeight}";
+                var fileName = GetFileNameFromPath(ImageFilePath);
+                WindowTitle = BuildWindowTitle(ImageWidth, ImageHeight, fileName);
             }
             else
             {
@@ -605,6 +602,9 @@ namespace ShareX.ImageEditor.ViewModels
         private string? _lastSavedPath;
 
         [ObservableProperty]
+        private string? _imageFilePath;
+
+        [ObservableProperty]
         private string _applicationName = "ShareX";
 
         public string EditorTitle => $"{ApplicationName} Editor";
@@ -637,18 +637,41 @@ namespace ShareX.ImageEditor.ViewModels
             UpdateCanvasProperties();
         }
 
-        private static string GetVersionString()
+        private static string BuildWindowTitle(double width, double height, string? fileName)
         {
-            var asm = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            var sb = new System.Text.StringBuilder("ShareX - Image Editor");
 
-            var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            if (!string.IsNullOrEmpty(info?.InformationalVersion))
+            if (width > 0 && height > 0)
             {
-                return info.InformationalVersion;
+                sb.Append($" - {width}x{height}");
             }
 
-            var version = asm.GetName().Version;
-            return version?.ToString() ?? string.Empty;
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                sb.Append($" - {fileName}");
+            }
+
+            return sb.ToString();
+        }
+
+        private static string? GetFileNameFromPath(string? filePath)
+        {
+            if (string.IsNullOrEmpty(filePath)) return null;
+            try
+            {
+                return Path.GetFileName(filePath);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        partial void OnImageFilePathChanged(string? value)
+        {
+            // Refresh window title when file path changes (after Save / Save As)
+            var fileName = GetFileNameFromPath(value);
+            WindowTitle = BuildWindowTitle(ImageWidth, ImageHeight, fileName);
         }
 
         public void AttachEditorCore(EditorCore editorCore)

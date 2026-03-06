@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ConvolutionMatrixImageEffect : ImageEffect
+public class ConvolutionMatrixImageEffect : FilterImageEffect
 {
     public override string Name => "Convolution matrix";
     public override string IconKey => "IconAdjust";

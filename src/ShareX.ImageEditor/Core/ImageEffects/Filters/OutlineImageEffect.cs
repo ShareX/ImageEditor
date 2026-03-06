@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class OutlineImageEffect : ImageEffect
+public class OutlineImageEffect : FilterImageEffect
 {
     public int Size { get; set; }
     public int Padding { get; set; }

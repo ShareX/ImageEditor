@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ShadowsHighlightsImageEffect : ImageEffect
+public class ShadowsHighlightsImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Shadows / Highlights";
     public override string IconKey => "IconArrowsV";

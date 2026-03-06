@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class WatercolorKuwaharaImageEffect : ImageEffect
+public class WatercolorKuwaharaImageEffect : FilterImageEffect
 {
     public override string Name => "Watercolor / Kuwahara";
     public override string IconKey => "IconPalette";

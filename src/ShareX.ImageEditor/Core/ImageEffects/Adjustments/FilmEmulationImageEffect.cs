@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class FilmEmulationImageEffect : ImageEffect
+public class FilmEmulationImageEffect : AdjustmentImageEffect
 {
     public enum FilmEmulationPreset
     {

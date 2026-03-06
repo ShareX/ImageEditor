@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ShadowImageEffect : ImageEffect
+public class ShadowImageEffect : FilterImageEffect
 {
     public float Opacity { get; set; }
     public int Size { get; set; }

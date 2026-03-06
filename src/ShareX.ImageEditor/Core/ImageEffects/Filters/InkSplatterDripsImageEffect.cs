@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class InkSplatterDripsImageEffect : ImageEffect
+public class InkSplatterDripsImageEffect : FilterImageEffect
 {
     public override string Name => "Ink splatter + drips";
     public override string IconKey => "IconInkStroke";

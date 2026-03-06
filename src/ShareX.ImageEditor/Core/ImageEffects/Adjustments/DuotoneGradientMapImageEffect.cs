@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class DuotoneGradientMapImageEffect : ImageEffect
+public class DuotoneGradientMapImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Duotone / Gradient map";
     public override string IconKey => "IconDroplets";

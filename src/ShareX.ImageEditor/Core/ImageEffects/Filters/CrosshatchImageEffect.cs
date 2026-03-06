@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CrosshatchImageEffect : ImageEffect
+public class CrosshatchImageEffect : FilterImageEffect
 {
     public override string Name => "Crosshatch";
     public override string IconKey => "IconHash";

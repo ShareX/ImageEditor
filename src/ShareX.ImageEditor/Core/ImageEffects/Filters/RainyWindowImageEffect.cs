@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RainyWindowImageEffect : ImageEffect
+public class RainyWindowImageEffect : FilterImageEffect
 {
     public override string Name => "Rainy window";
     public override string IconKey => "IconCloud";

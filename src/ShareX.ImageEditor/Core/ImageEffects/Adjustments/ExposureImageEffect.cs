@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ExposureImageEffect : ImageEffect
+public class ExposureImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Exposure";
     public override string IconKey => "IconRotateCW";

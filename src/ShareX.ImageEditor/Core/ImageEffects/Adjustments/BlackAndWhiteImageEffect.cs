@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class BlackAndWhiteImageEffect : ImageEffect
+public class BlackAndWhiteImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Black and White";
     public override string IconKey => "IconAdjust";

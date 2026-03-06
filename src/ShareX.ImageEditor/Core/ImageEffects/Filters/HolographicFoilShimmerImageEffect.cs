@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HolographicFoilShimmerImageEffect : ImageEffect
+public class HolographicFoilShimmerImageEffect : FilterImageEffect
 {
     public override string Name => "Holographic foil shimmer";
     public override string IconKey => "IconWandSparkles";

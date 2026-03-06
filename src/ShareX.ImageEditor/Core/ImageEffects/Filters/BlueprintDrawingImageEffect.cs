@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BlueprintDrawingImageEffect : ImageEffect
+public class BlueprintDrawingImageEffect : FilterImageEffect
 {
     public override string Name => "Blueprint drawing";
     public override string IconKey => "IconDesignIdeas";

@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class HueImageEffect : ImageEffect
+public class HueImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Hue";
     public override string IconKey => "IconPalette";

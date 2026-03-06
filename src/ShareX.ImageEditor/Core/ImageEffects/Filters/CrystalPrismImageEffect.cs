@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CrystalPrismImageEffect : ImageEffect
+public class CrystalPrismImageEffect : FilterImageEffect
 {
     public override string Name => "Crystal prism";
     public override string IconKey => "IconGem";

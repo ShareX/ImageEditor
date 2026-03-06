@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ThermalVisionImageEffect : ImageEffect
+public class ThermalVisionImageEffect : FilterImageEffect
 {
     public override string Name => "Thermal vision";
     public override string IconKey => "IconFlame";

@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class PosterizeImageEffect : ImageEffect
+public class PosterizeImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Posterize";
     public override string IconKey => "IconPalette";

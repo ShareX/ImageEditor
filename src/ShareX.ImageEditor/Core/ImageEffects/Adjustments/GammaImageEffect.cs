@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class GammaImageEffect : ImageEffect
+public class GammaImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Gamma";
     public override string IconKey => "IconWaveSquare";

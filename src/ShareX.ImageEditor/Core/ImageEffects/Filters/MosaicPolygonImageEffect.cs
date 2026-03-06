@@ -9,7 +9,7 @@ public enum MosaicPolygonShape
     Triangle
 }
 
-public class MosaicPolygonImageEffect : ImageEffect
+public class MosaicPolygonImageEffect : FilterImageEffect
 {
     public override string Name => "Mosaic polygon";
     public override string IconKey => "IconShapes";

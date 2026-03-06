@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class LevelsImageEffect : ImageEffect
+public class LevelsImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Levels";
     public override string IconKey => "IconResizeCanvas";

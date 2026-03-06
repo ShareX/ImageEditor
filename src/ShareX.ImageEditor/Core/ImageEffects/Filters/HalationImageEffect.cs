@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HalationImageEffect : ImageEffect
+public class HalationImageEffect : FilterImageEffect
 {
     public override string Name => "Halation";
     public override string IconKey => "IconSun";

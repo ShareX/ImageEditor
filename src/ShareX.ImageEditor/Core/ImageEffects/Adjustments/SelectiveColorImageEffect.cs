@@ -30,7 +30,7 @@ public struct SelectiveColorAdjustment
     }
 }
 
-public class SelectiveColorImageEffect : ImageEffect
+public class SelectiveColorImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Selective Color";
     public override string IconKey => "IconHighlighter";

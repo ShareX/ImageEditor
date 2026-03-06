@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BloomImageEffect : ImageEffect
+public class BloomImageEffect : FilterImageEffect
 {
     public override string Name => "Bloom";
     public override string IconKey => "IconSparkles";

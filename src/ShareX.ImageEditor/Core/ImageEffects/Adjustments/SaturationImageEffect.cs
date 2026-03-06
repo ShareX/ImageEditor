@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class SaturationImageEffect : ImageEffect
+public class SaturationImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Saturation";
     public override string IconKey => "IconFillDrip";

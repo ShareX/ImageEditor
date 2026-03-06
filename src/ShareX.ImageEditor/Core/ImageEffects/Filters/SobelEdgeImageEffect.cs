@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SobelEdgeImageEffect : ImageEffect
+public class SobelEdgeImageEffect : FilterImageEffect
 {
     public override string Name => "Sobel edge";
     public override string IconKey => "IconHighlighter";

@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class LiquidGlassImageEffect : ImageEffect
+public class LiquidGlassImageEffect : FilterImageEffect
 {
     public override string Name => "Liquid glass";
     public override string IconKey => "IconDroplet";

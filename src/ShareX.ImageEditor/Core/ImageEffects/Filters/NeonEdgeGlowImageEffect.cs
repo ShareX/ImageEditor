@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class NeonEdgeGlowImageEffect : ImageEffect
+public class NeonEdgeGlowImageEffect : FilterImageEffect
 {
     public override string Name => "Neon edge glow";
     public override string IconKey => "IconZap";

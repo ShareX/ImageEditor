@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class GrayscaleImageEffect : ImageEffect
+public class GrayscaleImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Grayscale";
     public override string IconKey => "IconCloud";

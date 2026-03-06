@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class PixelateImageEffect : ImageEffect
+public class PixelateImageEffect : FilterImageEffect
 {
     public override string Name => "Pixelate";
     public override string IconKey => "IconGrid";

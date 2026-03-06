@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class UnsharpMaskImageEffect : ImageEffect
+public class UnsharpMaskImageEffect : FilterImageEffect
 {
     public override string Name => "Unsharp mask";
     public override string IconKey => "IconMagic";

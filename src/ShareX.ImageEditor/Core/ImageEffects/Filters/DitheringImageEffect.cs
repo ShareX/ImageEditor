@@ -17,7 +17,7 @@ public enum DitheringPalette
     Grayscale4
 }
 
-public class DitheringImageEffect : ImageEffect
+public class DitheringImageEffect : FilterImageEffect
 {
     public override string Name => "Dithering";
     public override string IconKey => "IconTableCells";

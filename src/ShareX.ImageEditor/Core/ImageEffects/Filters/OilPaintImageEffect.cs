@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class OilPaintImageEffect : ImageEffect
+public class OilPaintImageEffect : FilterImageEffect
 {
     public override string Name => "Oil paint";
     public override string IconKey => "IconPalette";

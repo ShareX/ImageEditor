@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class SolarizeImageEffect : ImageEffect
+public class SolarizeImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Solarize";
     public override string IconKey => "IconSun";

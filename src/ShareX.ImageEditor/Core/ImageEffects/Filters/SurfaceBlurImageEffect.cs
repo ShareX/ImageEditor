@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SurfaceBlurImageEffect : ImageEffect
+public class SurfaceBlurImageEffect : FilterImageEffect
 {
     public override string Name => "Surface blur";
     public override string IconKey => "IconWater";

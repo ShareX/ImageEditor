@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SliceImageEffect : ImageEffect
+public class SliceImageEffect : FilterImageEffect
 {
     public int MinHeight { get; set; }
     public int MaxHeight { get; set; }

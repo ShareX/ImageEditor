@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ThresholdImageEffect : ImageEffect
+public class ThresholdImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Threshold";
     public override string IconKey => "IconHighlighter";

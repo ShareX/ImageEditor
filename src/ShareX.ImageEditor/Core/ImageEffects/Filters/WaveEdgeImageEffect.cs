@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class WaveEdgeImageEffect : ImageEffect
+public class WaveEdgeImageEffect : FilterImageEffect
 {
     public int Depth { get; set; } = 15;
     public int Range { get; set; } = 20;

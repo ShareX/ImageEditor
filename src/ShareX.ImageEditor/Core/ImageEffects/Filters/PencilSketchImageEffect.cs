@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class PencilSketchImageEffect : ImageEffect
+public class PencilSketchImageEffect : FilterImageEffect
 {
     public override string Name => "Pencil sketch";
     public override string IconKey => "IconPencil";

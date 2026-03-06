@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class TornEdgeImageEffect : ImageEffect
+public class TornEdgeImageEffect : FilterImageEffect
 {
     public int Depth { get; set; }
     public int Range { get; set; }

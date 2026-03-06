@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class EmbossImageEffect : ImageEffect
+public class EmbossImageEffect : FilterImageEffect
 {
     public override string Name => "Emboss";
     public override string IconKey => "IconMagic";

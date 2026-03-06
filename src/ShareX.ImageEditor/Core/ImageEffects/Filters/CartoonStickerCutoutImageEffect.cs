@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CartoonStickerCutoutImageEffect : ImageEffect
+public class CartoonStickerCutoutImageEffect : FilterImageEffect
 {
     public override string Name => "Cartoon sticker cutout";
     public override string IconKey => "IconNoteSticky";

@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class TemperatureTintImageEffect : ImageEffect
+public class TemperatureTintImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Temperature / Tint";
     public override string IconKey => "IconArrowsH";

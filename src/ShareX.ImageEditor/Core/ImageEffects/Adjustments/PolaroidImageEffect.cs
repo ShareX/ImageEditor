@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class PolaroidImageEffect : ImageEffect
+public class PolaroidImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Polaroid";
     public override string IconKey => "IconCameraRetro";

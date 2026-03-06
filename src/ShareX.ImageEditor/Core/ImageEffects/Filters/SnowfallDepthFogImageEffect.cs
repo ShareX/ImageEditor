@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SnowfallDepthFogImageEffect : ImageEffect
+public class SnowfallDepthFogImageEffect : FilterImageEffect
 {
     public override string Name => "Snowfall + depth fog";
     public override string IconKey => "IconWeatherSnow";

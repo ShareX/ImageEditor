@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ClaymationTextureImageEffect : ImageEffect
+public class ClaymationTextureImageEffect : FilterImageEffect
 {
     public override string Name => "Claymation texture";
     public override string IconKey => "IconFoodCake";

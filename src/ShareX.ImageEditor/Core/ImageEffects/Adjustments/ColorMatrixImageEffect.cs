@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ColorMatrixImageEffect : ImageEffect
+public class ColorMatrixImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Color matrix";
     public override string IconKey => "IconTableCells";

@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class OldCameraFlashBurnImageEffect : ImageEffect
+public class OldCameraFlashBurnImageEffect : FilterImageEffect
 {
     public override string Name => "Old camera flash burn";
     public override string IconKey => "IconFlash";

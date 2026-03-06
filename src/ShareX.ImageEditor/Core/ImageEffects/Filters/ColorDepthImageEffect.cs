@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ColorDepthImageEffect : ImageEffect
+public class ColorDepthImageEffect : FilterImageEffect
 {
     public override string Name => "Color depth";
     public override string IconKey => "IconAdjust";

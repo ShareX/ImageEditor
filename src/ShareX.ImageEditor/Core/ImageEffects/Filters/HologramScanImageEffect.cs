@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HologramScanImageEffect : ImageEffect
+public class HologramScanImageEffect : FilterImageEffect
 {
     public override string Name => "Hologram scan";
     public override string IconKey => "IconDisplay";

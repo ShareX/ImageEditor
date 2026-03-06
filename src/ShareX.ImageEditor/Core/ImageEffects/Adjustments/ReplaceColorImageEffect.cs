@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ReplaceColorImageEffect : ImageEffect
+public class ReplaceColorImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Replace Color";
     public override string IconKey => "IconSync";

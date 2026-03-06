@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class SepiaImageEffect : ImageEffect
+public class SepiaImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Sepia";
     public override string IconKey => "IconCoffee";

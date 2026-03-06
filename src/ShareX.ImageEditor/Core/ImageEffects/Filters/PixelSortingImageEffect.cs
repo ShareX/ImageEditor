@@ -15,7 +15,7 @@ public enum PixelSortMetric
     Hue
 }
 
-public class PixelSortingImageEffect : ImageEffect
+public class PixelSortingImageEffect : FilterImageEffect
 {
     public override string Name => "Pixel sorting";
     public override string IconKey => "IconArrowsH";

@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class AnimeSpeedLinesImageEffect : ImageEffect
+public class AnimeSpeedLinesImageEffect : FilterImageEffect
 {
     public override string Name => "Anime speed lines";
     public override string IconKey => "IconBurst";

@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class VignetteImageEffect : ImageEffect
+public class VignetteImageEffect : FilterImageEffect
 {
     public override string Name => "Vignette";
     public override string IconKey => "IconEyeDropper";

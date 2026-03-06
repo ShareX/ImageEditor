@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class VibranceImageEffect : ImageEffect
+public class VibranceImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Vibrance";
     public override string IconKey => "IconTint";

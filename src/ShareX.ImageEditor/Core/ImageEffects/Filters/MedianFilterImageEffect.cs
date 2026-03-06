@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class MedianFilterImageEffect : ImageEffect
+public class MedianFilterImageEffect : FilterImageEffect
 {
     public override string Name => "Median filter";
     public override string IconKey => "IconTableCells";

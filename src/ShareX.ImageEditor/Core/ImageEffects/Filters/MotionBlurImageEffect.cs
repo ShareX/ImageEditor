@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class MotionBlurImageEffect : ImageEffect
+public class MotionBlurImageEffect : FilterImageEffect
 {
     public override string Name => "Motion blur";
     public override string IconKey => "IconRotateCW";

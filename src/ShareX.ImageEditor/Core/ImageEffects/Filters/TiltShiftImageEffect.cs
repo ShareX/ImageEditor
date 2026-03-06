@@ -9,7 +9,7 @@ public enum TiltShiftMode
     Radial
 }
 
-public class TiltShiftImageEffect : ImageEffect
+public class TiltShiftImageEffect : FilterImageEffect
 {
     public override string Name => "Tilt-shift";
     public override string IconKey => "IconCamera";

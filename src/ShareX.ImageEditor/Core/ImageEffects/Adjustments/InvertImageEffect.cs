@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class InvertImageEffect : ImageEffect
+public class InvertImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Invert";
     public override string IconKey => "IconExchangeAlt";

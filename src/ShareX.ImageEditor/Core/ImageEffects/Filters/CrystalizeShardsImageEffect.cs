@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CrystalizeShardsImageEffect : ImageEffect
+public class CrystalizeShardsImageEffect : FilterImageEffect
 {
     public override string Name => "Crystalize shards";
     public override string IconKey => "IconGem";

@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SharpenImageEffect : ImageEffect
+public class SharpenImageEffect : FilterImageEffect
 {
     public override string Name => "Sharpen";
     public override string IconKey => "IconMagic";

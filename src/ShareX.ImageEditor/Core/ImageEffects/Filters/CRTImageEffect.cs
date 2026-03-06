@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CRTImageEffect : ImageEffect
+public class CRTImageEffect : FilterImageEffect
 {
     public override string Name => "CRT";
     public override string IconKey => "IconDisplay";

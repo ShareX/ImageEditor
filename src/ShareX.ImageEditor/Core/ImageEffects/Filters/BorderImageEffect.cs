@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BorderImageEffect : ImageEffect
+public class BorderImageEffect : FilterImageEffect
 {
     public ImageHelpers.BorderType Type { get; set; }
     public int Size { get; set; }

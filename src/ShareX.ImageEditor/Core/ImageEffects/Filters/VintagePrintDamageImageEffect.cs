@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class VintagePrintDamageImageEffect : ImageEffect
+public class VintagePrintDamageImageEffect : FilterImageEffect
 {
     public override string Name => "Vintage print damage";
     public override string IconKey => "IconFileImage";

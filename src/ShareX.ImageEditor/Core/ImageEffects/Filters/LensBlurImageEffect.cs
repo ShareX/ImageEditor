@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class LensBlurImageEffect : ImageEffect
+public class LensBlurImageEffect : FilterImageEffect
 {
     private readonly record struct KernelOffset(int X, int Y, float Weight);
     private static readonly ConcurrentDictionary<int, KernelOffset[]> KernelCache = new();

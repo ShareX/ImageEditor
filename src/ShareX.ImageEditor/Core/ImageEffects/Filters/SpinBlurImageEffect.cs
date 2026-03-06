@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SpinBlurImageEffect : ImageEffect
+public class SpinBlurImageEffect : FilterImageEffect
 {
     public override string Name => "Spin blur";
     public override string IconKey => "IconArrowsSpin";

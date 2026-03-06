@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HalftoneImageEffect : ImageEffect
+public class HalftoneImageEffect : FilterImageEffect
 {
     public override string Name => "Halftone";
     public override string IconKey => "IconCircle";

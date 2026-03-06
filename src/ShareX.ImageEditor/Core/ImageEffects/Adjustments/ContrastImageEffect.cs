@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ContrastImageEffect : ImageEffect
+public class ContrastImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Contrast";
     public override string IconKey => "IconAdjust";

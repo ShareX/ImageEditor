@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ReflectionImageEffect : ImageEffect
+public class ReflectionImageEffect : FilterImageEffect
 {
     public int Percentage { get; set; }
     public int MaxAlpha { get; set; }

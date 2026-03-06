@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class MatrixDigitalRainImageEffect : ImageEffect
+public class MatrixDigitalRainImageEffect : FilterImageEffect
 {
     public override string Name => "Matrix digital rain";
     public override string IconKey => "IconDisplay";

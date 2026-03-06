@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ASCIIArtImageEffect : ImageEffect
+public class ASCIIArtImageEffect : FilterImageEffect
 {
     public override string Name => "ASCII art";
     public override string IconKey => "IconText";

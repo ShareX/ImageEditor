@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BlurImageEffect : ImageEffect
+public class BlurImageEffect : FilterImageEffect
 {
     public override string Name => "Blur";
     public override string IconKey => "IconCloud";

@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class GlowImageEffect : ImageEffect
+public class GlowImageEffect : FilterImageEffect
 {
     public int Size { get; set; }
     public float Strength { get; set; }

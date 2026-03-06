@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class StainedGlassImageEffect : ImageEffect
+public class StainedGlassImageEffect : FilterImageEffect
 {
     public override string Name => "Stained glass";
     public override string IconKey => "IconGrid";

@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class AlphaImageEffect : ImageEffect
+public class AlphaImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Alpha";
     public override string IconKey => "IconEyeDropper";

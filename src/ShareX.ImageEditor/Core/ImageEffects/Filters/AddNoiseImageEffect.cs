@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class AddNoiseImageEffect : ImageEffect
+public class AddNoiseImageEffect : FilterImageEffect
 {
     public override string Name => "Add noise";
     public override string IconKey => "IconCloud";

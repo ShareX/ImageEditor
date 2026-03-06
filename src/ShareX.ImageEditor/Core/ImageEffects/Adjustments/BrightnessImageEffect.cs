@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class BrightnessImageEffect : ImageEffect
+public class BrightnessImageEffect : AdjustmentImageEffect
 {
     public override string Name => "Brightness";
     public override string IconKey => "IconSun";

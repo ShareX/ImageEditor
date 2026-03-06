@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class MeanRemovalImageEffect : ImageEffect
+public class MeanRemovalImageEffect : FilterImageEffect
 {
     public override string Name => "Mean removal";
     public override string IconKey => "IconMagic";

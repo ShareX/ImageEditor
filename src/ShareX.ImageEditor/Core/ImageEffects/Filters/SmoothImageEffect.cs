@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SmoothImageEffect : ImageEffect
+public class SmoothImageEffect : FilterImageEffect
 {
     public override string Name => "Smooth";
     public override string IconKey => "IconMagic";

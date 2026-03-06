@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class FrostedGlassIceEdgesImageEffect : ImageEffect
+public class FrostedGlassIceEdgesImageEffect : FilterImageEffect
 {
     public override string Name => "Frosted glass + ice edges";
     public override string IconKey => "IconSnowflake";

@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RGBSplitImageEffect : ImageEffect
+public class RGBSplitImageEffect : FilterImageEffect
 {
     public override string Name => "RGB split";
     public override string IconKey => "IconAdjust";

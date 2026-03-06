@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BlockGlitchImageEffect : ImageEffect
+public class BlockGlitchImageEffect : FilterImageEffect
 {
     public override string Name => "Block glitch / Databending";
     public override string IconKey => "IconFileImage";

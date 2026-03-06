@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class EdgeDetectImageEffect : ImageEffect
+public class EdgeDetectImageEffect : FilterImageEffect
 {
     public override string Name => "Edge detect";
     public override string IconKey => "IconMagic";

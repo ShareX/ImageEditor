@@ -7,6 +7,8 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public abstract class BaseEffectAnnotation : Annotation, IDisposable
 {
+    public override AnnotationCategory Category => AnnotationCategory.Effects;
+
     /// <summary>
     /// Effect radius / strength
     /// </summary>

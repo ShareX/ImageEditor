@@ -32,6 +32,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class RectangleAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public RectangleAnnotation()
     {
         ToolType = EditorTool.Rectangle;

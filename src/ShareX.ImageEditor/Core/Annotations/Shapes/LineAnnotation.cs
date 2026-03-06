@@ -32,6 +32,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class LineAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public LineAnnotation()
     {
         ToolType = EditorTool.Line;

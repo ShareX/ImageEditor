@@ -32,6 +32,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class EllipseAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public EllipseAnnotation()
     {
         ToolType = EditorTool.Ellipse;

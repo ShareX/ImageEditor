@@ -7,6 +7,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class SpeechBalloonAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Text;
     /// <summary>
     /// Tail point (absolute position)
     /// </summary>

@@ -32,6 +32,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class NumberAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Text;
     /// <summary>
     /// Number to display (typically auto-incremented)
     /// </summary>

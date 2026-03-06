@@ -33,6 +33,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public class CutOutAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     /// <summary>
     /// Indicates if the cut is vertical (true) or horizontal (false)
     /// </summary>

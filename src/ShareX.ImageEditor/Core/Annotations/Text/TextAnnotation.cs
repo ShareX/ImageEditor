@@ -32,6 +32,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class TextAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Text;
     /// <summary>
     /// Text content
     /// </summary>

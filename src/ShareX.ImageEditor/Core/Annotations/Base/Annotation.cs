@@ -50,6 +50,11 @@ namespace ShareX.ImageEditor.Core.Annotations;
 public abstract class Annotation
 {
     /// <summary>
+    /// Functional category of this annotation type (Shapes, Effects, or Text).
+    /// </summary>
+    public abstract AnnotationCategory Category { get; }
+
+    /// <summary>
     /// Unique identifier for this annotation
     /// </summary>
     public Guid Id { get; set; } = Guid.NewGuid();

@@ -32,6 +32,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class ArrowAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     /// <summary>
     /// Arrow head width is proportional to stroke width for visual balance.
     /// ISSUE-006 fix: Centralized magic number constant.

@@ -7,6 +7,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public class ImageAnnotation : Annotation, IDisposable
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     private SKBitmap? _imageBitmap;
 
     /// <summary>

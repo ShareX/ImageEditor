@@ -33,6 +33,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public class CropAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public CropAnnotation()
     {
         ToolType = EditorTool.Crop;

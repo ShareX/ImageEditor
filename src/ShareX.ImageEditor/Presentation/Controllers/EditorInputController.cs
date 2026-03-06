@@ -9,6 +9,7 @@ using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
+using ShareX.ImageEditor.Presentation.Views;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Controllers;

@@ -32,6 +32,8 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class SpotlightAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Effects;
+
     /// <summary>
     /// Darkening overlay opacity (0-255)
     /// </summary>

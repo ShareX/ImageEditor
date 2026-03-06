@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using ShareX.ImageEditor.Presentation.ViewModels;
+using ShareX.ImageEditor.Presentation.Views;
 
 namespace ShareX.ImageEditor.Presentation.Controllers;
 

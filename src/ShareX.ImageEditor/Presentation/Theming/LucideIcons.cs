@@ -1,4 +1,4 @@
-namespace ShareX.ImageEditor.Presentation.Theming
+﻿namespace ShareX.ImageEditor.Presentation.Theming
 {
     public static class LucideIcons
     {
@@ -8,6 +8,7 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string Minus = "\uE11C";
         public const string ArrowRight = "\uE049";
         public const string PenTool = "\uE131";
+        public const string Pencil = "\uE1F9";
         public const string Highlighter = "\uE0F4";
         public const string Type = "\uE198";
         public const string MessageSquare = "\uE117";
@@ -25,7 +26,9 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string Redo2 = "\uE2A0";
         public const string Trash2 = "\uE18E";
         public const string Copy = "\uE09E";
+        public const string Clipboard = "\uE085";
         public const string Save = "\uE14D";
+        public const string SaveAll = "\uE40F";
         public const string Download = "\uE0B2";
         public const string ZoomIn = "\uE1B6";
         public const string ZoomOut = "\uE1B7";
@@ -153,3 +156,5 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string TextCursor = "\uE264";
     }
 }
+
+

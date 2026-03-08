@@ -1,4 +1,4 @@
-#region License Information (GPL v3)
+﻿#region License Information (GPL v3)
 
 /*
     ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
@@ -526,14 +526,14 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     EditorTool.Ellipse => LucideIcons.Circle,
                     EditorTool.Line => LucideIcons.Minus,
                     EditorTool.Arrow => LucideIcons.ArrowRight,
-                    EditorTool.Freehand => LucideIcons.PenTool,
+                    EditorTool.Freehand => LucideIcons.Pencil,
                     EditorTool.Text => LucideIcons.Type,
                     EditorTool.SpeechBalloon => LucideIcons.MessageSquare,
-                    EditorTool.Step => LucideIcons.ListOrdered,
-                    EditorTool.Blur => LucideIcons.Focus,
+                    EditorTool.Step => LucideIcons.Hash,
+                    EditorTool.Blur => LucideIcons.Droplet,
                     EditorTool.Pixelate => LucideIcons.Grid2X2,
                     EditorTool.Magnify => LucideIcons.Search,
-                    EditorTool.Spotlight => LucideIcons.Spotlight,
+                    EditorTool.Spotlight => LucideIcons.Lightbulb,
                     EditorTool.SmartEraser => LucideIcons.Eraser,
                     EditorTool.Highlight => LucideIcons.Highlighter,
                     EditorTool.Crop => LucideIcons.Crop,
@@ -715,3 +715,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
     }
 }
+
+
+
+
+

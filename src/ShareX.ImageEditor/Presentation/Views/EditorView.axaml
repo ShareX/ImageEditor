@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -29,24 +29,24 @@
         <x:String x:Key="IconEllipse">&#xe076;</x:String>
         <x:String x:Key="IconLine">&#xe11c;</x:String>
         <x:String x:Key="IconArrow">&#xe049;</x:String>
-        <x:String x:Key="IconPen">&#xe131;</x:String>
+        <x:String x:Key="IconPen">&#xe1f9;</x:String>
         <x:String x:Key="IconHighlighter">&#xe0f4;</x:String>
         <x:String x:Key="IconText">&#xe198;</x:String>
         <x:String x:Key="IconSpeechBalloon">&#xe117;</x:String>
-        <x:String x:Key="IconNumber">&#xe1d1;</x:String>
-        <x:String x:Key="IconBlur">&#xe29e;</x:String>
+        <x:String x:Key="IconNumber">&#xe0ef;</x:String>
+        <x:String x:Key="IconBlur">&#xe0b4;</x:String>
         <x:String x:Key="IconPixelate">&#xe4ff;</x:String>
         <x:String x:Key="IconMagnify">&#xe151;</x:String>
-        <x:String x:Key="IconSpotlight">&#xe682;</x:String>
+        <x:String x:Key="IconSpotlight">&#xe1c2;</x:String>
         <x:String x:Key="IconSmartEraser">&#xe28f;</x:String>
         <x:String x:Key="IconCrop">&#xe0ab;</x:String>
         <x:String x:Key="IconCutOut">&#xe14e;</x:String>
-        <x:String x:Key="IconBackground">&#xe2e6;</x:String>
+        <x:String x:Key="IconBackground">&#xe0f6;</x:String>
         <x:String x:Key="IconUndo">&#xe2a1;</x:String>
         <x:String x:Key="IconRedo">&#xe2a0;</x:String>
         <x:String x:Key="IconClear">&#xe18e;</x:String>
         <x:String x:Key="IconDelete">&#xe18e;</x:String>
-        <x:String x:Key="IconCopy">&#xe09e;</x:String>
+        <x:String x:Key="IconCopy">&#xe085;</x:String>
         <x:String x:Key="IconSave">&#xe14d;</x:String>
         <x:String x:Key="IconDownload">&#xe0b2;</x:String>
         <x:String x:Key="IconZoomIn">&#xe1b6;</x:String>
@@ -61,7 +61,7 @@
         <x:String x:Key="IconBringForward">&#xe491;</x:String>
         <x:String x:Key="IconSendBackward">&#xe48c;</x:String>
         <x:String x:Key="IconSendToBack">&#xe4f3;</x:String>
-        <x:String x:Key="IconHardDrive">&#xe0ed;</x:String>
+        <x:String x:Key="IconHardDrive">&#xe40f;</x:String>
         <x:String x:Key="IconThumbtack">&#xe259;</x:String>
         <x:String x:Key="IconPlay">&#xe13c;</x:String>
         <x:String x:Key="IconCancel">&#xe1b2;</x:String>
@@ -69,7 +69,7 @@
         <x:String x:Key="IconItalic">&#xe0fb;</x:String>
         <x:String x:Key="IconUnderline">&#xe19a;</x:String>
         <x:String x:Key="IconFlatten">&#xe44c;</x:String>
-        <x:String x:Key="IconEffects">&#xe357;</x:String>
+        <x:String x:Key="IconEffects">&#xe412;</x:String>
 
         <ContextMenu x:Key="EditorContextMenu"
                      Placement="Pointer"
@@ -933,3 +933,8 @@
         </Border>
     </Grid>
 </UserControl>
+
+
+
+
+

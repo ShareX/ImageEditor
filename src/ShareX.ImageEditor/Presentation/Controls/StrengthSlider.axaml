@@ -15,7 +15,7 @@
                    VerticalAlignment="Center"
                    Width="24"
                    TextAlignment="Center"
-                   Margin="0,0,4,0"/>
+                   Margin="0,0,5,0"/>
         
         <!-- Slider -->
         <Slider x:Name="StrengthSliderControl"
@@ -23,8 +23,10 @@
                 Minimum="{Binding Minimum, ElementName=StrengthSliderRoot}"
                 Maximum="{Binding Maximum, ElementName=StrengthSliderRoot}"
                 Value="{Binding SelectedStrength, ElementName=StrengthSliderRoot, Mode=TwoWay}"
+                TickFrequency="1"
+                IsSnapToTickEnabled="True"
                 Height="50"
-                Width="100"
+                Width="120"
                 Margin="0,0,4,0"
                 VerticalAlignment="Center"/>
     </Grid>

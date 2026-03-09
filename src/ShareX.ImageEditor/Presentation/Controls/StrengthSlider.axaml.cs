@@ -45,7 +45,15 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             SelectedStrengthProperty.Changed.AddClassHandler<StrengthSlider>((s, e) =>
             {
-                s.StrengthChanged?.Invoke(s, s.SelectedStrength);
+                float roundedStrength = MathF.Round(s.SelectedStrength);
+
+                if (Math.Abs(s.SelectedStrength - roundedStrength) > float.Epsilon)
+                {
+                    s.SelectedStrength = roundedStrength;
+                    return;
+                }
+
+                s.StrengthChanged?.Invoke(s, roundedStrength);
             });
         }
 

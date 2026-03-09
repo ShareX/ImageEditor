@@ -159,10 +159,8 @@
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconMoon}"/>
                 </MenuItem.Icon>
-                <MenuItem Header="ShareX (Dark)" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
-                <MenuItem Header="ShareX (Light)" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>
-                <MenuItem Header="Dark" Command="{Binding SetThemeCommand}" CommandParameter="Dark"/>
-                <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="Light"/>
+                <MenuItem Header="Dark" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
+                <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>
             </MenuItem>
         </ContextMenu>
     </UserControl.Resources>
@@ -253,10 +251,8 @@
         <Style Selector="ContextMenu MenuItem:pointerover /template/ Border#PART_LayoutRoot">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
         </Style>
-        <Style Selector="ContextMenu MenuItem:separator">
-            <Setter Property="Height" Value="1"/>
-            <Setter Property="Margin" Value="0,4"/>
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+        <Style Selector="ContextMenu Separator">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
         </Style>
 
         <Style Selector="Border.capsule">

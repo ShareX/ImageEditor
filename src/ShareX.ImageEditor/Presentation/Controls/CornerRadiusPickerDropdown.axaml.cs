@@ -12,7 +12,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
         public static readonly StyledProperty<int> SelectedCornerRadiusProperty =
             AvaloniaProperty.Register<CornerRadiusPickerDropdown, int>(
                 nameof(SelectedCornerRadius),
-                defaultValue: 3);
+                defaultValue: 4);
 
         public static readonly StyledProperty<IEnumerable<int>> CornerRadiusOptionsProperty =
             AvaloniaProperty.Register<CornerRadiusPickerDropdown, IEnumerable<int>>(
@@ -85,23 +85,20 @@ namespace ShareX.ImageEditor.Presentation.Controls
             if (sender is Button button && button.CommandParameter is int selectedRadius)
             {
                 SelectedCornerRadius = selectedRadius;
+                CornerRadiusChanged?.Invoke(this, selectedRadius);
+                UpdateActiveStates();
 
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                var popup = this.FindControl<Popup>("CornerRadiusPopup");
+                if (popup != null)
                 {
-                    var popup = this.FindControl<Popup>("CornerRadiusPopup");
-                    if (popup != null)
-                    {
-                        popup.IsOpen = false;
-                    }
-
-                    CornerRadiusChanged?.Invoke(this, selectedRadius);
-                }, Avalonia.Threading.DispatcherPriority.Input);
+                    popup.IsOpen = false;
+                }
             }
         }
 
         private static IEnumerable<int> GetDefaultCornerRadiusOptions()
         {
-            return new List<int> { 0, 3, 6, 9, 12, 18, 24, 32 };
+            return new List<int> { 0, 2, 4, 6, 8, 10, 15, 20, 25, 30 };
         }
     }
 }

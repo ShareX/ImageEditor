@@ -140,7 +140,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         [ObservableProperty]
-        private int _cornerRadius = 3;
+        private int _cornerRadius = 4;
 
         partial void OnCornerRadiusChanged(int value)
         {

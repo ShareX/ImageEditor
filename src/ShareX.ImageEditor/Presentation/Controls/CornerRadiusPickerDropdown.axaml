@@ -2,9 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="using:ShareX.ImageEditor.Presentation.Converters"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
              x:Class="ShareX.ImageEditor.Presentation.Controls.CornerRadiusPickerDropdown"
              x:Name="CornerRadiusPickerDropdownRoot">
+
+    <UserControl.Resources>
+        <converters:CornerRadiusPreviewGeometryConverter x:Key="CornerRadiusPreviewGeometry" />
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="Button.picker-button">
@@ -28,15 +33,24 @@
                 Classes="editor-button"
                 Click="OnDropdownButtonClick"
                 Height="40"
-                MinWidth="74"
+                MinWidth="60"
                 HorizontalContentAlignment="Stretch">
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <TextBlock Grid.Column="0"
-                           Text="{Binding SelectedCornerRadius, ElementName=CornerRadiusPickerDropdownRoot, StringFormat='{}{0} px'}"
-                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
-                           FontSize="12"
-                           VerticalAlignment="Center"
-                           Margin="0,0,6,0"/>
+                <Grid Grid.Column="0"
+                      Width="24"
+                      Height="24"
+                      Margin="0,0,6,0"
+                      VerticalAlignment="Center">
+                    <Path Width="20"
+                          Height="20"
+                          Data="{Binding SelectedCornerRadius, ElementName=CornerRadiusPickerDropdownRoot, Converter={StaticResource CornerRadiusPreviewGeometry}, ConverterParameter=20}"
+                          Stroke="{DynamicResource ShareX.Brush.Text.Secondary}"
+                          StrokeThickness="2.5"
+                          StrokeJoin="Round"
+                          Stretch="None"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
+                </Grid>
 
                 <Border Grid.Column="1"/>
 
@@ -59,22 +73,32 @@
                 <ItemsControl ItemsSource="{Binding CornerRadiusOptions, ElementName=CornerRadiusPickerDropdownRoot}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical"/>
+                            <UniformGrid Columns="5"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button MinWidth="56"
-                                    Height="32"
-                                    Padding="8,0"
+                            <Button Width="36"
+                                    Height="36"
+                                    Padding="0"
                                     Classes="picker-button"
                                     Click="OnCornerRadiusSelected"
                                     CommandParameter="{Binding .}"
                                     HorizontalContentAlignment="Center"
-                                    VerticalContentAlignment="Center">
-                                <TextBlock Text="{Binding ., StringFormat='{}{0} px'}"
-                                           FontSize="12"
-                                           Foreground="{DynamicResource ShareX.Brush.Text}"/>
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding ., StringFormat='{}{0} px'}">
+                                <Grid Width="24"
+                                      Height="24">
+                                    <Path Width="20"
+                                          Height="20"
+                                          Data="{Binding ., Converter={StaticResource CornerRadiusPreviewGeometry}, ConverterParameter=20}"
+                                          Stroke="{DynamicResource ShareX.Brush.Text.Secondary}"
+                                          StrokeThickness="2.5"
+                                          StrokeJoin="Round"
+                                          Stretch="None"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                                </Grid>
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

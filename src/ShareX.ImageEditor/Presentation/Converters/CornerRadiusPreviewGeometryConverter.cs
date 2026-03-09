@@ -1,31 +1,41 @@
-using Avalonia;
 using Avalonia.Data.Converters;
+using Avalonia.Media;
 using System.Globalization;
 
 namespace ShareX.ImageEditor.Presentation.Converters
 {
-    public class DoubleToCornerRadiusConverter : IValueConverter
+    public class CornerRadiusPreviewGeometryConverter : IValueConverter
     {
-        public static readonly DoubleToCornerRadiusConverter Instance = new();
+        public static readonly CornerRadiusPreviewGeometryConverter Instance = new();
 
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (TryGetRadius(value, out double radius))
+            double size = 30;
+
+            if (parameter is string sizeText && double.TryParse(sizeText, NumberStyles.Float, CultureInfo.InvariantCulture, out double parsedSize) && parsedSize > 0)
             {
-                var clamped = Math.Max(0, radius);
-                return new CornerRadius(clamped);
+                size = parsedSize;
             }
 
-            return new CornerRadius(0);
+            if (!TryGetRadius(value, out double radius))
+            {
+                radius = 0;
+            }
+
+            double clampedRadius = Math.Clamp(radius, 0, size);
+            string sizeValue = size.ToString(CultureInfo.InvariantCulture);
+
+            if (clampedRadius <= 0.01d)
+            {
+                return Geometry.Parse($"M 0,{sizeValue} L 0,0 L {sizeValue},0");
+            }
+
+            string radiusValue = clampedRadius.ToString(CultureInfo.InvariantCulture);
+            return Geometry.Parse($"M 0,{sizeValue} L 0,{radiusValue} A {radiusValue},{radiusValue} 0 0 1 {radiusValue},0 L {sizeValue},0");
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value is CornerRadius cornerRadius)
-            {
-                return cornerRadius.TopLeft;
-            }
-
             return 0d;
         }
 

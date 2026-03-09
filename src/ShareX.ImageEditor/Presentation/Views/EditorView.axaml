@@ -551,99 +551,99 @@
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Select}"
                                 ToolTip.Tip="Select (V)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconSelect}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconSelect}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Rectangle}"
                                 ToolTip.Tip="Rectangle (R)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconRectangle}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconRectangle}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Ellipse}"
                                 ToolTip.Tip="Ellipse (E)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconEllipse}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconEllipse}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Line}"
                                 ToolTip.Tip="Line (L)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconLine}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconLine}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Arrow}"
                                 ToolTip.Tip="Arrow (A)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconArrow}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconArrow}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Freehand}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Freehand}"
                                 ToolTip.Tip="Freehand (F)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconPen}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconPen}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Text}"
                                 ToolTip.Tip="Text (T)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconText}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconText}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
                                 ToolTip.Tip="Speech Balloon (O)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconSpeechBalloon}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Step}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Step}"
                                 ToolTip.Tip="Step (N)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconNumber}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconNumber}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlight}"
                                 ToolTip.Tip="Highlight (H)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconHighlighter}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconHighlighter}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SmartEraser}"
                                 ToolTip.Tip="Smart Eraser (W)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconSmartEraser}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconSmartEraser}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Blur}"
                                 ToolTip.Tip="Blur (B)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconBlur}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconBlur}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pixelate}"
                                 ToolTip.Tip="Pixelate (P)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconPixelate}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconPixelate}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Magnify}"
                                 ToolTip.Tip="Magnify (M)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconMagnify}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconMagnify}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Spotlight}"
                                 ToolTip.Tip="Spotlight (S)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconSpotlight}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconSpotlight}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
                                 ToolTip.Tip="Crop (C)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconCrop}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconCrop}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=CutOut}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
                                 ToolTip.Tip="Cut Out (U)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconCutOut}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconCutOut}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding IsSettingsPanelOpen}"
                                 Command="{Binding ToggleSettingsPanelCommand}"
                                 ToolTip.Tip="Background"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconBackground}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconBackground}"/>
 
                         <!-- Effects Panel Toggle Button -->
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding IsEffectsPanelOpen}"
                                 Command="{Binding ToggleEffectsPanelCommand}"
                                 ToolTip.Tip="Effects"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconEffects}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconEffects}"/>
 
                     </StackPanel>
                 </ScrollViewer>
@@ -736,7 +736,7 @@
                                 Click="OnBoldButtonClick"
                                 IsVisible="{Binding ShowTextStyle}"
                                 ToolTip.Tip="Toggle Bold"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconBold}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconBold}"/>
 
                         <!-- Italic Toggle Button -->
                         <Button Classes="editor-button" Width="40"
@@ -744,7 +744,7 @@
                                 Click="OnItalicButtonClick"
                                 IsVisible="{Binding ShowTextStyle}"
                                 ToolTip.Tip="Toggle Italic"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconItalic}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconItalic}"/>
 
                         <!-- Underline Toggle Button -->
                         <Button Classes="editor-button" Width="40"
@@ -752,7 +752,7 @@
                                 Click="OnUnderlineButtonClick"
                                 IsVisible="{Binding ShowTextStyle}"
                                 ToolTip.Tip="Toggle Underline"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconUnderline}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconUnderline}"/>
 
                         <!-- Shadow Toggle Button -->
                         <Button Classes="editor-button" Width="40"
@@ -760,7 +760,7 @@
                                 Click="OnShadowButtonClick"
                                 IsVisible="False"
                                 ToolTip.Tip="Toggle Shadow"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="16" Content="{StaticResource IconMoon}"/>
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{StaticResource IconMoon}"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
@@ -809,7 +809,7 @@
                         </Button.Styles>
                         <TextBlock Text="{StaticResource IconCancel}"
                                    FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
-                                   FontSize="16" FontWeight="Normal" Foreground="White"
+                                   FontSize="18" FontWeight="Normal" Foreground="White"
                                    VerticalAlignment="Center"/>
                     </Button>
 
@@ -846,27 +846,27 @@
 
                 <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Copy image to clipboard (Ctrl+Shift+C)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
-                    <TextBlock Text="{StaticResource IconCopy}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                    <TextBlock Text="{StaticResource IconCopy}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding SaveCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Save image (Ctrl+S)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
-                    <TextBlock Text="{StaticResource IconSave}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                    <TextBlock Text="{StaticResource IconSave}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding SaveAsCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Save image as... (Ctrl+Shift+S)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
-                    <TextBlock Text="{StaticResource IconHardDrive}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                    <TextBlock Text="{StaticResource IconHardDrive}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding PinToScreenCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Pin image to screen (Ctrl+P)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
-                    <TextBlock Text="{StaticResource IconThumbtack}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                    <TextBlock Text="{StaticResource IconThumbtack}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 
                 <Button Classes="editor-button" Command="{Binding UploadCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Upload image (Ctrl+U)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
-                    <TextBlock Text="{StaticResource IconCloudArrowUp}" FontSize="16" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                    <TextBlock Text="{StaticResource IconCloudArrowUp}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
             </StackPanel>
         </Border>

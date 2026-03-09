@@ -68,7 +68,7 @@
         <x:String x:Key="IconBold">&#xe05d;</x:String>
         <x:String x:Key="IconItalic">&#xe0fb;</x:String>
         <x:String x:Key="IconUnderline">&#xe19a;</x:String>
-        <x:String x:Key="IconFlatten">&#xe44c;</x:String>
+        <x:String x:Key="IconFlatten">&#xe52a;</x:String>
         <x:String x:Key="IconEffects">&#xe412;</x:String>
 
         <ContextMenu x:Key="EditorContextMenu"
@@ -80,12 +80,12 @@
                      Cursor="Arrow">
             <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconUndo}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconUndo}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconRedo}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconRedo}"/>
                 </MenuItem.Icon>
             </MenuItem>
 
@@ -93,17 +93,17 @@
 
             <MenuItem Header="Delete" Command="{Binding DeleteSelectedCommand}" InputGesture="Delete">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconDelete}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconDelete}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Delete all" Command="{Binding ClearAnnotationsCommand}" InputGesture="Shift+Delete">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconClear}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconClear}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Flatten" Command="{Binding FlattenImageCommand}" InputGesture="Ctrl+Shift+F">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconFlatten}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconFlatten}"/>
                 </MenuItem.Icon>
             </MenuItem>
 
@@ -111,22 +111,22 @@
 
             <MenuItem Header="Cut" Command="{Binding CutAnnotationCommand}" InputGesture="Ctrl+X">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconCutOut}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconCutOut}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Copy" Command="{Binding CopyAnnotationCommand}" InputGesture="Ctrl+C">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconCopy}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconCopy}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Paste" Command="{Binding PasteCommand}" InputGesture="Ctrl+V">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconPaste}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconPaste}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Duplicate" Command="{Binding DuplicateSelectedCommand}" InputGesture="Ctrl+D">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconDuplicate}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconDuplicate}"/>
                 </MenuItem.Icon>
             </MenuItem>
 
@@ -134,22 +134,22 @@
 
             <MenuItem Header="Bring to front" Command="{Binding BringToFrontCommand}" InputGesture="Home">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconBringToFront}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconBringToFront}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Bring forward" Command="{Binding BringForwardCommand}" InputGesture="PageUp">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconBringForward}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconBringForward}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Send backward" Command="{Binding SendBackwardCommand}" InputGesture="PageDown">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconSendBackward}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconSendBackward}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Send to back" Command="{Binding SendToBackCommand}" InputGesture="End">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconSendToBack}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconSendToBack}"/>
                 </MenuItem.Icon>
             </MenuItem>
 
@@ -157,7 +157,7 @@
 
             <MenuItem Header="Theme">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconMoon}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconMoon}"/>
                 </MenuItem.Icon>
                 <MenuItem Header="ShareX (Dark)" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
                 <MenuItem Header="ShareX (Light)" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>

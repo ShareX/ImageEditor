@@ -575,8 +575,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             var theme = themeName switch
             {
-                "Dark" => ThemeVariant.Dark,
-                "Light" => ThemeVariant.Light,
                 "ShareXDark" => ThemeManager.ShareXDark,
                 "ShareXLight" => ThemeManager.ShareXLight,
                 _ => ThemeVariant.Default

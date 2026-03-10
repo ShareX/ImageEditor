@@ -89,7 +89,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 canvasContainer.Arrange(new Rect(0, 0, width, height));
 
                 // Render Avalonia visual tree to bitmap
-                var rtb = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+                using var rtb = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
                 rtb.Render(canvasContainer);
 
                 // Convert Avalonia RenderTargetBitmap → SKBitmap

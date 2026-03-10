@@ -27,7 +27,6 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Rendering;
 using System.Collections.ObjectModel;
@@ -86,62 +85,42 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             if (_originalSourceImage == null || PreviewImage == null)
             {
+                _smartPaddingCropInsets = new Thickness(0);
+                UpdateCanvasProperties();
                 return;
             }
 
             if (_isApplyingSmartPadding)
             {
-                return; // Prevent recursive calls
+                return;
             }
 
-            if (!UseSmartPadding)
+            if (!UseSmartPadding || !AreBackgroundEffectsActive)
             {
-                // Restore original image from backup
-                if (!_isApplyingSmartPadding && _originalSourceImage != null)
-                {
-                    _isApplyingSmartPadding = true;
-                    try
-                    {
-                        // SIP-FIX: Must copy _originalSourceImage because _currentSourceImage is owned/disposable
-                        if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
-                        {
-                            _currentSourceImage.Dispose();
-                        }
-                        _currentSourceImage = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.Restore");
-                        if (_currentSourceImage != null)
-                        {
-                            PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_currentSourceImage);
-                            ImageDimensions = $"{_currentSourceImage.Width} x {_currentSourceImage.Height}";
-                        }
-                    }
-                    finally
-                    {
-                        _isApplyingSmartPadding = false;
-                    }
-                }
+                _smartPaddingCropInsets = new Thickness(0);
+                UpdateCanvasProperties();
                 return;
             }
 
             _isApplyingSmartPadding = true;
             try
             {
-                // Start from the original image backup
                 var skBitmap = _originalSourceImage;
+                if (skBitmap == null)
+                {
+                    _smartPaddingCropInsets = new Thickness(0);
+                    UpdateCanvasProperties();
+                    return;
+                }
 
-                if (skBitmap == null) return;
-
-                // Get top-left pixel color as reference
                 var targetColor = skBitmap.GetPixel(0, 0);
-                const int tolerance = 30; // Color tolerance for matching
+                const int tolerance = 30;
 
-                // Find bounds of content (non-matching pixels)
-                // SIP-FIX: Use precise scanning (every pixel) to find true edges
                 int minX = skBitmap.Width;
                 int minY = skBitmap.Height;
                 int maxX = 0;
                 int maxY = 0;
 
-                // SIP-FIX: Use unsafe pointer access for performance to allow checking every pixel
                 unsafe
                 {
                     byte* ptr = (byte*)skBitmap.GetPixels().ToPointer();
@@ -155,7 +134,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     byte tB = targetColor.Blue;
                     byte tA = targetColor.Alpha;
 
-                    // Only optimize for 4 bytes per pixel (standard Bgra8888/Rgba8888)
                     if (bpp == 4)
                     {
                         bool isBgra = skBitmap.ColorType == SkiaSharp.SKColorType.Bgra8888;
@@ -165,11 +143,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                             byte* row = ptr + (y * rowBytes);
                             bool rowHasContent = false;
 
-                            // Scan from left
                             for (int x = 0; x < width; x++)
                             {
-                                byte r, g, b, a;
-                                // Simple mapping for standard 4-byte formats
+                                byte r;
+                                byte g;
+                                byte b;
+                                byte a;
+
                                 if (isBgra)
                                 {
                                     b = row[x * 4 + 0];
@@ -177,7 +157,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                                     r = row[x * 4 + 2];
                                     a = row[x * 4 + 3];
                                 }
-                                else // Rgba8888
+                                else
                                 {
                                     r = row[x * 4 + 0];
                                     g = row[x * 4 + 1];
@@ -190,22 +170,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                                     Math.Abs(b - tB) > tolerance ||
                                     Math.Abs(a - tA) > tolerance)
                                 {
-                                    // Found content start
                                     if (x < minX) minX = x;
-                                    if (x > maxX) maxX = x; // Initial set for this row
+                                    if (x > maxX) maxX = x;
                                     if (y < minY) minY = y;
                                     if (y > maxY) maxY = y;
                                     rowHasContent = true;
-                                    break; // Stop left scan
+                                    break;
                                 }
                             }
 
                             if (rowHasContent)
                             {
-                                // Scan from right
                                 for (int x = width - 1; x >= 0; x--)
                                 {
-                                    byte r, g, b, a;
+                                    byte r;
+                                    byte g;
+                                    byte b;
+                                    byte a;
+
                                     if (isBgra)
                                     {
                                         b = row[x * 4 + 0];
@@ -227,7 +209,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                                         Math.Abs(a - tA) > tolerance)
                                     {
                                         if (x > maxX) maxX = x;
-                                        break; // Stop right scan, found the end of content
+                                        break;
                                     }
                                 }
                             }
@@ -235,11 +217,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     }
                     else
                     {
-                        // Fallback: Use GetPixel but with edge-scan optimization for non-standard formats
                         for (int y = 0; y < height; y++)
                         {
                             bool rowHasContent = false;
-                            // Scan left
+
                             for (int x = 0; x < width; x++)
                             {
                                 var pixel = skBitmap.GetPixel(x, y);
@@ -256,9 +237,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                                     break;
                                 }
                             }
+
                             if (rowHasContent)
                             {
-                                // Scan right
                                 for (int x = width - 1; x >= 0; x--)
                                 {
                                     var pixel = skBitmap.GetPixel(x, y);
@@ -276,49 +257,18 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     }
                 }
 
-                // Check if we found any content
-                if (minX > maxX || minY > maxY || !AreBackgroundEffectsActive)
+                if (minX > maxX || minY > maxY)
                 {
-                    // No content found (or background effects disabled), keep original
-                    // SIP-FIX: Must copy _originalSourceImage because _currentSourceImage is owned/disposable
-                    if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
-                    {
-                        _currentSourceImage.Dispose();
-                    }
-                    _currentSourceImage = SafeCopyBitmap(_originalSourceImage, "ApplySmartPaddingCrop.NoCrop");
-                    if (_currentSourceImage != null)
-                    {
-                        PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(_currentSourceImage);
-                        ImageDimensions = $"{_currentSourceImage.Width} x {_currentSourceImage.Height}";
-                    }
-
-                    return;
+                    _smartPaddingCropInsets = new Thickness(0);
+                }
+                else
+                {
+                    int cropRight = Math.Max(0, skBitmap.Width - maxX - 1);
+                    int cropBottom = Math.Max(0, skBitmap.Height - maxY - 1);
+                    _smartPaddingCropInsets = new Thickness(minX, minY, cropRight, cropBottom);
                 }
 
-                // Calculate crop rectangle
-                int cropX = minX;
-                int cropY = minY;
-                int cropWidth = maxX - minX + 1;
-                int cropHeight = maxY - minY + 1;
-
-                // Ensure valid dimensions
-                if (cropWidth <= 0 || cropHeight <= 0)
-                {
-                    return;
-                }
-
-                // Perform the crop on the original image using internal ImageHelpers
-                var cropped = ImageHelpers.Crop(_originalSourceImage, cropX, cropY, cropWidth, cropHeight);
-
-                // Update preview with cropped image
-                // ISSUE-023 fix: Dispose old currentSourceImage before reassignment (if different)
-                if (_currentSourceImage != null && _currentSourceImage != _originalSourceImage)
-                {
-                    _currentSourceImage.Dispose();
-                }
-                _currentSourceImage = cropped;
-                PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(cropped);
-                ImageDimensions = $"{cropped.Width} x {cropped.Height}";
+                UpdateCanvasProperties();
             }
             catch (Exception ex)
             {
@@ -366,19 +316,18 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 CanvasShadow = new BoxShadows(); // No shadow
                 CanvasCornerRadius = 0;
             }
-            OnPropertyChanged(nameof(SmartPaddingColor));
-            OnPropertyChanged(nameof(SmartPaddingThickness));
+            NotifySmartPaddingLayoutChanged();
         }
 
         private Thickness CalculateOutputPadding(double basePadding, double? targetAspectRatio)
         {
-            if (PreviewImage == null || PreviewImage.Size.Width <= 0 || PreviewImage.Size.Height <= 0 || !targetAspectRatio.HasValue)
+            double imageWidth = SmartPaddingViewportWidth;
+            double imageHeight = SmartPaddingViewportHeight;
+
+            if (imageWidth <= 0 || imageHeight <= 0 || !targetAspectRatio.HasValue)
             {
                 return new Thickness(basePadding);
             }
-
-            double imageWidth = PreviewImage.Size.Width;
-            double imageHeight = PreviewImage.Size.Height;
 
             double totalWidth = imageWidth + (basePadding * 2);
             double totalHeight = imageHeight + (basePadding * 2);

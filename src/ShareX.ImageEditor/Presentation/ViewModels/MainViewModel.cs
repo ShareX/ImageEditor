@@ -258,6 +258,74 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private double _imageHeight;
 
+        private Thickness _smartPaddingCropInsets;
+
+        public double SmartPaddingViewportWidth
+        {
+            get
+            {
+                double width = ImageWidth;
+
+                if (UseSmartPadding && AreBackgroundEffectsActive)
+                {
+                    width -= _smartPaddingCropInsets.Left + _smartPaddingCropInsets.Right;
+                }
+
+                return Math.Max(0, width);
+            }
+        }
+
+        public double SmartPaddingViewportHeight
+        {
+            get
+            {
+                double height = ImageHeight;
+
+                if (UseSmartPadding && AreBackgroundEffectsActive)
+                {
+                    height -= _smartPaddingCropInsets.Top + _smartPaddingCropInsets.Bottom;
+                }
+
+                return Math.Max(0, height);
+            }
+        }
+
+        public double SmartPaddingOffsetX
+        {
+            get
+            {
+                if (!UseSmartPadding || !AreBackgroundEffectsActive)
+                {
+                    return 0;
+                }
+
+                return -_smartPaddingCropInsets.Left;
+            }
+        }
+
+        public double SmartPaddingOffsetY
+        {
+            get
+            {
+                if (!UseSmartPadding || !AreBackgroundEffectsActive)
+                {
+                    return 0;
+                }
+
+                return -_smartPaddingCropInsets.Top;
+            }
+        }
+
+        private void NotifySmartPaddingLayoutChanged()
+        {
+            OnPropertyChanged(nameof(SmartPaddingColor));
+            OnPropertyChanged(nameof(SmartPaddingThickness));
+            OnPropertyChanged(nameof(SmartPaddingViewportWidth));
+            OnPropertyChanged(nameof(SmartPaddingViewportHeight));
+            OnPropertyChanged(nameof(SmartPaddingOffsetX));
+            OnPropertyChanged(nameof(SmartPaddingOffsetY));
+        }
+
         private void OnPreviewImageChanged(Bitmap? value)
         {
             if (value != null)
@@ -271,7 +339,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     IsDirty = true;
                 }
 
-                OnPropertyChanged(nameof(SmartPaddingColor));
+                NotifySmartPaddingLayoutChanged();
 
                 // Apply smart padding crop if enabled (but not if we're already applying it)
                 // Only trigger if background effects are active to avoid overwriting live previews
@@ -288,6 +356,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 ImageWidth = 0;
                 ImageHeight = 0;
+                _smartPaddingCropInsets = new Thickness(0);
+                NotifySmartPaddingLayoutChanged();
                 HasPreviewImage = false;
             }
         }
@@ -328,7 +398,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
                 try
                 {
-                    var topLeftColor = SamplePixelColor(PreviewImage, 0, 0);
+                    int sampleX = 0;
+                    int sampleY = 0;
+
+                    if (UseSmartPadding && AreBackgroundEffectsActive)
+                    {
+                        sampleX = (int)Math.Round(Math.Max(0, _smartPaddingCropInsets.Left));
+                        sampleY = (int)Math.Round(Math.Max(0, _smartPaddingCropInsets.Top));
+                    }
+
+                    var topLeftColor = SamplePixelColor(PreviewImage, sampleX, sampleY);
                     return new SolidColorBrush(topLeftColor);
                 }
                 catch (Exception ex)
@@ -701,8 +780,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnSmartPaddingChanged(double value)
         {
-            OnPropertyChanged(nameof(SmartPaddingColor));
-            OnPropertyChanged(nameof(SmartPaddingThickness));
+            NotifySmartPaddingLayoutChanged();
+            UpdateCanvasProperties();
         }
 
         partial void OnUseSmartPaddingChanged(bool value)

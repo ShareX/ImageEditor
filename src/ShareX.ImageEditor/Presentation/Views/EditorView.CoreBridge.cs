@@ -71,9 +71,11 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             if (_editorCore.SourceImage == null) return null;
 
+            var previewFrame = this.FindControl<Border>("PreviewFrame");
             var canvasContainer = this.FindControl<Grid>("CanvasContainer");
             var overlayCanvas = this.FindControl<Canvas>("OverlayCanvas");
-            if (canvasContainer == null) return _editorCore.GetSnapshot();
+            Control? snapshotTarget = previewFrame as Control ?? canvasContainer;
+            if (snapshotTarget == null) return _editorCore.GetSnapshot();
 
             // Hide OverlayCanvas (selection handles, crop overlay) during capture
             bool overlayWasVisible = overlayCanvas?.IsVisible ?? false;
@@ -81,16 +83,31 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             try
             {
-                int width = _editorCore.SourceImage.Width;
-                int height = _editorCore.SourceImage.Height;
+                snapshotTarget.Measure(Size.Infinity);
+
+                double width = snapshotTarget.DesiredSize.Width;
+                double height = snapshotTarget.DesiredSize.Height;
+
+                if (width <= 0 || height <= 0)
+                {
+                    width = snapshotTarget.Bounds.Width;
+                    height = snapshotTarget.Bounds.Height;
+                }
+
+                if (width <= 0 || height <= 0)
+                {
+                    width = _editorCore.SourceImage.Width;
+                    height = _editorCore.SourceImage.Height;
+                }
 
                 // Force layout at native resolution (un-zoomed)
-                canvasContainer.Measure(new Size(width, height));
-                canvasContainer.Arrange(new Rect(0, 0, width, height));
+                snapshotTarget.Arrange(new Rect(0, 0, width, height));
 
                 // Render Avalonia visual tree to bitmap
-                using var rtb = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
-                rtb.Render(canvasContainer);
+                using var rtb = new RenderTargetBitmap(
+                    new PixelSize(Math.Max(1, (int)Math.Ceiling(width)), Math.Max(1, (int)Math.Ceiling(height))),
+                    new Vector(96, 96));
+                rtb.Render(snapshotTarget);
 
                 // Convert Avalonia RenderTargetBitmap → SKBitmap
                 using var stream = new System.IO.MemoryStream();
@@ -106,8 +123,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 if (overlayCanvas != null) overlayCanvas.IsVisible = overlayWasVisible;
 
                 // Re-trigger layout with current zoom
-                canvasContainer.InvalidateMeasure();
-                canvasContainer.InvalidateArrange();
+                snapshotTarget.InvalidateMeasure();
+                snapshotTarget.InvalidateArrange();
             }
         }
 

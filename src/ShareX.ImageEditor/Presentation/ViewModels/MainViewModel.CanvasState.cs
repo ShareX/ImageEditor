@@ -491,7 +491,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 new() { Name = "Nightfall", Brush = Make("#141E30", "#243B55") },
                 new() { Name = "Electric Cyan", Brush = Make("#0575E6", "#00F260") },
                 new() { Name = "Velvet Rose", Brush = Make("#DA4453", "#89216B") },
-                new() { Name = "Desert Sand", Brush = Make("#BA8B02", "#181818") }
+                new() { Name = "Desert Sand", Brush = Make("#BA8B02", "#181818") },
+                new() { Name = "Cosmic Fusion", Brush = Make("#FF00CC", "#333399") },
+                new() { Name = "Deep Ocean", Brush = Make("#360033", "#0B8793") },
+                new() { Name = "Northern Lights", Brush = Make("#43E97B", "#38F9D7") },
+                new() { Name = "Neon Glow", Brush = Make("#4FACFE", "#00F2FE") },
+                new() { Name = "Burning Orange", Brush = Make("#FF416C", "#FF4B2B") },
+                new() { Name = "Mystic Purple", Brush = Make("#9D50BB", "#6E48AA") },
+                new() { Name = "Golden Sunset", Brush = Make("#F12711", "#F5AF19") },
+                new() { Name = "Midnight Dark", Brush = Make("#2C3E50", "#3498DB") },
+                new() { Name = "Cool Sky", Brush = Make("#2980B9", "#6DD5FA") },
+                new() { Name = "Purple Love", Brush = Make("#CC2B5E", "#753A88") }
             };
         }
 

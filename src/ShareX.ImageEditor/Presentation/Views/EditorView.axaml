@@ -342,7 +342,7 @@
 
                         <!-- Ratio -->
                         <StackPanel Spacing="0">
-                            <TextBlock Text="Ratio" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,0,0,8"/>
+                            <TextBlock Text="Ratio" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,0,0,16"/>
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*">
                                 <Grid.Styles>
                                     <Style Selector="Button.editor-button">
@@ -407,7 +407,7 @@
 
                         <!-- Background -->
                         <StackPanel Spacing="0">
-                            <TextBlock Text="Background" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,8"/>
+                            <TextBlock Text="Background" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,16"/>
                             <ComboBox ItemsSource="{Binding BackgroundModeOptions}"
                                       SelectedItem="{Binding SelectedBackgroundModeOption, Mode=TwoWay}"
                                       Margin="0,0,0,12"
@@ -415,7 +415,8 @@
                                       Background="{DynamicResource ShareX.Brush.Control.Background}"
                                       BorderBrush="{DynamicResource ShareX.Brush.Border}"
                                       BorderThickness="1"
-                                      Foreground="{DynamicResource ShareX.Brush.Text}">
+                                      Foreground="{DynamicResource ShareX.Brush.Text}"
+                                      HorizontalAlignment="Stretch">
                             </ComboBox>
 
                             <StackPanel IsVisible="{Binding IsGradientBackgroundModeSelected}" Spacing="0">

@@ -501,7 +501,7 @@
                                     IsVisible="{Binding HasPreviewImage}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch"
-                                     Background="{Binding CanvasBackground}"
+                                     Background="{Binding EffectiveCanvasBackground}"
                                      Padding="{Binding CanvasPadding}">
                                 <!-- Outer Border: User-controlled Shadow effect -->
                                 <Border BoxShadow="{Binding CanvasShadow}"

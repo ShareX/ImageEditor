@@ -460,11 +460,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private bool _isPreviewingEffect;
         public bool AreBackgroundEffectsActive => IsSettingsPanelOpen && !_isPreviewingEffect;
+        public IBrush EffectiveCanvasBackground => AreBackgroundEffectsActive ? CanvasBackground : Brushes.Transparent;
 
         partial void OnIsSettingsPanelOpenChanged(bool value)
         {
             // Toggle background effects visibility
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
+            OnPropertyChanged(nameof(EffectiveCanvasBackground));
             UpdateCanvasProperties();
 
             // Re-evaluate Smart Padding application

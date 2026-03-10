@@ -188,6 +188,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
             _isPreviewingEffect = true;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
+            OnPropertyChanged(nameof(EffectiveCanvasBackground));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
         }
@@ -311,6 +312,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
             _isPreviewingEffect = false;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
+            OnPropertyChanged(nameof(EffectiveCanvasBackground));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
         }
@@ -350,6 +352,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             // Restore Background Effects
             _isPreviewingEffect = false;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
+            OnPropertyChanged(nameof(EffectiveCanvasBackground));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
         }

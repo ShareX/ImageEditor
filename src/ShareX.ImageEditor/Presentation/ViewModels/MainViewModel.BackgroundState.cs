@@ -221,6 +221,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             Bitmap? previousBitmap = _backgroundBitmap;
             _backgroundBitmap = ownedBitmap;
             CanvasBackground = brush;
+            OnPropertyChanged(nameof(EffectiveCanvasBackground));
 
             if (previousBitmap != null && !ReferenceEquals(previousBitmap, ownedBitmap))
             {

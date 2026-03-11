@@ -27,6 +27,8 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Rendering;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -262,8 +264,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
             try
             {
-                using FileStream stream = File.OpenRead(filePath);
-                bitmap = new Bitmap(stream);
+                bitmap = LoadBitmapFromPath(filePath);
                 brush = CreateImageBrush(bitmap, layout);
 
                 return true;
@@ -274,6 +275,38 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 bitmap = null;
                 EditorServices.ReportWarning(nameof(MainViewModel), $"Failed to load background image '{filePath}'.", ex);
                 return false;
+            }
+        }
+
+        private static Bitmap LoadBitmapFromPath(string filePath)
+        {
+            try
+            {
+                using FileStream stream = File.OpenRead(filePath);
+                return new Bitmap(stream);
+            }
+            catch (Exception avaloniaException)
+            {
+                try
+                {
+                    using FileStream stream = File.OpenRead(filePath);
+                    using SKBitmap? skBitmap = SKBitmap.Decode(stream);
+                    if (skBitmap != null)
+                    {
+                        return BitmapConversionHelpers.ToAvaloniBitmap(skBitmap);
+                    }
+                }
+                catch (Exception skiaException)
+                {
+                    throw new AggregateException(
+                        $"Failed to decode background image '{filePath}' with both Avalonia and Skia.",
+                        avaloniaException,
+                        skiaException);
+                }
+
+                throw new InvalidOperationException(
+                    $"Failed to decode background image '{filePath}' with Avalonia, and Skia returned no bitmap.",
+                    avaloniaException);
             }
         }
 

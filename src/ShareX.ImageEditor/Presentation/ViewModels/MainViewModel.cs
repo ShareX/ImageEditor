@@ -826,6 +826,12 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void SelectTool(EditorTool tool)
         {
             DeselectRequested?.Invoke(this, EventArgs.Empty);
+
+            if (tool is EditorTool.Crop or EditorTool.CutOut)
+            {
+                IsSettingsPanelOpen = false;
+            }
+
             ActiveTool = tool;
         }
 

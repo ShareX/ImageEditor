@@ -30,8 +30,6 @@ using ShareX.ImageEditor.Hosting;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
 {
@@ -53,9 +51,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
             public override string ToString() => DisplayName;
         }
-
-        private const int SpiGetDesktopWallpaper = 0x0073;
-        private const int MaxWallpaperPath = 260;
 
         private Bitmap? _backgroundBitmap;
 
@@ -200,9 +195,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private void ApplyWallpaperBackground()
         {
-            if (!TryGetWindowsWallpaperPath(out string? wallpaperPath))
+            IDesktopWallpaperService? desktopWallpaperService = EditorServices.DesktopWallpaper;
+            if (desktopWallpaperService?.IsSupported != true ||
+                !desktopWallpaperService.TryGetDesktopWallpaperPath(out string? wallpaperPath))
             {
-                EditorServices.ReportWarning(nameof(MainViewModel), "Failed to locate the current Windows wallpaper.");
+                EditorServices.ReportWarning(nameof(MainViewModel), "Failed to locate the current desktop wallpaper.");
                 SetCanvasBackground(Brushes.Transparent);
                 return;
             }
@@ -244,7 +241,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 new() { Mode = CanvasBackgroundMode.Image, DisplayName = "Image" }
             ];
 
-            if (OperatingSystem.IsWindows())
+            if (EditorServices.DesktopWallpaper?.IsSupported == true)
             {
                 options.Add(new BackgroundModeOption { Mode = CanvasBackgroundMode.Wallpaper, DisplayName = "Wallpaper" });
             }
@@ -281,33 +278,5 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 return false;
             }
         }
-
-        private static bool TryGetWindowsWallpaperPath(out string? path)
-        {
-            path = null;
-
-            if (!OperatingSystem.IsWindows())
-            {
-                return false;
-            }
-
-            StringBuilder buffer = new StringBuilder(MaxWallpaperPath);
-            if (!SystemParametersInfo(SpiGetDesktopWallpaper, buffer.Capacity, buffer, 0))
-            {
-                return false;
-            }
-
-            string wallpaperPath = buffer.ToString().TrimEnd('\0');
-            if (string.IsNullOrWhiteSpace(wallpaperPath) || !File.Exists(wallpaperPath))
-            {
-                return false;
-            }
-
-            path = wallpaperPath;
-            return true;
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool SystemParametersInfo(int uiAction, int uiParam, StringBuilder pvParam, int fWinIni);
     }
 }

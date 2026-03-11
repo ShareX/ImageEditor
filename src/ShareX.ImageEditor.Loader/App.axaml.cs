@@ -27,6 +27,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 using System;
@@ -49,6 +50,8 @@ namespace ShareX.ImageEditor.Loader
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                EditorServices.DesktopWallpaper = new DesktopWallpaperService();
+
                 var window = new ShareX.ImageEditor.Presentation.Views.EditorWindow();
                 desktop.MainWindow = window;
 

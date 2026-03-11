@@ -43,6 +43,13 @@ public static class EditorServices
     /// </summary>
     public static IEditorDiagnosticsSink? Diagnostics { get; set; }
 
+    /// <summary>
+    /// Optional service for resolving the current desktop wallpaper path.
+    /// Hosts should set this before creating editor view models when wallpaper
+    /// background support is desired.
+    /// </summary>
+    public static IDesktopWallpaperService? DesktopWallpaper { get; set; }
+
     public static void ReportInformation(string source, string message)
     {
         ReportDiagnostic(EditorDiagnosticLevel.Information, source, message, null);

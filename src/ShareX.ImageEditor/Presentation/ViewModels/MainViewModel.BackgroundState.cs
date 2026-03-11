@@ -32,6 +32,7 @@ using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
 {
@@ -55,6 +56,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         private Bitmap? _backgroundBitmap;
+        private Task? _wallpaperBackgroundPreloadTask;
 
         public ObservableCollection<BackgroundModeOption> BackgroundModeOptions { get; }
 
@@ -227,6 +229,43 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
             EditorServices.ReportInformation(nameof(MainViewModel), "Wallpaper background applied.");
             SetCanvasBackground(brush!, bitmap);
+        }
+
+        private void StartWallpaperBackgroundPreload()
+        {
+            IDesktopWallpaperService? desktopWallpaperService = EditorServices.DesktopWallpaper;
+            if (desktopWallpaperService?.IsSupported != true)
+            {
+                return;
+            }
+
+            Task? existingTask = _wallpaperBackgroundPreloadTask;
+            if (existingTask is { IsCompleted: false })
+            {
+                return;
+            }
+
+            _wallpaperBackgroundPreloadTask = Task.Run(() =>
+            {
+                try
+                {
+                    EditorServices.ReportInformation(nameof(MainViewModel), "Starting wallpaper background prewarm.");
+
+                    if (desktopWallpaperService.TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper) &&
+                        wallpaper != null)
+                    {
+                        EditorServices.ReportInformation(
+                            nameof(MainViewModel),
+                            $"Wallpaper background prewarm completed for '{wallpaper.Path}'.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EditorServices.ReportWarning(
+                        nameof(MainViewModel),
+                        $"Wallpaper background prewarm failed: {ex.Message}");
+                }
+            });
         }
 
         private void SetCanvasBackground(IBrush brush, Bitmap? ownedBitmap = null)

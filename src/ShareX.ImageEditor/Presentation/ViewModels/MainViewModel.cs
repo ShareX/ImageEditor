@@ -464,6 +464,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnIsSettingsPanelOpenChanged(bool value)
         {
+            if (value)
+            {
+                StartWallpaperBackgroundPreload();
+            }
+
             // Toggle background effects visibility
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             OnPropertyChanged(nameof(EffectiveCanvasBackground));

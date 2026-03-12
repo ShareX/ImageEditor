@@ -8,20 +8,36 @@ namespace ShareX.ImageEditor.Presentation.Rendering
 {
     internal static class CursorAssetLoader
     {
+        private static readonly Uri ClosedHandCursorUri = new("avares://ShareX.ImageEditor/Assets/closedhand.cur");
         private static readonly Uri CrosshairCursorUri = new("avares://ShareX.ImageEditor/Assets/Crosshair.cur");
-        private static readonly Cursor FallbackCrossCursor = new(StandardCursorType.Cross);
-        private static readonly Lazy<LoadedCursor?> CrosshairCursor = new(TryLoadCrosshairCursor);
+        private static readonly Uri OpenHandCursorUri = new("avares://ShareX.ImageEditor/Assets/openhand.cur");
+        private static readonly Cursor FallbackClosedHandCursor = new(StandardCursorType.SizeAll);
+        private static readonly Cursor FallbackCrosshairCursor = new(StandardCursorType.Cross);
+        private static readonly Cursor FallbackOpenHandCursor = new(StandardCursorType.Hand);
+        private static readonly Lazy<LoadedCursor?> ClosedHandCursor = new(() => TryLoadCursor(ClosedHandCursorUri));
+        private static readonly Lazy<LoadedCursor?> CrosshairCursor = new(() => TryLoadCursor(CrosshairCursorUri));
+        private static readonly Lazy<LoadedCursor?> OpenHandCursor = new(() => TryLoadCursor(OpenHandCursorUri));
 
         public static Cursor GetCrosshairCursor()
         {
-            return CrosshairCursor.Value?.Cursor ?? FallbackCrossCursor;
+            return CrosshairCursor.Value?.Cursor ?? FallbackCrosshairCursor;
         }
 
-        private static LoadedCursor? TryLoadCrosshairCursor()
+        public static Cursor GetOpenHandCursor()
+        {
+            return OpenHandCursor.Value?.Cursor ?? FallbackOpenHandCursor;
+        }
+
+        public static Cursor GetClosedHandCursor()
+        {
+            return ClosedHandCursor.Value?.Cursor ?? FallbackClosedHandCursor;
+        }
+
+        private static LoadedCursor? TryLoadCursor(Uri cursorUri)
         {
             try
             {
-                using Stream cursorStream = AssetLoader.Open(CrosshairCursorUri);
+                using Stream cursorStream = AssetLoader.Open(cursorUri);
                 return LoadCursor(cursorStream);
             }
             catch

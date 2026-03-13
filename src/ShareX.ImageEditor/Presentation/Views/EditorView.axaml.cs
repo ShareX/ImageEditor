@@ -574,7 +574,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                                 {
                                     e.Handled = true;
                                 }
-                                else if (vm.TaskMode)
+                                else
                                 {
                                     vm.ContinueCommand.Execute(null);
                                     e.Handled = true;
@@ -604,18 +604,10 @@ namespace ShareX.ImageEditor.Presentation.Views
                             _selectionController.ClearSelection();
                             e.Handled = true;
                         }
-                        else if (vm.TaskMode)
+                        else
                         {
                             vm.CancelCommand.Execute(null);
                             e.Handled = true;
-                        }
-                        else
-                        {
-                            if (TopLevel.GetTopLevel(this) is Avalonia.Controls.Window window)
-                            {
-                                window.Close();
-                                e.Handled = true;
-                            }
                         }
                         break;
                 }

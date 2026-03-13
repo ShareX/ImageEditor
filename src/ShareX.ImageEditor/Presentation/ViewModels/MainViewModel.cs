@@ -88,6 +88,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private bool _taskMode;
 
+        public string ContinueButtonTooltip => TaskMode ? "Continue (Enter)" : "Run after capture tasks (Enter)";
+
+        partial void OnTaskModeChanged(bool value)
+        {
+            OnPropertyChanged(nameof(ContinueButtonTooltip));
+        }
+
         [ObservableProperty]
         private EditorTaskResult _taskResult = EditorTaskResult.None;
 

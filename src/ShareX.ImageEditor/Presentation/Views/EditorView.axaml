@@ -817,7 +817,7 @@
                 <Border Width="1" Height="38" Background="{DynamicResource ShareX.Brush.Separator}" Margin="4,0"/>
 
                 <!-- Task Mode Buttons -->
-                <Grid IsVisible="{Binding TaskMode}" Width="90" Height="40" Margin="4,0,10,0" ClipToBounds="False" VerticalAlignment="Bottom">
+                <Grid Width="90" Height="40" Margin="4,0,10,0" ClipToBounds="False" VerticalAlignment="Bottom">
                     <!-- Cancel Button: Red Rectangle (Behind) -->
                     <Button Command="{Binding CancelCommand}"
                             Background="#DC2626"
@@ -854,7 +854,7 @@
                             BorderThickness="1"
                             HorizontalAlignment="Left" VerticalAlignment="Bottom"
                             Margin="0,0,0,-8"
-                            ToolTip.Tip="Continue (Enter)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
+                            ToolTip.Tip="{Binding ContinueButtonTooltip}" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             ZIndex="20">
                         <Button.Styles>
                             <Style Selector="Button:pressed">

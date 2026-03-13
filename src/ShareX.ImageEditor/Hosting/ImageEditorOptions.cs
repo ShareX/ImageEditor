@@ -49,7 +49,7 @@ namespace ShareX.ImageEditor.Hosting
         private static Color HexToColor(string hex) => Color.Parse(hex);
 
         // Editor
-        public List<string> FavoriteEffects { get; set; } = new List<string>(DefaultFavoriteEffects);
+        public bool ExitConfirmation { get; set; } = true;
 
         // Shared
         public string BorderColorHex { get; set; } = ColorToHex(PrimaryColor);
@@ -134,5 +134,8 @@ namespace ShareX.ImageEditor.Hosting
         [JsonIgnore]
         public Color BackgroundColor { get => HexToColor(BackgroundColorHex); set => BackgroundColorHex = ColorToHex(value); }
         public string BackgroundImagePath { get; set; } = "";
+
+        // Effects
+        public List<string> FavoriteEffects { get; set; } = new List<string>(DefaultFavoriteEffects);
     }
 }

@@ -25,8 +25,13 @@
         <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
         <converters:EqualsConverter x:Key="EqualsConverter" />
 
-        <MenuFlyout x:Key="EditorContextMenu"
-                    Placement="Pointer">
+        <ContextMenu x:Key="EditorContextMenu"
+                     Placement="Pointer"
+                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                     BorderThickness="1"
+                     CornerRadius="6"
+                     Padding="6,2"
+                     Cursor="Arrow">
             <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionUndo}"/>
@@ -111,7 +116,7 @@
                 <MenuItem Header="Dark" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
                 <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>
             </MenuItem>
-        </MenuFlyout>
+        </ContextMenu>
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -184,23 +189,23 @@
             </Style>
         </Style>
 
-        <Style Selector="MenuFlyoutPresenter">
+        <Style Selector="ContextMenu">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="Padding" Value="6,2"/>
         </Style>
-        <Style Selector="MenuFlyoutPresenter MenuItem">
+        <Style Selector="ContextMenu MenuItem">
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Padding" Value="12,8"/>
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
-        <Style Selector="MenuFlyoutPresenter MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+        <Style Selector="ContextMenu MenuItem:pointerover /template/ Border#PART_LayoutRoot">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
         </Style>
-        <Style Selector="MenuFlyoutPresenter Separator">
+        <Style Selector="ContextMenu Separator">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
         </Style>
 

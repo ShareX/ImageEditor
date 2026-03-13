@@ -502,9 +502,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _ => false
         };
 
-        /// <summary>
-        /// Returns the Lucide icon glyph for the active tool (or selected shape's tool in Select mode).
-        /// </summary>
         public string ActiveToolIcon
         {
             get
@@ -515,27 +512,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     tool = _selectedAnnotation.ToolType;
                 }
 
-                return tool switch
-                {
-                    EditorTool.Select => LucideIcons.MousePointer2,
-                    EditorTool.Rectangle => LucideIcons.Square,
-                    EditorTool.Ellipse => LucideIcons.Circle,
-                    EditorTool.Line => LucideIcons.Minus,
-                    EditorTool.Arrow => LucideIcons.ArrowRight,
-                    EditorTool.Freehand => LucideIcons.Pencil,
-                    EditorTool.Text => LucideIcons.Type,
-                    EditorTool.SpeechBalloon => LucideIcons.MessageSquare,
-                    EditorTool.Step => LucideIcons.Hash,
-                    EditorTool.Blur => LucideIcons.Droplet,
-                    EditorTool.Pixelate => LucideIcons.Grid2X2,
-                    EditorTool.Magnify => LucideIcons.Search,
-                    EditorTool.Spotlight => LucideIcons.Lightbulb,
-                    EditorTool.SmartEraser => LucideIcons.Eraser,
-                    EditorTool.Highlight => LucideIcons.Highlighter,
-                    EditorTool.Crop => LucideIcons.Crop,
-                    EditorTool.CutOut => LucideIcons.Scissors,
-                    _ => LucideIcons.MousePointer2
-                };
+                return EditorIcons.ForTool(tool);
             }
         }
 

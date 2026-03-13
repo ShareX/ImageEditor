@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:cp="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
              x:Class="ShareX.ImageEditor.Presentation.Controls.ColorPickerDropdown"
              x:Name="ColorPickerDropdownRoot">
@@ -52,7 +53,7 @@
                     <!-- Text Color: Plain 'A' label -->
                     <TextBlock Text="A"
                                IsVisible="{Binding ShowTextLabel, ElementName=ColorPickerDropdownRoot}"
-                               FontFamily="Segoe UI"
+                               FontFamily="{DynamicResource ShareX.FontFamily.Default}"
                                FontWeight="Bold"
                                FontSize="14"
                                Foreground="{Binding IconForeground, ElementName=ColorPickerDropdownRoot}"
@@ -66,7 +67,7 @@
 
                 <!-- Chevron Icon (Lucide ChevronDown) -->
                 <TextBlock Grid.Column="2"
-                           Text="&#xe06d;"
+                           Text="{x:Static theming:EditorIcons.ChevronDown}"
                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Normal"
                            FontSize="10"

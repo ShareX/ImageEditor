@@ -1,15 +1,13 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:helpers="clr-namespace:ShareX.ImageEditor.Presentation.Theming">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ShareXTypography.axaml"/>
+    </ResourceDictionary.MergedDictionaries>
     <ResourceDictionary.ThemeDictionaries>
 
         <!-- ShareX Dark -->
         <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareXDark}">
-            <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
-            <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
-
-            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#lucide</FontFamily>
-
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
 
@@ -87,10 +85,6 @@
 
         <!-- ShareX Light -->
         <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareXLight}">
-            <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
-            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#lucide</FontFamily>
-            <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
-
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
 

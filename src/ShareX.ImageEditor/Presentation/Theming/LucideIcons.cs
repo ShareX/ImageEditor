@@ -50,6 +50,7 @@
         public const string Italic = "\uE0FB";
         public const string Underline = "\uE19A";
         public const string ChevronDown = "\uE06D";
+        public const string ChevronUp = "\uE95A";
         public const string Combine = "\uE44C";
         public const string Wand2 = "\uE357";
         public const string Box = "\uE061";
@@ -154,5 +155,10 @@
         public const string Frame = "\uE291";
         public const string ImagePlus = "\uE1F7";
         public const string TextCursor = "\uE264";
+        public const string Pause = "\uEA60";
+        public const string Link = "\uEA24";
+        public const string Plus = "\uEA76";
+        public const string AlertTriangle = "\uE90A";
+        public const string Users = "\uEAFE";
     }
 }

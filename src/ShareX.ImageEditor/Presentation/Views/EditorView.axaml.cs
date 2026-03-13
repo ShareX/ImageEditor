@@ -59,6 +59,9 @@ namespace ShareX.ImageEditor.Presentation.Views
         private bool _isSyncingToVM;
         private bool _skipNextCoreImageChanged;
 
+        // Window-level key handler reference (so shortcuts work regardless of focus)
+        private Window? _parentWindow;
+
         // SIP-CLIPBOARD: Internal clipboard for shape deep-cloning
         private static Annotation? _clipboardAnnotation;
 
@@ -223,11 +226,18 @@ namespace ShareX.ImageEditor.Presentation.Views
             // Check clipboard initially
             _ = CheckClipboardStatus();
 
-            // Listen for window activation to check clipboard (as close as we get to ClipboardChanged)
-            if (TopLevel.GetTopLevel(this) is Window window)
+            // Attach key handlers to the parent Window so shortcuts work
+            // regardless of which child control has focus (buttons, dropdowns, etc.).
+            _parentWindow = TopLevel.GetTopLevel(this) as Window;
+            if (_parentWindow != null)
             {
-                window.Activated += (s, args) => _ = CheckClipboardStatus();
+                _parentWindow.KeyDown += OnKeyDown;
+                _parentWindow.KeyUp += OnKeyUp;
+                _parentWindow.Activated += OnWindowActivated;
             }
+
+            // Give the editor initial focus
+            this.Focus();
 
             if (DataContext is MainViewModel vm)
             {
@@ -275,6 +285,13 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             base.OnUnloaded(e);
 
+            if (_parentWindow != null)
+            {
+                _parentWindow.KeyDown -= OnKeyDown;
+                _parentWindow.KeyUp -= OnKeyUp;
+                _parentWindow.Activated -= OnWindowActivated;
+            }
+
             if (DataContext is MainViewModel vm)
             {
                 vm.PropertyChanged -= OnViewModelPropertyChanged;
@@ -283,6 +300,11 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
+        }
+
+        private void OnWindowActivated(object? sender, EventArgs e)
+        {
+            _ = CheckClipboardStatus();
         }
 
         private void OnEffectBrowserOverlayPointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)
@@ -482,9 +504,10 @@ namespace ShareX.ImageEditor.Presentation.Views
             _inputController.OnCanvasPointerReleased(sender, e);
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs e)
+        private void OnKeyDown(object? sender, KeyEventArgs e)
         {
-            if (e.Source is TextBox) return;
+            // Skip shortcuts when the user is typing in a text field
+            if (_parentWindow?.FocusManager?.GetFocusedElement() is TextBox) return;
 
             if (DataContext is MainViewModel vm)
             {
@@ -586,9 +609,10 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
-        private void OnKeyUp(object sender, KeyEventArgs e)
+        private void OnKeyUp(object? sender, KeyEventArgs e)
         {
-            if (e.Source is TextBox) return;
+            // Skip shortcuts when the user is typing in a text field
+            if (_parentWindow?.FocusManager?.GetFocusedElement() is TextBox) return;
 
             if (DataContext is MainViewModel vm && e.KeyModifiers == KeyModifiers.None)
             {

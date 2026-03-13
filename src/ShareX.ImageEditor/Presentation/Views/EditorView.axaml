@@ -11,9 +11,7 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="ShareX.ImageEditor.Presentation.Views.EditorView"
-             Focusable="True"
-             KeyDown="OnKeyDown"
-             KeyUp="OnKeyUp">
+             Focusable="True">
 
     <UserControl.DataTemplates>
         <DataTemplate DataType="{x:Type vm:ConfirmationDialogViewModel}">

@@ -111,6 +111,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void Cancel()
         {
+            if (TaskMode)
+            {
+                TaskResult = EditorTaskResult.ContinueNoSave;
+                CloseRequested?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
             RequestClose();
         }
 

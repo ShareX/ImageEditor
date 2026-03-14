@@ -71,6 +71,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private bool _showCaptureToolbar = true;
 
+        [ObservableProperty]
+        private bool _showTaskModeButtons = true;
+
         // Events to signal View to perform canvas operations
         public event EventHandler? UndoRequested;
         public event EventHandler? RedoRequested;

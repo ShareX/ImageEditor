@@ -799,7 +799,8 @@
                 <Border Width="1" Height="38" Background="{DynamicResource ShareX.Brush.Separator}" Margin="4,0"/>
 
                 <!-- Task Mode Buttons -->
-                <Grid Width="90" Height="40" Margin="4,0,10,0" ClipToBounds="False" VerticalAlignment="Bottom">
+                <Grid Width="90" Height="40" Margin="4,0,10,0" ClipToBounds="False" VerticalAlignment="Bottom"
+                      IsVisible="{Binding ShowTaskModeButtons}">
                     <!-- Cancel Button: Red Rectangle (Behind) -->
                     <Button Command="{Binding CancelCommand}"
                             Background="#DC2626"

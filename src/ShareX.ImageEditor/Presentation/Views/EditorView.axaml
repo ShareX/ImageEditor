@@ -11,11 +11,11 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="ShareX.ImageEditor.Presentation.Views.EditorView"
-             x:CompileBindings="False"
+             x:DataType="vm:MainViewModel"
              Focusable="True">
 
     <UserControl.DataTemplates>
-        <DataTemplate DataType="{x:Type vm:ConfirmationDialogViewModel}">
+        <DataTemplate DataType="{x:Type vm:ConfirmationDialogViewModel}" x:DataType="vm:ConfirmationDialogViewModel">
             <views:ConfirmationDialogView />
         </DataTemplate>
     </UserControl.DataTemplates>
@@ -384,13 +384,13 @@
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
+                                        <DataTemplate x:DataType="vm:MainViewModel+GradientPreset">
                                             <Button Padding="0"
                                                     BorderThickness="0"
                                                     Background="Transparent"
                                                     Margin="2"
                                                     ToolTip.Tip="{Binding Name}"
-                                                    Command="{Binding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Command="{ReflectionBinding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}">
                                                 <Border Width="46"
                                                         Height="36"
@@ -558,6 +558,7 @@
 
             <!-- Top Toolbar: Tools and Actions -->
             <Border Padding="4" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+                    x:DataType="vm:EditorToolbarAdapter"
                     DataContext="{Binding ToolbarAdapter}"
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ScrollViewer x:Name="ToolbarScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="OnToolbarScrollChanged">
@@ -667,6 +668,7 @@
 
             <!-- Bottom Toolbar: Tool Options -->
             <Border Padding="4,0,4,4" Margin="0,-1,0,0" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1,0,1,1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+                    x:DataType="vm:EditorToolbarAdapter"
                     DataContext="{Binding ToolbarAdapter}"
                     IsVisible="{Binding ShowToolOptionsSeparator}"
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">

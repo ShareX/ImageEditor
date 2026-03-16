@@ -69,7 +69,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="x:Single">
                             <Button MinWidth="50"
                                     Height="32"
                                     Padding="8,0"

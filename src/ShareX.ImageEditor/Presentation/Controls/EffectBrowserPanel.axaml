@@ -40,7 +40,7 @@
             <ItemsControl x:Name="CategoriesControl" Margin="16,8,16,16">
                 <ItemsControl.DataTemplates>
                     <!-- EffectCategory Template -->
-                    <DataTemplate DataType="{x:Type controls:EffectCategory}">
+                    <DataTemplate DataType="{x:Type controls:EffectCategory}" x:DataType="controls:EffectCategory">
                         <StackPanel Margin="0,0,0,8" IsVisible="{Binding IsVisible}">
                             <TextBlock Text="{Binding HeaderText}" Classes="category-header"/>
                             <ItemsControl ItemsSource="{Binding VisibleEffects}">
@@ -50,7 +50,7 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type controls:EffectItem}">
+                                    <DataTemplate DataType="{x:Type controls:EffectItem}" x:DataType="controls:EffectItem">
                                         <Button Classes="effect-item" 
                                                 Command="{Binding ExecuteCommand}"
                                                 PointerPressed="OnEffectItemPointerPressed"

@@ -5,6 +5,7 @@
         xmlns:views="using:ShareX.ImageEditor.Presentation.Views"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="ShareX.ImageEditor.Presentation.Views.EditorWindow"
+        x:CompileBindings="False"
         Title="{Binding WindowTitle}"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">

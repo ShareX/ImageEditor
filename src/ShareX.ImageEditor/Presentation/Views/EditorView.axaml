@@ -11,6 +11,7 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="ShareX.ImageEditor.Presentation.Views.EditorView"
+             x:CompileBindings="False"
              Focusable="True">
 
     <UserControl.DataTemplates>

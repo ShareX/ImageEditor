@@ -61,6 +61,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         private bool _skipNextCoreImageChanged;
         private bool _pendingZoomToFitOnOpen;
         private int _pendingZoomToFitRetryCount;
+        private int _pendingAutoCopyImageVersion;
 
         // Window-level key handler reference (so shortcuts work regardless of focus)
         private Window? _parentWindow;
@@ -129,6 +130,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                     // Mark as dirty when history changes (annotations added/interactions/undo/redo)
                     vm.IsDirty = true;
+                    QueueAutoCopyImageToClipboard(vm);
                 }
             });
 
@@ -502,6 +504,43 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             Dispatcher.UIThread.Post(TryApplyPendingZoomToFitOnOpen, DispatcherPriority.Render);
+        }
+
+        private void QueueAutoCopyImageToClipboard(MainViewModel vm)
+        {
+            if (!vm.Options.AutoCopyImageToClipboard || !vm.HasPreviewImage)
+            {
+                return;
+            }
+
+            int version = ++_pendingAutoCopyImageVersion;
+
+            Dispatcher.UIThread.Post(async () =>
+            {
+                if (version != _pendingAutoCopyImageVersion)
+                {
+                    return;
+                }
+
+                AutoCopyImageToClipboard(vm);
+            }, DispatcherPriority.Background);
+        }
+
+        private void AutoCopyImageToClipboard(MainViewModel vm)
+        {
+            if (!vm.Options.AutoCopyImageToClipboard || !vm.HasPreviewImage)
+            {
+                return;
+            }
+
+            try
+            {
+                vm.RequestCopyToClipboard();
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportWarning(nameof(EditorView), "Failed to raise auto-copy image request.", ex);
+            }
         }
 
 

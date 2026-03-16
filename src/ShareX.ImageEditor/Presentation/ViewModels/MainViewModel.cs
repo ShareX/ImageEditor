@@ -135,6 +135,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
         }
 
+        public void RequestCopyToClipboard()
+        {
+            _copyRequested?.Invoke();
+        }
+
         private void ShowConfirmationDialog()
         {
             var dialog = new ConfirmationDialogViewModel(
@@ -1005,7 +1010,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand(CanExecute = nameof(CanCopy))]
         private void Copy()
         {
-            _copyRequested?.Invoke();
+            RequestCopyToClipboard();
             CloseAfterTaskActionIfEnabled();
         }
 

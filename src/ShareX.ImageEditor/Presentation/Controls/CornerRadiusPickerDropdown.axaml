@@ -11,24 +11,6 @@
     <UserControl.Resources>
         <converters:CornerRadiusPreviewGeometryConverter x:Key="CornerRadiusPreviewGeometry" />
     </UserControl.Resources>
-
-    <UserControl.Styles>
-        <Style Selector="Button.picker-button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-        <Style Selector="Button.picker-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
-        </Style>
-        <Style Selector="Button.picker-button.active">
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
-        </Style>
-        <Style Selector="Button.picker-button.active /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
-        </Style>
-    </UserControl.Styles>
-
     <Grid>
         <Button x:Name="DropdownButton"
                 Classes="editor-button"

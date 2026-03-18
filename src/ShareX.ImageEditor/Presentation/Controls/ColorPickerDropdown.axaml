@@ -7,11 +7,6 @@
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
              x:Class="ShareX.ImageEditor.Presentation.Controls.ColorPickerDropdown"
              x:Name="ColorPickerDropdownRoot">
-
-    <UserControl.Styles>
-        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
-    </UserControl.Styles>
-
     <Grid>
         <!-- Dropdown Button -->
         <Button x:Name="DropdownButton"

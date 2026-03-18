@@ -6,29 +6,6 @@
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.GrayscaleDialog"
              x:Name="GrayscaleDialogRoot">
-
-    <UserControl.Styles>
-        <Style Selector="TextBlock.label">
-             <Setter Property="Foreground" Value="#9CA3AF"/>
-             <Setter Property="FontSize" Value="13"/>
-             <Setter Property="FontWeight" Value="SemiBold"/>
-             <Setter Property="Margin" Value="0,0,0,4"/>
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#3975D5"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </UserControl.Styles>
-
     <StackPanel Spacing="0">
         <!-- Header -->
         <TextBlock Text="Grayscale" Foreground="#9CA3AF" Margin="0,0,0,8"/>

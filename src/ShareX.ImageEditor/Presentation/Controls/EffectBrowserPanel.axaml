@@ -5,27 +5,6 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="600"
              x:Class="ShareX.ImageEditor.Presentation.Controls.EffectBrowserPanel">
-
-    <UserControl.Styles>
-        <Style Selector="TextBlock.category-header">
-            <Setter Property="FontSize" Value="18"/>
-            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
-            <Setter Property="Margin" Value="8,8,0,8"/>
-        </Style>
-        <Style Selector="Button.effect-item">
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="Margin" Value="4"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            
-            <Style Selector="^:pointerover">
-                <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
-            </Style>
-        </Style>
-    </UserControl.Styles>
-
     <Grid RowDefinitions="Auto,*">
         <!-- Search Box -->
         <TextBox x:Name="SearchBox"

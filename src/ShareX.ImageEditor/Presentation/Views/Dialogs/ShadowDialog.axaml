@@ -7,11 +7,6 @@
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.ShadowDialog"
              x:Name="ShadowDialogRoot">
-
-    <UserControl.Styles>
-        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
-    </UserControl.Styles>
-
     <StackPanel Spacing="0">
         <TextBlock Text="Shadow" Foreground="#9CA3AF" Margin="0,0,0,8"/>
         

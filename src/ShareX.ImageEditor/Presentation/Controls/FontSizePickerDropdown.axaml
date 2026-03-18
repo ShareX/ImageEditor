@@ -6,24 +6,6 @@
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
              x:Class="ShareX.ImageEditor.Presentation.Controls.FontSizePickerDropdown"
              x:Name="FontSizePickerDropdownRoot">
-
-    <UserControl.Styles>
-        <Style Selector="Button.picker-button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-        <Style Selector="Button.picker-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
-        </Style>
-        <Style Selector="Button.picker-button.active">
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
-        </Style>
-        <Style Selector="Button.picker-button.active /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
-        </Style>
-    </UserControl.Styles>
-
     <Grid>
         <!-- Dropdown Button -->
         <Button x:Name="DropdownButton"

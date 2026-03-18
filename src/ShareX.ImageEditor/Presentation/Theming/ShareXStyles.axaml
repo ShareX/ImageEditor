@@ -1,0 +1,293 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <!--
+        Project-wide style entry point.
+        Keep reusable selectors and style classes here so views stay focused on layout and behavior.
+    -->
+
+    <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
+    <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Controls/EffectSlider.axaml" />
+
+    <!-- Base typography -->
+    <Style Selector="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource ShareX.FontFamily.Default}"/>
+        <Setter Property="FontSize" Value="{DynamicResource ShareX.FontSize.Default}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <!-- Shared buttons -->
+    <Style Selector="Button.editor-button">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none"/>
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="^.active">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Button.picker-button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="4"/>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+        </Style>
+
+        <Style Selector="^.active">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
+        <Style Selector="^.active /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Button.ratio-button">
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="Width" Value="NaN"/>
+        <Setter Property="Height" Value="32"/>
+    </Style>
+
+    <Style Selector="Button.task-mode-button">
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Button.task-mode-button.danger:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#EF4444"/>
+        <Setter Property="BorderBrush" Value="#EF4444"/>
+    </Style>
+
+    <Style Selector="Button.task-mode-button.danger:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="#EF4444"/>
+        <Setter Property="BorderBrush" Value="#EF4444"/>
+    </Style>
+
+    <Style Selector="Button.task-mode-button.success:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#13DD9A"/>
+        <Setter Property="BorderBrush" Value="#13DD9A"/>
+    </Style>
+
+    <Style Selector="Button.task-mode-button.success:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="#13DD9A"/>
+        <Setter Property="BorderBrush" Value="#13DD9A"/>
+    </Style>
+
+    <!-- Shared surfaces -->
+    <Style Selector="Border.popup-border">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="BoxShadow" Value="0 4 16 #40000000"/>
+    </Style>
+
+    <Style Selector="Border.popup-surface">
+        <Setter Property="RenderTransformOrigin" Value="50%,0%"/>
+        <Setter Property="RenderTransform" Value="translateY(-8px) scale(0.98)"/>
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="BoxShadow" Value="0 0 0 0 #00000000"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18"/>
+                <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+
+        <Style Selector="^.open">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform" Value="translateY(0px) scale(1)"/>
+            <Setter Property="BoxShadow" Value="0 14 28 -14 #66000000"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Border.popup-surface.zoom-upward">
+        <Setter Property="RenderTransformOrigin" Value="50%,100%"/>
+        <Setter Property="RenderTransform" Value="translateY(8px) scale(0.98)"/>
+    </Style>
+
+    <Style Selector="Border.floating-panel">
+        <Setter Property="RenderTransformOrigin" Value="50%,0%"/>
+        <Setter Property="RenderTransform" Value="translateY(-24px) scale(0.98)"/>
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="BoxShadow" Value="0 0 0 0 #00000000"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2"/>
+                <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2"/>
+            </Transitions>
+        </Setter>
+
+        <Style Selector="^.open">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform" Value="translateY(0px) scale(1)"/>
+            <Setter Property="BoxShadow" Value="0 22 40 -22 #66000000"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Border.capsule">
+        <Setter Property="Padding" Value="6,3"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        </Style>
+    </Style>
+
+    <!-- Editor layout primitives -->
+    <Style Selector="TextBlock.dropdown-chevron">
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="RenderTransform" Value="rotate(0deg)"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.16"/>
+            </Transitions>
+        </Setter>
+
+        <Style Selector="^.open">
+            <Setter Property="RenderTransform" Value="rotate(180deg)"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Border.editor-sidebar">
+        <Setter Property="Width" Value="0"/>
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="ClipToBounds" Value="True"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="RenderTransform" Value="translateX(0px)"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Width" Duration="0:0:0.22"/>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22"/>
+            </Transitions>
+        </Setter>
+
+        <Style Selector="^.left">
+            <Setter Property="RenderTransform" Value="translateX(-18px)"/>
+        </Style>
+
+        <Style Selector="^.right">
+            <Setter Property="RenderTransform" Value="translateX(18px)"/>
+        </Style>
+
+        <Style Selector="^.open">
+            <Setter Property="Width" Value="252"/>
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform" Value="translateX(0px)"/>
+        </Style>
+
+        <Style Selector="^.left.open">
+            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+        </Style>
+
+        <Style Selector="^.right.open">
+            <Setter Property="BorderThickness" Value="1,0,0,0"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Grid.overlay-scrim">
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+
+        <Style Selector="^.open">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+    </Style>
+
+    <!-- Shared feature panels -->
+    <Style Selector="TextBlock.category-header">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        <Setter Property="Margin" Value="8,8,0,8"/>
+    </Style>
+
+    <Style Selector="Button.effect-item">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
+        </Style>
+    </Style>
+
+    <!-- Common control overrides -->
+    <Style Selector="Slider:horizontal">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent}"/>
+
+        <Style Selector="^ /template/ Thumb">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderThickness" Value="4"/>
+        </Style>
+
+        <Style Selector="^ /template/ Thumb:pointerover">
+            <Setter Property="BorderThickness" Value="3"/>
+        </Style>
+    </Style>
+
+    <Style Selector="CheckBox">
+        <Style Selector="^:checked /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Style>
+
+    <Style Selector="ContextMenu">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="6,2"/>
+    </Style>
+
+    <Style Selector="ContextMenu MenuItem">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+
+    <Style Selector="ContextMenu MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+    </Style>
+
+    <Style Selector="ContextMenu Separator">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
+    </Style>
+</Styles>

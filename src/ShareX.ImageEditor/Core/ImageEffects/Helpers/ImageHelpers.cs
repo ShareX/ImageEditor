@@ -332,6 +332,16 @@ public static class ImageHelpers
         }.Apply(source);
     }
 
+    public static SKBitmap ApplyChromaticAberration(SKBitmap source, float amount, float edgeStart, float strength)
+    {
+        return new ChromaticAberrationImageEffect
+        {
+            Amount = amount,
+            EdgeStart = edgeStart,
+            Strength = strength
+        }.Apply(source);
+    }
+
     public static SKBitmap ApplyLiquidGlass(SKBitmap source, float distortion, float refraction, int chromaShift, float gloss, float flowScale)
     {
         return new LiquidGlassImageEffect

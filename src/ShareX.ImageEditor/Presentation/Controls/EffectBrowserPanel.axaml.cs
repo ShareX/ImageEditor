@@ -519,6 +519,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Blur...", LucideIcons.Focus, "Applies a blur effect.", () => RaiseDialog("blur"));
             fil.AddEffect("Cartoon sticker cutout...", LucideIcons.Sticker, "Posterizes colors, inks edges and adds a white sticker-like border glow.", () => RaiseDialog("cartoon_sticker_cutout"), "cartoon_sticker_cutout");
             fil.AddEffect("Claymation texture...", LucideIcons.PaintRoller, "Builds chunky plasticine-like color lumps with tactile relief grain.", () => RaiseDialog("claymation_texture"), "claymation_texture");
+            fil.AddEffect("Chromatic aberration...", LucideIcons.Aperture, "Simulates lens fringing by separating red and blue channels toward the frame edges.", () => RaiseDialog("chromatic_aberration"), "chromatic_aberration");
             fil.AddEffect("Color depth...", LucideIcons.Layers2, "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
             fil.AddEffect("Convolution matrix...", LucideIcons.Grid3X3, "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
             fil.AddEffect("CRT...", LucideIcons.Monitor, "Applies a retro CRT monitor effect.", () => RaiseDialog("crt"));

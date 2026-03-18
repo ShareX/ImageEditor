@@ -94,6 +94,7 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["color_depth"] = () => new ColorDepthDialog(),
                 ["convolution_matrix"] = () => new ConvolutionMatrixDialog(),
                 ["crt"] = () => new CRTDialog(),
+                ["chromatic_aberration"] = () => new ChromaticAberrationDialog(),
                 ["gaussian_blur"] = () => new GaussianBlurDialog(),
                 ["bloom"] = () => new BloomDialog(),
                 ["dithering"] = () => new DitheringDialog(),

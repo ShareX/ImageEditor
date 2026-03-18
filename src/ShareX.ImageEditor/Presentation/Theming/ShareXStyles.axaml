@@ -35,7 +35,7 @@
         <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
         <Setter Property="Padding" Value="8,6"/>
         <Setter Property="CornerRadius" Value="4"/>
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 

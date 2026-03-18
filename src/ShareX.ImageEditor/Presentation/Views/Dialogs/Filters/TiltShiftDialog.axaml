@@ -16,10 +16,7 @@
                 <ComboBox x:Name="ModeComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnModeChanged"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151"
-                          BorderThickness="0"
-                          CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Linear"/>
                     <ComboBoxItem Content="Radial"/>
                 </ComboBox>

@@ -16,10 +16,7 @@
                 <ComboBox x:Name="DirectionComboBox"
                           SelectedIndex="1"
                           SelectionChanged="OnSelectionChanged"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151"
-                          BorderThickness="0"
-                          CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Horizontal"/>
                     <ComboBoxItem Content="Vertical"/>
                 </ComboBox>
@@ -30,10 +27,7 @@
                 <ComboBox x:Name="MetricComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnSelectionChanged"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151"
-                          BorderThickness="0"
-                          CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Brightness"/>
                     <ComboBoxItem Content="Hue"/>
                 </ComboBox>

@@ -15,7 +15,7 @@
             <StackPanel Spacing="4">
                 <TextBlock Text="Type" Foreground="#9CA3AF"/>
                 <ComboBox x:Name="TypeComboBox" SelectedIndex="0" SelectionChanged="OnSelectionChanged"
-                          HorizontalAlignment="Stretch" Background="#374151" BorderThickness="0" CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Outside"/>
                     <ComboBoxItem Content="Inside"/>
                 </ComboBox>
@@ -29,7 +29,7 @@
             <StackPanel Spacing="4">
                 <TextBlock Text="Dash Style" Foreground="#9CA3AF"/>
                 <ComboBox x:Name="DashStyleComboBox" SelectedIndex="0" SelectionChanged="OnSelectionChanged"
-                          HorizontalAlignment="Stretch" Background="#374151" BorderThickness="0" CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Solid"/>
                     <ComboBoxItem Content="Dash"/>
                     <ComboBoxItem Content="Dot"/>

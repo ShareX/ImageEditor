@@ -26,10 +26,7 @@
                     <ComboBox x:Name="PlacementComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
-                              HorizontalAlignment="Stretch"
-                              Background="#374151"
-                              BorderThickness="0"
-                              CornerRadius="4">
+                              HorizontalAlignment="Stretch">
                         <ComboBoxItem Content="Top left"/>
                         <ComboBoxItem Content="Top center"/>
                         <ComboBoxItem Content="Top right"/>

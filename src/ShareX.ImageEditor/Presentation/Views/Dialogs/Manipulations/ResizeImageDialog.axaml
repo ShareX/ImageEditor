@@ -42,8 +42,7 @@
                 <TextBlock Text="Resample Mode" Foreground="#9CA3AF"/>
                 <ComboBox x:Name="ResampleModeCombo" 
                           SelectedIndex="2"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151" BorderThickness="0" CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Nearest Neighbor (Fast)"/>
                     <ComboBoxItem Content="Bilinear"/>
                     <ComboBoxItem Content="Bicubic"/>

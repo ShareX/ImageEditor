@@ -16,10 +16,7 @@
                 <ComboBox x:Name="ShapeComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnShapeChanged"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151"
-                          BorderThickness="0"
-                          CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Hexagon"/>
                     <ComboBoxItem Content="Triangle"/>
                 </ComboBox>

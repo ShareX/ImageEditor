@@ -16,10 +16,7 @@
                 <ComboBox x:Name="MethodComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnSelectionChanged"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151"
-                          BorderThickness="0"
-                          CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Floyd-Steinberg"/>
                     <ComboBoxItem Content="Bayer 4x4"/>
                 </ComboBox>
@@ -30,10 +27,7 @@
                 <ComboBox x:Name="PaletteComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnSelectionChanged"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151"
-                          BorderThickness="0"
-                          CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="1-bit B&amp;W"/>
                     <ComboBoxItem Content="Web-safe 216"/>
                     <ComboBoxItem Content="RGB332"/>

@@ -16,10 +16,7 @@
                 <ComboBox x:Name="PresetComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnPresetChanged"
-                          HorizontalAlignment="Stretch"
-                          Background="#374151"
-                          BorderThickness="0"
-                          CornerRadius="4">
+                          HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Classic"/>
                     <ComboBoxItem Content="Warm"/>
                     <ComboBoxItem Content="Cool"/>

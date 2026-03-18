@@ -28,10 +28,7 @@
                     <ComboBox x:Name="PlacementComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
-                              HorizontalAlignment="Stretch"
-                              Background="#374151"
-                              BorderThickness="0"
-                              CornerRadius="4">
+                              HorizontalAlignment="Stretch">
                         <ComboBoxItem Content="Top left"/>
                         <ComboBoxItem Content="Top center"/>
                         <ComboBoxItem Content="Top right"/>
@@ -72,10 +69,7 @@
                     <ComboBox x:Name="SizeModeComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
-                              HorizontalAlignment="Stretch"
-                              Background="#374151"
-                              BorderThickness="0"
-                              CornerRadius="4">
+                              HorizontalAlignment="Stretch">
                         <ComboBoxItem Content="Don't resize"/>
                         <ComboBoxItem Content="Absolute size"/>
                         <ComboBoxItem Content="Percentage of watermark"/>
@@ -111,10 +105,7 @@
                     <ComboBox x:Name="RotateFlipComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
-                              HorizontalAlignment="Stretch"
-                              Background="#374151"
-                              BorderThickness="0"
-                              CornerRadius="4">
+                              HorizontalAlignment="Stretch">
                         <ComboBoxItem Content="None"/>
                         <ComboBoxItem Content="Rotate 90"/>
                         <ComboBoxItem Content="Rotate 180"/>
@@ -143,10 +134,7 @@
                     <ComboBox x:Name="InterpolationComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
-                              HorizontalAlignment="Stretch"
-                              Background="#374151"
-                              BorderThickness="0"
-                              CornerRadius="4">
+                              HorizontalAlignment="Stretch">
                         <ComboBoxItem Content="High quality bicubic"/>
                         <ComboBoxItem Content="Bicubic"/>
                         <ComboBoxItem Content="High quality bilinear"/>
@@ -160,10 +148,7 @@
                     <ComboBox x:Name="CompositingComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
-                              HorizontalAlignment="Stretch"
-                              Background="#374151"
-                              BorderThickness="0"
-                              CornerRadius="4">
+                              HorizontalAlignment="Stretch">
                         <ComboBoxItem Content="Source over"/>
                         <ComboBoxItem Content="Source copy"/>
                     </ComboBox>

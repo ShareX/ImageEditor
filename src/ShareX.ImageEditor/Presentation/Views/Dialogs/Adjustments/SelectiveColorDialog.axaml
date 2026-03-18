@@ -16,7 +16,7 @@
             <StackPanel Spacing="4">
                 <TextBlock Text="Color Range" Foreground="#9CA3AF"/>
                 <ComboBox x:Name="RangeComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" SelectionChanged="OnRangeChanged"
-                          Background="#374151" BorderThickness="0" CornerRadius="4">
+>
                     <ComboBoxItem>Reds</ComboBoxItem>
                     <ComboBoxItem>Yellows</ComboBoxItem>
                     <ComboBoxItem>Greens</ComboBoxItem>

@@ -26,15 +26,6 @@
             <Color x:Key="ShareX.Color.Control.Background">#2E2E2E</Color>
             <Color x:Key="ShareX.Color.Control.Background.Hover">#3A3A3A</Color>
             <Color x:Key="ShareX.Color.Control.Border">#1F1F1F</Color>
-            <Color x:Key="ShareX.Color.Status.Success.Background">#16271C</Color>
-            <Color x:Key="ShareX.Color.Status.Success.Border">#4C8E67</Color>
-            <Color x:Key="ShareX.Color.Status.Success.Foreground">#D9FBE8</Color>
-            <Color x:Key="ShareX.Color.Status.Warning.Background">#35260D</Color>
-            <Color x:Key="ShareX.Color.Status.Warning.Border">#D7A550</Color>
-            <Color x:Key="ShareX.Color.Status.Warning.Foreground">#FFE9B2</Color>
-            <Color x:Key="ShareX.Color.Status.Error.Background">#34161B</Color>
-            <Color x:Key="ShareX.Color.Status.Error.Border">#DC5A68</Color>
-            <Color x:Key="ShareX.Color.Status.Error.Foreground">#FFD7DC</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Background">#DC2626</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Border">#EF4444</Color>
             <Color x:Key="ShareX.Color.TaskMode.Continue.Background">#10B981</Color>
@@ -60,12 +51,6 @@
             <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#383838" />
             <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#333333" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Success.Background" Color="{StaticResource ShareX.Color.Status.Success.Background}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Success.Border" Color="{StaticResource ShareX.Color.Status.Success.Border}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Success.Foreground" Color="{StaticResource ShareX.Color.Status.Success.Foreground}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Error.Background" Color="{StaticResource ShareX.Color.Status.Error.Background}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Error.Border" Color="{StaticResource ShareX.Color.Status.Error.Border}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Error.Foreground" Color="{StaticResource ShareX.Color.Status.Error.Foreground}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Background" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Background}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Border" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Continue.Background" Color="{StaticResource ShareX.Color.TaskMode.Continue.Background}" />
@@ -132,15 +117,6 @@
             <Color x:Key="ShareX.Color.Control.Background">#F5F5F7</Color>
             <Color x:Key="ShareX.Color.Control.Background.Hover">#EBEBEF</Color>
             <Color x:Key="ShareX.Color.Control.Border">#DBDBDF</Color>
-            <Color x:Key="ShareX.Color.Status.Success.Background">#EAF7EE</Color>
-            <Color x:Key="ShareX.Color.Status.Success.Border">#72A86A</Color>
-            <Color x:Key="ShareX.Color.Status.Success.Foreground">#183624</Color>
-            <Color x:Key="ShareX.Color.Status.Warning.Background">#FFF4CC</Color>
-            <Color x:Key="ShareX.Color.Status.Warning.Border">#D7A550</Color>
-            <Color x:Key="ShareX.Color.Status.Warning.Foreground">#6A4C00</Color>
-            <Color x:Key="ShareX.Color.Status.Error.Background">#FDECEC</Color>
-            <Color x:Key="ShareX.Color.Status.Error.Border">#DC3545</Color>
-            <Color x:Key="ShareX.Color.Status.Error.Foreground">#7A1622</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Background">#DC2626</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Border">#EF4444</Color>
             <Color x:Key="ShareX.Color.TaskMode.Continue.Background">#10B981</Color>
@@ -166,12 +142,6 @@
             <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#AEAEB2" />
             <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#E3E3E3" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Success.Background" Color="{StaticResource ShareX.Color.Status.Success.Background}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Success.Border" Color="{StaticResource ShareX.Color.Status.Success.Border}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Success.Foreground" Color="{StaticResource ShareX.Color.Status.Success.Foreground}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Error.Background" Color="{StaticResource ShareX.Color.Status.Error.Background}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Error.Border" Color="{StaticResource ShareX.Color.Status.Error.Border}" />
-            <SolidColorBrush x:Key="ShareX.Brush.Status.Error.Foreground" Color="{StaticResource ShareX.Color.Status.Error.Foreground}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Background" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Background}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Border" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Continue.Background" Color="{StaticResource ShareX.Color.TaskMode.Continue.Background}" />

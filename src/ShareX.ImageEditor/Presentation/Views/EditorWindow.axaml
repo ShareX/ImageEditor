@@ -11,10 +11,6 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">
 
-    <Window.Styles>
-        <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ShareXStyles.axaml"/>
-    </Window.Styles>
-
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

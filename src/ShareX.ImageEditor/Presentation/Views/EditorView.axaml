@@ -15,7 +15,7 @@
              Focusable="True">
 
     <UserControl.Styles>
-        <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ShareXStyles.axaml"/>
+        <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ImageEditorStyles.axaml"/>
     </UserControl.Styles>
 
     <UserControl.DataTemplates>
@@ -25,6 +25,12 @@
     </UserControl.DataTemplates>
 
     <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ImageEditorTheme.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
         <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
         <converters:EqualsConverter x:Key="EqualsConverter" />
 

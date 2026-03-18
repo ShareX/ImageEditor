@@ -11,14 +11,6 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">
 
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ShareXTheme.axaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-
     <views:EditorView Name="EditorViewControl"/>
 
 </Window>

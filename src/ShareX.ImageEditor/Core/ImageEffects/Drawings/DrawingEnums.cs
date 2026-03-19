@@ -21,6 +21,15 @@ public enum DrawingImageSizeMode
     PercentageOfCanvas
 }
 
+public enum DrawingShapeType
+{
+    Rectangle,
+    RoundedRectangle,
+    Ellipse,
+    Triangle,
+    Diamond
+}
+
 public enum DrawingImageRotateFlipType
 {
     None = 0,

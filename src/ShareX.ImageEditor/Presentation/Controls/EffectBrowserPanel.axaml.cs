@@ -583,6 +583,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             drawings.AddEffect("Border...", LucideIcons.Frame, "Adds a border to the image.", () => RaiseDialog("border"));
             drawings.AddEffect("Image...", LucideIcons.ImagePlus, "Draws an image overlay with placement, sizing and opacity controls.", () => RaiseDialog("draw_image"));
             drawings.AddEffect("Particles...", LucideIcons.Sparkle, "Draws random particles from an image folder.", () => RaiseDialog("draw_particles"));
+            drawings.AddEffect("Shape...", LucideIcons.VectorSquare, "Draws filled primitive shapes with placement, size and color controls.", () => RaiseDialog("draw_shape"));
             drawings.AddEffect("Text...", LucideIcons.TextCursor, "Draws stylized text with gradient, outline and shadow options.", () => RaiseDialog("draw_text"));
             drawings.AddEffect("Text watermark...", LucideIcons.Stamp, "Draws text inside a rounded watermark box with padding, border and optional shadow.", () => RaiseDialog("text_watermark"));
             drawings.AddEffect("Wooden frame...", LucideIcons.Frame, "Expands the canvas with a beveled procedural wooden picture frame.", () => RaiseDialog("wooden_frame"), "wooden_frame");

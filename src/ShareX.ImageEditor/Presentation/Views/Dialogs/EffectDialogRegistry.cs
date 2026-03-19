@@ -136,6 +136,7 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["draw_checkerboard"] = () => new DrawCheckerboardDialog(),
                 ["draw_image"] = () => new DrawImageDialog(),
                 ["draw_particles"] = () => new DrawParticlesDialog(),
+                ["draw_shape"] = () => new DrawShapeDialog(),
                 ["draw_text"] = () => new DrawTextDialog(),
                 ["text_watermark"] = () => new TextWatermarkDialog(),
                 ["wooden_frame"] = () => new WoodenFrameDialog(),

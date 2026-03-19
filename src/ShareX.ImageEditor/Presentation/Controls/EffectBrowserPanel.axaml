@@ -9,9 +9,11 @@
         <!-- Search Box -->
         <TextBox x:Name="SearchBox"
                  Grid.Row="0"
+                 Classes="effect-search"
                  Watermark="Search effects..."
                  Margin="16,16,16,0"
                  CornerRadius="4"
+                 VerticalContentAlignment="Center"
                  TextChanged="OnSearchTextChanged"/>
 
         <!-- Categories List -->

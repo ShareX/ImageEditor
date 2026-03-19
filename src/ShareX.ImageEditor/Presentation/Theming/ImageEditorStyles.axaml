@@ -339,6 +339,16 @@
         </Style>
     </Style>
 
+    <Style Selector="TextBox.effect-search">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="8,0"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+        <Style Selector="^ /template/ TextPresenter">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Style>
+
     <Style Selector="ComboBox">
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>

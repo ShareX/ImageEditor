@@ -29,6 +29,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.ViewModels;
+using ShareX.ImageEditor.Presentation.Views;
 using SkiaSharp;
 using System;
 using System.IO;
@@ -52,7 +53,10 @@ namespace ShareX.ImageEditor.Loader
             {
                 EditorServices.DesktopWallpaper = new DesktopWallpaperService();
 
-                var window = new ShareX.ImageEditor.Presentation.Views.EditorWindow();
+                ImageEditorOptions options = new ImageEditorOptions();
+                options.ShowExitConfirmation = false;
+
+                EditorWindow window = new EditorWindow(options);
                 desktop.MainWindow = window;
 
                 if (window.DataContext is MainViewModel vm)

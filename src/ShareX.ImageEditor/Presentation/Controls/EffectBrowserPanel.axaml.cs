@@ -536,11 +536,13 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Glow...", LucideIcons.Lightbulb, "Applies a glowing effect.", () => RaiseDialog("glow"));
             fil.AddEffect("Halftone...", LucideIcons.CircleDotDashed, "Creates a comic-style CMYK dot print pattern.", () => RaiseDialog("halftone"));
             fil.AddEffect("Halation...", LucideIcons.Sunset, "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
+            fil.AddEffect("Heat haze refraction...", LucideIcons.Waves, "Distorts the image with shimmering refractive heat ripples.", () => RaiseDialog("heat_haze_refraction"));
             fil.AddEffect("Hologram scan...", LucideIcons.ScanFace, "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
             fil.AddEffect("Holographic foil shimmer...", LucideIcons.Rainbow, "Adds iridescent foil rainbow shimmer with specular sparkle.", () => RaiseDialog("holographic_foil_shimmer"), "holographic_foil_shimmer");
             fil.AddEffect("Ink splatter + drips...", LucideIcons.Brush, "Adds expressive ink blotches with gravity drips and paper stain fade.", () => RaiseDialog("ink_splatter_drips"), "ink_splatter_drips");
             fil.AddEffect("Lens blur (bokeh)...", LucideIcons.Target, "Simulates circular aperture blur with weighted highlight bloom.", () => RaiseDialog("lens_blur"), "lens_blur");
             fil.AddEffect("Liquid glass...", LucideIcons.Glasses, "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
+            fil.AddEffect("Luminance contour lines...", LucideIcons.Map, "Quantizes luminance into grayscale contour bands with adjustable line overlays.", () => RaiseDialog("luminance_contour_lines"));
             fil.AddEffect("Matrix digital rain...", LucideIcons.Terminal, "Rebuilds the image with glowing falling terminal glyphs.", () => RaiseDialog("matrix_digital_rain"));
             fil.AddEffect("Mean removal", LucideIcons.Sigma, "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
             fil.AddEffect("Median filter...", LucideIcons.Filter, "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
@@ -548,9 +550,11 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Motion blur...", LucideIcons.MoveHorizontal, "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));
             fil.AddEffect("Spin blur...", LucideIcons.LoaderPinwheel, "Blurs pixels along an arc around a custom center point.", () => RaiseDialog("spin_blur"), "spin_blur");
             fil.AddEffect("Neon edge glow...", LucideIcons.Zap, "Detects edges and renders a neon glow around them.", () => RaiseDialog("neon_edge_glow"));
+            fil.AddEffect("Nebula starfield...", LucideIcons.Sparkles, "Overlays colored nebula clouds and procedural stars.", () => RaiseDialog("nebula_starfield"));
             fil.AddEffect("Old camera flash burn...", LucideIcons.Flashlight, "Simulates overexposed flash, warm frame burn and analog grain.", () => RaiseDialog("old_camera_flash_burn"), "old_camera_flash_burn");
             fil.AddEffect("Oil paint...", LucideIcons.Paintbrush2, "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
             fil.AddEffect("Outline...", LucideIcons.VectorSquare, "Applies an outline effect.", () => RaiseDialog("outline"));
+            fil.AddEffect("Paper stencil mask...", LucideIcons.Stamp, "Builds a feathered stencil mask over a dimmed background.", () => RaiseDialog("paper_stencil_mask"));
             fil.AddEffect("Pencil sketch...", LucideIcons.PencilLine, "Simulates graphite sketch using dodge-blur and edge darkening.", () => RaiseDialog("pencil_sketch"));
             fil.AddEffect("Pixel sorting...", LucideIcons.ArrowDownWideNarrow, "Sorts horizontal or vertical pixel spans by brightness or hue for glitch cascades.", () => RaiseDialog("pixel_sorting"));
             fil.AddEffect("Pixelate...", LucideIcons.Grid2X2, "Pixelates the image.", () => RaiseDialog("pixelate"));
@@ -558,6 +562,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Rainy window...", LucideIcons.CloudRain, "Simulates water streaks, droplets and foggy glass.", () => RaiseDialog("rainy_window"));
             fil.AddEffect("Reflection...", LucideIcons.FlipVertical2, "Adds a reflection to the bottom of the image.", () => RaiseDialog("reflection"));
             fil.AddEffect("RGB split...", LucideIcons.SplitSquareHorizontal, "Splits the red, green, and blue color channels.", () => RaiseDialog("rgb_split"));
+            fil.AddEffect("Riso print...", LucideIcons.Newspaper, "Simulates layered risograph inks with halftone dots and slight registration offset.", () => RaiseDialog("riso_print"));
             fil.AddEffect("Shadow...", LucideIcons.CloudMoon, "Adds a drop shadow to the image.", () => RaiseDialog("shadow"));
             fil.AddEffect("Sharpen...", LucideIcons.Crosshair, "Sharpens the image.", () => RaiseDialog("sharpen"));
             fil.AddEffect("Slice...", LucideIcons.Slice, "Slices the image.", () => RaiseDialog("slice"));

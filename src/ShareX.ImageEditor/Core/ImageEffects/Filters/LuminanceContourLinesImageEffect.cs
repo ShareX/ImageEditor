@@ -26,13 +26,13 @@ public class LuminanceContourLinesImageEffect : FilterImageEffect
             return source.Copy();
         }
 
+        float backgroundStrength01 = Math.Clamp(BackgroundStrength, 0f, 100f) / 100f;
         float lineStrength01 = Math.Clamp(LineStrength, 0f, 100f) / 100f;
-        if (lineStrength01 <= 0f)
+        if (lineStrength01 <= 0f && backgroundStrength01 <= 0f)
         {
             return source.Copy();
         }
 
-        float backgroundStrength01 = Math.Clamp(BackgroundStrength, 0f, 100f) / 100f;
         float thresholdBias = Math.Clamp(Threshold, 0f, 255f) / 255f;
 
         float lineWidth01 = Math.Clamp(LineWidth, 0f, 200f) / 200f; // 0..1

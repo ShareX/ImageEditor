@@ -514,6 +514,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Anime speed lines...", LucideIcons.ScanLine, "Overlays dramatic radial anime motion streaks from a focal point.", () => RaiseDialog("anime_speed_lines"), "anime_speed_lines");
             fil.AddEffect("ASCII art...", LucideIcons.SquareTerminal, "Converts luminance to configurable ASCII glyph shading.", () => RaiseDialog("ascii_art"));
             fil.AddEffect("Bevel...", LucideIcons.Combine, "Adds an inner beveled edge with configurable light, highlight, and shadow.", () => RaiseDialog("bevel"), "bevel");
+            fil.AddEffect("Blood splash...", LucideIcons.Droplet, "Overlays deep red splashes, fine spray, and glossy runny drips.", () => RaiseDialog("blood_splash"), "blood_splash");
             fil.AddEffect("Block glitch / databending...", LucideIcons.Cpu, "Displaces rectangular chunks and misaligns color channels like corrupted files.", () => RaiseDialog("block_glitch"));
             fil.AddEffect("Bloom...", LucideIcons.Sparkle, "Creates a soft glow around bright regions.", () => RaiseDialog("bloom"));
             fil.AddEffect("Blueprint drawing...", LucideIcons.DraftingCompass, "Converts image structure into cyan technical lines over blueprint paper.", () => RaiseDialog("blueprint_drawing"), "blueprint_drawing");

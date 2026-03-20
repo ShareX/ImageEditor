@@ -75,6 +75,7 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["anime_speed_lines"] = () => new AnimeSpeedLinesDialog(),
                 ["ascii_art"] = () => new ASCIIArtDialog(),
                 ["bevel"] = () => new BevelDialog(),
+                ["blood_splash"] = () => new BloodSplashDialog(),
                 ["block_glitch"] = () => new BlockGlitchDialog(),
                 ["blueprint_drawing"] = () => new BlueprintDrawingDialog(),
                 ["border"] = () => new BorderDialog(),

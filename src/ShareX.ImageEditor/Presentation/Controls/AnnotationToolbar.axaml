@@ -54,13 +54,16 @@
         </Style>
     </UserControl.Styles>
 
-    <Border Background="{DynamicResource ShareX.Brush.Control.Background}"
-            BorderBrush="{DynamicResource ShareX.Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Padding="8">
-        <StackPanel Orientation="Vertical" Spacing="8">
-            <StackPanel Orientation="Horizontal" Spacing="4">
+    <StackPanel Orientation="Vertical" Spacing="0">
+        <Border Padding="4"
+                Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+                BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="0,0,4,4"
+                HorizontalAlignment="Center">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled">
+                <StackPanel Orientation="Horizontal" Spacing="4">
                     <Button Classes="toolbar-button"
                             Tag="{x:Static models:EditorTool.Select}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
@@ -191,11 +194,22 @@
                                 Background="{DynamicResource ShareX.Brush.Separator}"/>
                         <ContentPresenter Content="{Binding TopRowTrailingContent, ElementName=AnnotationToolbarRoot}"/>
                     </StackPanel>
-            </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
 
-            <StackPanel Orientation="Horizontal"
-                        Spacing="6"
-                        IsVisible="{Binding ShowToolOptionsSeparator}">
+        <Border Padding="4,0,4,4"
+                Margin="0,-1,0,0"
+                Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+                BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                BorderThickness="1,0,1,1"
+                CornerRadius="0,0,4,4"
+                HorizontalAlignment="Center"
+                IsVisible="{Binding ShowToolOptionsSeparator}">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="6">
                 <Border Background="Transparent"
                         Width="40"
                         Height="40"
@@ -286,7 +300,8 @@
                         IsVisible="{Binding ShowShadow}"
                         ToolTip.Tip="Toggle shadow"
                         Content="{x:Static theming:EditorIcons.MenuTheme}"/>
-            </StackPanel>
-        </StackPanel>
-    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </StackPanel>
 </UserControl>

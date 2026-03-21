@@ -12,27 +12,9 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <SolidColorBrush x:Key="AnnotationToolbarActiveBrush" Color="{DynamicResource SystemAccentColor}"/>
-            <SolidColorBrush x:Key="AnnotationToolbarActiveForegroundBrush" Color="{DynamicResource ShareX.Color.Text}"/>
             <converters:EqualsConverter x:Key="EqualsConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
-
-    <UserControl.Styles>
-        <Style Selector="Button.editor-button.toolbar-button">
-            <Setter Property="Width" Value="40"/>
-            <Setter Property="MinWidth" Value="40"/>
-            <Setter Property="FontFamily" Value="{DynamicResource ShareX.FontFamily.Icon}"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="FontSize" Value="18"/>
-
-            <Style Selector="^.active">
-                <Setter Property="Background" Value="{DynamicResource AnnotationToolbarActiveBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource AnnotationToolbarActiveBrush}"/>
-                <Setter Property="Foreground" Value="{DynamicResource AnnotationToolbarActiveForegroundBrush}"/>
-            </Style>
-        </Style>
-    </UserControl.Styles>
 
     <StackPanel Orientation="Vertical" Spacing="0">
         <Border Padding="4"

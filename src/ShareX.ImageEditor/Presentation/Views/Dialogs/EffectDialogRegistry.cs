@@ -24,6 +24,8 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Controls;
+using ShareX.ImageEditor.Presentation.Filters;
+using System.Linq;
 
 namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
@@ -70,81 +72,17 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["vibrance"] = () => new VibranceDialog(),
                 ["duotone_gradient_map"] = () => new DuotoneGradientMapDialog(),
 
-                // --- Filters ---
-                ["add_noise"] = () => new AddNoiseDialog(),
-                ["anime_speed_lines"] = () => new AnimeSpeedLinesDialog(),
+                // --- Filters (custom dialogs not covered by FilterCatalog) ---
                 ["anamorphic_lens_flare"] = () => new AnamorphicLensFlareDialog(),
-                ["ascii_art"] = () => new ASCIIArtDialog(),
-                ["bevel"] = () => new BevelDialog(),
-                ["blood_splash"] = () => new BloodSplashDialog(),
-                ["block_glitch"] = () => new BlockGlitchDialog(),
-                ["blueprint_drawing"] = () => new BlueprintDrawingDialog(),
-                ["border"] = () => new BorderDialog(),
-                ["cartoon_sticker_cutout"] = () => new CartoonStickerCutoutDialog(),
-                ["claymation_texture"] = () => new ClaymationTextureDialog(),
                 ["etched_glass"] = () => new EtchedGlassDialog(),
-                ["outline"] = () => new OutlineDialog(),
-                ["shadow"] = () => new ShadowDialog(),
-                ["glow"] = () => new GlowDialog(),
-                ["reflection"] = () => new ReflectionDialog(),
-                ["crystalize_shards"] = () => new CrystalizeShardsDialog(),
-                ["crosshatch"] = () => new CrosshatchDialog(),
-                ["oil_paint"] = () => new OilPaintDialog(),
-                ["halftone"] = () => new HalftoneDialog(),
-                ["sobel_edge"] = () => new SobelEdgeDialog(),
-                ["torn_edge"] = () => new TornEdgeDialog(),
-                ["wave_edge"] = () => new WaveEdgeDialog(),
-                ["slice"] = () => new SliceDialog(),
-                ["color_depth"] = () => new ColorDepthDialog(),
-                ["convolution_matrix"] = () => new ConvolutionMatrixDialog(),
-                ["crt"] = () => new CRTDialog(),
-                ["chromatic_aberration"] = () => new ChromaticAberrationDialog(),
-                ["gaussian_blur"] = () => new GaussianBlurDialog(),
-                ["bloom"] = () => new BloomDialog(),
-                ["dithering"] = () => new DitheringDialog(),
-                ["lens_blur"] = () => new LensBlurDialog(),
-                ["median_filter"] = () => new MedianFilterDialog(),
-                ["matrix_digital_rain"] = () => new MatrixDigitalRainDialog(),
-                ["motion_blur"] = () => new MotionBlurDialog(),
-                ["spin_blur"] = () => new SpinBlurDialog(),
-                ["surface_blur"] = () => new SurfaceBlurDialog(),
-                ["halation"] = () => new HalationDialog(),
-                ["heat_haze_refraction"] = () => new HeatHazeRefractionDialog(),
-                ["pixel_sorting"] = () => new PixelSortingDialog(),
-                ["rgb_split"] = () => new RGBSplitDialog(),
-                ["crystal_prism"] = () => new CrystalPrismDialog(),
-                ["hologram_scan"] = () => new HologramScanDialog(),
-                ["holographic_foil_shimmer"] = () => new HolographicFoilShimmerDialog(),
-                ["ink_splatter_drips"] = () => new InkSplatterDripsDialog(),
-                ["liquid_glass"] = () => new LiquidGlassDialog(),
                 ["liquid_mercury"] = () => new LiquidMercuryDialog(),
-                ["luminance_contour_lines"] = () => new LuminanceContourLinesDialog(),
-                ["neon_edge_glow"] = () => new NeonEdgeGlowDialog(),
-                ["nebula_starfield"] = () => new NebulaStarfieldDialog(),
                 ["night_vision"] = () => new NightVisionDialog(),
                 ["oil_slick_interference"] = () => new OilSlickInterferenceDialog(),
-                ["old_camera_flash_burn"] = () => new OldCameraFlashBurnDialog(),
                 ["plasma_energy_arcs"] = () => new PlasmaEnergyArcsDialog(),
-                ["rainy_window"] = () => new RainyWindowDialog(),
-                ["paper_stencil_mask"] = () => new PaperStencilMaskDialog(),
-                ["riso_print"] = () => new RisoPrintDialog(),
-                ["frosted_glass_ice_edges"] = () => new FrostedGlassIceEdgesDialog(),
                 ["rust_corrosion"] = () => new RustCorrosionDialog(),
-                ["snowfall_depth_fog"] = () => new SnowfallDepthFogDialog(),
                 ["smoke_overlay"] = () => new SmokeOverlayDialog(),
-                ["stained_glass"] = () => new StainedGlassDialog(),
-                ["unsharp_mask"] = () => new UnsharpMaskDialog(),
                 ["vhs_tape_damage"] = () => new VhsTapeDamageDialog(),
-                ["vintage_print_damage"] = () => new VintagePrintDamageDialog(),
-                ["vignette"] = () => new VignetteDialog(),
-                ["mosaic_polygon"] = () => new MosaicPolygonDialog(),
-                ["pencil_sketch"] = () => new PencilSketchDialog(),
-                ["pointillism"] = () => new PointillismDialog(),
-                ["thermal_vision"] = () => new ThermalVisionDialog(),
-                ["tilt_shift"] = () => new TiltShiftDialog(),
-                ["watercolor_kuwahara"] = () => new WatercolorKuwaharaDialog(),
                 ["x_ray_scan"] = () => new XRayScanDialog(),
-                ["zoom_blur"] = () => new ZoomBlurDialog(),
 
                 // --- Drawings ---
                 ["draw_background"] = () => new DrawBackgroundDialog(),
@@ -171,10 +109,6 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["resize_image"] = () => new ResizeImageDialog(),
                 ["resize_canvas"] = () => new ResizeCanvasDialog(),
 
-                // --- Quality ---
-                ["blur"] = () => new BlurDialog(),
-                ["pixelate"] = () => new PixelateDialog(),
-                ["sharpen"] = () => new SharpenDialog(),
             };
 
         /// <summary>
@@ -186,6 +120,12 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
         /// </returns>
         public static bool TryCreate(string effectId, out UserControl? dialog)
         {
+            if (FilterCatalog.TryGetDefinition(effectId, out FilterDefinition? definition) && definition != null)
+            {
+                dialog = new SchemaDrivenFilterDialog(definition);
+                return true;
+            }
+
             if (_factories.TryGetValue(effectId, out var factory))
             {
                 dialog = factory();
@@ -197,6 +137,10 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
         }
 
         /// <summary>Returns all registered effect IDs (case-insensitive).</summary>
-        public static IReadOnlyCollection<string> RegisteredIds => _factories.Keys;
+        public static IReadOnlyCollection<string> RegisteredIds =>
+            _factories.Keys
+                .Concat(FilterCatalog.Definitions.Select(definition => definition.Id))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
     }
 }

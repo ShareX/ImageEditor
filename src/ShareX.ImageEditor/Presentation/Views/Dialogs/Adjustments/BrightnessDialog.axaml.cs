@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ShareX.ImageEditor.Core.ImageEffects.Adjustments;
-using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
@@ -61,16 +60,5 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
         }
     }
 
-    public class EffectEventArgs : EventArgs
-    {
-        public Func<SKBitmap, SKBitmap> EffectOperation { get; }
-        public string StatusMessage { get; }
-
-        public EffectEventArgs(Func<SKBitmap, SKBitmap> operation, string statusMessage)
-        {
-            EffectOperation = operation;
-            StatusMessage = statusMessage;
-        }
-    }
 }
 

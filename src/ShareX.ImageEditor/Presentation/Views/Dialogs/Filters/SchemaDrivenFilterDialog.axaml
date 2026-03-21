@@ -47,6 +47,25 @@
                         <controls:ColorPickerDropdown SelectedColorValue="{Binding Value, Mode=TwoWay}"/>
                     </StackPanel>
                 </DataTemplate>
+
+                <DataTemplate DataType="{x:Type filters:NumericFilterParameterState}" x:DataType="filters:NumericFilterParameterState">
+                    <StackPanel Spacing="4" Margin="0,0,0,10">
+                        <TextBlock Text="{Binding Label}"/>
+                        <NumericUpDown Value="{Binding Value, Mode=TwoWay}"
+                                       Minimum="{Binding Minimum}"
+                                       Maximum="{Binding Maximum}"
+                                       Increment="{Binding Increment}"
+                                       FormatString="{Binding FormatString}"
+                                       ShowButtonSpinner="False"/>
+                    </StackPanel>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type filters:TextFilterParameterState}" x:DataType="filters:TextFilterParameterState">
+                    <StackPanel Spacing="4" Margin="0,0,0,10">
+                        <TextBlock Text="{Binding Label}"/>
+                        <TextBox Text="{Binding Value, Mode=TwoWay}"/>
+                    </StackPanel>
+                </DataTemplate>
             </ItemsControl.DataTemplates>
         </ItemsControl>
 

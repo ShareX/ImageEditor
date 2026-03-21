@@ -511,70 +511,10 @@ namespace ShareX.ImageEditor.Presentation.Controls
             Categories.Add(adj);
 
             var fil = new EffectCategory("Filters");
-            fil.AddEffect("Add noise...", LucideIcons.SprayCan, "Adds noise to the image.", () => RaiseDialog("add_noise"));
-            fil.AddEffect("Anime speed lines...", LucideIcons.ScanLine, "Overlays dramatic radial anime motion streaks from a focal point.", () => RaiseDialog("anime_speed_lines"), "anime_speed_lines");
-            fil.AddEffect("ASCII art...", LucideIcons.SquareTerminal, "Converts luminance to configurable ASCII glyph shading.", () => RaiseDialog("ascii_art"));
-            fil.AddEffect("Bevel...", LucideIcons.Combine, "Adds an inner beveled edge with configurable light, highlight, and shadow.", () => RaiseDialog("bevel"), "bevel");
-            fil.AddEffect("Blood splash...", LucideIcons.Droplet, "Overlays deep red splashes, fine spray, and glossy runny drips.", () => RaiseDialog("blood_splash"), "blood_splash");
-            fil.AddEffect("Block glitch / databending...", LucideIcons.Cpu, "Displaces rectangular chunks and misaligns color channels like corrupted files.", () => RaiseDialog("block_glitch"));
-            fil.AddEffect("Bloom...", LucideIcons.Sparkle, "Creates a soft glow around bright regions.", () => RaiseDialog("bloom"));
-            fil.AddEffect("Blueprint drawing...", LucideIcons.DraftingCompass, "Converts image structure into cyan technical lines over blueprint paper.", () => RaiseDialog("blueprint_drawing"), "blueprint_drawing");
-            fil.AddEffect("Cartoon sticker cutout...", LucideIcons.Sticker, "Posterizes colors, inks edges and adds a white sticker-like border glow.", () => RaiseDialog("cartoon_sticker_cutout"), "cartoon_sticker_cutout");
-            fil.AddEffect("Claymation texture...", LucideIcons.PaintRoller, "Builds chunky plasticine-like color lumps with tactile relief grain.", () => RaiseDialog("claymation_texture"), "claymation_texture");
-            fil.AddEffect("Chromatic aberration...", LucideIcons.Aperture, "Simulates lens fringing by separating red and blue channels toward the frame edges.", () => RaiseDialog("chromatic_aberration"), "chromatic_aberration");
-            fil.AddEffect("Color depth...", LucideIcons.Layers2, "Changes the color depth of the image.", () => RaiseDialog("color_depth"));
-            fil.AddEffect("Convolution matrix...", LucideIcons.Grid3X3, "Applies a custom convolution matrix.", () => RaiseDialog("convolution_matrix"));
-            fil.AddEffect("CRT...", LucideIcons.Monitor, "Applies a retro CRT monitor effect.", () => RaiseDialog("crt"));
-            fil.AddEffect("Crystal prism...", LucideIcons.Gem, "Creates refracted crystal facets with RGB dispersion.", () => RaiseDialog("crystal_prism"));
-            fil.AddEffect("Crystalize shards...", LucideIcons.Diamond, "Breaks the image into faceted crystal shards with edge glints.", () => RaiseDialog("crystalize_shards"), "crystalize_shards");
-            fil.AddEffect("Crosshatch...", LucideIcons.Hash, "Builds shading from layered hatch lines.", () => RaiseDialog("crosshatch"));
             fil.AddEffect("Edge detect", LucideIcons.ScanSearch, "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
             fil.AddEffect("Emboss", LucideIcons.Stamp, "Applies an emboss effect.", () => Raise(EmbossRequested));
-            fil.AddEffect("Frosted glass + ice edges...", LucideIcons.GlassWater, "Applies frosted refraction with cool icy edge highlights.", () => RaiseDialog("frosted_glass_ice_edges"), "frosted_glass_ice_edges");
-            fil.AddEffect("Halftone...", LucideIcons.CircleDotDashed, "Creates a comic-style CMYK dot print pattern.", () => RaiseDialog("halftone"));
-            fil.AddEffect("Halation...", LucideIcons.Sunset, "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
-            fil.AddEffect("Heat haze refraction...", LucideIcons.Waves, "Distorts the image with shimmering refractive heat ripples.", () => RaiseDialog("heat_haze_refraction"));
-            fil.AddEffect("Hologram scan...", LucideIcons.ScanFace, "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
-            fil.AddEffect("Holographic foil shimmer...", LucideIcons.Rainbow, "Adds iridescent foil rainbow shimmer with specular sparkle.", () => RaiseDialog("holographic_foil_shimmer"), "holographic_foil_shimmer");
-            fil.AddEffect("Ink splatter + drips...", LucideIcons.Brush, "Adds expressive ink blotches with gravity drips and paper stain fade.", () => RaiseDialog("ink_splatter_drips"), "ink_splatter_drips");
-            fil.AddEffect("Liquid glass...", LucideIcons.Glasses, "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
-            fil.AddEffect("Luminance contour lines...", LucideIcons.Map, "Quantizes luminance into grayscale contour bands with adjustable line overlays.", () => RaiseDialog("luminance_contour_lines"));
-            fil.AddEffect("Matrix digital rain...", LucideIcons.Terminal, "Rebuilds the image with glowing falling terminal glyphs.", () => RaiseDialog("matrix_digital_rain"));
             fil.AddEffect("Mean removal", LucideIcons.Sigma, "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
-            fil.AddEffect("Median filter...", LucideIcons.Filter, "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
-            fil.AddEffect("Mosaic polygon...", LucideIcons.Hexagon, "Pixelates with tessellated hexagon or triangle polygons.", () => RaiseDialog("mosaic_polygon"));
-            fil.AddEffect("Motion blur...", LucideIcons.MoveHorizontal, "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));
-            fil.AddEffect("Spin blur...", LucideIcons.LoaderPinwheel, "Blurs pixels along an arc around a custom center point.", () => RaiseDialog("spin_blur"), "spin_blur");
-            fil.AddEffect("Neon edge glow...", LucideIcons.Zap, "Detects edges and renders a neon glow around them.", () => RaiseDialog("neon_edge_glow"));
-            fil.AddEffect("Nebula starfield...", LucideIcons.Sparkles, "Overlays colored nebula clouds and procedural stars.", () => RaiseDialog("nebula_starfield"));
-            fil.AddEffect("Old camera flash burn...", LucideIcons.Flashlight, "Simulates overexposed flash, warm frame burn and analog grain.", () => RaiseDialog("old_camera_flash_burn"), "old_camera_flash_burn");
-            fil.AddEffect("Oil paint...", LucideIcons.Paintbrush2, "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
-            fil.AddEffect("Outline...", LucideIcons.VectorSquare, "Applies an outline effect.", () => RaiseDialog("outline"));
-            fil.AddEffect("Paper stencil mask...", LucideIcons.Stamp, "Builds a feathered stencil mask over a dimmed background.", () => RaiseDialog("paper_stencil_mask"));
-            fil.AddEffect("Pencil sketch...", LucideIcons.PencilLine, "Simulates graphite sketch using dodge-blur and edge darkening.", () => RaiseDialog("pencil_sketch"));
-            fil.AddEffect("Pixel sorting...", LucideIcons.ArrowDownWideNarrow, "Sorts horizontal or vertical pixel spans by brightness or hue for glitch cascades.", () => RaiseDialog("pixel_sorting"));
-            fil.AddEffect("Pixelate...", LucideIcons.Grid2X2, "Pixelates the image.", () => RaiseDialog("pixelate"));
-            fil.AddEffect("Pointillism...", LucideIcons.Dot, "Re-renders the image as overlapping colored dots.", () => RaiseDialog("pointillism"));
-            fil.AddEffect("Rainy window...", LucideIcons.CloudRain, "Simulates water streaks, droplets and foggy glass.", () => RaiseDialog("rainy_window"));
-            fil.AddEffect("Reflection...", LucideIcons.FlipVertical2, "Adds a reflection to the bottom of the image.", () => RaiseDialog("reflection"));
-            fil.AddEffect("RGB split...", LucideIcons.SplitSquareHorizontal, "Splits the red, green, and blue color channels.", () => RaiseDialog("rgb_split"));
-            fil.AddEffect("Riso print...", LucideIcons.Newspaper, "Simulates layered risograph inks with halftone dots and slight registration offset.", () => RaiseDialog("riso_print"));
-            fil.AddEffect("Shadow...", LucideIcons.CloudMoon, "Adds a drop shadow to the image.", () => RaiseDialog("shadow"));
-            fil.AddEffect("Sharpen...", LucideIcons.Crosshair, "Sharpens the image.", () => RaiseDialog("sharpen"));
-            fil.AddEffect("Slice...", LucideIcons.Slice, "Slices the image.", () => RaiseDialog("slice"));
-            fil.AddEffect("Sobel edge...", LucideIcons.ScanEye, "Applies a Sobel edge detection filter.", () => RaiseDialog("sobel_edge"));
-            fil.AddEffect("Snowfall + depth fog...", LucideIcons.CloudSnow, "Overlays procedural snowfall layers with atmospheric distance fog.", () => RaiseDialog("snowfall_depth_fog"), "snowfall_depth_fog");
             fil.AddEffect("Smooth", LucideIcons.Waves, "Applies a smoothing effect.", () => Raise(SmoothRequested));
-            fil.AddEffect("Stained glass...", LucideIcons.PanelsTopBottom, "Turns the image into stained glass-style tiles.", () => RaiseDialog("stained_glass"));
-            fil.AddEffect("Surface blur...", LucideIcons.BrushCleaning, "Softens regions while preserving stronger local edges.", () => RaiseDialog("surface_blur"), "surface_blur");
-            fil.AddEffect("Thermal vision...", LucideIcons.ThermometerSun, "Maps image intensity to an infrared heatmap gradient.", () => RaiseDialog("thermal_vision"));
-            fil.AddEffect("Tilt-shift (miniature)...", LucideIcons.Camera, "Adds selective blur and saturation for toy-like miniature scenes.", () => RaiseDialog("tilt_shift"));
-            fil.AddEffect("Torn edge...", LucideIcons.ScissorsLineDashed, "Adds a torn edge border effect.", () => RaiseDialog("torn_edge"));
-            fil.AddEffect("Unsharp mask...", LucideIcons.Target, "Applies an unsharp mask filter.", () => RaiseDialog("unsharp_mask"));
-            fil.AddEffect("Vintage print damage...", LucideIcons.Newspaper, "Adds film grain, scratches, dust and faded paper burn.", () => RaiseDialog("vintage_print_damage"));
-            fil.AddEffect("Watercolor / Kuwahara...", LucideIcons.Paintbrush, "Simplifies local color regions for watercolor-like strokes.", () => RaiseDialog("watercolor_kuwahara"));
-            fil.AddEffect("Wave edge...", LucideIcons.WavesLadder, "Adds a wavy edge to the image.", () => RaiseDialog("wave_edge"));
-            fil.AddEffect("Zoom blur...", LucideIcons.ZoomIn, "Creates radial streak blur toward a chosen center point.", () => RaiseDialog("zoom_blur"), "zoom_blur");
             AddCatalogDrivenFilters(fil);
             Categories.Add(fil);
 
@@ -596,6 +536,11 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             foreach (FilterDefinition definition in FilterCatalog.Definitions)
             {
+                if (!definition.IncludeInFiltersCategory)
+                {
+                    continue;
+                }
+
                 category.AddEffect(
                     definition.BrowserLabel,
                     definition.Icon,

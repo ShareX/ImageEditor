@@ -24,234 +24,21 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Media;
-using ShareX.ImageEditor.Core.ImageEffects.Filters;
-using ShareX.ImageEditor.Presentation.Theming;
+using ShareX.ImageEditor.Core.ImageEffects;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Filters;
 
-public static class FilterCatalog
+public static partial class FilterCatalog
 {
-    private static readonly IReadOnlyList<FilterDefinition> _definitions =
-    [
-        new FilterDefinition(
-            id: "blur",
-            name: "Blur",
-            browserLabel: "Blur...",
-            icon: LucideIcons.Focus,
-            description: "Applies a blur effect.",
-            createEffect: static () => new BlurImageEffect(),
-            parameters:
-            [
-                new SliderFilterParameterDefinition(
-                    key: "radius",
-                    label: "Radius",
-                    minimum: 1,
-                    maximum: 200,
-                    defaultValue: 10,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: true,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((BlurImageEffect)effect).Radius = (int)value)
-            ]),
-        new FilterDefinition(
-            id: "gaussian_blur",
-            name: "Gaussian blur",
-            browserLabel: "Gaussian blur...",
-            icon: LucideIcons.CircleGauge,
-            description: "Applies a Gaussian blur effect.",
-            createEffect: static () => new GaussianBlurImageEffect(),
-            parameters:
-            [
-                new SliderFilterParameterDefinition(
-                    key: "radius",
-                    label: "Radius",
-                    minimum: 1,
-                    maximum: 200,
-                    defaultValue: 15,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: true,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((GaussianBlurImageEffect)effect).Radius = (int)value)
-            ]),
-        new FilterDefinition(
-            id: "glow",
-            name: "Glow",
-            browserLabel: "Glow...",
-            icon: LucideIcons.Lightbulb,
-            description: "Applies a glowing effect.",
-            createEffect: static () => new GlowImageEffect(20, 80f, SKColors.White, 0, 0, autoResize: true),
-            parameters:
-            [
-                new SliderFilterParameterDefinition(
-                    key: "size",
-                    label: "Size",
-                    minimum: 1,
-                    maximum: 100,
-                    defaultValue: 20,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: false,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((GlowImageEffect)effect).Size = (int)value),
-                new SliderFilterParameterDefinition(
-                    key: "strength",
-                    label: "Strength",
-                    minimum: 1,
-                    maximum: 100,
-                    defaultValue: 80,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: false,
-                    valueStringFormat: "{}{0:0}%",
-                    applyValue: static (effect, value) => ((GlowImageEffect)effect).Strength = (float)value),
-                new SliderFilterParameterDefinition(
-                    key: "offset_x",
-                    label: "Offset X",
-                    minimum: -100,
-                    maximum: 100,
-                    defaultValue: 0,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: false,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((GlowImageEffect)effect).OffsetX = (int)value),
-                new SliderFilterParameterDefinition(
-                    key: "offset_y",
-                    label: "Offset Y",
-                    minimum: -100,
-                    maximum: 100,
-                    defaultValue: 0,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: false,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((GlowImageEffect)effect).OffsetY = (int)value),
-                new ColorFilterParameterDefinition(
-                    key: "color",
-                    label: "Color",
-                    defaultValue: Colors.White,
-                    applyValue: static (effect, value) => ((GlowImageEffect)effect).Color = ToSkColor(value)),
-                new CheckboxFilterParameterDefinition(
-                    key: "auto_resize",
-                    label: "Auto resize",
-                    defaultValue: true,
-                    applyValue: static (effect, value) => ((GlowImageEffect)effect).AutoResize = value)
-            ]),
-        new FilterDefinition(
-            id: "dithering",
-            name: "Dithering",
-            browserLabel: "Dithering...",
-            icon: LucideIcons.DotSquare,
-            description: "Reduces palette with Floyd-Steinberg or Bayer dot diffusion.",
-            createEffect: static () => new DitheringImageEffect(),
-            parameters:
-            [
-                new EnumFilterParameterDefinition(
-                    key: "method",
-                    label: "Method",
-                    options:
-                    [
-                        new FilterOptionDefinition("Floyd-Steinberg", DitheringMethod.FloydSteinberg),
-                        new FilterOptionDefinition("Bayer 4x4", DitheringMethod.Bayer4x4)
-                    ],
-                    defaultIndex: 0,
-                    applyValue: static (effect, value) => ((DitheringImageEffect)effect).Method = value is DitheringMethod method ? method : DitheringMethod.FloydSteinberg),
-                new EnumFilterParameterDefinition(
-                    key: "palette",
-                    label: "Palette",
-                    options:
-                    [
-                        new FilterOptionDefinition("1-bit B&W", DitheringPalette.OneBitBW),
-                        new FilterOptionDefinition("Web-safe 216", DitheringPalette.WebSafe216),
-                        new FilterOptionDefinition("RGB332", DitheringPalette.RGB332),
-                        new FilterOptionDefinition("Grayscale (4 levels)", DitheringPalette.Grayscale4)
-                    ],
-                    defaultIndex: 0,
-                    applyValue: static (effect, value) => ((DitheringImageEffect)effect).Palette = value is DitheringPalette palette ? palette : DitheringPalette.OneBitBW),
-                new CheckboxFilterParameterDefinition(
-                    key: "serpentine",
-                    label: "Serpentine scan (Floyd-Steinberg)",
-                    defaultValue: true,
-                    applyValue: static (effect, value) => ((DitheringImageEffect)effect).Serpentine = value),
-                new SliderFilterParameterDefinition(
-                    key: "strength",
-                    label: "Strength (%)",
-                    minimum: 0,
-                    maximum: 100,
-                    defaultValue: 100,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: true,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((DitheringImageEffect)effect).Strength = (float)value)
-            ]),
-        new FilterDefinition(
-            id: "lens_blur",
-            name: "Lens blur (bokeh)",
-            browserLabel: "Lens blur (bokeh)...",
-            icon: LucideIcons.Target,
-            description: "Simulates circular aperture blur with weighted highlight bloom.",
-            createEffect: static () => new LensBlurImageEffect(),
-            parameters:
-            [
-                new SliderFilterParameterDefinition(
-                    key: "radius",
-                    label: "Radius (px)",
-                    minimum: 1,
-                    maximum: 15,
-                    defaultValue: 8,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: true,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((LensBlurImageEffect)effect).Radius = (int)Math.Round(value)),
-                new SliderFilterParameterDefinition(
-                    key: "threshold",
-                    label: "Highlight threshold (%)",
-                    minimum: 0,
-                    maximum: 100,
-                    defaultValue: 70,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: true,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((LensBlurImageEffect)effect).HighlightThreshold = (float)value),
-                new SliderFilterParameterDefinition(
-                    key: "boost",
-                    label: "Highlight boost (%)",
-                    minimum: 0,
-                    maximum: 200,
-                    defaultValue: 85,
-                    tickFrequency: 1,
-                    isSnapToTickEnabled: true,
-                    valueStringFormat: "{}{0:0}",
-                    applyValue: static (effect, value) => ((LensBlurImageEffect)effect).HighlightBoost = (float)value)
-            ]),
-        new FilterDefinition(
-            id: "vignette",
-            name: "Vignette",
-            browserLabel: "Vignette...",
-            icon: LucideIcons.CircleDashed,
-            description: "Applies a vignette effect.",
-            createEffect: static () => new VignetteImageEffect(),
-            parameters:
-            [
-                new SliderFilterParameterDefinition(
-                    key: "strength",
-                    label: "Strength",
-                    minimum: 0,
-                    maximum: 1,
-                    defaultValue: 0.5,
-                    tickFrequency: 0.01,
-                    isSnapToTickEnabled: false,
-                    valueStringFormat: "{}{0:0.##}",
-                    applyValue: static (effect, value) => ((VignetteImageEffect)effect).Strength = (float)value),
-                new SliderFilterParameterDefinition(
-                    key: "radius",
-                    label: "Radius",
-                    minimum: 0.05,
-                    maximum: 1,
-                    defaultValue: 0.75,
-                    tickFrequency: 0.01,
-                    isSnapToTickEnabled: false,
-                    valueStringFormat: "{}{0:0.##}",
-                    applyValue: static (effect, value) => ((VignetteImageEffect)effect).Radius = (float)value)
-            ])
-    ];
+    private sealed record FilterPresentationMetadata(
+        string BrowserLabel,
+        string Icon,
+        string Description,
+        bool IncludeInFiltersCategory = true);
+
+    private static readonly IReadOnlyDictionary<string, FilterPresentationMetadata> _presentationById = BuildPresentationMetadata();
+    private static readonly IReadOnlyList<FilterDefinition> _definitions = BuildDefinitions();
 
     private static readonly IReadOnlyDictionary<string, FilterDefinition> _definitionsById =
         _definitions.ToDictionary(definition => definition.Id, StringComparer.OrdinalIgnoreCase);
@@ -262,6 +49,223 @@ public static class FilterCatalog
     {
         return _definitionsById.TryGetValue(id, out definition);
     }
+
+    private static FilterDefinition Filter<TEffect>(string id, params FilterParameterDefinition[] parameters)
+        where TEffect : ImageEffect, new()
+    {
+        return Filter(id, static () => new TEffect(), parameters);
+    }
+
+    private static FilterDefinition Filter(string id, Func<ImageEffect> createEffect, params FilterParameterDefinition[] parameters)
+    {
+        FilterPresentationMetadata metadata = GetMetadata(id);
+        return new FilterDefinition(
+            id,
+            metadata.BrowserLabel,
+            metadata.Icon,
+            metadata.Description,
+            createEffect,
+            parameters,
+            metadata.IncludeInFiltersCategory);
+    }
+
+    private static SliderFilterParameterDefinition IntSlider<TEffect>(
+        string key,
+        string label,
+        int minimum,
+        int maximum,
+        int defaultValue,
+        Action<TEffect, int> applyValue,
+        int tickFrequency = 1,
+        bool isSnapToTickEnabled = true,
+        string valueStringFormat = "{}{0:0}")
+        where TEffect : ImageEffect
+    {
+        return new SliderFilterParameterDefinition(
+            key,
+            label,
+            minimum,
+            maximum,
+            defaultValue,
+            tickFrequency,
+            isSnapToTickEnabled,
+            valueStringFormat,
+            (effect, value) => applyValue((TEffect)effect, (int)Math.Round(value)));
+    }
+
+    private static SliderFilterParameterDefinition FloatSlider<TEffect>(
+        string key,
+        string label,
+        double minimum,
+        double maximum,
+        double defaultValue,
+        Action<TEffect, float> applyValue,
+        double tickFrequency = 1,
+        bool isSnapToTickEnabled = true,
+        string valueStringFormat = "{}{0:0}")
+        where TEffect : ImageEffect
+    {
+        return new SliderFilterParameterDefinition(
+            key,
+            label,
+            minimum,
+            maximum,
+            defaultValue,
+            tickFrequency,
+            isSnapToTickEnabled,
+            valueStringFormat,
+            (effect, value) => applyValue((TEffect)effect, (float)value));
+    }
+
+    private static SliderFilterParameterDefinition DoubleSlider<TEffect>(
+        string key,
+        string label,
+        double minimum,
+        double maximum,
+        double defaultValue,
+        Action<TEffect, double> applyValue,
+        double tickFrequency = 1,
+        bool isSnapToTickEnabled = true,
+        string valueStringFormat = "{}{0:0}")
+        where TEffect : ImageEffect
+    {
+        return new SliderFilterParameterDefinition(
+            key,
+            label,
+            minimum,
+            maximum,
+            defaultValue,
+            tickFrequency,
+            isSnapToTickEnabled,
+            valueStringFormat,
+            (effect, value) => applyValue((TEffect)effect, value));
+    }
+
+    private static CheckboxFilterParameterDefinition BoolParameter<TEffect>(
+        string key,
+        string label,
+        bool defaultValue,
+        Action<TEffect, bool> applyValue)
+        where TEffect : ImageEffect
+    {
+        return new CheckboxFilterParameterDefinition(
+            key,
+            label,
+            defaultValue,
+            (effect, value) => applyValue((TEffect)effect, value));
+    }
+
+    private static EnumFilterParameterDefinition EnumParameter<TEffect, TEnum>(
+        string key,
+        string label,
+        TEnum defaultValue,
+        Action<TEffect, TEnum> applyValue,
+        params (string Label, TEnum Value)[] options)
+        where TEffect : ImageEffect
+        where TEnum : notnull
+    {
+        int defaultIndex = Array.FindIndex(
+            options,
+            option => EqualityComparer<TEnum>.Default.Equals(option.Value, defaultValue));
+
+        if (defaultIndex < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(defaultValue), defaultValue, "Enum default value must be present in the options list.");
+        }
+
+        return new EnumFilterParameterDefinition(
+            key,
+            label,
+            options.Select(option => new FilterOptionDefinition(option.Label, option.Value!)).ToArray(),
+            defaultIndex,
+            (effect, value) => applyValue((TEffect)effect, value is TEnum typedValue ? typedValue : defaultValue));
+    }
+
+    private static ColorFilterParameterDefinition ColorParameter<TEffect>(
+        string key,
+        string label,
+        Color defaultValue,
+        Action<TEffect, Color> applyValue)
+        where TEffect : ImageEffect
+    {
+        return new ColorFilterParameterDefinition(
+            key,
+            label,
+            defaultValue,
+            (effect, value) => applyValue((TEffect)effect, value));
+    }
+
+    private static NumericFilterParameterDefinition IntNumeric<TEffect>(
+        string key,
+        string label,
+        int minimum,
+        int maximum,
+        int defaultValue,
+        Action<TEffect, int> applyValue,
+        int increment = 1,
+        string formatString = "0")
+        where TEffect : ImageEffect
+    {
+        return new NumericFilterParameterDefinition(
+            key,
+            label,
+            minimum,
+            maximum,
+            defaultValue,
+            increment,
+            formatString,
+            (effect, value) => applyValue(
+                (TEffect)effect,
+                decimal.ToInt32(decimal.Round(value, 0, MidpointRounding.AwayFromZero))));
+    }
+
+    private static NumericFilterParameterDefinition DoubleNumeric<TEffect>(
+        string key,
+        string label,
+        double minimum,
+        double maximum,
+        double defaultValue,
+        Action<TEffect, double> applyValue,
+        double increment = 1,
+        string formatString = "0.##")
+        where TEffect : ImageEffect
+    {
+        return new NumericFilterParameterDefinition(
+            key,
+            label,
+            (decimal)minimum,
+            (decimal)maximum,
+            (decimal)defaultValue,
+            (decimal)increment,
+            formatString,
+            (effect, value) => applyValue((TEffect)effect, (double)value));
+    }
+
+    private static TextFilterParameterDefinition TextParameter<TEffect>(
+        string key,
+        string label,
+        string defaultValue,
+        Action<TEffect, string> applyValue)
+        where TEffect : ImageEffect
+    {
+        return new TextFilterParameterDefinition(
+            key,
+            label,
+            defaultValue,
+            (effect, value) => applyValue((TEffect)effect, value));
+    }
+
+    private static FilterPresentationMetadata GetMetadata(string id)
+    {
+        if (_presentationById.TryGetValue(id, out FilterPresentationMetadata? metadata))
+        {
+            return metadata;
+        }
+
+        throw new KeyNotFoundException($"No filter catalog metadata was found for '{id}'.");
+    }
+
+    private static Color Argb(byte alpha, byte red, byte green, byte blue) => Color.FromArgb(alpha, red, green, blue);
 
     private static SKColor ToSkColor(Color color) => new(color.R, color.G, color.B, color.A);
 }

@@ -180,6 +180,81 @@ public sealed class ColorFilterParameterDefinition : FilterParameterDefinition
     }
 }
 
+public sealed class NumericFilterParameterDefinition : FilterParameterDefinition
+{
+    private readonly Action<ImageEffect, decimal> _applyValue;
+
+    public decimal Minimum { get; }
+
+    public decimal Maximum { get; }
+
+    public decimal DefaultValue { get; }
+
+    public decimal Increment { get; }
+
+    public string FormatString { get; }
+
+    public NumericFilterParameterDefinition(
+        string key,
+        string label,
+        decimal minimum,
+        decimal maximum,
+        decimal defaultValue,
+        decimal increment,
+        string formatString,
+        Action<ImageEffect, decimal> applyValue)
+        : base(key, label)
+    {
+        Minimum = minimum;
+        Maximum = maximum;
+        DefaultValue = defaultValue;
+        Increment = increment;
+        FormatString = formatString ?? throw new ArgumentNullException(nameof(formatString));
+        _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
+    }
+
+    internal override FilterParameterState CreateState() => new NumericFilterParameterState(this);
+
+    internal override void ApplyValue(ImageEffect effect, object? value)
+    {
+        decimal resolvedValue = value switch
+        {
+            decimal decimalValue => decimalValue,
+            double doubleValue => (decimal)doubleValue,
+            int intValue => intValue,
+            null => DefaultValue,
+            _ => DefaultValue
+        };
+
+        _applyValue(effect, resolvedValue);
+    }
+}
+
+public sealed class TextFilterParameterDefinition : FilterParameterDefinition
+{
+    private readonly Action<ImageEffect, string> _applyValue;
+
+    public string DefaultValue { get; }
+
+    public TextFilterParameterDefinition(
+        string key,
+        string label,
+        string defaultValue,
+        Action<ImageEffect, string> applyValue)
+        : base(key, label)
+    {
+        DefaultValue = defaultValue ?? throw new ArgumentNullException(nameof(defaultValue));
+        _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
+    }
+
+    internal override FilterParameterState CreateState() => new TextFilterParameterState(this);
+
+    internal override void ApplyValue(ImageEffect effect, object? value)
+    {
+        _applyValue(effect, value as string ?? DefaultValue);
+    }
+}
+
 public sealed class FilterOptionDefinition
 {
     public string Label { get; }

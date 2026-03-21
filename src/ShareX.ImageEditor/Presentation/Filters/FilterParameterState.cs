@@ -115,3 +115,41 @@ public sealed partial class ColorFilterParameterState : FilterParameterState
 
     internal override object? GetValue() => Value;
 }
+
+public sealed partial class NumericFilterParameterState : FilterParameterState
+{
+    [ObservableProperty]
+    private decimal? _value;
+
+    public NumericFilterParameterDefinition NumericDefinition => (NumericFilterParameterDefinition)Definition;
+
+    public decimal Minimum => NumericDefinition.Minimum;
+
+    public decimal Maximum => NumericDefinition.Maximum;
+
+    public decimal Increment => NumericDefinition.Increment;
+
+    public string FormatString => NumericDefinition.FormatString;
+
+    public NumericFilterParameterState(NumericFilterParameterDefinition definition)
+        : base(definition)
+    {
+        _value = definition.DefaultValue;
+    }
+
+    internal override object? GetValue() => Value;
+}
+
+public sealed partial class TextFilterParameterState : FilterParameterState
+{
+    [ObservableProperty]
+    private string _value;
+
+    public TextFilterParameterState(TextFilterParameterDefinition definition)
+        : base(definition)
+    {
+        _value = definition.DefaultValue;
+    }
+
+    internal override object? GetValue() => Value;
+}

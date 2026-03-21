@@ -43,6 +43,28 @@ public sealed class FilterDefinition
 
     public IReadOnlyList<FilterParameterDefinition> Parameters { get; }
 
+    public bool IncludeInFiltersCategory { get; }
+
+    public FilterDefinition(
+        string id,
+        string browserLabel,
+        string icon,
+        string description,
+        Func<ImageEffect> createEffect,
+        IReadOnlyList<FilterParameterDefinition> parameters,
+        bool includeInFiltersCategory = true)
+        : this(
+            id,
+            DeriveName(browserLabel),
+            browserLabel,
+            icon,
+            description,
+            createEffect,
+            parameters,
+            includeInFiltersCategory)
+    {
+    }
+
     public FilterDefinition(
         string id,
         string name,
@@ -50,7 +72,8 @@ public sealed class FilterDefinition
         string icon,
         string description,
         Func<ImageEffect> createEffect,
-        IReadOnlyList<FilterParameterDefinition> parameters)
+        IReadOnlyList<FilterParameterDefinition> parameters,
+        bool includeInFiltersCategory = true)
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
         Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -59,6 +82,7 @@ public sealed class FilterDefinition
         Description = description ?? throw new ArgumentNullException(nameof(description));
         CreateEffect = createEffect ?? throw new ArgumentNullException(nameof(createEffect));
         Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+        IncludeInFiltersCategory = includeInFiltersCategory;
     }
 
     public ImageEffect CreateConfiguredEffect(IEnumerable<FilterParameterState> parameterStates)
@@ -71,5 +95,17 @@ public sealed class FilterDefinition
         }
 
         return effect;
+    }
+
+    private static string DeriveName(string browserLabel)
+    {
+        if (browserLabel is null)
+        {
+            throw new ArgumentNullException(nameof(browserLabel));
+        }
+
+        return browserLabel.EndsWith("...", StringComparison.Ordinal)
+            ? browserLabel[..^3]
+            : browserLabel;
     }
 }

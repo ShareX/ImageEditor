@@ -5,6 +5,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Filters;
 using ShareX.ImageEditor.Presentation.Theming;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -518,7 +519,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Block glitch / databending...", LucideIcons.Cpu, "Displaces rectangular chunks and misaligns color channels like corrupted files.", () => RaiseDialog("block_glitch"));
             fil.AddEffect("Bloom...", LucideIcons.Sparkle, "Creates a soft glow around bright regions.", () => RaiseDialog("bloom"));
             fil.AddEffect("Blueprint drawing...", LucideIcons.DraftingCompass, "Converts image structure into cyan technical lines over blueprint paper.", () => RaiseDialog("blueprint_drawing"), "blueprint_drawing");
-            fil.AddEffect("Blur...", LucideIcons.Focus, "Applies a blur effect.", () => RaiseDialog("blur"));
             fil.AddEffect("Cartoon sticker cutout...", LucideIcons.Sticker, "Posterizes colors, inks edges and adds a white sticker-like border glow.", () => RaiseDialog("cartoon_sticker_cutout"), "cartoon_sticker_cutout");
             fil.AddEffect("Claymation texture...", LucideIcons.PaintRoller, "Builds chunky plasticine-like color lumps with tactile relief grain.", () => RaiseDialog("claymation_texture"), "claymation_texture");
             fil.AddEffect("Chromatic aberration...", LucideIcons.Aperture, "Simulates lens fringing by separating red and blue channels toward the frame edges.", () => RaiseDialog("chromatic_aberration"), "chromatic_aberration");
@@ -528,19 +528,15 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Crystal prism...", LucideIcons.Gem, "Creates refracted crystal facets with RGB dispersion.", () => RaiseDialog("crystal_prism"));
             fil.AddEffect("Crystalize shards...", LucideIcons.Diamond, "Breaks the image into faceted crystal shards with edge glints.", () => RaiseDialog("crystalize_shards"), "crystalize_shards");
             fil.AddEffect("Crosshatch...", LucideIcons.Hash, "Builds shading from layered hatch lines.", () => RaiseDialog("crosshatch"));
-            fil.AddEffect("Dithering...", LucideIcons.DotSquare, "Reduces palette with Floyd-Steinberg or Bayer dot diffusion.", () => RaiseDialog("dithering"));
             fil.AddEffect("Edge detect", LucideIcons.ScanSearch, "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
             fil.AddEffect("Emboss", LucideIcons.Stamp, "Applies an emboss effect.", () => Raise(EmbossRequested));
             fil.AddEffect("Frosted glass + ice edges...", LucideIcons.GlassWater, "Applies frosted refraction with cool icy edge highlights.", () => RaiseDialog("frosted_glass_ice_edges"), "frosted_glass_ice_edges");
-            fil.AddEffect("Gaussian blur...", LucideIcons.CircleGauge, "Applies a Gaussian blur effect.", () => RaiseDialog("gaussian_blur"));
-            fil.AddEffect("Glow...", LucideIcons.Lightbulb, "Applies a glowing effect.", () => RaiseDialog("glow"));
             fil.AddEffect("Halftone...", LucideIcons.CircleDotDashed, "Creates a comic-style CMYK dot print pattern.", () => RaiseDialog("halftone"));
             fil.AddEffect("Halation...", LucideIcons.Sunset, "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
             fil.AddEffect("Heat haze refraction...", LucideIcons.Waves, "Distorts the image with shimmering refractive heat ripples.", () => RaiseDialog("heat_haze_refraction"));
             fil.AddEffect("Hologram scan...", LucideIcons.ScanFace, "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
             fil.AddEffect("Holographic foil shimmer...", LucideIcons.Rainbow, "Adds iridescent foil rainbow shimmer with specular sparkle.", () => RaiseDialog("holographic_foil_shimmer"), "holographic_foil_shimmer");
             fil.AddEffect("Ink splatter + drips...", LucideIcons.Brush, "Adds expressive ink blotches with gravity drips and paper stain fade.", () => RaiseDialog("ink_splatter_drips"), "ink_splatter_drips");
-            fil.AddEffect("Lens blur (bokeh)...", LucideIcons.Target, "Simulates circular aperture blur with weighted highlight bloom.", () => RaiseDialog("lens_blur"), "lens_blur");
             fil.AddEffect("Liquid glass...", LucideIcons.Glasses, "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
             fil.AddEffect("Luminance contour lines...", LucideIcons.Map, "Quantizes luminance into grayscale contour bands with adjustable line overlays.", () => RaiseDialog("luminance_contour_lines"));
             fil.AddEffect("Matrix digital rain...", LucideIcons.Terminal, "Rebuilds the image with glowing falling terminal glyphs.", () => RaiseDialog("matrix_digital_rain"));
@@ -576,10 +572,10 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Torn edge...", LucideIcons.ScissorsLineDashed, "Adds a torn edge border effect.", () => RaiseDialog("torn_edge"));
             fil.AddEffect("Unsharp mask...", LucideIcons.Target, "Applies an unsharp mask filter.", () => RaiseDialog("unsharp_mask"));
             fil.AddEffect("Vintage print damage...", LucideIcons.Newspaper, "Adds film grain, scratches, dust and faded paper burn.", () => RaiseDialog("vintage_print_damage"));
-            fil.AddEffect("Vignette...", LucideIcons.CircleDashed, "Applies a vignette effect.", () => RaiseDialog("vignette"));
             fil.AddEffect("Watercolor / Kuwahara...", LucideIcons.Paintbrush, "Simplifies local color regions for watercolor-like strokes.", () => RaiseDialog("watercolor_kuwahara"));
             fil.AddEffect("Wave edge...", LucideIcons.WavesLadder, "Adds a wavy edge to the image.", () => RaiseDialog("wave_edge"));
             fil.AddEffect("Zoom blur...", LucideIcons.ZoomIn, "Creates radial streak blur toward a chosen center point.", () => RaiseDialog("zoom_blur"), "zoom_blur");
+            AddCatalogDrivenFilters(fil);
             Categories.Add(fil);
 
             var drawings = new EffectCategory("Drawings");
@@ -594,6 +590,19 @@ namespace ShareX.ImageEditor.Presentation.Controls
             drawings.AddEffect("Text watermark...", LucideIcons.Stamp, "Draws text inside a rounded watermark box with padding, border and optional shadow.", () => RaiseDialog("text_watermark"));
             drawings.AddEffect("Wooden frame...", LucideIcons.Frame, "Expands the canvas with a beveled procedural wooden picture frame.", () => RaiseDialog("wooden_frame"), "wooden_frame");
             Categories.Add(drawings);
+        }
+
+        private void AddCatalogDrivenFilters(EffectCategory category)
+        {
+            foreach (FilterDefinition definition in FilterCatalog.Definitions)
+            {
+                category.AddEffect(
+                    definition.BrowserLabel,
+                    definition.Icon,
+                    definition.Description,
+                    () => RaiseDialog(definition.Id),
+                    definition.Id);
+            }
         }
     }
 }

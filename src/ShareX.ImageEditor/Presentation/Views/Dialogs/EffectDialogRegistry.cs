@@ -24,6 +24,8 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Controls;
+using ShareX.ImageEditor.Presentation.Filters;
+using System.Linq;
 
 namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
@@ -97,10 +99,7 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["convolution_matrix"] = () => new ConvolutionMatrixDialog(),
                 ["crt"] = () => new CRTDialog(),
                 ["chromatic_aberration"] = () => new ChromaticAberrationDialog(),
-                ["gaussian_blur"] = () => new GaussianBlurDialog(),
                 ["bloom"] = () => new BloomDialog(),
-                ["dithering"] = () => new DitheringDialog(),
-                ["lens_blur"] = () => new LensBlurDialog(),
                 ["median_filter"] = () => new MedianFilterDialog(),
                 ["matrix_digital_rain"] = () => new MatrixDigitalRainDialog(),
                 ["motion_blur"] = () => new MotionBlurDialog(),
@@ -127,7 +126,6 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["stained_glass"] = () => new StainedGlassDialog(),
                 ["unsharp_mask"] = () => new UnsharpMaskDialog(),
                 ["vintage_print_damage"] = () => new VintagePrintDamageDialog(),
-                ["vignette"] = () => new VignetteDialog(),
                 ["mosaic_polygon"] = () => new MosaicPolygonDialog(),
                 ["pencil_sketch"] = () => new PencilSketchDialog(),
                 ["pointillism"] = () => new PointillismDialog(),
@@ -162,7 +160,6 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["resize_canvas"] = () => new ResizeCanvasDialog(),
 
                 // --- Quality ---
-                ["blur"] = () => new BlurDialog(),
                 ["pixelate"] = () => new PixelateDialog(),
                 ["sharpen"] = () => new SharpenDialog(),
             };
@@ -176,6 +173,12 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
         /// </returns>
         public static bool TryCreate(string effectId, out UserControl? dialog)
         {
+            if (FilterCatalog.TryGetDefinition(effectId, out FilterDefinition? definition) && definition != null)
+            {
+                dialog = new SchemaDrivenFilterDialog(definition);
+                return true;
+            }
+
             if (_factories.TryGetValue(effectId, out var factory))
             {
                 dialog = factory();
@@ -187,6 +190,10 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
         }
 
         /// <summary>Returns all registered effect IDs (case-insensitive).</summary>
-        public static IReadOnlyCollection<string> RegisteredIds => _factories.Keys;
+        public static IReadOnlyCollection<string> RegisteredIds =>
+            _factories.Keys
+                .Concat(FilterCatalog.Definitions.Select(definition => definition.Id))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
     }
 }

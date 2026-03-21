@@ -49,6 +49,44 @@ internal static class ProceduralEffectHelper
         }
     }
 
+    public static float ValueNoise(float x, float y, int seed = 0)
+    {
+        int x0 = (int)MathF.Floor(x);
+        int y0 = (int)MathF.Floor(y);
+        int x1 = x0 + 1;
+        int y1 = y0 + 1;
+
+        float tx = Fade(x - x0);
+        float ty = Fade(y - y0);
+
+        float v00 = Hash01(x0, y0, seed);
+        float v10 = Hash01(x1, y0, seed);
+        float v01 = Hash01(x0, y1, seed);
+        float v11 = Hash01(x1, y1, seed);
+
+        float vx0 = Lerp(v00, v10, tx);
+        float vx1 = Lerp(v01, v11, tx);
+        return Lerp(vx0, vx1, ty);
+    }
+
+    public static float FractalNoise(float x, float y, int octaves, float lacunarity, float gain, int seed = 0)
+    {
+        float value = 0f;
+        float amplitude = 1f;
+        float frequency = 1f;
+        float normalization = 0f;
+
+        for (int i = 0; i < octaves; i++)
+        {
+            value += ValueNoise(x * frequency, y * frequency, seed + (i * 1619)) * amplitude;
+            normalization += amplitude;
+            frequency *= lacunarity;
+            amplitude *= gain;
+        }
+
+        return normalization > 0f ? value / normalization : 0f;
+    }
+
     public static SKColor BilinearSample(SKColor[] pixels, int width, int height, float x, float y)
     {
         int right = width - 1;
@@ -92,5 +130,10 @@ internal static class ProceduralEffectHelper
         if (value <= 0f) return 0;
         if (value >= 255f) return 255;
         return (byte)MathF.Round(value);
+    }
+
+    private static float Fade(float t)
+    {
+        return t * t * t * ((t * ((t * 6f) - 15f)) + 10f);
     }
 }

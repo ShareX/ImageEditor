@@ -227,6 +227,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
     public partial class EffectBrowserPanel : UserControl
     {
+        private const string RecentHeaderHint = "Right click to remove";
         private const string FavoritesHeaderHint = "Right click to favorite";
         private const int MaxRecentEffects = 10;
         private const string SearchWatermarkFormat = "Search image effects... ({0})";
@@ -262,7 +263,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
         public ObservableCollection<EffectCategory> Categories { get; } = new();
 
-        private readonly EffectCategory _recentCategory = new("Recent");
+        private readonly EffectCategory _recentCategory = new("Recent", headerHint: RecentHeaderHint);
         private readonly EffectCategory _favoritesCategory = new("Favorites", headerHint: FavoritesHeaderHint);
         private readonly Dictionary<string, EffectItem> _allEffectsById = new(StringComparer.OrdinalIgnoreCase);
         private readonly List<string> _recentEffectIds = new();
@@ -333,6 +334,18 @@ namespace ShareX.ImageEditor.Presentation.Controls
             var point = e.GetCurrentPoint(button);
             if (!point.Properties.IsRightButtonPressed)
             {
+                return;
+            }
+
+            if (_recentCategory.AllEffects.Contains(effect))
+            {
+                if (RemoveRecent(effect.EffectId))
+                {
+                    ApplyCurrentFilter();
+                    PersistRecentToOptions();
+                }
+
+                e.Handled = true;
                 return;
             }
 
@@ -485,6 +498,18 @@ namespace ShareX.ImageEditor.Presentation.Controls
             }
 
             _favoritesCategory.RemoveEffectsById(effectId);
+            return true;
+        }
+
+        private bool RemoveRecent(string effectId)
+        {
+            int removedCount = _recentEffectIds.RemoveAll(id => string.Equals(id, effectId, StringComparison.OrdinalIgnoreCase));
+            if (removedCount == 0)
+            {
+                return false;
+            }
+
+            RebuildRecentCategory();
             return true;
         }
 

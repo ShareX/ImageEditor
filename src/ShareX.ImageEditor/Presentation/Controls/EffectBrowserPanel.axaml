@@ -10,7 +10,7 @@
         <TextBox x:Name="SearchBox"
                  Grid.Row="0"
                  Classes="effect-search"
-                 Watermark="Search effects..."
+                 Watermark="Search image effects..."
                  Margin="16,16,16,0"
                  CornerRadius="4"
                  VerticalContentAlignment="Center"

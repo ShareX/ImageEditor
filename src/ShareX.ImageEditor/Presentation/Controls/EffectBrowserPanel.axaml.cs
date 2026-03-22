@@ -219,6 +219,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
     public partial class EffectBrowserPanel : UserControl
     {
         private const string FavoritesHeaderHint = "Right click to favorite";
+        private const string SearchWatermarkFormat = "Search image effects... ({0})";
 
         private static readonly Dictionary<string, string> FavoriteAliases = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -268,6 +269,8 @@ namespace ShareX.ImageEditor.Presentation.Controls
             {
                 categoriesControl.ItemsSource = Categories;
             }
+
+            UpdateSearchWatermark();
         }
 
         public void SetOptions(ImageEditorOptions options)
@@ -439,6 +442,21 @@ namespace ShareX.ImageEditor.Presentation.Controls
             {
                 category.Filter(searchText);
             }
+        }
+
+        private void UpdateSearchWatermark()
+        {
+            var searchBox = this.FindControl<TextBox>("SearchBox");
+            if (searchBox == null)
+            {
+                return;
+            }
+
+            int totalEffectCount = Categories
+                .Where(category => !ReferenceEquals(category, _favoritesCategory))
+                .Sum(category => category.AllEffects.Count);
+
+            searchBox.Watermark = string.Format(SearchWatermarkFormat, totalEffectCount);
         }
 
         private void PersistFavoritesToOptions()

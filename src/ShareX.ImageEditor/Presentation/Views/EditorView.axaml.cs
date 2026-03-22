@@ -257,6 +257,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AttachEditorCore(_editorCore);
+                _editorCore.ActiveTool = vm.ActiveTool;
                 HookAnnotationToolbarEvents();
 
                 var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
@@ -687,6 +688,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.ActiveTool))
                 {
+                    _editorCore.ActiveTool = vm.ActiveTool;
+
                     if (vm.ActiveTool == EditorTool.Crop)
                         _inputController.ActivateCropToFullImage();
                     else

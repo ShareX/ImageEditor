@@ -25,6 +25,7 @@
 
 using Avalonia.Media;
 using Newtonsoft.Json;
+using ShareX.ImageEditor.Core.Annotations;
 
 namespace ShareX.ImageEditor.Hosting
 {
@@ -53,6 +54,7 @@ namespace ShareX.ImageEditor.Hosting
         public bool ZoomToFitOnOpen { get; set; } = false;
         public bool AutoCloseEditorOnTask { get; set; } = false;
         public bool AutoCopyImageToClipboard { get; set; } = false;
+        public EditorTool LastUsedAnnotationTool { get; set; } = EditorTool.Rectangle;
         public bool UseSystemTheme { get; set; } = true;
         public bool UseSystemAccentColor { get; set; } = true;
 

@@ -32,6 +32,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
+        private static EditorTool? _sessionLastUsedAnnotationTool;
+
         [ObservableProperty]
         private string _selectedColor = "#EF4444";
 
@@ -591,6 +593,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnActiveToolChanged(EditorTool value)
         {
+            RememberAnnotationToolIfEligible(value);
+
             _isLoadingOptions = true;
             try
             {
@@ -608,6 +612,50 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 _isLoadingOptions = false;
             }
+        }
+
+        private static bool IsRememberableAnnotationTool(EditorTool tool) => tool is
+            EditorTool.Rectangle or
+            EditorTool.Ellipse or
+            EditorTool.Line or
+            EditorTool.Arrow or
+            EditorTool.Freehand or
+            EditorTool.Text or
+            EditorTool.SpeechBalloon or
+            EditorTool.Step or
+            EditorTool.Highlight or
+            EditorTool.SmartEraser or
+            EditorTool.Blur or
+            EditorTool.Pixelate or
+            EditorTool.Magnify or
+            EditorTool.Spotlight;
+
+        private static EditorTool SanitizeRememberedAnnotationTool(EditorTool tool)
+        {
+            return IsRememberableAnnotationTool(tool) ? tool : EditorTool.Rectangle;
+        }
+
+        private EditorTool GetInitialAnnotationTool()
+        {
+            EditorTool rememberedTool = Options.LastUsedAnnotationTool;
+
+            if (!IsRememberableAnnotationTool(rememberedTool) && _sessionLastUsedAnnotationTool.HasValue)
+            {
+                rememberedTool = _sessionLastUsedAnnotationTool.Value;
+            }
+
+            return SanitizeRememberedAnnotationTool(rememberedTool);
+        }
+
+        private void RememberAnnotationToolIfEligible(EditorTool tool)
+        {
+            if (!IsRememberableAnnotationTool(tool))
+            {
+                return;
+            }
+
+            Options.LastUsedAnnotationTool = tool;
+            _sessionLastUsedAnnotationTool = tool;
         }
 
         private void LoadOptionsForTool(EditorTool tool)

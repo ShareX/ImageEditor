@@ -725,6 +725,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public MainViewModel(ImageEditorOptions? options = null)
         {
             _options = options ?? new ImageEditorOptions();
+            _activeTool = GetInitialAnnotationTool();
+
             ToolbarAdapter = new EditorToolbarAdapter(this);
             Current = this;
             GradientPresets = BuildGradientPresets();
@@ -747,6 +749,18 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             // Get version from assembly
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             _appVersion = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.0.0";
+
+            _isLoadingOptions = true;
+            try
+            {
+                OnPropertyChanged(nameof(EffectStrengthMaximum));
+                LoadOptionsForTool(_activeTool);
+                UpdateToolOptionsVisibility();
+            }
+            finally
+            {
+                _isLoadingOptions = false;
+            }
 
             ApplySelectedBackgroundMode();
             UpdateCanvasProperties();

@@ -74,6 +74,10 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
 
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
+        // ContentControl's ContentPresenter can replace an inherited DataContext with the parent's
+        // (e.g. MainViewModel). Parameter bindings then fail silently and preview/apply keep defaults.
+        // Old bespoke dialogs used FindControl and did not depend on DataContext; schema-driven UI does.
+        DataContext = this;
         _isReady = true;
         RequestPreview();
     }

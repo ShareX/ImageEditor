@@ -214,6 +214,10 @@ public static partial class FilterCatalog
                 BoolParameter<DitheringImageEffect>("serpentine", "Serpentine scan (Floyd-Steinberg)", true, (effect, value) => effect.Serpentine = value),
                 FloatSlider<DitheringImageEffect>("strength", "Strength (%)", 0, 100, 100, (effect, value) => effect.Strength = value)),
 
+            Filter<EdgeFeatherImageEffect>(
+                "edge_feather",
+                FloatSlider<EdgeFeatherImageEffect>("radius", "Radius (px)", 0, 100, 12, (effect, value) => effect.Radius = value, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}")),
+
             Filter<FrostedGlassIceEdgesImageEffect>(
                 "frosted_glass_ice_edges",
                 FloatSlider<FrostedGlassIceEdgesImageEffect>("distortion", "Distortion (px)", 0, 30, 10, (effect, value) => effect.Distortion = value),

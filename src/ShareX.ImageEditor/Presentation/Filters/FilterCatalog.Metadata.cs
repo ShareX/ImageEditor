@@ -53,6 +53,7 @@ public static partial class FilterCatalog
             ["crystal_prism"] = new("Crystal prism...", LucideIcons.Gem, "Creates refracted crystal facets with RGB dispersion."),
             ["crystalize_shards"] = new("Crystalize shards...", LucideIcons.Diamond, "Breaks the image into faceted crystal shards with edge glints."),
             ["dithering"] = new("Dithering...", LucideIcons.DotSquare, "Reduces palette with Floyd-Steinberg or Bayer dot diffusion."),
+            ["edge_feather"] = new("Edge feather...", LucideIcons.Blend, "Softens alpha edges by blurring an inward feather mask around opaque pixels."),
             ["frosted_glass_ice_edges"] = new("Frosted glass + ice edges...", LucideIcons.GlassWater, "Applies frosted refraction with cool icy edge highlights."),
             ["gaussian_blur"] = new("Gaussian blur...", LucideIcons.CircleGauge, "Applies a Gaussian blur effect."),
             ["glow"] = new("Glow...", LucideIcons.Lightbulb, "Applies a glowing effect."),

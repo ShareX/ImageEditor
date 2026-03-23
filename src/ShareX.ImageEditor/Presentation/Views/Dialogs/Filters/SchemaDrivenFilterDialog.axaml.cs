@@ -27,20 +27,19 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform.Storage;
-using ShareX.ImageEditor.Presentation.Effects;
+using ShareX.ImageEditor.Presentation.Filters;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace ShareX.ImageEditor.Presentation.Views.Dialogs;
 
-public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
+public partial class SchemaDrivenFilterDialog : UserControl, IEffectDialog
 {
     private bool _isReady;
 
-    public EffectDefinition Definition { get; }
+    public FilterDefinition Definition { get; }
 
-    public ObservableCollection<EffectParameterState> ParameterStates { get; }
+    public ObservableCollection<FilterParameterState> ParameterStates { get; }
 
     public string Title => Definition.Name;
 
@@ -50,17 +49,17 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
 
     public event EventHandler? CancelRequested;
 
-    public SchemaDrivenEffectDialog()
-        : this(ImageEffectCatalog.Definitions[0])
+    public SchemaDrivenFilterDialog()
+        : this(FilterCatalog.Definitions[0])
     {
     }
 
-    public SchemaDrivenEffectDialog(EffectDefinition definition)
+    public SchemaDrivenFilterDialog(FilterDefinition definition)
     {
         Definition = definition ?? throw new ArgumentNullException(nameof(definition));
-        ParameterStates = new ObservableCollection<EffectParameterState>(definition.Parameters.Select(parameter => parameter.CreateState()));
+        ParameterStates = new ObservableCollection<FilterParameterState>(definition.Parameters.Select(parameter => parameter.CreateState()));
 
-        foreach (EffectParameterState parameterState in ParameterStates)
+        foreach (FilterParameterState parameterState in ParameterStates)
         {
             parameterState.PropertyChanged += OnParameterStateChanged;
         }
@@ -113,60 +112,5 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
         return new EffectEventArgs(
             img => Definition.CreateConfiguredEffect(ParameterStates).Apply(img),
             statusMessage);
-    }
-
-    private async void OnBrowseFilePathClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not Button button || button.Tag is not FilePathParameterState parameterState)
-        {
-            return;
-        }
-
-        TopLevel? topLevel = TopLevel.GetTopLevel(this);
-        if (topLevel?.StorageProvider == null)
-        {
-            return;
-        }
-
-        IReadOnlyList<FilePickerFileType> fileTypes = ParseFileTypes(parameterState.FileFilter);
-        IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = $"Select {parameterState.Label}",
-            AllowMultiple = false,
-            FileTypeFilter = fileTypes
-        });
-
-        if (files.Count > 0)
-        {
-            parameterState.Value = files[0].Path.LocalPath;
-        }
-    }
-
-    private static IReadOnlyList<FilePickerFileType> ParseFileTypes(string? filter)
-    {
-        if (string.IsNullOrWhiteSpace(filter))
-        {
-            return [FilePickerFileTypes.All];
-        }
-
-        string[] parts = filter.Split('|', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length < 2)
-        {
-            return [FilePickerFileTypes.All];
-        }
-
-        string[] patterns = parts[1].Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        if (patterns.Length == 0)
-        {
-            return [FilePickerFileTypes.All];
-        }
-
-        return
-        [
-            new FilePickerFileType(parts[0])
-            {
-                Patterns = patterns
-            }
-        ];
     }
 }

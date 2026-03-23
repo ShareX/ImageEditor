@@ -25,9 +25,9 @@
 
 using ShareX.ImageEditor.Core.ImageEffects;
 
-namespace ShareX.ImageEditor.Presentation.Effects;
+namespace ShareX.ImageEditor.Presentation.Filters;
 
-public sealed class EffectDefinition
+public sealed class FilterDefinition
 {
     public string Id { get; }
 
@@ -39,77 +39,57 @@ public sealed class EffectDefinition
 
     public string Description { get; }
 
-    public ImageEffectCategory Category { get; }
-
     public Func<ImageEffect> CreateEffect { get; }
 
-    public IReadOnlyList<EffectParameterDefinition> Parameters { get; }
+    public IReadOnlyList<FilterParameterDefinition> Parameters { get; }
 
-    /// <summary>
-    /// When set, indicates this effect requires a bespoke editor rather than the generic schema-driven dialog.
-    /// The value is a key used to resolve the bespoke editor control.
-    /// </summary>
-    public string? CustomEditorKey { get; }
+    public bool IncludeInFiltersCategory { get; }
 
-    /// <summary>
-    /// When true, the effect is applied immediately from the browser without opening a dialog.
-    /// Used for parameterless effects like Invert, Black &amp; White, Polaroid, etc.
-    /// </summary>
-    public bool ApplyImmediately { get; }
-
-    public EffectDefinition(
+    public FilterDefinition(
         string id,
         string browserLabel,
         string icon,
         string description,
-        ImageEffectCategory category,
         Func<ImageEffect> createEffect,
-        IReadOnlyList<EffectParameterDefinition> parameters,
-        string? customEditorKey = null,
-        bool applyImmediately = false)
+        IReadOnlyList<FilterParameterDefinition> parameters,
+        bool includeInFiltersCategory = true)
         : this(
             id,
             DeriveName(browserLabel),
             browserLabel,
             icon,
             description,
-            category,
             createEffect,
             parameters,
-            customEditorKey,
-            applyImmediately)
+            includeInFiltersCategory)
     {
     }
 
-    public EffectDefinition(
+    public FilterDefinition(
         string id,
         string name,
         string browserLabel,
         string icon,
         string description,
-        ImageEffectCategory category,
         Func<ImageEffect> createEffect,
-        IReadOnlyList<EffectParameterDefinition> parameters,
-        string? customEditorKey = null,
-        bool applyImmediately = false)
+        IReadOnlyList<FilterParameterDefinition> parameters,
+        bool includeInFiltersCategory = true)
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
         Name = name ?? throw new ArgumentNullException(nameof(name));
         BrowserLabel = browserLabel ?? throw new ArgumentNullException(nameof(browserLabel));
         Icon = icon ?? throw new ArgumentNullException(nameof(icon));
         Description = description ?? throw new ArgumentNullException(nameof(description));
-        Category = category;
         CreateEffect = createEffect ?? throw new ArgumentNullException(nameof(createEffect));
         Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-        CustomEditorKey = customEditorKey;
-        ApplyImmediately = applyImmediately;
+        IncludeInFiltersCategory = includeInFiltersCategory;
     }
 
-    public ImageEffect CreateConfiguredEffect(IEnumerable<EffectParameterState> parameterStates)
+    public ImageEffect CreateConfiguredEffect(IEnumerable<FilterParameterState> parameterStates)
     {
         ImageEffect effect = CreateEffect();
 
-        foreach (EffectParameterState parameterState in parameterStates)
+        foreach (FilterParameterState parameterState in parameterStates)
         {
             parameterState.Definition.ApplyValue(effect, parameterState.GetValue());
         }

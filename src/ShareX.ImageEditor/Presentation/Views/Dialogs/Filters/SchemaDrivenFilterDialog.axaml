@@ -4,18 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              xmlns:dialogs="using:ShareX.ImageEditor.Presentation.Views.Dialogs"
-             xmlns:effects="using:ShareX.ImageEditor.Presentation.Effects"
+             xmlns:filters="using:ShareX.ImageEditor.Presentation.Filters"
              mc:Ignorable="d"
              d:DesignWidth="420"
              d:DesignHeight="420"
-             x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.SchemaDrivenEffectDialog"
-             x:DataType="dialogs:SchemaDrivenEffectDialog">
+             x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.SchemaDrivenFilterDialog"
+             x:DataType="dialogs:SchemaDrivenFilterDialog">
     <StackPanel Spacing="0">
         <TextBlock Text="{Binding Title}" Margin="0,0,0,8"/>
 
         <ItemsControl ItemsSource="{Binding ParameterStates}">
             <ItemsControl.DataTemplates>
-                <DataTemplate DataType="{x:Type effects:SliderParameterState}" x:DataType="effects:SliderParameterState">
+                <DataTemplate DataType="{x:Type filters:SliderFilterParameterState}" x:DataType="filters:SliderFilterParameterState">
                     <controls:EffectSlider Label="{Binding Label}"
                                            Minimum="{Binding Minimum}"
                                            Maximum="{Binding Maximum}"
@@ -26,13 +26,13 @@
                                            Margin="0,0,0,10"/>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type effects:CheckboxParameterState}" x:DataType="effects:CheckboxParameterState">
+                <DataTemplate DataType="{x:Type filters:CheckboxFilterParameterState}" x:DataType="filters:CheckboxFilterParameterState">
                     <CheckBox Content="{Binding Label}"
                               IsChecked="{Binding Value, Mode=TwoWay}"
                               Margin="0,0,0,10"/>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type effects:EnumParameterState}" x:DataType="effects:EnumParameterState">
+                <DataTemplate DataType="{x:Type filters:EnumFilterParameterState}" x:DataType="filters:EnumFilterParameterState">
                     <StackPanel Spacing="4" Margin="0,0,0,10">
                         <TextBlock Text="{Binding Label}"/>
                         <ComboBox ItemsSource="{Binding Options}"
@@ -41,14 +41,14 @@
                     </StackPanel>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type effects:ColorParameterState}" x:DataType="effects:ColorParameterState">
+                <DataTemplate DataType="{x:Type filters:ColorFilterParameterState}" x:DataType="filters:ColorFilterParameterState">
                     <StackPanel Spacing="4" Margin="0,0,0,10">
                         <TextBlock Text="{Binding Label}"/>
                         <controls:ColorPickerDropdown SelectedColorValue="{Binding Value, Mode=TwoWay}"/>
                     </StackPanel>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type effects:NumericParameterState}" x:DataType="effects:NumericParameterState">
+                <DataTemplate DataType="{x:Type filters:NumericFilterParameterState}" x:DataType="filters:NumericFilterParameterState">
                     <StackPanel Spacing="4" Margin="0,0,0,10">
                         <TextBlock Text="{Binding Label}"/>
                         <NumericUpDown Value="{Binding Value, Mode=TwoWay}"
@@ -60,23 +60,10 @@
                     </StackPanel>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type effects:TextParameterState}" x:DataType="effects:TextParameterState">
+                <DataTemplate DataType="{x:Type filters:TextFilterParameterState}" x:DataType="filters:TextFilterParameterState">
                     <StackPanel Spacing="4" Margin="0,0,0,10">
                         <TextBlock Text="{Binding Label}"/>
                         <TextBox Text="{Binding Value, Mode=TwoWay}"/>
-                    </StackPanel>
-                </DataTemplate>
-
-                <DataTemplate DataType="{x:Type effects:FilePathParameterState}" x:DataType="effects:FilePathParameterState">
-                    <StackPanel Spacing="4" Margin="0,0,0,10">
-                        <TextBlock Text="{Binding Label}"/>
-                        <Grid ColumnDefinitions="*,Auto">
-                            <TextBox Text="{Binding Value, Mode=TwoWay}" Margin="0,0,8,0"/>
-                            <Button Grid.Column="1"
-                                    Content="Browse..."
-                                    Click="OnBrowseFilePathClick"
-                                    Tag="{Binding}"/>
-                        </Grid>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.DataTemplates>

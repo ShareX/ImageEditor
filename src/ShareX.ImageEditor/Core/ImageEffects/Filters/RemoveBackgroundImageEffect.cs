@@ -3,12 +3,13 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RemoveBackgroundImageEffect : FilterImageEffect
+public class RemoveBackgroundImageEffect : ImageEffect
 {
     private const byte TransparentAlphaThreshold = 20;
     private const int MaxProcessDimension = 256;
 
     public override string Name => "Remove background";
+    public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
     public override string IconKey => "IconScissors";
     public override bool HasParameters => true;
 

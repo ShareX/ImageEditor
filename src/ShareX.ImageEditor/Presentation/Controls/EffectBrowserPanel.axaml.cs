@@ -613,6 +613,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             manip.AddEffect("Flip vertical", LucideIcons.FlipVertical, "Flips the image vertically.", () => Raise(FlipVerticalRequested));
             manip.AddEffect("Perspective warp...", LucideIcons.Waypoints, "Warps the image perspective.", () => RaiseDialog("perspective_warp"));
             manip.AddEffect("Pinch / bulge...", LucideIcons.CircleGauge, "Applies a pinch or bulge effect.", () => RaiseDialog("pinch_bulge"));
+            manip.AddEffect("Remove background...", LucideIcons.Scissors, "Removes border-connected background colors and turns them transparent.", () => RaiseDialog("remove_background"), "remove_background");
             manip.AddEffect("Resize canvas...", LucideIcons.Maximize, "Resizes the canvas.", () => RaiseDialog("resize_canvas"));
             manip.AddEffect("Resize image...", LucideIcons.ImageUpscale, "Resizes the image.", () => RaiseDialog("resize_image"));
             manip.AddEffect("Rotate...", LucideIcons.RotateCw, "Rotates the image by a custom angle.", () => Raise(RotateCustomAngleRequested));

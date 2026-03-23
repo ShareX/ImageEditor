@@ -82,7 +82,7 @@ public static partial class FilterCatalog
             ["pointillism"] = new("Pointillism...", LucideIcons.Dot, "Re-renders the image as overlapping colored dots."),
             ["rainy_window"] = new("Rainy window...", LucideIcons.CloudRain, "Simulates water streaks, droplets and foggy glass."),
             ["reflection"] = new("Reflection...", LucideIcons.FlipVertical2, "Adds a reflection to the bottom of the image."),
-            ["remove_background"] = new("Remove background...", LucideIcons.Scissors, "Removes border-connected background colors and turns them transparent."),
+            ["remove_background"] = new("Remove background...", LucideIcons.Scissors, "Removes border-connected background colors and turns them transparent.", IncludeInFiltersCategory: false),
             ["rgb_split"] = new("RGB split...", LucideIcons.SplitSquareHorizontal, "Splits the red, green, and blue color channels."),
             ["riso_print"] = new("Riso print...", LucideIcons.Newspaper, "Simulates layered risograph inks with halftone dots and slight registration offset."),
             ["shadow"] = new("Shadow...", LucideIcons.CloudMoon, "Adds a drop shadow to the image."),

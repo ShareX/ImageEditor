@@ -4,8 +4,9 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ShareX.ImageEditor.Core.ImageEffects;
 using ShareX.ImageEditor.Hosting;
-using ShareX.ImageEditor.Presentation.Filters;
+using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.Theming;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -247,23 +248,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
         public event EventHandler<EffectDialogRequestedEventArgs>? EffectDialogRequested;
 
-        public event EventHandler? InvertRequested;
-        public event EventHandler? BlackAndWhiteRequested;
-        public event EventHandler? PolaroidRequested;
-        public event EventHandler? EdgeDetectRequested;
-        public event EventHandler? EmbossRequested;
-        public event EventHandler? MeanRemovalRequested;
-        public event EventHandler? SmoothRequested;
-
-        public event EventHandler? CropImageRequested;
-        public event EventHandler? AutoCropImageRequested;
-        public event EventHandler? Rotate90CWRequested;
-        public event EventHandler? Rotate90CCWRequested;
-        public event EventHandler? Rotate180Requested;
-        public event EventHandler? RotateCustomAngleRequested;
-        public event EventHandler? FlipHorizontalRequested;
-        public event EventHandler? FlipVerticalRequested;
-
         public ObservableCollection<EffectCategory> Categories { get; } = new();
 
         private readonly EffectCategory _recentCategory = new("Recent", headerHint: RecentHeaderHint);
@@ -314,11 +298,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
                     Dispatcher.UIThread.Post(() => searchBox.Focus(), DispatcherPriority.Input);
                 });
             }
-        }
-
-        private void Raise(EventHandler? handler)
-        {
-            Dispatcher.UIThread.Post(() => handler?.Invoke(this, EventArgs.Empty));
         }
 
         private void RaiseDialog(string effectId)
@@ -603,91 +582,18 @@ namespace ShareX.ImageEditor.Presentation.Controls
             Categories.Add(_recentCategory);
             Categories.Add(_favoritesCategory);
 
-            var manip = new EffectCategory("Manipulations");
-            manip.AddEffect("3D Box / Extrude...", LucideIcons.Box, "Applies a 3D box or extrude effect.", () => RaiseDialog("rotate_3d_box"));
-            manip.AddEffect("Auto crop image", LucideIcons.Scan, "Automatically crops the image by finding its edges.", () => Raise(AutoCropImageRequested));
-            manip.AddEffect("Crop image...", LucideIcons.Crop, "Crops the image.", () => Raise(CropImageRequested));
-            manip.AddEffect("Displacement map...", LucideIcons.Map, "Applies a displacement map.", () => RaiseDialog("displacement_map"));
-            manip.AddEffect("Flip...", LucideIcons.FlipHorizontal2, "Flip the image.", () => RaiseDialog("flip"));
-            manip.AddEffect("Flip horizontal", LucideIcons.FlipHorizontal, "Flips the image horizontally.", () => Raise(FlipHorizontalRequested));
-            manip.AddEffect("Flip vertical", LucideIcons.FlipVertical, "Flips the image vertically.", () => Raise(FlipVerticalRequested));
-            manip.AddEffect("Perspective warp...", LucideIcons.Waypoints, "Warps the image perspective.", () => RaiseDialog("perspective_warp"));
-            manip.AddEffect("Pinch / bulge...", LucideIcons.CircleGauge, "Applies a pinch or bulge effect.", () => RaiseDialog("pinch_bulge"));
-            manip.AddEffect("Remove background...", LucideIcons.Scissors, "Removes border-connected background colors and turns them transparent.", () => RaiseDialog("remove_background"), "remove_background");
-            manip.AddEffect("Resize canvas...", LucideIcons.Maximize, "Resizes the canvas.", () => RaiseDialog("resize_canvas"));
-            manip.AddEffect("Resize image...", LucideIcons.ImageUpscale, "Resizes the image.", () => RaiseDialog("resize_image"));
-            manip.AddEffect("Rotate...", LucideIcons.RotateCw, "Rotates the image by a custom angle.", () => Raise(RotateCustomAngleRequested));
-            manip.AddEffect("Rotate 180°", LucideIcons.RotateCwSquare, "Rotates the image by 180 degrees.", () => Raise(Rotate180Requested));
-            manip.AddEffect("Rotate 3D...", LucideIcons.Rotate3D, "Rotates the image in 3D space.", () => RaiseDialog("rotate_3d"));
-            manip.AddEffect("Rotate 90° clockwise", LucideIcons.Redo2, "Rotates the image 90 degrees clockwise.", () => Raise(Rotate90CWRequested));
-            manip.AddEffect("Rotate 90° counter clockwise", LucideIcons.Undo2, "Rotates the image 90 degrees counter-clockwise.", () => Raise(Rotate90CCWRequested));
-            manip.AddEffect("Rounded Corners...", LucideIcons.SquareRoundCorner, "Rounds the corners of the image.", () => RaiseDialog("rounded_corners"));
-            manip.AddEffect("Scale...", LucideIcons.Scale, "Scales the image.", () => RaiseDialog("scale"));
-            manip.AddEffect("Skew...", LucideIcons.MoveDiagonal, "Skews the image.", () => RaiseDialog("skew"));
-            manip.AddEffect("Twirl...", LucideIcons.Orbit, "Applies a twirl effect.", () => RaiseDialog("twirl"));
-            Categories.Add(manip);
-
-            var adj = new EffectCategory("Adjustments");
-            adj.AddEffect("Alpha...", LucideIcons.Droplet, "Adjusts the alpha transparency.", () => RaiseDialog("alpha"));
-            adj.AddEffect("Auto contrast...", LucideIcons.Wand2, "Automatically adjusts the contrast.", () => RaiseDialog("auto_contrast"));
-            adj.AddEffect("Black & White", LucideIcons.ShieldHalf, "Converts the image to black and white.", () => Raise(BlackAndWhiteRequested));
-            adj.AddEffect("Brightness...", LucideIcons.SunMedium, "Adjusts image brightness.", () => RaiseDialog("brightness"));
-            adj.AddEffect("Color matrix...", LucideIcons.TableProperties, "Applies a color matrix transformation.", () => RaiseDialog("color_matrix"));
-            adj.AddEffect("Colorize...", LucideIcons.Palette, "Colorizes the image.", () => RaiseDialog("colorize"));
-            adj.AddEffect("Contrast...", LucideIcons.Contrast, "Adjusts image contrast.", () => RaiseDialog("contrast"));
-            adj.AddEffect("Duotone / Gradient map...", LucideIcons.Blend, "Maps grayscale tones to a custom multi-color gradient.", () => RaiseDialog("duotone_gradient_map"));
-            adj.AddEffect("Exposure...", LucideIcons.Aperture, "Adjusts the exposure level.", () => RaiseDialog("exposure"));
-            adj.AddEffect("Film emulation...", LucideIcons.Film, "Applies cinematic analog film looks with grain and fade.", () => RaiseDialog("film_emulation"));
-            adj.AddEffect("Gamma...", LucideIcons.Gauge, "Adjusts the gamma level.", () => RaiseDialog("gamma"));
-            adj.AddEffect("Grayscale...", LucideIcons.Moon, "Converts the image to grayscale.", () => RaiseDialog("grayscale"));
-            adj.AddEffect("Hue...", LucideIcons.Pipette, "Adjusts the hue of the image.", () => RaiseDialog("hue"));
-            adj.AddEffect("Invert", LucideIcons.RefreshCcwDot, "Inverts image colors.", () => Raise(InvertRequested));
-            adj.AddEffect("Levels...", LucideIcons.SlidersVertical, "Adjusts image color levels.", () => RaiseDialog("levels"));
-            adj.AddEffect("Polaroid", LucideIcons.Camera, "Applies a Polaroid effect.", () => Raise(PolaroidRequested));
-            adj.AddEffect("Posterize...", LucideIcons.Layers3, "Reduces the number of colors to create a poster-like effect.", () => RaiseDialog("posterize"));
-            adj.AddEffect("Replace Color...", LucideIcons.Replace, "Replaces a specific color.", () => RaiseDialog("replace_color"));
-            adj.AddEffect("Saturation...", LucideIcons.Droplets, "Adjusts the color saturation.", () => RaiseDialog("saturation"));
-            adj.AddEffect("Selective Color...", LucideIcons.SwatchBook, "Adjusts selective color channels.", () => RaiseDialog("selective_color"));
-            adj.AddEffect("Sepia...", LucideIcons.Coffee, "Applies a sepia tone effect.", () => RaiseDialog("sepia"));
-            adj.AddEffect("Shadows / Highlights...", LucideIcons.Lightbulb, "Adjusts shadows and highlights.", () => RaiseDialog("shadows_highlights"));
-            adj.AddEffect("Solarize...", LucideIcons.Sun, "Applies a solarize effect.", () => RaiseDialog("solarize"));
-            adj.AddEffect("Temperature / Tint...", LucideIcons.Thermometer, "Adjusts the color temperature and tint.", () => RaiseDialog("temperature_tint"));
-            adj.AddEffect("Threshold...", LucideIcons.Binary, "Applies a contrast threshold.", () => RaiseDialog("threshold"));
-            adj.AddEffect("Vibrance...", LucideIcons.Sparkles, "Adjusts the color vibrance.", () => RaiseDialog("vibrance"));
-            Categories.Add(adj);
-
-            var fil = new EffectCategory("Filters");
-            fil.AddEffect("Edge detect", LucideIcons.ScanSearch, "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
-            fil.AddEffect("Emboss", LucideIcons.Stamp, "Applies an emboss effect.", () => Raise(EmbossRequested));
-            fil.AddEffect("Mean removal", LucideIcons.Sigma, "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
-            fil.AddEffect("Smooth", LucideIcons.Waves, "Applies a smoothing effect.", () => Raise(SmoothRequested));
-            fil.AddEffect("Wooden frame...", LucideIcons.Frame, "Expands the canvas with a beveled procedural wooden picture frame.", () => RaiseDialog("wooden_frame"), "wooden_frame");
-            AddCatalogDrivenFilters(fil);
-            Categories.Add(fil);
-
-            var drawings = new EffectCategory("Drawings");
-            drawings.AddEffect("Background...", LucideIcons.PaintBucket, "Fills transparent regions using a solid color or gradient background.", () => RaiseDialog("draw_background"));
-            drawings.AddEffect("Background image...", LucideIcons.Image, "Draws an image behind the current canvas.", () => RaiseDialog("draw_background_image"));
-            drawings.AddEffect("Checkerboard...", LucideIcons.Grid2X2Check, "Draws a checkerboard background behind the image.", () => RaiseDialog("draw_checkerboard"));
-            drawings.AddEffect("Border...", LucideIcons.Frame, "Adds a border to the image.", () => RaiseDialog("border"));
-            drawings.AddEffect("Image...", LucideIcons.ImagePlus, "Draws an image overlay with placement, sizing and opacity controls.", () => RaiseDialog("draw_image"));
-            drawings.AddEffect("Line...", LucideIcons.Minus, "Draws a straight line overlay with start, end, color and thickness controls.", () => RaiseDialog("draw_line"));
-            drawings.AddEffect("Particles...", LucideIcons.Sparkle, "Draws random particles from an image folder.", () => RaiseDialog("draw_particles"));
-            drawings.AddEffect("Shape...", LucideIcons.VectorSquare, "Draws filled primitive shapes with placement, size and color controls.", () => RaiseDialog("draw_shape"));
-            drawings.AddEffect("Text...", LucideIcons.TextCursor, "Draws stylized text with gradient, outline and shadow options.", () => RaiseDialog("draw_text"));
-            drawings.AddEffect("Text watermark...", LucideIcons.Stamp, "Draws text inside a rounded watermark box with padding, border and optional shadow.", () => RaiseDialog("text_watermark"));
-            Categories.Add(drawings);
+            foreach (ImageEffectCategory categoryEnum in Enum.GetValues<ImageEffectCategory>())
+            {
+                var category = new EffectCategory(categoryEnum.ToString());
+                AddCatalogDrivenEffects(category, categoryEnum);
+                Categories.Add(category);
+            }
         }
 
-        private void AddCatalogDrivenFilters(EffectCategory category)
+        private void AddCatalogDrivenEffects(EffectCategory category, ImageEffectCategory targetCategory)
         {
-            foreach (FilterDefinition definition in FilterCatalog.Definitions)
+            foreach (EffectDefinition definition in ImageEffectCatalog.GetByCategory(targetCategory))
             {
-                if (!definition.IncludeInFiltersCategory)
-                {
-                    continue;
-                }
-
                 category.AddEffect(
                     definition.BrowserLabel,
                     definition.Icon,

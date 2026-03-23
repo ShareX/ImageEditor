@@ -448,6 +448,12 @@ public static partial class FilterCatalog
                 BoolParameter<ReflectionImageEffect>("skew", "Skew", false, (effect, value) => effect.Skew = value),
                 IntSlider<ReflectionImageEffect>("skew_size", "Skew Size", 1, 100, 25, (effect, value) => effect.SkewSize = value, isSnapToTickEnabled: false)),
 
+            Filter<RemoveBackgroundImageEffect>(
+                "remove_background",
+                FloatSlider<RemoveBackgroundImageEffect>("sensitivity", "Sensitivity (%)", 0, 100, 60, (effect, value) => effect.Sensitivity = value),
+                FloatSlider<RemoveBackgroundImageEffect>("center_protection", "Center protection (%)", 0, 100, 65, (effect, value) => effect.CenterProtection = value),
+                FloatSlider<RemoveBackgroundImageEffect>("edge_feather", "Edge feather (px)", 0, 24, 4, (effect, value) => effect.EdgeFeather = value, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}")),
+
             Filter<RGBSplitImageEffect>(
                 "rgb_split",
                 IntNumeric<RGBSplitImageEffect>("offset_red_x", "Red offset X", -1000, 1000, -5, (effect, value) => effect.OffsetRedX = value),

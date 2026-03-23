@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="600"
              x:Class="ShareX.ImageEditor.Presentation.Controls.EffectBrowserPanel">
     <Grid RowDefinitions="Auto,*">
@@ -23,7 +24,16 @@
                     <!-- EffectCategory Template -->
                     <DataTemplate DataType="{x:Type controls:EffectCategory}" x:DataType="controls:EffectCategory">
                         <StackPanel Margin="0,0,0,8" IsVisible="{Binding IsVisible}">
-                            <TextBlock Text="{Binding HeaderText}" Classes="category-header"/>
+                            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="6" Margin="8,8,0,8">
+                                <TextBlock Text="{Binding HeaderText}" Classes="category-header" Margin="0"/>
+                                <Border Classes="category-tip"
+                                        Grid.Column="1"
+                                        IsVisible="{Binding HasHeaderHint}"
+                                        ToolTip.Tip="{Binding HeaderHint}">
+                                    <TextBlock Text="{x:Static theming:LucideIcons.Lightbulb}"
+                                               Classes="category-tip-icon"/>
+                                </Border>
+                            </Grid>
                             <ItemsControl ItemsSource="{Binding VisibleEffects}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>

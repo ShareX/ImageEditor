@@ -47,10 +47,13 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             get
             {
-                string header = _showCount ? $"{Name} ({AllEffects.Count})" : Name;
-                return string.IsNullOrWhiteSpace(_headerHint) ? header : $"{header} - {_headerHint}";
+                return _showCount ? $"{Name} ({AllEffects.Count})" : Name;
             }
         }
+
+        public string HeaderHint => _headerHint ?? string.Empty;
+
+        public bool HasHeaderHint => !string.IsNullOrWhiteSpace(_headerHint);
 
         partial void OnNameChanged(string value)
         {
@@ -227,8 +230,8 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
     public partial class EffectBrowserPanel : UserControl
     {
-        private const string RecentHeaderHint = "Right click to remove";
-        private const string FavoritesHeaderHint = "Right click to favorite";
+        private const string RecentHeaderHint = "Right-click an effect item to remove it from Recent.";
+        private const string FavoritesHeaderHint = "Right-click an effect item to add or remove it from Favorites.";
         private const int MaxRecentEffects = 10;
         private const string SearchWatermarkFormat = "Search image effects... ({0})";
 

@@ -9,7 +9,8 @@
              d:DesignWidth="420"
              d:DesignHeight="420"
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.SchemaDrivenEffectDialog"
-             x:DataType="dialogs:SchemaDrivenEffectDialog">
+             x:DataType="dialogs:SchemaDrivenEffectDialog"
+             x:CompileBindings="False">
     <StackPanel Spacing="0">
         <TextBlock Text="{Binding Title}" Margin="0,0,0,8"/>
 

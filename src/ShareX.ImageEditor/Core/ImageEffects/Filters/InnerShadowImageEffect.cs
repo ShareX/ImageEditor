@@ -6,7 +6,7 @@ namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 public class InnerShadowImageEffect : FilterImageEffect
 {
     public float Opacity { get; set; } = 70f; // 0..100
-    public int Size { get; set; } = 18; // 0..100
+    public int Size { get; set; } = 20; // 0..300
     public SKColor Color { get; set; } = SKColors.Black;
     public int OffsetX { get; set; } = 0;
     public int OffsetY { get; set; } = 0;
@@ -20,7 +20,7 @@ public class InnerShadowImageEffect : FilterImageEffect
         if (source is null) throw new ArgumentNullException(nameof(source));
 
         float opacity = Math.Clamp(Opacity, 0f, 100f) / 100f;
-        int size = Math.Clamp(Size, 0, 100);
+        int size = Math.Clamp(Size, 0, 300);
 
         if (opacity <= 0f || (size <= 0 && OffsetX == 0 && OffsetY == 0) || Color.Alpha == 0)
         {

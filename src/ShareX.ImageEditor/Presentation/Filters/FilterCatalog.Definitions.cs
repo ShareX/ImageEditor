@@ -245,13 +245,13 @@ public static partial class FilterCatalog
                 static () => new InnerShadowImageEffect
                 {
                     Opacity = 70f,
-                    Size = 18,
+                    Size = 20,
                     Color = ToSkColor(Colors.Black),
                     OffsetX = 0,
                     OffsetY = 0
                 },
                 FloatSlider<InnerShadowImageEffect>("opacity", "Opacity", 0, 100, 70, (effect, value) => effect.Opacity = value, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0}%"),
-                IntSlider<InnerShadowImageEffect>("size", "Size", 0, 100, 18, (effect, value) => effect.Size = value, isSnapToTickEnabled: false),
+                IntSlider<InnerShadowImageEffect>("size", "Size", 0, 300, 20, (effect, value) => effect.Size = value, isSnapToTickEnabled: false),
                 IntNumeric<InnerShadowImageEffect>("offset_x", "Offset X", -1000, 1000, 0, (effect, value) => effect.OffsetX = value),
                 IntNumeric<InnerShadowImageEffect>("offset_y", "Offset Y", -1000, 1000, 0, (effect, value) => effect.OffsetY = value),
                 ColorParameter<InnerShadowImageEffect>("color", "Color", Colors.Black, (effect, value) => effect.Color = ToSkColor(value))),

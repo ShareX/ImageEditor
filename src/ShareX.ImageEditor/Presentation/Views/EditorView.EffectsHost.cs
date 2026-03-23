@@ -25,7 +25,6 @@
 
 using Avalonia.Controls;
 using ShareX.ImageEditor.Core.Annotations;
-using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views.Dialogs;
@@ -200,32 +199,20 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
-            if (EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) && dialog != null)
-            {
-                switch (dialog)
-                {
-                    case IEffectDialog effectDialog:
-                        ShowEffectDialog(dialog, effectDialog);
-                        break;
-                    case ResizeImageDialog resizeImageDialog:
-                        ShowResizeImageDialog(resizeImageDialog);
-                        break;
-                    case ResizeCanvasDialog resizeCanvasDialog:
-                        ShowResizeCanvasDialog(resizeCanvasDialog);
-                        break;
-                }
+            if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
-            }
 
-            if (ImageEffectCatalog.TryGetDefinition(e.EffectId, out EffectDefinition? definition) &&
-                definition != null &&
-                definition.ApplyImmediately &&
-                DataContext is MainViewModel vm)
+            switch (dialog)
             {
-                vm.ApplyEffect(
-                    img => definition.CreateConfiguredEffect([]).Apply(img),
-                    $"Applied {definition.Name}");
-                vm.CloseEffectsPanelCommand.Execute(null);
+                case IEffectDialog effectDialog:
+                    ShowEffectDialog(dialog, effectDialog);
+                    break;
+                case ResizeImageDialog resizeImageDialog:
+                    ShowResizeImageDialog(resizeImageDialog);
+                    break;
+                case ResizeCanvasDialog resizeCanvasDialog:
+                    ShowResizeCanvasDialog(resizeCanvasDialog);
+                    break;
             }
         }
 

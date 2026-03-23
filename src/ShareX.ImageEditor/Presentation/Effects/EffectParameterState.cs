@@ -26,16 +26,16 @@
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ShareX.ImageEditor.Presentation.Filters;
+namespace ShareX.ImageEditor.Presentation.Effects;
 
-public abstract partial class FilterParameterState : ObservableObject
+public abstract partial class EffectParameterState : ObservableObject
 {
-    protected FilterParameterState(FilterParameterDefinition definition)
+    protected EffectParameterState(EffectParameterDefinition definition)
     {
         Definition = definition ?? throw new ArgumentNullException(nameof(definition));
     }
 
-    public FilterParameterDefinition Definition { get; }
+    public EffectParameterDefinition Definition { get; }
 
     public string Key => Definition.Key;
 
@@ -44,12 +44,12 @@ public abstract partial class FilterParameterState : ObservableObject
     internal abstract object? GetValue();
 }
 
-public sealed partial class SliderFilterParameterState : FilterParameterState
+public sealed partial class SliderParameterState : EffectParameterState
 {
     [ObservableProperty]
     private double _value;
 
-    public SliderFilterParameterDefinition SliderDefinition => (SliderFilterParameterDefinition)Definition;
+    public SliderParameterDefinition SliderDefinition => (SliderParameterDefinition)Definition;
 
     public double Minimum => SliderDefinition.Minimum;
 
@@ -61,7 +61,7 @@ public sealed partial class SliderFilterParameterState : FilterParameterState
 
     public string ValueStringFormat => SliderDefinition.ValueStringFormat;
 
-    public SliderFilterParameterState(SliderFilterParameterDefinition definition)
+    public SliderParameterState(SliderParameterDefinition definition)
         : base(definition)
     {
         _value = definition.DefaultValue;
@@ -70,12 +70,12 @@ public sealed partial class SliderFilterParameterState : FilterParameterState
     internal override object? GetValue() => Value;
 }
 
-public sealed partial class CheckboxFilterParameterState : FilterParameterState
+public sealed partial class CheckboxParameterState : EffectParameterState
 {
     [ObservableProperty]
     private bool _value;
 
-    public CheckboxFilterParameterState(CheckboxFilterParameterDefinition definition)
+    public CheckboxParameterState(CheckboxParameterDefinition definition)
         : base(definition)
     {
         _value = definition.DefaultValue;
@@ -84,16 +84,16 @@ public sealed partial class CheckboxFilterParameterState : FilterParameterState
     internal override object? GetValue() => Value;
 }
 
-public sealed partial class EnumFilterParameterState : FilterParameterState
+public sealed partial class EnumParameterState : EffectParameterState
 {
     [ObservableProperty]
-    private FilterOptionDefinition _selectedOption;
+    private EffectOptionDefinition _selectedOption;
 
-    public EnumFilterParameterDefinition EnumDefinition => (EnumFilterParameterDefinition)Definition;
+    public EnumParameterDefinition EnumDefinition => (EnumParameterDefinition)Definition;
 
-    public IReadOnlyList<FilterOptionDefinition> Options => EnumDefinition.Options;
+    public IReadOnlyList<EffectOptionDefinition> Options => EnumDefinition.Options;
 
-    public EnumFilterParameterState(EnumFilterParameterDefinition definition)
+    public EnumParameterState(EnumParameterDefinition definition)
         : base(definition)
     {
         _selectedOption = definition.Options[definition.DefaultIndex];
@@ -102,12 +102,12 @@ public sealed partial class EnumFilterParameterState : FilterParameterState
     internal override object? GetValue() => SelectedOption.Value;
 }
 
-public sealed partial class ColorFilterParameterState : FilterParameterState
+public sealed partial class ColorParameterState : EffectParameterState
 {
     [ObservableProperty]
     private Color _value;
 
-    public ColorFilterParameterState(ColorFilterParameterDefinition definition)
+    public ColorParameterState(ColorParameterDefinition definition)
         : base(definition)
     {
         _value = definition.DefaultValue;
@@ -116,12 +116,12 @@ public sealed partial class ColorFilterParameterState : FilterParameterState
     internal override object? GetValue() => Value;
 }
 
-public sealed partial class NumericFilterParameterState : FilterParameterState
+public sealed partial class NumericParameterState : EffectParameterState
 {
     [ObservableProperty]
     private decimal? _value;
 
-    public NumericFilterParameterDefinition NumericDefinition => (NumericFilterParameterDefinition)Definition;
+    public NumericParameterDefinition NumericDefinition => (NumericParameterDefinition)Definition;
 
     public decimal Minimum => NumericDefinition.Minimum;
 
@@ -131,7 +131,7 @@ public sealed partial class NumericFilterParameterState : FilterParameterState
 
     public string FormatString => NumericDefinition.FormatString;
 
-    public NumericFilterParameterState(NumericFilterParameterDefinition definition)
+    public NumericParameterState(NumericParameterDefinition definition)
         : base(definition)
     {
         _value = definition.DefaultValue;
@@ -140,12 +140,30 @@ public sealed partial class NumericFilterParameterState : FilterParameterState
     internal override object? GetValue() => Value;
 }
 
-public sealed partial class TextFilterParameterState : FilterParameterState
+public sealed partial class TextParameterState : EffectParameterState
 {
     [ObservableProperty]
     private string _value;
 
-    public TextFilterParameterState(TextFilterParameterDefinition definition)
+    public TextParameterState(TextParameterDefinition definition)
+        : base(definition)
+    {
+        _value = definition.DefaultValue;
+    }
+
+    internal override object? GetValue() => Value;
+}
+
+public sealed partial class FilePathParameterState : EffectParameterState
+{
+    [ObservableProperty]
+    private string _value;
+
+    public FilePathParameterDefinition FilePathDefinition => (FilePathParameterDefinition)Definition;
+
+    public string? FileFilter => FilePathDefinition.FileFilter;
+
+    public FilePathParameterState(FilePathParameterDefinition definition)
         : base(definition)
     {
         _value = definition.DefaultValue;

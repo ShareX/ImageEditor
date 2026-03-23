@@ -26,11 +26,11 @@
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.ImageEffects;
 
-namespace ShareX.ImageEditor.Presentation.Filters;
+namespace ShareX.ImageEditor.Presentation.Effects;
 
-public abstract class FilterParameterDefinition
+public abstract class EffectParameterDefinition
 {
-    protected FilterParameterDefinition(string key, string label)
+    protected EffectParameterDefinition(string key, string label)
     {
         Key = key ?? throw new ArgumentNullException(nameof(key));
         Label = label ?? throw new ArgumentNullException(nameof(label));
@@ -40,12 +40,12 @@ public abstract class FilterParameterDefinition
 
     public string Label { get; }
 
-    internal abstract FilterParameterState CreateState();
+    internal abstract EffectParameterState CreateState();
 
     internal abstract void ApplyValue(ImageEffect effect, object? value);
 }
 
-public sealed class SliderFilterParameterDefinition : FilterParameterDefinition
+public sealed class SliderParameterDefinition : EffectParameterDefinition
 {
     private readonly Action<ImageEffect, double> _applyValue;
 
@@ -61,7 +61,7 @@ public sealed class SliderFilterParameterDefinition : FilterParameterDefinition
 
     public string ValueStringFormat { get; }
 
-    public SliderFilterParameterDefinition(
+    public SliderParameterDefinition(
         string key,
         string label,
         double minimum,
@@ -82,7 +82,7 @@ public sealed class SliderFilterParameterDefinition : FilterParameterDefinition
         _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
     }
 
-    internal override FilterParameterState CreateState() => new SliderFilterParameterState(this);
+    internal override EffectParameterState CreateState() => new SliderParameterState(this);
 
     internal override void ApplyValue(ImageEffect effect, object? value)
     {
@@ -90,13 +90,13 @@ public sealed class SliderFilterParameterDefinition : FilterParameterDefinition
     }
 }
 
-public sealed class CheckboxFilterParameterDefinition : FilterParameterDefinition
+public sealed class CheckboxParameterDefinition : EffectParameterDefinition
 {
     private readonly Action<ImageEffect, bool> _applyValue;
 
     public bool DefaultValue { get; }
 
-    public CheckboxFilterParameterDefinition(
+    public CheckboxParameterDefinition(
         string key,
         string label,
         bool defaultValue,
@@ -107,7 +107,7 @@ public sealed class CheckboxFilterParameterDefinition : FilterParameterDefinitio
         _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
     }
 
-    internal override FilterParameterState CreateState() => new CheckboxFilterParameterState(this);
+    internal override EffectParameterState CreateState() => new CheckboxParameterState(this);
 
     internal override void ApplyValue(ImageEffect effect, object? value)
     {
@@ -115,18 +115,18 @@ public sealed class CheckboxFilterParameterDefinition : FilterParameterDefinitio
     }
 }
 
-public sealed class EnumFilterParameterDefinition : FilterParameterDefinition
+public sealed class EnumParameterDefinition : EffectParameterDefinition
 {
     private readonly Action<ImageEffect, object> _applyValue;
 
-    public IReadOnlyList<FilterOptionDefinition> Options { get; }
+    public IReadOnlyList<EffectOptionDefinition> Options { get; }
 
     public int DefaultIndex { get; }
 
-    public EnumFilterParameterDefinition(
+    public EnumParameterDefinition(
         string key,
         string label,
-        IReadOnlyList<FilterOptionDefinition> options,
+        IReadOnlyList<EffectOptionDefinition> options,
         int defaultIndex,
         Action<ImageEffect, object> applyValue)
         : base(key, label)
@@ -146,7 +146,7 @@ public sealed class EnumFilterParameterDefinition : FilterParameterDefinition
         _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
     }
 
-    internal override FilterParameterState CreateState() => new EnumFilterParameterState(this);
+    internal override EffectParameterState CreateState() => new EnumParameterState(this);
 
     internal override void ApplyValue(ImageEffect effect, object? value)
     {
@@ -155,13 +155,13 @@ public sealed class EnumFilterParameterDefinition : FilterParameterDefinition
     }
 }
 
-public sealed class ColorFilterParameterDefinition : FilterParameterDefinition
+public sealed class ColorParameterDefinition : EffectParameterDefinition
 {
     private readonly Action<ImageEffect, Color> _applyValue;
 
     public Color DefaultValue { get; }
 
-    public ColorFilterParameterDefinition(
+    public ColorParameterDefinition(
         string key,
         string label,
         Color defaultValue,
@@ -172,7 +172,7 @@ public sealed class ColorFilterParameterDefinition : FilterParameterDefinition
         _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
     }
 
-    internal override FilterParameterState CreateState() => new ColorFilterParameterState(this);
+    internal override EffectParameterState CreateState() => new ColorParameterState(this);
 
     internal override void ApplyValue(ImageEffect effect, object? value)
     {
@@ -180,7 +180,7 @@ public sealed class ColorFilterParameterDefinition : FilterParameterDefinition
     }
 }
 
-public sealed class NumericFilterParameterDefinition : FilterParameterDefinition
+public sealed class NumericParameterDefinition : EffectParameterDefinition
 {
     private readonly Action<ImageEffect, decimal> _applyValue;
 
@@ -194,7 +194,7 @@ public sealed class NumericFilterParameterDefinition : FilterParameterDefinition
 
     public string FormatString { get; }
 
-    public NumericFilterParameterDefinition(
+    public NumericParameterDefinition(
         string key,
         string label,
         decimal minimum,
@@ -213,7 +213,7 @@ public sealed class NumericFilterParameterDefinition : FilterParameterDefinition
         _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
     }
 
-    internal override FilterParameterState CreateState() => new NumericFilterParameterState(this);
+    internal override EffectParameterState CreateState() => new NumericParameterState(this);
 
     internal override void ApplyValue(ImageEffect effect, object? value)
     {
@@ -230,13 +230,13 @@ public sealed class NumericFilterParameterDefinition : FilterParameterDefinition
     }
 }
 
-public sealed class TextFilterParameterDefinition : FilterParameterDefinition
+public sealed class TextParameterDefinition : EffectParameterDefinition
 {
     private readonly Action<ImageEffect, string> _applyValue;
 
     public string DefaultValue { get; }
 
-    public TextFilterParameterDefinition(
+    public TextParameterDefinition(
         string key,
         string label,
         string defaultValue,
@@ -247,7 +247,7 @@ public sealed class TextFilterParameterDefinition : FilterParameterDefinition
         _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
     }
 
-    internal override FilterParameterState CreateState() => new TextFilterParameterState(this);
+    internal override EffectParameterState CreateState() => new TextParameterState(this);
 
     internal override void ApplyValue(ImageEffect effect, object? value)
     {
@@ -255,13 +255,46 @@ public sealed class TextFilterParameterDefinition : FilterParameterDefinition
     }
 }
 
-public sealed class FilterOptionDefinition
+public sealed class FilePathParameterDefinition : EffectParameterDefinition
+{
+    private readonly Action<ImageEffect, string> _applyValue;
+
+    public string DefaultValue { get; }
+
+    /// <summary>
+    /// Optional file type filter string for the file picker dialog.
+    /// Example: "Image files|*.png;*.jpg;*.bmp"
+    /// </summary>
+    public string? FileFilter { get; }
+
+    public FilePathParameterDefinition(
+        string key,
+        string label,
+        string defaultValue,
+        Action<ImageEffect, string> applyValue,
+        string? fileFilter = null)
+        : base(key, label)
+    {
+        DefaultValue = defaultValue ?? "";
+        _applyValue = applyValue ?? throw new ArgumentNullException(nameof(applyValue));
+        FileFilter = fileFilter;
+    }
+
+    internal override EffectParameterState CreateState() => new FilePathParameterState(this);
+
+    internal override void ApplyValue(ImageEffect effect, object? value)
+    {
+        _applyValue(effect, value as string ?? DefaultValue);
+    }
+}
+
+public sealed class EffectOptionDefinition
 {
     public string Label { get; }
 
     public object Value { get; }
 
-    public FilterOptionDefinition(string label, object value)
+    public EffectOptionDefinition(string label, object value)
     {
         Label = label ?? throw new ArgumentNullException(nameof(label));
         Value = value ?? throw new ArgumentNullException(nameof(value));

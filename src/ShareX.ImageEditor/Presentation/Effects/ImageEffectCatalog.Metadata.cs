@@ -25,13 +25,13 @@
 
 using ShareX.ImageEditor.Presentation.Theming;
 
-namespace ShareX.ImageEditor.Presentation.Filters;
+namespace ShareX.ImageEditor.Presentation.Effects;
 
-public static partial class FilterCatalog
+public static partial class ImageEffectCatalog
 {
-    private static IReadOnlyDictionary<string, FilterPresentationMetadata> BuildPresentationMetadata()
+    private static IReadOnlyDictionary<string, EffectPresentationMetadata> BuildPresentationMetadata()
     {
-        return new Dictionary<string, FilterPresentationMetadata>(StringComparer.OrdinalIgnoreCase)
+        return new Dictionary<string, EffectPresentationMetadata>(StringComparer.OrdinalIgnoreCase)
         {
             ["add_noise"] = new("Add noise...", LucideIcons.SprayCan, "Adds noise to the image."),
             ["anime_speed_lines"] = new("Anime speed lines...", LucideIcons.ScanLine, "Overlays dramatic radial anime motion streaks from a focal point."),
@@ -42,7 +42,7 @@ public static partial class FilterCatalog
             ["bloom"] = new("Bloom...", LucideIcons.Sparkle, "Creates a soft glow around bright regions."),
             ["blueprint_drawing"] = new("Blueprint drawing...", LucideIcons.DraftingCompass, "Converts image structure into cyan technical lines over blueprint paper."),
             ["blur"] = new("Blur...", LucideIcons.Focus, "Applies a blur effect."),
-            ["border"] = new("Border...", LucideIcons.Frame, "Adds a border to the image.", IncludeInFiltersCategory: false),
+            ["border"] = new("Border...", LucideIcons.Frame, "Adds a border to the image."),
             ["cartoon_sticker_cutout"] = new("Cartoon sticker cutout...", LucideIcons.Sticker, "Posterizes colors, inks edges and adds a white sticker-like border glow."),
             ["chromatic_aberration"] = new("Chromatic aberration...", LucideIcons.Aperture, "Simulates lens fringing by separating red and blue channels toward the frame edges."),
             ["claymation_texture"] = new("Claymation texture...", LucideIcons.PaintRoller, "Builds chunky plasticine-like color lumps with tactile relief grain."),
@@ -83,7 +83,7 @@ public static partial class FilterCatalog
             ["pointillism"] = new("Pointillism...", LucideIcons.Dot, "Re-renders the image as overlapping colored dots."),
             ["rainy_window"] = new("Rainy window...", LucideIcons.CloudRain, "Simulates water streaks, droplets and foggy glass."),
             ["reflection"] = new("Reflection...", LucideIcons.FlipVertical2, "Adds a reflection to the bottom of the image."),
-            ["remove_background"] = new("Remove background...", LucideIcons.Scissors, "Removes border-connected background colors and turns them transparent.", IncludeInFiltersCategory: false),
+            ["remove_background"] = new("Remove background...", LucideIcons.Scissors, "Removes border-connected background colors and turns them transparent."),
             ["rgb_split"] = new("RGB split...", LucideIcons.SplitSquareHorizontal, "Splits the red, green, and blue color channels."),
             ["riso_print"] = new("Riso print...", LucideIcons.Newspaper, "Simulates layered risograph inks with halftone dots and slight registration offset."),
             ["shadow"] = new("Shadow...", LucideIcons.CloudMoon, "Adds a drop shadow to the image."),

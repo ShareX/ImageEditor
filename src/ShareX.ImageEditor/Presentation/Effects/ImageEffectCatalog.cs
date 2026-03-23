@@ -27,49 +27,114 @@ using Avalonia.Media;
 using ShareX.ImageEditor.Core.ImageEffects;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Presentation.Filters;
+namespace ShareX.ImageEditor.Presentation.Effects;
 
-public static partial class FilterCatalog
+public static partial class ImageEffectCatalog
 {
-    private sealed record FilterPresentationMetadata(
+    private sealed record EffectPresentationMetadata(
         string BrowserLabel,
         string Icon,
-        string Description,
-        bool IncludeInFiltersCategory = true);
+        string Description);
 
-    private static readonly IReadOnlyDictionary<string, FilterPresentationMetadata> _presentationById = BuildPresentationMetadata();
-    private static readonly IReadOnlyList<FilterDefinition> _definitions = BuildDefinitions();
+    private static readonly IReadOnlyDictionary<string, EffectPresentationMetadata> _presentationById = BuildPresentationMetadata();
+    private static readonly IReadOnlyList<EffectDefinition> _definitions = BuildAllDefinitions();
 
-    private static readonly IReadOnlyDictionary<string, FilterDefinition> _definitionsById =
+    private static readonly IReadOnlyDictionary<string, EffectDefinition> _definitionsById =
         _definitions.ToDictionary(definition => definition.Id, StringComparer.OrdinalIgnoreCase);
 
-    public static IReadOnlyList<FilterDefinition> Definitions => _definitions;
+    private static readonly IReadOnlyDictionary<ImageEffectCategory, IReadOnlyList<EffectDefinition>> _definitionsByCategory =
+        _definitions
+            .GroupBy(definition => definition.Category)
+            .ToDictionary(
+                group => group.Key,
+                group => (IReadOnlyList<EffectDefinition>)group.ToArray());
 
-    public static bool TryGetDefinition(string id, out FilterDefinition? definition)
+    public static IReadOnlyList<EffectDefinition> Definitions => _definitions;
+
+    public static bool TryGetDefinition(string id, out EffectDefinition? definition)
     {
         return _definitionsById.TryGetValue(id, out definition);
     }
 
-    private static FilterDefinition Filter<TEffect>(string id, params FilterParameterDefinition[] parameters)
-        where TEffect : ImageEffect, new()
+    public static IReadOnlyList<EffectDefinition> GetByCategory(ImageEffectCategory category)
     {
-        return Filter(id, static () => new TEffect(), parameters);
+        return _definitionsByCategory.TryGetValue(category, out var definitions) ? definitions : [];
     }
 
-    private static FilterDefinition Filter(string id, Func<ImageEffect> createEffect, params FilterParameterDefinition[] parameters)
+    private static IReadOnlyList<EffectDefinition> BuildAllDefinitions()
     {
-        FilterPresentationMetadata metadata = GetMetadata(id);
-        return new FilterDefinition(
+        var all = new List<EffectDefinition>();
+        all.AddRange(BuildFilterDefinitions());
+        all.AddRange(BuildAdjustmentDefinitions());
+        all.AddRange(BuildManipulationDefinitions());
+        all.AddRange(BuildDrawingDefinitions());
+        return all.AsReadOnly();
+    }
+
+    // --- Shared helper builders ---
+
+    private static EffectDefinition Effect<TEffect>(
+        string id,
+        ImageEffectCategory category,
+        params EffectParameterDefinition[] parameters)
+        where TEffect : ImageEffect, new()
+    {
+        return Effect(id, category, static () => new TEffect(), parameters);
+    }
+
+    private static EffectDefinition Effect(
+        string id,
+        ImageEffectCategory category,
+        Func<ImageEffect> createEffect,
+        params EffectParameterDefinition[] parameters)
+    {
+        EffectPresentationMetadata metadata = GetMetadata(id);
+        return new EffectDefinition(
             id,
             metadata.BrowserLabel,
             metadata.Icon,
             metadata.Description,
+            category,
             createEffect,
-            parameters,
-            metadata.IncludeInFiltersCategory);
+            parameters);
     }
 
-    private static SliderFilterParameterDefinition IntSlider<TEffect>(
+    private static EffectDefinition ImmediateEffect<TEffect>(
+        string id,
+        ImageEffectCategory category)
+        where TEffect : ImageEffect, new()
+    {
+        EffectPresentationMetadata metadata = GetMetadata(id);
+        return new EffectDefinition(
+            id,
+            metadata.BrowserLabel,
+            metadata.Icon,
+            metadata.Description,
+            category,
+            static () => new TEffect(),
+            [],
+            applyImmediately: true);
+    }
+
+    private static EffectDefinition BespokeEffect<TEffect>(
+        string id,
+        ImageEffectCategory category,
+        string customEditorKey)
+        where TEffect : ImageEffect, new()
+    {
+        EffectPresentationMetadata metadata = GetMetadata(id);
+        return new EffectDefinition(
+            id,
+            metadata.BrowserLabel,
+            metadata.Icon,
+            metadata.Description,
+            category,
+            static () => new TEffect(),
+            [],
+            customEditorKey: customEditorKey);
+    }
+
+    private static SliderParameterDefinition IntSlider<TEffect>(
         string key,
         string label,
         int minimum,
@@ -81,7 +146,7 @@ public static partial class FilterCatalog
         string valueStringFormat = "{}{0:0}")
         where TEffect : ImageEffect
     {
-        return new SliderFilterParameterDefinition(
+        return new SliderParameterDefinition(
             key,
             label,
             minimum,
@@ -93,7 +158,7 @@ public static partial class FilterCatalog
             (effect, value) => applyValue((TEffect)effect, (int)Math.Round(value)));
     }
 
-    private static SliderFilterParameterDefinition FloatSlider<TEffect>(
+    private static SliderParameterDefinition FloatSlider<TEffect>(
         string key,
         string label,
         double minimum,
@@ -105,7 +170,7 @@ public static partial class FilterCatalog
         string valueStringFormat = "{}{0:0}")
         where TEffect : ImageEffect
     {
-        return new SliderFilterParameterDefinition(
+        return new SliderParameterDefinition(
             key,
             label,
             minimum,
@@ -117,7 +182,7 @@ public static partial class FilterCatalog
             (effect, value) => applyValue((TEffect)effect, (float)value));
     }
 
-    private static SliderFilterParameterDefinition DoubleSlider<TEffect>(
+    private static SliderParameterDefinition DoubleSlider<TEffect>(
         string key,
         string label,
         double minimum,
@@ -129,7 +194,7 @@ public static partial class FilterCatalog
         string valueStringFormat = "{}{0:0}")
         where TEffect : ImageEffect
     {
-        return new SliderFilterParameterDefinition(
+        return new SliderParameterDefinition(
             key,
             label,
             minimum,
@@ -141,21 +206,21 @@ public static partial class FilterCatalog
             (effect, value) => applyValue((TEffect)effect, value));
     }
 
-    private static CheckboxFilterParameterDefinition BoolParameter<TEffect>(
+    private static CheckboxParameterDefinition BoolParameter<TEffect>(
         string key,
         string label,
         bool defaultValue,
         Action<TEffect, bool> applyValue)
         where TEffect : ImageEffect
     {
-        return new CheckboxFilterParameterDefinition(
+        return new CheckboxParameterDefinition(
             key,
             label,
             defaultValue,
             (effect, value) => applyValue((TEffect)effect, value));
     }
 
-    private static EnumFilterParameterDefinition EnumParameter<TEffect, TEnum>(
+    private static EnumParameterDefinition EnumParameter<TEffect, TEnum>(
         string key,
         string label,
         TEnum defaultValue,
@@ -173,29 +238,29 @@ public static partial class FilterCatalog
             throw new ArgumentOutOfRangeException(nameof(defaultValue), defaultValue, "Enum default value must be present in the options list.");
         }
 
-        return new EnumFilterParameterDefinition(
+        return new EnumParameterDefinition(
             key,
             label,
-            options.Select(option => new FilterOptionDefinition(option.Label, option.Value!)).ToArray(),
+            options.Select(option => new EffectOptionDefinition(option.Label, option.Value!)).ToArray(),
             defaultIndex,
             (effect, value) => applyValue((TEffect)effect, value is TEnum typedValue ? typedValue : defaultValue));
     }
 
-    private static ColorFilterParameterDefinition ColorParameter<TEffect>(
+    private static ColorParameterDefinition ColorParameter<TEffect>(
         string key,
         string label,
         Color defaultValue,
         Action<TEffect, Color> applyValue)
         where TEffect : ImageEffect
     {
-        return new ColorFilterParameterDefinition(
+        return new ColorParameterDefinition(
             key,
             label,
             defaultValue,
             (effect, value) => applyValue((TEffect)effect, value));
     }
 
-    private static NumericFilterParameterDefinition IntNumeric<TEffect>(
+    private static NumericParameterDefinition IntNumeric<TEffect>(
         string key,
         string label,
         int minimum,
@@ -206,7 +271,7 @@ public static partial class FilterCatalog
         string formatString = "0")
         where TEffect : ImageEffect
     {
-        return new NumericFilterParameterDefinition(
+        return new NumericParameterDefinition(
             key,
             label,
             minimum,
@@ -219,7 +284,7 @@ public static partial class FilterCatalog
                 decimal.ToInt32(decimal.Round(value, 0, MidpointRounding.AwayFromZero))));
     }
 
-    private static NumericFilterParameterDefinition DoubleNumeric<TEffect>(
+    private static NumericParameterDefinition DoubleNumeric<TEffect>(
         string key,
         string label,
         double minimum,
@@ -230,7 +295,7 @@ public static partial class FilterCatalog
         string formatString = "0.##")
         where TEffect : ImageEffect
     {
-        return new NumericFilterParameterDefinition(
+        return new NumericParameterDefinition(
             key,
             label,
             (decimal)minimum,
@@ -241,31 +306,60 @@ public static partial class FilterCatalog
             (effect, value) => applyValue((TEffect)effect, (double)value));
     }
 
-    private static TextFilterParameterDefinition TextParameter<TEffect>(
+    private static TextParameterDefinition TextParameter<TEffect>(
         string key,
         string label,
         string defaultValue,
         Action<TEffect, string> applyValue)
         where TEffect : ImageEffect
     {
-        return new TextFilterParameterDefinition(
+        return new TextParameterDefinition(
             key,
             label,
             defaultValue,
             (effect, value) => applyValue((TEffect)effect, value));
     }
 
-    private static FilterPresentationMetadata GetMetadata(string id)
+    private static FilePathParameterDefinition FilePathParameter<TEffect>(
+        string key,
+        string label,
+        string defaultValue,
+        Action<TEffect, string> applyValue,
+        string? fileFilter = null)
+        where TEffect : ImageEffect
     {
-        if (_presentationById.TryGetValue(id, out FilterPresentationMetadata? metadata))
+        return new FilePathParameterDefinition(
+            key,
+            label,
+            defaultValue,
+            (effect, value) => applyValue((TEffect)effect, value),
+            fileFilter);
+    }
+
+    private static EffectPresentationMetadata GetMetadata(string id)
+    {
+        if (_presentationById.TryGetValue(id, out EffectPresentationMetadata? metadata))
         {
             return metadata;
         }
-
-        throw new KeyNotFoundException($"No filter catalog metadata was found for '{id}'.");
+        return BuildFallbackMetadata(id);
     }
 
     private static Color Argb(byte alpha, byte red, byte green, byte blue) => Color.FromArgb(alpha, red, green, blue);
 
     private static SKColor ToSkColor(Color color) => new(color.R, color.G, color.B, color.A);
+
+    private static EffectPresentationMetadata BuildFallbackMetadata(string id)
+    {
+        string browserLabel = string.Join(
+            " ",
+            id.Split('_', StringSplitOptions.RemoveEmptyEntries)
+                .Select(part => char.ToUpperInvariant(part[0]) + part[1..]))
+            + "...";
+
+        return new EffectPresentationMetadata(
+            browserLabel,
+            string.Empty,
+            $"Applies the {browserLabel[..^3]} effect.");
+    }
 }

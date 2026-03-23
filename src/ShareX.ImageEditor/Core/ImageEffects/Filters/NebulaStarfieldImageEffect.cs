@@ -108,15 +108,30 @@ public class NebulaStarfieldImageEffect : FilterImageEffect
                     float dy = y - starCenterY;
                     float d01 = MathF.Sqrt((dx * dx) + (dy * dy)) / (cell * 0.5f);
 
+                    float twinkleSeed = ProceduralEffectHelper.Hash01(cellX, cellY, Seed ^ 0x51A7);
+                    float twinkleWave = 0.5f + (0.5f * MathF.Sin((twinkleSeed * MathF.PI * 10f) + phase + (cellX * 0.91f) + (cellY * 1.37f)));
+                    float twinkleRadius = ProceduralEffectHelper.Lerp(1f, 0.82f + (twinkleWave * 0.70f), twinkle01);
+                    float twinkleIntensity = ProceduralEffectHelper.Lerp(1f, 0.35f + (twinkleWave * 1.65f), twinkle01);
+
+                    d01 /= MathF.Max(0.35f, twinkleRadius);
+
                     float r = radiusBase;
-                    float w = radiusFeather;
+                    float w = radiusFeather * ProceduralEffectHelper.Lerp(1f, 1.35f, twinkle01);
                     float edge = ProceduralEffectHelper.SmoothStep(r, r + w, d01);
                     starMask = 1f - edge;
 
-                    // Twinkle (static but seed-based).
-                    float tw = 0.85f + (0.15f * MathF.Sin((x * 0.11f) + (y * 0.07f) + (Seed * 0.0013f)));
-                    tw = 1f + (twinkle01 * 0.55f * (tw - 1f));
-                    starMask *= tw;
+                    if (twinkle01 > 0.001f)
+                    {
+                        float streakScale = 0.08f + (starSize01 * 0.20f);
+                        float axisX = MathF.Abs(dx) / MathF.Max(0.0001f, cell * streakScale);
+                        float axisY = MathF.Abs(dy) / MathF.Max(0.0001f, cell * streakScale);
+                        float streakX = 1f - ProceduralEffectHelper.SmoothStep(0.2f, 1.45f, axisX);
+                        float streakY = 1f - ProceduralEffectHelper.SmoothStep(0.2f, 1.45f, axisY);
+                        float halo = 1f - ProceduralEffectHelper.SmoothStep(r * 0.7f, r + (1.25f + starSize01), d01);
+                        float glint = MathF.Max(streakX, streakY) * halo;
+
+                        starMask = (starMask * twinkleIntensity) + (glint * twinkle01 * MathF.Max(0f, twinkleIntensity - 1f) * 0.45f);
+                    }
                 }
 
                 float starStrength = intensity01 * starMask * (0.25f + (0.75f * starSize01));

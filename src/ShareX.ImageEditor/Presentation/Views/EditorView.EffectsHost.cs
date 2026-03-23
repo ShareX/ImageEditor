@@ -25,6 +25,7 @@
 
 using Avalonia.Controls;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.ViewModels;
@@ -200,8 +201,12 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
+            EditorServices.ReportDebug(nameof(EditorView), $"EffectDialogRequested effectId={e.EffectId}");
+
             if (EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) && dialog != null)
             {
+                EditorServices.ReportDebug(nameof(EditorView), $"TryCreate succeeded effectId={e.EffectId} dialogType={dialog.GetType().Name}");
+
                 switch (dialog)
                 {
                     case IEffectDialog effectDialog:
@@ -216,6 +221,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 }
                 return;
             }
+
+            EditorServices.ReportDebug(nameof(EditorView), $"TryCreate failed for effectId={e.EffectId}; checking ApplyImmediately catalog path.");
 
             if (ImageEffectCatalog.TryGetDefinition(e.EffectId, out EffectDefinition? definition) &&
                 definition != null &&
@@ -235,8 +242,13 @@ namespace ShareX.ImageEditor.Presentation.Views
         private void ShowEffectDialog(UserControl dialog, IEffectDialog effectDialog)
         {
             var vm = DataContext as MainViewModel;
-            if (vm == null) return;
+            if (vm == null)
+            {
+                EditorServices.ReportDebug(nameof(EditorView), "ShowEffectDialog: DataContext is not MainViewModel; aborting.");
+                return;
+            }
 
+            EditorServices.ReportDebug(nameof(EditorView), $"ShowEffectDialog: wiring preview/apply for {dialog.GetType().Name}");
             vm.StartEffectPreview();
 
             effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);

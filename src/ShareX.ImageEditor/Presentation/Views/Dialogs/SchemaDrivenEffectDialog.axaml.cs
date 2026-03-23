@@ -28,14 +28,19 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
+using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Effects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.Text;
 
 namespace ShareX.ImageEditor.Presentation.Views.Dialogs;
 
 public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
 {
+    private const int MaxParameterSnapshotChars = 400;
+
     private bool _isReady;
 
     public EffectDefinition Definition { get; }
@@ -70,15 +75,28 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
 
         AttachedToVisualTree += OnAttachedToVisualTree;
         DetachedFromVisualTree += OnDetachedFromVisualTree;
+
+        EditorServices.ReportDebug(
+            nameof(SchemaDrivenEffectDialog),
+            $"Constructed effectId={Definition.Id} name={Definition.Name} category={Definition.Category} paramCount={ParameterStates.Count}");
     }
 
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
+        object? dcBefore = DataContext;
+        string beforeType = dcBefore?.GetType().Name ?? "null";
+        bool selfBefore = ReferenceEquals(dcBefore, this);
+
         // ContentControl's ContentPresenter can replace an inherited DataContext with the parent's
         // (e.g. MainViewModel). Parameter bindings then fail silently and preview/apply keep defaults.
         // Old bespoke dialogs used FindControl and did not depend on DataContext; schema-driven UI does.
         DataContext = this;
         _isReady = true;
+
+        EditorServices.ReportDebug(
+            nameof(SchemaDrivenEffectDialog),
+            $"AttachedToVisualTree effectId={Definition.Id} DataContextBefore={beforeType} ReferenceEquals(self)={selfBefore} AfterSet ReferenceEquals(self)={ReferenceEquals(DataContext, this)} snapshot={TruncateSnapshot(BuildParameterSnapshot())}");
+
         RequestPreview();
     }
 
@@ -99,11 +117,19 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
 
     private void RequestPreview()
     {
+        EditorServices.ReportDebug(
+            nameof(SchemaDrivenEffectDialog),
+            $"PreviewRequested effectId={Definition.Id} params={TruncateSnapshot(BuildParameterSnapshot())}");
+
         PreviewRequested?.Invoke(this, BuildEffectEventArgs(Definition.Name));
     }
 
     private void OnApplyClick(object? sender, RoutedEventArgs e)
     {
+        EditorServices.ReportDebug(
+            nameof(SchemaDrivenEffectDialog),
+            $"ApplyClicked effectId={Definition.Id} params={TruncateSnapshot(BuildParameterSnapshot())}");
+
         ApplyRequested?.Invoke(this, BuildEffectEventArgs($"Applied {Definition.Name}"));
     }
 
@@ -172,5 +198,69 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
                 Patterns = patterns
             }
         ];
+    }
+
+    private static string TruncateSnapshot(string snapshot)
+    {
+        if (snapshot.Length <= MaxParameterSnapshotChars)
+        {
+            return snapshot;
+        }
+
+        return snapshot[..MaxParameterSnapshotChars] + "…";
+    }
+
+    private string BuildParameterSnapshot()
+    {
+        if (ParameterStates.Count == 0)
+        {
+            return "(no parameters)";
+        }
+
+        var sb = new StringBuilder();
+        foreach (EffectParameterState state in ParameterStates)
+        {
+            if (sb.Length > 0)
+            {
+                sb.Append("; ");
+            }
+
+            sb.Append(state.Key);
+            sb.Append('=');
+            switch (state)
+            {
+                case SliderParameterState slider:
+                    sb.Append(slider.Value.ToString("0.##", CultureInfo.InvariantCulture));
+                    break;
+                case CheckboxParameterState check:
+                    sb.Append(check.Value ? "true" : "false");
+                    break;
+                case EnumParameterState en:
+                    sb.Append(en.SelectedOption.Label);
+                    break;
+                case ColorParameterState color:
+                    sb.Append(color.Value.ToString());
+                    break;
+                case NumericParameterState num:
+                    sb.Append(num.Value?.ToString(CultureInfo.InvariantCulture) ?? "null");
+                    break;
+                case TextParameterState text:
+                    sb.Append('"');
+                    sb.Append(text.Value.Length > 40 ? text.Value[..40] + "…" : text.Value);
+                    sb.Append('"');
+                    break;
+                case FilePathParameterState path:
+                    string p = path.Value;
+                    sb.Append('"');
+                    sb.Append(p.Length > 48 ? "…" + p[^48..] : p);
+                    sb.Append('"');
+                    break;
+                default:
+                    sb.Append(state.GetType().Name);
+                    break;
+            }
+        }
+
+        return sb.ToString();
     }
 }

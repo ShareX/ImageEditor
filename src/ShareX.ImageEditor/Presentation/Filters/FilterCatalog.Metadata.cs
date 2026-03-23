@@ -63,6 +63,7 @@ public static partial class FilterCatalog
             ["hologram_scan"] = new("Hologram scan...", LucideIcons.ScanFace, "Adds scanlines, glitch offsets and cyan glow."),
             ["holographic_foil_shimmer"] = new("Holographic foil shimmer...", LucideIcons.Rainbow, "Adds iridescent foil rainbow shimmer with specular sparkle."),
             ["ink_splatter_drips"] = new("Ink splatter + drips...", LucideIcons.Brush, "Adds expressive ink blotches with gravity drips and paper stain fade."),
+            ["inner_shadow"] = new("Inner shadow...", LucideIcons.MoonStar, "Casts a blurred shadow inward from alpha edges and canvas boundaries."),
             ["lens_blur"] = new("Lens blur (bokeh)...", LucideIcons.Target, "Simulates circular aperture blur with weighted highlight bloom."),
             ["liquid_glass"] = new("Liquid glass...", LucideIcons.Glasses, "Applies refractive liquid-like glass distortion and gloss."),
             ["luminance_contour_lines"] = new("Luminance contour lines...", LucideIcons.Map, "Quantizes luminance into grayscale contour bands with adjustable line overlays."),

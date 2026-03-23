@@ -1,0 +1,140 @@
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using SkiaSharp;
+
+namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
+
+public class InnerShadowImageEffect : FilterImageEffect
+{
+    public float Opacity { get; set; } = 70f; // 0..100
+    public int Size { get; set; } = 18; // 0..100
+    public SKColor Color { get; set; } = SKColors.Black;
+    public int OffsetX { get; set; } = 0;
+    public int OffsetY { get; set; } = 0;
+
+    public override string Name => "Inner shadow";
+    public override bool HasParameters => true;
+    public override string IconKey => "IconCloudMoon";
+
+    public override SKBitmap Apply(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        float opacity = Math.Clamp(Opacity, 0f, 100f) / 100f;
+        int size = Math.Clamp(Size, 0, 100);
+
+        if (opacity <= 0f || (size <= 0 && OffsetX == 0 && OffsetY == 0) || Color.Alpha == 0)
+        {
+            return source.Copy();
+        }
+
+        int width = source.Width;
+        int height = source.Height;
+        if (width <= 0 || height <= 0)
+        {
+            return source.Copy();
+        }
+
+        SKColor[] sourcePixels = source.Pixels;
+        SKColor[] alphaMaskPixels = new SKColor[sourcePixels.Length];
+
+        for (int i = 0; i < sourcePixels.Length; i++)
+        {
+            byte alpha = sourcePixels[i].Alpha;
+            alphaMaskPixels[i] = new SKColor(alpha, alpha, alpha, alpha);
+        }
+
+        using SKBitmap alphaMask = new SKBitmap(width, height, source.ColorType, source.AlphaType)
+        {
+            Pixels = alphaMaskPixels
+        };
+        using SKBitmap shiftedMask = ShiftBitmap(alphaMask, -OffsetX, -OffsetY);
+        using SKBitmap blurredMask = size > 0 ? ApplyTransparentBlur(shiftedMask, size / 2f) : shiftedMask.Copy();
+
+        SKColor[] blurredPixels = blurredMask.Pixels;
+        SKColor[] outputPixels = new SKColor[sourcePixels.Length];
+
+        float colorAlpha = Color.Alpha / 255f;
+
+        for (int i = 0; i < sourcePixels.Length; i++)
+        {
+            SKColor src = sourcePixels[i];
+            float sourceAlpha = src.Alpha / 255f;
+
+            if (sourceAlpha <= 0f)
+            {
+                outputPixels[i] = src;
+                continue;
+            }
+
+            float shiftedAlpha = blurredPixels[i].Alpha / 255f;
+            float innerCoverage = ProceduralEffectHelper.Clamp01(sourceAlpha - shiftedAlpha);
+            float shadowMix = innerCoverage * opacity * colorAlpha;
+
+            float r = ProceduralEffectHelper.Lerp(src.Red, Color.Red, shadowMix);
+            float g = ProceduralEffectHelper.Lerp(src.Green, Color.Green, shadowMix);
+            float b = ProceduralEffectHelper.Lerp(src.Blue, Color.Blue, shadowMix);
+
+            outputPixels[i] = new SKColor(
+                ProceduralEffectHelper.ClampToByte(r),
+                ProceduralEffectHelper.ClampToByte(g),
+                ProceduralEffectHelper.ClampToByte(b),
+                src.Alpha);
+        }
+
+        return new SKBitmap(width, height, source.ColorType, source.AlphaType)
+        {
+            Pixels = outputPixels
+        };
+    }
+
+    private static SKBitmap ShiftBitmap(SKBitmap source, int offsetX, int offsetY)
+    {
+        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+
+        using SKCanvas canvas = new(result);
+        canvas.Clear(SKColors.Transparent);
+        canvas.DrawBitmap(source, offsetX, offsetY);
+
+        return result;
+    }
+
+    private static SKBitmap ApplyTransparentBlur(SKBitmap source, float radius)
+    {
+        if (radius <= 0.01f)
+        {
+            return source.Copy();
+        }
+
+        int padding = Math.Max(2, (int)MathF.Ceiling(radius * 2f));
+        int expandedWidth = source.Width + (padding * 2);
+        int expandedHeight = source.Height + (padding * 2);
+
+        using SKBitmap expanded = new(expandedWidth, expandedHeight, source.ColorType, source.AlphaType);
+        using (SKCanvas expandCanvas = new(expanded))
+        {
+            expandCanvas.Clear(SKColors.Transparent);
+            expandCanvas.DrawBitmap(source, padding, padding);
+        }
+
+        float sigma = Math.Max(0.001f, radius / 3f);
+
+        using SKBitmap blurredExpanded = new(expandedWidth, expandedHeight, source.ColorType, source.AlphaType);
+        using (SKCanvas blurCanvas = new(blurredExpanded))
+        using (SKPaint blurPaint = new() { ImageFilter = SKImageFilter.CreateBlur(sigma, sigma) })
+        {
+            blurCanvas.DrawBitmap(expanded, 0, 0, blurPaint);
+        }
+
+        SKBitmap result = new(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using (SKCanvas resultCanvas = new(result))
+        {
+            resultCanvas.Clear(SKColors.Transparent);
+            resultCanvas.DrawBitmap(
+                blurredExpanded,
+                new SKRect(padding, padding, padding + source.Width, padding + source.Height),
+                new SKRect(0, 0, source.Width, source.Height));
+        }
+
+        return result;
+    }
+}

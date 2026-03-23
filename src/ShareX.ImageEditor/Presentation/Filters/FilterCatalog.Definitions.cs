@@ -240,6 +240,22 @@ public static partial class FilterCatalog
                 ColorParameter<GlowImageEffect>("color", "Color", Colors.White, (effect, value) => effect.Color = ToSkColor(value)),
                 BoolParameter<GlowImageEffect>("auto_resize", "Auto resize", true, (effect, value) => effect.AutoResize = value)),
 
+            Filter(
+                "inner_shadow",
+                static () => new InnerShadowImageEffect
+                {
+                    Opacity = 70f,
+                    Size = 18,
+                    Color = ToSkColor(Colors.Black),
+                    OffsetX = 0,
+                    OffsetY = 0
+                },
+                FloatSlider<InnerShadowImageEffect>("opacity", "Opacity", 0, 100, 70, (effect, value) => effect.Opacity = value, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0}%"),
+                IntSlider<InnerShadowImageEffect>("size", "Size", 0, 100, 18, (effect, value) => effect.Size = value, isSnapToTickEnabled: false),
+                IntNumeric<InnerShadowImageEffect>("offset_x", "Offset X", -1000, 1000, 0, (effect, value) => effect.OffsetX = value),
+                IntNumeric<InnerShadowImageEffect>("offset_y", "Offset Y", -1000, 1000, 0, (effect, value) => effect.OffsetY = value),
+                ColorParameter<InnerShadowImageEffect>("color", "Color", Colors.Black, (effect, value) => effect.Color = ToSkColor(value))),
+
             Filter<HalationImageEffect>(
                 "halation",
                 FloatSlider<HalationImageEffect>("threshold", "Highlight threshold (%)", 0, 100, 72, (effect, value) => effect.Threshold = value),
@@ -482,8 +498,8 @@ public static partial class FilterCatalog
                 static () => new ShadowImageEffect(80f, 20, ToSkColor(Colors.Black), 5, 5, autoResize: true),
                 FloatSlider<ShadowImageEffect>("opacity", "Opacity", 0, 100, 80, (effect, value) => effect.Opacity = value, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0}%"),
                 IntSlider<ShadowImageEffect>("size", "Size", 0, 100, 20, (effect, value) => effect.Size = value, isSnapToTickEnabled: false),
-                IntSlider<ShadowImageEffect>("offset_x", "Offset X", -100, 100, 5, (effect, value) => effect.OffsetX = value, isSnapToTickEnabled: false),
-                IntSlider<ShadowImageEffect>("offset_y", "Offset Y", -100, 100, 5, (effect, value) => effect.OffsetY = value, isSnapToTickEnabled: false),
+                IntNumeric<ShadowImageEffect>("offset_x", "Offset X", -1000, 1000, 5, (effect, value) => effect.OffsetX = value),
+                IntNumeric<ShadowImageEffect>("offset_y", "Offset Y", -1000, 1000, 5, (effect, value) => effect.OffsetY = value),
                 ColorParameter<ShadowImageEffect>("color", "Color", Colors.Black, (effect, value) => effect.Color = ToSkColor(value)),
                 BoolParameter<ShadowImageEffect>("auto_resize", "Auto resize", true, (effect, value) => effect.AutoResize = value)),
 

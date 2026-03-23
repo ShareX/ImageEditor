@@ -56,7 +56,7 @@
                                        Maximum="{Binding Maximum}"
                                        Increment="{Binding Increment}"
                                        FormatString="{Binding FormatString}"
-                                       ShowButtonSpinner="False"/>
+                                       ShowButtonSpinner="True"/>
                     </StackPanel>
                 </DataTemplate>
 

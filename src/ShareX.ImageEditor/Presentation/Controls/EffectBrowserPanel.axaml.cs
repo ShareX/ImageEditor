@@ -642,18 +642,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 }
             }
 
-            EffectCategory? drawings = Categories.FirstOrDefault(c => c.Name == nameof(ImageEffectCategory.Drawings));
-            if (drawings != null &&
-                ImageEffectCatalog.TryGetDefinition("border", out EffectDefinition? borderDefinition) &&
-                borderDefinition != null)
-            {
-                drawings.AddEffect(
-                    borderDefinition.BrowserLabel,
-                    borderDefinition.Icon,
-                    borderDefinition.Description,
-                    () => RaiseDialog("border"),
-                    "border");
-            }
         }
 
         private void AddHostManipulationShortcuts(EffectCategory manipulations)

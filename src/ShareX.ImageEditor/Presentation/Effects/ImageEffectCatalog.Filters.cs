@@ -114,29 +114,6 @@ public static partial class ImageEffectCatalog
                 ImageEffectCategory.Filters,
                 IntSlider<BlurImageEffect>("radius", "Radius", 1, 200, 10, (effect, value) => effect.Radius = value)),
 
-            Effect(
-                "border",
-                ImageEffectCategory.Filters,
-                static () => new BorderImageEffect(ImageHelpers.BorderType.Outside, 5, ImageHelpers.DashStyle.Solid, ToSkColor(Colors.Black)),
-                EnumParameter<BorderImageEffect, ImageHelpers.BorderType>(
-                    "type",
-                    "Type",
-                    ImageHelpers.BorderType.Outside,
-                    (effect, value) => effect.Type = value,
-                    ("Outside", ImageHelpers.BorderType.Outside),
-                    ("Inside", ImageHelpers.BorderType.Inside)),
-                IntSlider<BorderImageEffect>("size", "Size", 1, 100, 5, (effect, value) => effect.Size = value),
-                EnumParameter<BorderImageEffect, ImageHelpers.DashStyle>(
-                    "dash_style",
-                    "Dash style",
-                    ImageHelpers.DashStyle.Solid,
-                    (effect, value) => effect.DashStyle = value,
-                    ("Solid", ImageHelpers.DashStyle.Solid),
-                    ("Dash", ImageHelpers.DashStyle.Dash),
-                    ("Dot", ImageHelpers.DashStyle.Dot),
-                    ("Dash Dot", ImageHelpers.DashStyle.DashDot)),
-                ColorParameter<BorderImageEffect>("color", "Color", Colors.Black, (effect, value) => effect.Color = ToSkColor(value))),
-
             Effect<CartoonStickerCutoutImageEffect>(
                 "cartoon_sticker_cutout",
                 ImageEffectCategory.Filters,
@@ -524,13 +501,6 @@ public static partial class ImageEffectCatalog
                 IntSlider<ReflectionImageEffect>("offset", "Offset", 0, 100, 0, (effect, value) => effect.Offset = value, isSnapToTickEnabled: false),
                 BoolParameter<ReflectionImageEffect>("skew", "Skew", false, (effect, value) => effect.Skew = value),
                 IntSlider<ReflectionImageEffect>("skew_size", "Skew Size", 1, 100, 25, (effect, value) => effect.SkewSize = value, isSnapToTickEnabled: false)),
-
-            Effect<RemoveBackgroundImageEffect>(
-                "remove_background",
-                ImageEffectCategory.Filters,
-                FloatSlider<RemoveBackgroundImageEffect>("sensitivity", "Sensitivity (%)", 0, 100, 60, (effect, value) => effect.Sensitivity = value),
-                FloatSlider<RemoveBackgroundImageEffect>("center_protection", "Center protection (%)", 0, 100, 65, (effect, value) => effect.CenterProtection = value),
-                FloatSlider<RemoveBackgroundImageEffect>("edge_feather", "Edge feather (px)", 0, 24, 4, (effect, value) => effect.EdgeFeather = value, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}")),
 
             Effect<RGBSplitImageEffect>(
                 "rgb_split",

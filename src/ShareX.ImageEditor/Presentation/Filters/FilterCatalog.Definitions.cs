@@ -148,6 +148,14 @@ public static partial class FilterCatalog
                 FloatSlider<ClaymationTextureImageEffect>("saturation", "Saturation (%)", -100, 100, 20, (effect, value) => effect.Saturation = value),
                 FloatSlider<ClaymationTextureImageEffect>("texture_grain", "Texture grain (%)", 0, 100, 30, (effect, value) => effect.TextureGrain = value)),
 
+            Filter<CloudsImageEffect>(
+                "clouds",
+                FloatSlider<CloudsImageEffect>("coverage", "Coverage (%)", 0, 100, 55, (effect, value) => effect.Coverage = value),
+                FloatSlider<CloudsImageEffect>("scale", "Scale (%)", 0, 100, 72, (effect, value) => effect.Scale = value),
+                FloatSlider<CloudsImageEffect>("height_bias", "Height bias (%)", 0, 100, 62, (effect, value) => effect.HeightBias = value),
+                FloatSlider<CloudsImageEffect>("softness", "Softness (%)", 0, 100, 64, (effect, value) => effect.Softness = value),
+                FloatSlider<CloudsImageEffect>("sunlight", "Sunlight (%)", 0, 100, 38, (effect, value) => effect.Sunlight = value)),
+
             Filter<ColorDepthImageEffect>(
                 "color_depth",
                 IntSlider<ColorDepthImageEffect>("bits_per_channel", "Bits per channel", 1, 8, 4, (effect, value) => effect.BitsPerChannel = value)),

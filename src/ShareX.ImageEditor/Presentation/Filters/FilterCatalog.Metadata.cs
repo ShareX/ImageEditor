@@ -46,6 +46,7 @@ public static partial class FilterCatalog
             ["cartoon_sticker_cutout"] = new("Cartoon sticker cutout...", LucideIcons.Sticker, "Posterizes colors, inks edges and adds a white sticker-like border glow."),
             ["chromatic_aberration"] = new("Chromatic aberration...", LucideIcons.Aperture, "Simulates lens fringing by separating red and blue channels toward the frame edges."),
             ["claymation_texture"] = new("Claymation texture...", LucideIcons.PaintRoller, "Builds chunky plasticine-like color lumps with tactile relief grain."),
+            ["clouds"] = new("Clouds...", LucideIcons.Cloud, "Overlays broad sunlit cloud banks with soft atmospheric haze."),
             ["color_depth"] = new("Color depth...", LucideIcons.Layers2, "Changes the color depth of the image."),
             ["convolution_matrix"] = new("Convolution matrix...", LucideIcons.Grid3X3, "Applies a custom convolution matrix."),
             ["crosshatch"] = new("Crosshatch...", LucideIcons.Hash, "Builds shading from layered hatch lines."),

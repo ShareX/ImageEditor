@@ -926,8 +926,8 @@ public class EditorInputController
     private const double CropHandleEdgeHitLength = 40;
     private const double CropHandleEdgeHitThickness = 28;
     private const double CropHandleCornerArmLength = 24;
-    private const double CropHandleCenterBarLength = 20;
-    private const double CropHandleThickness = 4;
+    private const double CropHandleCenterBarLength = 30;
+    private const double CropHandleThickness = 5;
     private const double MinCropGuideSize = 24;
 
     private static readonly Color CropHandleFill = Color.FromRgb(255, 255, 255);

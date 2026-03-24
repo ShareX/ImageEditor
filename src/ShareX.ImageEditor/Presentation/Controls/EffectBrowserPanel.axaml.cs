@@ -138,7 +138,8 @@ namespace ShareX.ImageEditor.Presentation.Controls
             {
                 foreach (var effect in AllEffects)
                 {
-                    if (effect.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                    if (effect.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                        effect.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                     {
                         VisibleEffects.Add(effect);
                     }

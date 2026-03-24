@@ -28,7 +28,10 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Effects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -42,6 +45,8 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
     private const int MaxParameterSnapshotChars = 400;
 
     private bool _isReady;
+
+    private readonly List<Action> _visualDebugUnsubscribes = [];
 
     public EffectDefinition Definition { get; }
 
@@ -97,22 +102,114 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
             nameof(SchemaDrivenEffectDialog),
             $"AttachedToVisualTree effectId={Definition.Id} DataContextBefore={beforeType} ReferenceEquals(self)={selfBefore} AfterSet ReferenceEquals(self)={ReferenceEquals(DataContext, this)} snapshot={TruncateSnapshot(BuildParameterSnapshot())}");
 
+        Dispatcher.UIThread.Post(AttachVisualBindingDiagnostics, DispatcherPriority.Loaded);
+
         RequestPreview();
     }
 
     private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         _isReady = false;
+        foreach (Action unsubscribe in _visualDebugUnsubscribes)
+        {
+            unsubscribe();
+        }
+
+        _visualDebugUnsubscribes.Clear();
     }
 
     private void OnParameterStateChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (sender is EffectParameterState state)
+        {
+            EditorServices.ReportDebug(
+                nameof(SchemaDrivenEffectDialog),
+                $"ParameterState PropertyChanged effectId={Definition.Id} key={state.Key} prop={e.PropertyName ?? "(null)"}");
+        }
+
         if (!_isReady)
         {
             return;
         }
 
         RequestPreview();
+    }
+
+    private void AttachVisualBindingDiagnostics()
+    {
+        if (!_isReady || !this.IsAttachedToVisualTree())
+        {
+            return;
+        }
+
+        int sliderIndex = 0;
+        foreach (EffectSlider slider in this.GetVisualDescendants().OfType<EffectSlider>())
+        {
+            object? dc = slider.DataContext;
+            string dcType = dc?.GetType().Name ?? "null";
+            bool inCollection = dc is EffectParameterState eps && ParameterStates.Contains(eps);
+            string? key = dc is SliderParameterState sps ? sps.Key : null;
+            double modelValue = dc is SliderParameterState sps2 ? sps2.Value : double.NaN;
+
+            EditorServices.ReportDebug(
+                nameof(SchemaDrivenEffectDialog),
+                $"EffectSlider[{sliderIndex}] effectId={Definition.Id} DataContextType={dcType} key={key ?? "?"} inParameterStates={inCollection} controlValue={slider.Value.ToString("0.##", CultureInfo.InvariantCulture)} modelValue={(double.IsNaN(modelValue) ? "n/a" : modelValue.ToString("0.##", CultureInfo.InvariantCulture))}");
+
+            sliderIndex++;
+
+            void OnSliderPropertyChanged(object? s, AvaloniaPropertyChangedEventArgs ev)
+            {
+                if (ev.Property != Slider.ValueProperty)
+                {
+                    return;
+                }
+
+                object? d = slider.DataContext;
+                string k = d is SliderParameterState sp ? sp.Key : "?";
+                double mv = d is SliderParameterState sp2 ? sp2.Value : double.NaN;
+                EditorServices.ReportDebug(
+                    nameof(SchemaDrivenEffectDialog),
+                    $"EffectSlider ValueProperty changed effectId={Definition.Id} key={k} controlValue={slider.Value.ToString("0.##", CultureInfo.InvariantCulture)} modelValue={(double.IsNaN(mv) ? "n/a" : mv.ToString("0.##", CultureInfo.InvariantCulture))}");
+            }
+
+            slider.PropertyChanged += OnSliderPropertyChanged;
+            _visualDebugUnsubscribes.Add(() => slider.PropertyChanged -= OnSliderPropertyChanged);
+        }
+
+        int checkIndex = 0;
+        foreach (CheckBox check in this.GetVisualDescendants().OfType<CheckBox>())
+        {
+            object? dc = check.DataContext;
+            if (dc is not CheckboxParameterState)
+            {
+                continue;
+            }
+
+            string key = ((CheckboxParameterState)dc).Key;
+            EditorServices.ReportDebug(
+                nameof(SchemaDrivenEffectDialog),
+                $"CheckBox[{checkIndex}] effectId={Definition.Id} key={key} inParameterStates={ParameterStates.Contains((EffectParameterState)dc)} IsChecked={check.IsChecked}");
+
+            checkIndex++;
+
+            void OnCheckPropertyChanged(object? s, AvaloniaPropertyChangedEventArgs ev)
+            {
+                if (ev.Property != CheckBox.IsCheckedProperty)
+                {
+                    return;
+                }
+
+                object? d = check.DataContext;
+                string k = d is CheckboxParameterState cb ? cb.Key : "?";
+                bool mv = d is CheckboxParameterState cb2 && cb2.Value;
+                EditorServices.ReportDebug(
+                    nameof(SchemaDrivenEffectDialog),
+                    $"CheckBox IsChecked changed effectId={Definition.Id} key={k} controlIsChecked={check.IsChecked} modelValue={mv}");
+            }
+
+            check.PropertyChanged += OnCheckPropertyChanged;
+            _visualDebugUnsubscribes.Add(() => check.PropertyChanged -= OnCheckPropertyChanged);
+        }
     }
 
     private void RequestPreview()

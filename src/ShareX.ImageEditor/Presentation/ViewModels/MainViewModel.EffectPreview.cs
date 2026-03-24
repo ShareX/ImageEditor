@@ -447,30 +447,56 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 return;
             }
 
-            if (IsBitmapAlive(_latestEffectPreviewImage))
-            {
-                SkiaSharp.SKBitmap previewResult = _latestEffectPreviewImage!;
-                EditorServices.ReportDebug(
-                    nameof(MainViewModel),
-                    $"ApplyEffect(Func): committing latest preview bitmap {previewResult.Width}x{previewResult.Height} status={statusMessage}");
-                _latestEffectPreviewImage = null;
-                CommitEffectAndCleanup(previewResult, statusMessage);
-                return;
-            }
-
-            _latestEffectPreviewImage?.Dispose();
+            // Always compute a fresh apply result from the original pre-effect snapshot.
+            // This avoids committing a stale preview frame when Apply is clicked before
+            // an async/live preview update has completed.
+            SkiaSharp.SKBitmap? previousPreview = _latestEffectPreviewImage;
             _latestEffectPreviewImage = null;
 
-            EditorServices.ReportDebug(nameof(MainViewModel), $"ApplyEffect(Func): running effect fresh (no preview bitmap) status={statusMessage}");
-            SkiaSharp.SKBitmap? result = effect(_preEffectImage);
-            if (!IsBitmapAlive(result))
+            try
             {
-                EditorServices.ReportDebug(nameof(MainViewModel), "ApplyEffect(Func): effect returned null or dead bitmap.");
-                result?.Dispose();
-                return;
-            }
+                EditorServices.ReportDebug(
+                    nameof(MainViewModel),
+                    $"ApplyEffect(Func): computing fresh result from preEffectImage status={statusMessage}");
 
-            CommitEffectAndCleanup(result!, statusMessage);
+                SkiaSharp.SKBitmap? result = effect(_preEffectImage);
+                if (!IsBitmapAlive(result))
+                {
+                    EditorServices.ReportDebug(nameof(MainViewModel), "ApplyEffect(Func): effect returned null or dead bitmap.");
+                    result?.Dispose();
+                    return;
+                }
+
+                if (ReferenceEquals(result, _preEffectImage))
+                {
+                    SkiaSharp.SKBitmap? copied = SafeCopyBitmap(result, "ApplyEffect.ReferenceEqual");
+                    if (!IsBitmapAlive(copied))
+                    {
+                        EditorServices.ReportDebug(nameof(MainViewModel), "ApplyEffect(Func): failed to copy ReferenceEqual result.");
+                        copied?.Dispose();
+                        return;
+                    }
+
+                    result = copied;
+                }
+
+                EditorServices.ReportDebug(
+                    nameof(MainViewModel),
+                    $"ApplyEffect(Func): fresh result {result!.Width}x{result.Height}, previewAlive={IsBitmapAlive(previousPreview)} status={statusMessage}");
+
+                CommitEffectAndCleanup(result!, statusMessage);
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportError(nameof(MainViewModel), "ApplyEffect(Func): failed while computing fresh effect result.", ex);
+            }
+            finally
+            {
+                if (previousPreview != null && !ReferenceEquals(previousPreview, _preEffectImage))
+                {
+                    previousPreview.Dispose();
+                }
+            }
         }
 
         // --- Rotate Custom Angle Feature ---

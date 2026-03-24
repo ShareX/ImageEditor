@@ -605,15 +605,15 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             void AddHost(string effectId)
             {
-                if (!ImageEffectCatalog.TryGetDefinition(effectId, out EffectDefinition? definition) || definition == null)
+                if (!ImageEffectCatalog.TryGetBrowserPresentation(effectId, out string label, out string icon, out string description))
                 {
                     return;
                 }
 
                 manipulations.AddEffect(
-                    definition.BrowserLabel,
-                    definition.Icon,
-                    definition.Description,
+                    label,
+                    icon,
+                    description,
                     () => RaiseDialog(effectId),
                     effectId);
             }

@@ -56,6 +56,46 @@ public static partial class ImageEffectCatalog
         return _definitionsById.TryGetValue(id, out definition);
     }
 
+    /// <summary>
+    /// Resolves browser label, icon, and description for an effect id.
+    /// Uses a catalog <see cref="EffectDefinition"/> when present; otherwise only ids with explicit
+    /// presentation metadata (e.g. host / view-model shortcuts without a schema definition).
+    /// </summary>
+    public static bool TryGetBrowserPresentation(
+        string id,
+        out string browserLabel,
+        out string icon,
+        out string description)
+    {
+        if (TryGetDefinition(id, out EffectDefinition? definition) && definition != null)
+        {
+            browserLabel = definition.BrowserLabel;
+            icon = definition.Icon;
+            description = definition.Description;
+            return true;
+        }
+
+        browserLabel = string.Empty;
+        icon = string.Empty;
+        description = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return false;
+        }
+
+        string key = id.Trim();
+        if (_presentationById.TryGetValue(key, out EffectPresentationMetadata? metadata))
+        {
+            browserLabel = metadata.BrowserLabel;
+            icon = metadata.Icon;
+            description = metadata.Description;
+            return true;
+        }
+
+        return false;
+    }
+
     public static IReadOnlyList<EffectDefinition> GetByCategory(ImageEffectCategory category)
     {
         return _definitionsByCategory.TryGetValue(category, out var definitions) ? definitions : [];

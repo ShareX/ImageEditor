@@ -1,0 +1,97 @@
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using SkiaSharp;
+
+namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
+
+public class InfraredFalseColorImageEffect : FilterImageEffect
+{
+    public override string Name => "Infrared false color";
+    public override bool HasParameters => true;
+
+    public float Intensity { get; set; } = 68f;
+    public float FoliageShift { get; set; } = 78f;
+    public float SkyDarkening { get; set; } = 44f;
+    public float Glow { get; set; } = 20f;
+    public float Contrast { get; set; } = 118f;
+
+    public override SKBitmap Apply(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        float intensity = Math.Clamp(Intensity, 0f, 100f) / 100f;
+        float foliageShift = Math.Clamp(FoliageShift, 0f, 100f) / 100f;
+        float skyDarkening = Math.Clamp(SkyDarkening, 0f, 100f) / 100f;
+        float glow = Math.Clamp(Glow, 0f, 100f) / 100f;
+        float contrast = Math.Clamp(Contrast, 50f, 200f) / 100f;
+
+        if (intensity <= 0.0001f)
+        {
+            return source.Copy();
+        }
+
+        int width = source.Width;
+        int height = source.Height;
+        SKColor[] srcPixels = source.Pixels;
+        using SKBitmap? glowBitmap = glow > 0.01f ? AnalogEffectHelper.CreateBlurredClamp(source, 6f + (glow * 12f)) : null;
+        SKColor[] glowPixels = glowBitmap?.Pixels ?? srcPixels;
+        SKColor[] dstPixels = new SKColor[srcPixels.Length];
+
+        Parallel.For(0, height, y =>
+        {
+            int row = y * width;
+            for (int x = 0; x < width; x++)
+            {
+                SKColor src = srcPixels[row + x];
+                src.ToHsl(out float h, out float s, out float l);
+
+                float nh = h;
+                float ns = s;
+                float nl = l;
+
+                bool isFoliage = h >= 45f && h <= 170f && s >= 18f;
+                bool isSky = h >= 170f && h <= 260f && s >= 12f;
+
+                if (isFoliage)
+                {
+                    nh = ProceduralEffectHelper.Lerp(h, 8f + (l * 0.16f), foliageShift * (0.55f + (intensity * 0.35f)));
+                    ns = Math.Min(100f, s * (1f + (0.18f * intensity) + (0.32f * foliageShift)));
+                    nl = Math.Min(100f, l + (intensity * 14f) + (foliageShift * 10f));
+                }
+                else if (isSky)
+                {
+                    nh = ProceduralEffectHelper.Lerp(h, 196f, 0.22f + (intensity * 0.28f));
+                    ns = Math.Min(100f, s * (1.03f + (0.10f * intensity)));
+                    nl = Math.Max(0f, l * (1f - (skyDarkening * 0.46f)));
+                }
+                else
+                {
+                    nh = ProceduralEffectHelper.Lerp(h, h + 6f, intensity * 0.10f);
+                    ns = Math.Min(100f, s * (1f + (intensity * 0.06f)));
+                    nl = Math.Clamp(l + (intensity * 3f), 0f, 100f);
+                }
+
+                SKColor mapped = AnalogEffectHelper.FromHsl(nh, ns, nl, src.Alpha);
+                float r = AnalogEffectHelper.ApplyContrast(mapped.Red / 255f, contrast);
+                float g = AnalogEffectHelper.ApplyContrast(mapped.Green / 255f, contrast);
+                float b = AnalogEffectHelper.ApplyContrast(mapped.Blue / 255f, contrast);
+
+                if (glow > 0.0001f)
+                {
+                    float glowMask = MathF.Max(0f, (AnalogEffectHelper.Luminance01(glowPixels[row + x]) - 0.52f) / 0.48f);
+                    glowMask = MathF.Pow(glowMask, 1.55f) * glow;
+                    r = AnalogEffectHelper.Screen(r, glowMask * 0.80f);
+                    g = AnalogEffectHelper.Screen(g, glowMask * 0.18f);
+                    b = AnalogEffectHelper.Screen(b, glowMask * 0.42f);
+                }
+
+                dstPixels[row + x] = new SKColor(
+                    ProceduralEffectHelper.ClampToByte(r * 255f),
+                    ProceduralEffectHelper.ClampToByte(g * 255f),
+                    ProceduralEffectHelper.ClampToByte(b * 255f),
+                    src.Alpha);
+            }
+        });
+
+        return AnalogEffectHelper.CreateBitmap(source, dstPixels);
+    }
+}

@@ -238,23 +238,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
         private const int MaxRecentEffects = 10;
         private const string SearchWatermarkFormat = "Search image effects... ({0})";
 
-        /// <summary>
-        /// Effects listed under Manipulations that are also listed under Filters on develop
-        /// (duplicate rows, same effect id).
-        /// </summary>
-        private static readonly string[] ManipulationEffectsAlsoInDevelopFiltersCategory =
-        [
-            "cylinder_wrap",
-            "fisheye_lens",
-            "fold_crease_warp",
-            "kaleidoscope",
-            "liquify_push_smudge",
-            "mirror_tiles",
-            "page_curl",
-            "polar_warp",
-            "ripple_refraction"
-        ];
-
         private static readonly Dictionary<string, string> EffectAliases = new(StringComparer.OrdinalIgnoreCase)
         {
             ["resize"] = "resize_image",
@@ -608,42 +591,16 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 Categories.Add(category);
             }
 
-            ApplyDevelopEffectBrowserParity();
-        }
-
-        /// <summary>
-        /// Restores develop-branch effect browser row counts: host shortcuts under Manipulations,
-        /// duplicate warp rows under Filters, and Border under Drawings (also under Filters).
-        /// </summary>
-        private void ApplyDevelopEffectBrowserParity()
-        {
             EffectCategory? manipulations = Categories.FirstOrDefault(c => c.Name == nameof(ImageEffectCategory.Manipulations));
             if (manipulations != null)
             {
                 AddHostManipulationShortcuts(manipulations);
             }
-
-            EffectCategory? filters = Categories.FirstOrDefault(c => c.Name == nameof(ImageEffectCategory.Filters));
-            if (filters != null)
-            {
-                foreach (string effectId in ManipulationEffectsAlsoInDevelopFiltersCategory)
-                {
-                    if (!ImageEffectCatalog.TryGetDefinition(effectId, out EffectDefinition? definition) || definition == null)
-                    {
-                        continue;
-                    }
-
-                    filters.AddEffect(
-                        definition.BrowserLabel,
-                        definition.Icon,
-                        definition.Description,
-                        () => RaiseDialog(effectId),
-                        effectId);
-                }
-            }
-
         }
 
+        /// <summary>
+        /// Adds manipulation entries that are handled by the host / view model (not separate <see cref="ImageEffect"/> rows in the catalog).
+        /// </summary>
         private void AddHostManipulationShortcuts(EffectCategory manipulations)
         {
             void AddHost(string effectId)

@@ -246,7 +246,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         /// <summary>
         /// Handles effect ids that are not backed by <see cref="ImageEffect"/> instances (editor core / VM shortcuts).
-        /// Matches develop-branch browser entries for quick rotate, flip, and auto crop.
+        /// Handles effect ids dispatched by the browser for quick rotate, flip, and auto crop (host / view-model commands).
         /// </summary>
         private bool TryDispatchEditorHostEffect(string effectId)
         {

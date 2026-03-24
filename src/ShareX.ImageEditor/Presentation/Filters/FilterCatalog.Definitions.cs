@@ -26,6 +26,7 @@
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.ImageEffects.Filters;
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
 namespace ShareX.ImageEditor.Presentation.Filters;
 
@@ -623,6 +624,101 @@ public static partial class FilterCatalog
                 IntSlider<ZoomBlurImageEffect>("samples", "Samples", 4, 64, 24, (effect, value) => effect.Samples = value),
                 FloatSlider<ZoomBlurImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterX = value),
                 FloatSlider<ZoomBlurImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterY = value)),
+
+            Filter<FisheyeLensImageEffect>(
+                "fisheye_lens",
+                FloatSlider<FisheyeLensImageEffect>("strength", "Strength (%)", 0, 100, 58, (effect, value) => effect.Strength = value),
+                FloatSlider<FisheyeLensImageEffect>("radius", "Radius (%)", 1, 100, 100, (effect, value) => effect.RadiusPercentage = value),
+                FloatSlider<FisheyeLensImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterXPercentage = value),
+                FloatSlider<FisheyeLensImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterYPercentage = value)),
+
+            Filter<RippleRefractionImageEffect>(
+                "ripple_refraction",
+                FloatSlider<RippleRefractionImageEffect>("amplitude", "Amplitude (px)", 0, 80, 12, (effect, value) => effect.Amplitude = value),
+                FloatSlider<RippleRefractionImageEffect>("wavelength", "Wavelength (px)", 4, 160, 32, (effect, value) => effect.Wavelength = value),
+                FloatSlider<RippleRefractionImageEffect>("phase", "Phase", -180, 180, 0, (effect, value) => effect.Phase = value, valueStringFormat: "{}{0:0} deg"),
+                FloatSlider<RippleRefractionImageEffect>("refraction", "Refraction (%)", 0, 100, 35, (effect, value) => effect.Refraction = value),
+                FloatSlider<RippleRefractionImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterXPercentage = value),
+                FloatSlider<RippleRefractionImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterYPercentage = value)),
+
+            Filter<KaleidoscopeImageEffect>(
+                "kaleidoscope",
+                IntSlider<KaleidoscopeImageEffect>("segments", "Segments", 2, 24, 8, (effect, value) => effect.Segments = value),
+                FloatSlider<KaleidoscopeImageEffect>("rotation", "Rotation", -180, 180, 0, (effect, value) => effect.Rotation = value, valueStringFormat: "{}{0:0} deg"),
+                FloatSlider<KaleidoscopeImageEffect>("zoom", "Zoom (%)", 20, 300, 100, (effect, value) => effect.Zoom = value),
+                FloatSlider<KaleidoscopeImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterXPercentage = value),
+                FloatSlider<KaleidoscopeImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterYPercentage = value)),
+
+            Filter<MirrorTilesImageEffect>(
+                "mirror_tiles",
+                IntSlider<MirrorTilesImageEffect>("columns", "Columns", 1, 16, 3, (effect, value) => effect.Columns = value),
+                IntSlider<MirrorTilesImageEffect>("rows", "Rows", 1, 16, 3, (effect, value) => effect.Rows = value),
+                BoolParameter<MirrorTilesImageEffect>("mirror_columns", "Mirror alternate columns", true, (effect, value) => effect.MirrorAlternateColumns = value),
+                BoolParameter<MirrorTilesImageEffect>("mirror_rows", "Mirror alternate rows", true, (effect, value) => effect.MirrorAlternateRows = value)),
+
+            Filter<PolarWarpImageEffect>(
+                "polar_warp",
+                EnumParameter<PolarWarpImageEffect, PolarWarpMode>(
+                    "mode",
+                    "Mode",
+                    PolarWarpMode.CartesianToPolar,
+                    (effect, value) => effect.Mode = value,
+                    ("Cartesian to polar", PolarWarpMode.CartesianToPolar),
+                    ("Polar to cartesian", PolarWarpMode.PolarToCartesian)),
+                FloatSlider<PolarWarpImageEffect>("rotation", "Rotation", -180, 180, 0, (effect, value) => effect.Rotation = value, valueStringFormat: "{}{0:0} deg"),
+                FloatSlider<PolarWarpImageEffect>("radius_scale", "Radius scale (%)", 20, 200, 100, (effect, value) => effect.RadiusScale = value),
+                FloatSlider<PolarWarpImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterXPercentage = value),
+                FloatSlider<PolarWarpImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterYPercentage = value)),
+
+            Filter<CylinderWrapImageEffect>(
+                "cylinder_wrap",
+                EnumParameter<CylinderWrapImageEffect, CylinderWrapOrientation>(
+                    "orientation",
+                    "Orientation",
+                    CylinderWrapOrientation.Vertical,
+                    (effect, value) => effect.Orientation = value,
+                    ("Vertical", CylinderWrapOrientation.Vertical),
+                    ("Horizontal", CylinderWrapOrientation.Horizontal)),
+                FloatSlider<CylinderWrapImageEffect>("curvature", "Curvature (%)", 0, 100, 65, (effect, value) => effect.Curvature = value),
+                FloatSlider<CylinderWrapImageEffect>("edge_shading", "Edge shading (%)", 0, 100, 35, (effect, value) => effect.EdgeShading = value)),
+
+            Filter<PageCurlImageEffect>(
+                "page_curl",
+                EnumParameter<PageCurlImageEffect, PageCurlCorner>(
+                    "corner",
+                    "Corner",
+                    PageCurlCorner.BottomRight,
+                    (effect, value) => effect.Corner = value,
+                    ("Top left", PageCurlCorner.TopLeft),
+                    ("Top right", PageCurlCorner.TopRight),
+                    ("Bottom right", PageCurlCorner.BottomRight),
+                    ("Bottom left", PageCurlCorner.BottomLeft)),
+                FloatSlider<PageCurlImageEffect>("curl_size", "Curl size (%)", 5, 80, 28, (effect, value) => effect.CurlSize = value),
+                FloatSlider<PageCurlImageEffect>("curl_depth", "Curl depth (%)", 0, 100, 55, (effect, value) => effect.CurlDepth = value),
+                FloatSlider<PageCurlImageEffect>("shadow_strength", "Shadow (%)", 0, 100, 60, (effect, value) => effect.ShadowStrength = value),
+                ColorParameter<PageCurlImageEffect>("back_color", "Back color", Argb(255, 248, 244, 236), (effect, value) => effect.BackColor = ToSkColor(value))),
+
+            Filter<FoldCreaseWarpImageEffect>(
+                "fold_crease_warp",
+                EnumParameter<FoldCreaseWarpImageEffect, FoldCreaseOrientation>(
+                    "orientation",
+                    "Orientation",
+                    FoldCreaseOrientation.Vertical,
+                    (effect, value) => effect.Orientation = value,
+                    ("Vertical", FoldCreaseOrientation.Vertical),
+                    ("Horizontal", FoldCreaseOrientation.Horizontal)),
+                IntSlider<FoldCreaseWarpImageEffect>("fold_count", "Fold count", 1, 10, 3, (effect, value) => effect.FoldCount = value),
+                FloatSlider<FoldCreaseWarpImageEffect>("fold_depth", "Fold depth (%)", 0, 100, 30, (effect, value) => effect.FoldDepth = value),
+                FloatSlider<FoldCreaseWarpImageEffect>("shadow_strength", "Shadow (%)", 0, 100, 40, (effect, value) => effect.ShadowStrength = value)),
+
+            Filter<LiquifyPushSmudgeImageEffect>(
+                "liquify_push_smudge",
+                FloatSlider<LiquifyPushSmudgeImageEffect>("angle", "Direction", -180, 180, 0, (effect, value) => effect.Angle = value, valueStringFormat: "{}{0:0} deg"),
+                FloatSlider<LiquifyPushSmudgeImageEffect>("distance", "Push distance (px)", -200, 200, 40, (effect, value) => effect.Distance = value),
+                FloatSlider<LiquifyPushSmudgeImageEffect>("radius", "Radius (%)", 1, 100, 25, (effect, value) => effect.RadiusPercentage = value),
+                FloatSlider<LiquifyPushSmudgeImageEffect>("smudge", "Smudge (%)", 0, 100, 35, (effect, value) => effect.Smudge = value),
+                FloatSlider<LiquifyPushSmudgeImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterXPercentage = value),
+                FloatSlider<LiquifyPushSmudgeImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterYPercentage = value)),
 
             // --- Migrated from bespoke dialogs (IEIP0003 Phase 4) ---
 

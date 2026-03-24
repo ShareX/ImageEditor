@@ -104,6 +104,16 @@ public static partial class FilterCatalog
             ["wave_edge"] = new("Wave edge...", LucideIcons.WavesLadder, "Adds a wavy edge to the image."),
             ["zoom_blur"] = new("Zoom blur...", LucideIcons.ZoomIn, "Creates radial streak blur toward a chosen center point."),
 
+            ["fisheye_lens"] = new("Fisheye lens...", LucideIcons.Focus, "Magnifies the center with a circular fisheye warp.", IncludeInFiltersCategory: false),
+            ["ripple_refraction"] = new("Ripple refraction...", LucideIcons.Waves, "Displaces pixels through radial water-like ripple waves.", IncludeInFiltersCategory: false),
+            ["kaleidoscope"] = new("Kaleidoscope...", LucideIcons.Sparkles, "Mirrors the image into repeated radial wedges.", IncludeInFiltersCategory: false),
+            ["mirror_tiles"] = new("Mirror tiles...", LucideIcons.Grid2X2, "Repeats the full image into mirrored tile panels.", IncludeInFiltersCategory: false),
+            ["polar_warp"] = new("Polar warp...", LucideIcons.Orbit, "Converts between circular polar space and rectangular unwraps.", IncludeInFiltersCategory: false),
+            ["cylinder_wrap"] = new("Cylinder wrap...", LucideIcons.PanelsTopBottom, "Wraps the image onto a cylindrical projection with edge shading.", IncludeInFiltersCategory: false),
+            ["page_curl"] = new("Page curl...", LucideIcons.Copy, "Peels back one corner with underside tint and fold shadow.", IncludeInFiltersCategory: false),
+            ["fold_crease_warp"] = new("Fold crease warp...", LucideIcons.PanelsTopBottom, "Adds brochure-style folds with bend and shading across panels.", IncludeInFiltersCategory: false),
+            ["liquify_push_smudge"] = new("Liquify push / smudge...", LucideIcons.Brush, "Pushes pixels through a soft directional liquify stroke.", IncludeInFiltersCategory: false),
+
             // --- Migrated from bespoke dialogs (IEIP0003 Phase 4) ---
             ["anamorphic_lens_flare"] = new("Anamorphic lens flare...", LucideIcons.Aperture, "Adds cinematic horizontal flare streaks, warm bloom, and lens ghosts around bright areas."),
             ["etched_glass"] = new("Etched glass...", LucideIcons.Glasses, "Turns the image into frosted glass with engraved detail and refracted highlights."),

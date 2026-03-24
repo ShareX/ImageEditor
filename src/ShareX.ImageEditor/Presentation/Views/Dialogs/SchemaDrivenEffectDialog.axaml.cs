@@ -31,7 +31,6 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ShareX.ImageEditor.Hosting;
-using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Effects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -143,9 +142,14 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
         }
 
         int sliderIndex = 0;
-        foreach (EffectSlider slider in this.GetVisualDescendants().OfType<EffectSlider>())
+        foreach (Slider slider in this.GetVisualDescendants().OfType<Slider>())
         {
             object? dc = slider.DataContext;
+            if (dc is not SliderParameterState)
+            {
+                continue;
+            }
+
             string dcType = dc?.GetType().Name ?? "null";
             bool inCollection = dc is EffectParameterState eps && ParameterStates.Contains(eps);
             string? key = dc is SliderParameterState sps ? sps.Key : null;
@@ -153,7 +157,7 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
 
             EditorServices.ReportDebug(
                 nameof(SchemaDrivenEffectDialog),
-                $"EffectSlider[{sliderIndex}] effectId={Definition.Id} DataContextType={dcType} key={key ?? "?"} inParameterStates={inCollection} controlValue={slider.Value.ToString("0.##", CultureInfo.InvariantCulture)} modelValue={(double.IsNaN(modelValue) ? "n/a" : modelValue.ToString("0.##", CultureInfo.InvariantCulture))}");
+                $"Slider[{sliderIndex}] effectId={Definition.Id} DataContextType={dcType} key={key ?? "?"} inParameterStates={inCollection} controlValue={slider.Value.ToString("0.##", CultureInfo.InvariantCulture)} modelValue={(double.IsNaN(modelValue) ? "n/a" : modelValue.ToString("0.##", CultureInfo.InvariantCulture))}");
 
             sliderIndex++;
 
@@ -169,7 +173,7 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
                 double mv = d is SliderParameterState sp2 ? sp2.Value : double.NaN;
                 EditorServices.ReportDebug(
                     nameof(SchemaDrivenEffectDialog),
-                    $"EffectSlider ValueProperty changed effectId={Definition.Id} key={k} controlValue={slider.Value.ToString("0.##", CultureInfo.InvariantCulture)} modelValue={(double.IsNaN(mv) ? "n/a" : mv.ToString("0.##", CultureInfo.InvariantCulture))}");
+                    $"Slider ValueProperty changed effectId={Definition.Id} key={k} controlValue={slider.Value.ToString("0.##", CultureInfo.InvariantCulture)} modelValue={(double.IsNaN(mv) ? "n/a" : mv.ToString("0.##", CultureInfo.InvariantCulture))}");
             }
 
             slider.PropertyChanged += OnSliderPropertyChanged;

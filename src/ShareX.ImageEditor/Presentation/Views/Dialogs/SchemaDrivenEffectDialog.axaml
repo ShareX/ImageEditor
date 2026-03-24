@@ -17,14 +17,19 @@
         <ItemsControl ItemsSource="{Binding ParameterStates}">
             <ItemsControl.DataTemplates>
                 <DataTemplate DataType="{x:Type effects:SliderParameterState}" x:DataType="effects:SliderParameterState">
-                    <controls:EffectSlider Label="{Binding Label}"
-                                           Minimum="{Binding Minimum}"
-                                           Maximum="{Binding Maximum}"
-                                           Value="{Binding Value, Mode=TwoWay}"
-                                           TickFrequency="{Binding TickFrequency}"
-                                           IsSnapToTickEnabled="{Binding IsSnapToTickEnabled}"
-                                           ValueStringFormat="{Binding ValueStringFormat}"
-                                           Margin="0,0,0,10"/>
+                    <StackPanel Spacing="4" Margin="0,0,0,10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Label}"/>
+                            <Border Grid.Column="1" Classes="capsule">
+                                <TextBlock Text="{Binding Value, StringFormat={}{0:0.##}}"/>
+                            </Border>
+                        </Grid>
+                        <Slider Minimum="{Binding Minimum}"
+                                Maximum="{Binding Maximum}"
+                                Value="{Binding Value, Mode=TwoWay}"
+                                TickFrequency="{Binding TickFrequency}"
+                                IsSnapToTickEnabled="{Binding IsSnapToTickEnabled}"/>
+                    </StackPanel>
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type effects:CheckboxParameterState}" x:DataType="effects:CheckboxParameterState">

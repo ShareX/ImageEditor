@@ -625,6 +625,99 @@ public static partial class FilterCatalog
                 FloatSlider<ZoomBlurImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterX = value),
                 FloatSlider<ZoomBlurImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterY = value)),
 
+            Filter<JpegArtifactImageEffect>(
+                "jpeg_artifact",
+                FloatSlider<JpegArtifactImageEffect>("compression", "Compression (%)", 0, 100, 62, (effect, value) => effect.Compression = value),
+                IntSlider<JpegArtifactImageEffect>("block_size", "Block size", 4, 32, 8, (effect, value) => effect.BlockSize = value),
+                FloatSlider<JpegArtifactImageEffect>("chroma_bleed", "Chroma bleed (%)", 0, 100, 45, (effect, value) => effect.ChromaBleed = value),
+                FloatSlider<JpegArtifactImageEffect>("ringing", "Ringing (%)", 0, 100, 28, (effect, value) => effect.Ringing = value)),
+
+            Filter<DatamoshSmearImageEffect>(
+                "datamosh_smear",
+                EnumParameter<DatamoshSmearImageEffect, DatamoshDirection>(
+                    "direction",
+                    "Direction",
+                    DatamoshDirection.Horizontal,
+                    (effect, value) => effect.Direction = value,
+                    ("Horizontal", DatamoshDirection.Horizontal),
+                    ("Vertical", DatamoshDirection.Vertical)),
+                FloatSlider<DatamoshSmearImageEffect>("smear_amount", "Smear (%)", 0, 100, 58, (effect, value) => effect.SmearAmount = value),
+                FloatSlider<DatamoshSmearImageEffect>("corruption", "Corruption (%)", 0, 100, 36, (effect, value) => effect.Corruption = value),
+                IntSlider<DatamoshSmearImageEffect>("block_size", "Block size", 4, 64, 12, (effect, value) => effect.BlockSize = value),
+                FloatSlider<DatamoshSmearImageEffect>("drift", "Drift", -100, 100, 24, (effect, value) => effect.Drift = value),
+                FloatSlider<DatamoshSmearImageEffect>("channel_split", "Channel split (%)", 0, 100, 25, (effect, value) => effect.ChannelSplit = value)),
+
+            Filter<DoubleExposureImageEffect>(
+                "double_exposure",
+                FloatSlider<DoubleExposureImageEffect>("blend_amount", "Blend (%)", 0, 100, 62, (effect, value) => effect.BlendAmount = value),
+                IntNumeric<DoubleExposureImageEffect>("offset_x", "Offset X", -400, 400, 22, (effect, value) => effect.OffsetX = value),
+                IntNumeric<DoubleExposureImageEffect>("offset_y", "Offset Y", -400, 400, -14, (effect, value) => effect.OffsetY = value),
+                FloatSlider<DoubleExposureImageEffect>("ghost_blur", "Ghost blur (px)", 0, 30, 8, (effect, value) => effect.GhostBlur = value),
+                FloatSlider<DoubleExposureImageEffect>("highlight_bias", "Highlight bias (%)", 0, 100, 55, (effect, value) => effect.HighlightBias = value),
+                FloatSlider<DoubleExposureImageEffect>("contrast", "Contrast (%)", 50, 200, 112, (effect, value) => effect.Contrast = value)),
+
+            Filter<DisposableCameraImageEffect>(
+                "disposable_camera",
+                FloatSlider<DisposableCameraImageEffect>("flash", "Flash (%)", 0, 100, 55, (effect, value) => effect.Flash = value),
+                FloatSlider<DisposableCameraImageEffect>("softness", "Softness (px)", 0, 24, 8, (effect, value) => effect.Softness = value),
+                FloatSlider<DisposableCameraImageEffect>("grain", "Grain (%)", 0, 100, 24, (effect, value) => effect.Grain = value),
+                FloatSlider<DisposableCameraImageEffect>("vignette", "Vignette (%)", 0, 100, 34, (effect, value) => effect.Vignette = value),
+                FloatSlider<DisposableCameraImageEffect>("warmth", "Warmth (%)", 0, 100, 42, (effect, value) => effect.Warmth = value)),
+
+            Filter<InfraredFalseColorImageEffect>(
+                "infrared_false_color",
+                FloatSlider<InfraredFalseColorImageEffect>("intensity", "Intensity (%)", 0, 100, 68, (effect, value) => effect.Intensity = value),
+                FloatSlider<InfraredFalseColorImageEffect>("foliage_shift", "Foliage shift (%)", 0, 100, 78, (effect, value) => effect.FoliageShift = value),
+                FloatSlider<InfraredFalseColorImageEffect>("sky_darkening", "Sky darkening (%)", 0, 100, 44, (effect, value) => effect.SkyDarkening = value),
+                FloatSlider<InfraredFalseColorImageEffect>("glow", "Glow (%)", 0, 100, 20, (effect, value) => effect.Glow = value),
+                FloatSlider<InfraredFalseColorImageEffect>("contrast", "Contrast (%)", 50, 200, 118, (effect, value) => effect.Contrast = value)),
+
+            Filter<CyanotypeImageEffect>(
+                "cyanotype",
+                FloatSlider<CyanotypeImageEffect>("contrast", "Contrast (%)", 50, 200, 118, (effect, value) => effect.Contrast = value),
+                FloatSlider<CyanotypeImageEffect>("paper_texture", "Paper texture (%)", 0, 100, 34, (effect, value) => effect.PaperTexture = value),
+                FloatSlider<CyanotypeImageEffect>("stain", "Stain (%)", 0, 100, 28, (effect, value) => effect.Stain = value),
+                FloatSlider<CyanotypeImageEffect>("grain", "Grain (%)", 0, 100, 12, (effect, value) => effect.Grain = value),
+                FloatSlider<CyanotypeImageEffect>("vignette", "Vignette (%)", 0, 100, 20, (effect, value) => effect.Vignette = value)),
+
+            Filter<WetPlateCollodionImageEffect>(
+                "wet_plate_collodion",
+                FloatSlider<WetPlateCollodionImageEffect>("contrast", "Contrast (%)", 50, 200, 132, (effect, value) => effect.Contrast = value),
+                FloatSlider<WetPlateCollodionImageEffect>("plate_stains", "Plate stains (%)", 0, 100, 34, (effect, value) => effect.PlateStains = value),
+                FloatSlider<WetPlateCollodionImageEffect>("scratches", "Scratches (%)", 0, 100, 24, (effect, value) => effect.Scratches = value),
+                FloatSlider<WetPlateCollodionImageEffect>("silvering", "Silvering (%)", 0, 100, 36, (effect, value) => effect.Silvering = value),
+                FloatSlider<WetPlateCollodionImageEffect>("vignette", "Vignette (%)", 0, 100, 58, (effect, value) => effect.Vignette = value)),
+
+            Filter<StarFilterImageEffect>(
+                "star_filter",
+                FloatSlider<StarFilterImageEffect>("threshold", "Threshold (%)", 0, 100, 74, (effect, value) => effect.Threshold = value),
+                FloatSlider<StarFilterImageEffect>("length", "Length (px)", 4, 80, 40, (effect, value) => effect.Length = value),
+                FloatSlider<StarFilterImageEffect>("strength", "Strength (%)", 0, 100, 58, (effect, value) => effect.Strength = value),
+                FloatSlider<StarFilterImageEffect>("rotation", "Rotation", -180, 180, 0, (effect, value) => effect.Rotation = value, valueStringFormat: "{}{0:0} deg"),
+                FloatSlider<StarFilterImageEffect>("warmth", "Warmth (%)", 0, 100, 48, (effect, value) => effect.Warmth = value)),
+
+            Filter<SoftDiffusionImageEffect>(
+                "soft_diffusion",
+                FloatSlider<SoftDiffusionImageEffect>("amount", "Amount (%)", 0, 100, 52, (effect, value) => effect.Amount = value),
+                FloatSlider<SoftDiffusionImageEffect>("radius", "Radius (px)", 0, 30, 12, (effect, value) => effect.Radius = value),
+                FloatSlider<SoftDiffusionImageEffect>("highlight_bloom", "Highlight bloom (%)", 0, 100, 40, (effect, value) => effect.HighlightBloom = value),
+                FloatSlider<SoftDiffusionImageEffect>("contrast_softening", "Contrast softening (%)", 0, 100, 28, (effect, value) => effect.ContrastSoftening = value),
+                FloatSlider<SoftDiffusionImageEffect>("warmth", "Warmth (%)", 0, 100, 22, (effect, value) => effect.Warmth = value)),
+
+            Filter<Anaglyph3DImageEffect>(
+                "anaglyph_3d",
+                EnumParameter<Anaglyph3DImageEffect, AnaglyphMode>(
+                    "mode",
+                    "Mode",
+                    AnaglyphMode.RedCyan,
+                    (effect, value) => effect.Mode = value,
+                    ("Red / Cyan", AnaglyphMode.RedCyan),
+                    ("Amber / Blue", AnaglyphMode.AmberBlue),
+                    ("Green / Magenta", AnaglyphMode.GreenMagenta)),
+                IntNumeric<Anaglyph3DImageEffect>("separation_x", "Separation X", -100, 100, 10, (effect, value) => effect.SeparationX = value),
+                IntNumeric<Anaglyph3DImageEffect>("separation_y", "Separation Y", -100, 100, 0, (effect, value) => effect.SeparationY = value),
+                FloatSlider<Anaglyph3DImageEffect>("ghost_reduction", "Ghost reduction (%)", 0, 100, 45, (effect, value) => effect.GhostReduction = value)),
+
             Filter<FisheyeLensImageEffect>(
                 "fisheye_lens",
                 FloatSlider<FisheyeLensImageEffect>("strength", "Strength (%)", 0, 100, 58, (effect, value) => effect.Strength = value),

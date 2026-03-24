@@ -171,7 +171,7 @@
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Disabled">
                 <StackPanel Orientation="Horizontal"
-                            Spacing="6">
+                            Spacing="4">
                 <Border Background="Transparent"
                         Width="40"
                         Height="40"

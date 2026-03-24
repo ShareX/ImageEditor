@@ -40,26 +40,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         private void OnCropImageRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
-            {
-                var dialog = new CropImageDialog();
-                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-
-                dialog.ApplyRequested += (s, args) =>
-                {
-                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                    _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                dialog.CancelRequested += (s, args) =>
-                {
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
-            }
+            ShowCropImageDialog(new CropImageDialog());
         }
 
         private void OnAutoCropImageRequested(object? sender, EventArgs e)
@@ -294,6 +275,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             dialog.ApplyRequested += (s, args) =>
             {
+                // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
                 _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
                 vm.CloseEffectsPanelCommand.Execute(null);
             };

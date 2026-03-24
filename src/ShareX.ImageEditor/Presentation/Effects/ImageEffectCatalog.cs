@@ -354,12 +354,50 @@ public static partial class ImageEffectCatalog
         string browserLabel = string.Join(
             " ",
             id.Split('_', StringSplitOptions.RemoveEmptyEntries)
-                .Select(part => char.ToUpperInvariant(part[0]) + part[1..]))
+                .Select(FormatPresentationToken))
             + "...";
 
         return new EffectPresentationMetadata(
             browserLabel,
             string.Empty,
             $"Applies the {browserLabel[..^3]} effect.");
+    }
+
+    /// <summary>
+    /// Title-cases a snake_case segment for display, preserving common acronyms (3D, RGB, …).
+    /// </summary>
+    private static string FormatPresentationToken(string segment)
+    {
+        if (string.IsNullOrEmpty(segment))
+        {
+            return segment;
+        }
+
+        return segment.ToLowerInvariant() switch
+        {
+            "2d" => "2D",
+            "3d" => "3D",
+            "rgb" => "RGB",
+            "cmyk" => "CMYK",
+            "vhs" => "VHS",
+            "dvd" => "DVD",
+            "lcd" => "LCD",
+            "crt" => "CRT",
+            "ui" => "UI",
+            "ux" => "UX",
+            "url" => "URL",
+            "uri" => "URI",
+            "api" => "API",
+            "css" => "CSS",
+            "html" => "HTML",
+            "sql" => "SQL",
+            "jpg" or "jpeg" => "JPEG",
+            "png" => "PNG",
+            "gif" => "GIF",
+            "webp" => "WebP",
+            "avif" => "AVIF",
+            "ascii" => "ASCII",
+            _ => char.ToUpperInvariant(segment[0]) + segment[1..].ToLowerInvariant()
+        };
     }
 }

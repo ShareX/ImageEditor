@@ -9,6 +9,7 @@ using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.Theming;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace ShareX.ImageEditor.Presentation.Controls
@@ -236,6 +237,23 @@ namespace ShareX.ImageEditor.Presentation.Controls
         private const string FavoritesHeaderHint = "Right-click an effect item to add or remove it from Favorites.";
         private const int MaxRecentEffects = 10;
         private const string SearchWatermarkFormat = "Search image effects... ({0})";
+
+        /// <summary>
+        /// Effects listed under Manipulations that are also listed under Filters on develop
+        /// (duplicate rows, same effect id).
+        /// </summary>
+        private static readonly string[] ManipulationEffectsAlsoInDevelopFiltersCategory =
+        [
+            "cylinder_wrap",
+            "fisheye_lens",
+            "fold_crease_warp",
+            "kaleidoscope",
+            "liquify_push_smudge",
+            "mirror_tiles",
+            "page_curl",
+            "polar_warp",
+            "ripple_refraction"
+        ];
 
         private static readonly Dictionary<string, string> EffectAliases = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -589,6 +607,79 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 AddCatalogDrivenEffects(category, categoryEnum);
                 Categories.Add(category);
             }
+
+            ApplyDevelopEffectBrowserParity();
+        }
+
+        /// <summary>
+        /// Restores develop-branch effect browser row counts: host shortcuts under Manipulations,
+        /// duplicate warp rows under Filters, and Border under Drawings (also under Filters).
+        /// </summary>
+        private void ApplyDevelopEffectBrowserParity()
+        {
+            EffectCategory? manipulations = Categories.FirstOrDefault(c => c.Name == nameof(ImageEffectCategory.Manipulations));
+            if (manipulations != null)
+            {
+                AddHostManipulationShortcuts(manipulations);
+            }
+
+            EffectCategory? filters = Categories.FirstOrDefault(c => c.Name == nameof(ImageEffectCategory.Filters));
+            if (filters != null)
+            {
+                foreach (string effectId in ManipulationEffectsAlsoInDevelopFiltersCategory)
+                {
+                    if (!ImageEffectCatalog.TryGetDefinition(effectId, out EffectDefinition? definition) || definition == null)
+                    {
+                        continue;
+                    }
+
+                    filters.AddEffect(
+                        definition.BrowserLabel,
+                        definition.Icon,
+                        definition.Description,
+                        () => RaiseDialog(effectId),
+                        effectId);
+                }
+            }
+
+            EffectCategory? drawings = Categories.FirstOrDefault(c => c.Name == nameof(ImageEffectCategory.Drawings));
+            if (drawings != null &&
+                ImageEffectCatalog.TryGetDefinition("border", out EffectDefinition? borderDefinition) &&
+                borderDefinition != null)
+            {
+                drawings.AddEffect(
+                    borderDefinition.BrowserLabel,
+                    borderDefinition.Icon,
+                    borderDefinition.Description,
+                    () => RaiseDialog("border"),
+                    "border");
+            }
+        }
+
+        private void AddHostManipulationShortcuts(EffectCategory manipulations)
+        {
+            void AddHost(string effectId)
+            {
+                if (!ImageEffectCatalog.TryGetDefinition(effectId, out EffectDefinition? definition) || definition == null)
+                {
+                    return;
+                }
+
+                manipulations.AddEffect(
+                    definition.BrowserLabel,
+                    definition.Icon,
+                    definition.Description,
+                    () => RaiseDialog(effectId),
+                    effectId);
+            }
+
+            AddHost("rotate_90_clockwise");
+            AddHost("rotate_90_counter_clockwise");
+            AddHost("rotate_180");
+            AddHost("rotate_custom_angle");
+            AddHost("flip_horizontal");
+            AddHost("flip_vertical");
+            AddHost("editor_auto_crop");
         }
 
         private void AddCatalogDrivenEffects(EffectCategory category, ImageEffectCategory targetCategory)

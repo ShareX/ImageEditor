@@ -203,6 +203,11 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             EditorServices.ReportDebug(nameof(EditorView), $"EffectDialogRequested effectId={e.EffectId}");
 
+            if (TryDispatchEditorHostEffect(e.EffectId))
+            {
+                return;
+            }
+
             if (EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) && dialog != null)
             {
                 EditorServices.ReportDebug(nameof(EditorView), $"TryCreate succeeded effectId={e.EffectId} dialogType={dialog.GetType().Name}");
@@ -211,6 +216,9 @@ namespace ShareX.ImageEditor.Presentation.Views
                 {
                     case IEffectDialog effectDialog:
                         ShowEffectDialog(dialog, effectDialog);
+                        break;
+                    case CropImageDialog cropImageDialog:
+                        ShowCropImageDialog(cropImageDialog);
                         break;
                     case ResizeImageDialog resizeImageDialog:
                         ShowResizeImageDialog(resizeImageDialog);
@@ -234,6 +242,69 @@ namespace ShareX.ImageEditor.Presentation.Views
                     $"Applied {definition.Name}");
                 vm.CloseEffectsPanelCommand.Execute(null);
             }
+        }
+
+        /// <summary>
+        /// Handles effect ids that are not backed by <see cref="ImageEffect"/> instances (editor core / VM shortcuts).
+        /// Matches develop-branch browser entries for quick rotate, flip, and auto crop.
+        /// </summary>
+        private bool TryDispatchEditorHostEffect(string effectId)
+        {
+            if (string.IsNullOrWhiteSpace(effectId))
+            {
+                return false;
+            }
+
+            switch (effectId.Trim().ToLowerInvariant())
+            {
+                case "rotate_90_clockwise":
+                    OnRotate90CWRequested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_90_counter_clockwise":
+                    OnRotate90CCWRequested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_180":
+                    OnRotate180Requested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_custom_angle":
+                    OnRotateCustomAngleRequested(this, EventArgs.Empty);
+                    return true;
+                case "flip_horizontal":
+                    OnFlipHorizontalRequested(this, EventArgs.Empty);
+                    return true;
+                case "flip_vertical":
+                    OnFlipVerticalRequested(this, EventArgs.Empty);
+                    return true;
+                case "editor_auto_crop":
+                    OnAutoCropImageRequested(this, EventArgs.Empty);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void ShowCropImageDialog(CropImageDialog dialog)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
+            {
+                return;
+            }
+
+            dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
+
+            dialog.ApplyRequested += (s, args) =>
+            {
+                _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+
+            dialog.CancelRequested += (s, args) =>
+            {
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+
+            vm.EffectsPanelContent = dialog;
+            vm.IsEffectsPanelOpen = true;
         }
 
         /// <summary>

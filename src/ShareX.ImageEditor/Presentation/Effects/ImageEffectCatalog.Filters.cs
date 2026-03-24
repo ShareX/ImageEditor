@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Media;
+using ShareX.ImageEditor.Core.ImageEffects.Drawings;
 using ShareX.ImageEditor.Core.ImageEffects.Filters;
 using ShareX.ImageEditor.Core.ImageEffects;
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
@@ -239,6 +240,11 @@ public static partial class ImageEffectCatalog
                 "edge_feather",
                 ImageEffectCategory.Filters,
                 FloatSlider<EdgeFeatherImageEffect>("radius", "Radius (px)", 0, 100, 12, (effect, value) => effect.Radius = value, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}")),
+
+            ImmediateEffect<EdgeDetectImageEffect>("edge_detect", ImageEffectCategory.Filters),
+            ImmediateEffect<EmbossImageEffect>("emboss", ImageEffectCategory.Filters),
+            ImmediateEffect<MeanRemovalImageEffect>("mean_removal", ImageEffectCategory.Filters),
+            ImmediateEffect<SmoothImageEffect>("smooth", ImageEffectCategory.Filters),
 
             Effect<FrostedGlassIceEdgesImageEffect>(
                 "frosted_glass_ice_edges",
@@ -796,6 +802,14 @@ public static partial class ImageEffectCatalog
                 FloatSlider<WetPlateCollodionImageEffect>("silvering", "Silvering (%)", 0, 100, 36, (effect, value) => effect.Silvering = value),
                 FloatSlider<WetPlateCollodionImageEffect>("vignette", "Vignette (%)", 0, 100, 58, (effect, value) => effect.Vignette = value),
                 IntNumeric<WetPlateCollodionImageEffect>("seed", "Seed", 0, int.MaxValue, 1855, (effect, value) => effect.Seed = value)),
+
+            Effect<WoodenFrameImageEffect>(
+                "wooden_frame",
+                ImageEffectCategory.Filters,
+                IntSlider<WoodenFrameImageEffect>("frame_width", "Frame width", 2, 300, 48, (e, v) => e.FrameWidth = v),
+                FloatSlider<WoodenFrameImageEffect>("grain_strength", "Grain strength", 0, 100, 60, (e, v) => e.GrainStrength = v),
+                FloatSlider<WoodenFrameImageEffect>("bevel_strength", "Bevel strength", 0, 100, 65, (e, v) => e.BevelStrength = v),
+                ColorParameter<WoodenFrameImageEffect>("wood_color", "Wood color", Color.FromRgb(139, 94, 60), (e, v) => e.WoodColor = ToSkColor(v))),
 
             // --- Migrated from bespoke dialogs (IEIP0003 Phase 4) ---
 

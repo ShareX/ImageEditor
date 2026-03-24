@@ -18,12 +18,6 @@ public static partial class ImageEffectCatalog
                 IntSlider<DrawCheckerboardEffect>("size", "Size", 1, 200, 10, (e, v) => e.Size = v),
                 ColorParameter<DrawCheckerboardEffect>("color", "Color 1", Color.FromRgb(211, 211, 211), (e, v) => e.Color = ToSkColor(v)),
                 ColorParameter<DrawCheckerboardEffect>("color2", "Color 2", Colors.White, (e, v) => e.Color2 = ToSkColor(v))),
-            Effect<WoodenFrameImageEffect>(
-                "wooden_frame", ImageEffectCategory.Drawings,
-                IntSlider<WoodenFrameImageEffect>("frame_width", "Frame width", 2, 300, 48, (e, v) => e.FrameWidth = v),
-                FloatSlider<WoodenFrameImageEffect>("grain_strength", "Grain strength", 0, 100, 60, (e, v) => e.GrainStrength = v),
-                FloatSlider<WoodenFrameImageEffect>("bevel_strength", "Bevel strength", 0, 100, 65, (e, v) => e.BevelStrength = v),
-                ColorParameter<WoodenFrameImageEffect>("wood_color", "Wood color", Color.FromRgb(139, 94, 60), (e, v) => e.WoodColor = ToSkColor(v))),
             Effect<DrawBackgroundImageEffect>(
                 "draw_background_image", ImageEffectCategory.Drawings,
                 FilePathParameter<DrawBackgroundImageEffect>("image_file_path", "Image file", "", (e, v) => e.ImageFilePath = v, "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.webp"),

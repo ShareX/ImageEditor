@@ -122,25 +122,21 @@
                                 IsVisible="{Binding ShowEditingActions, ElementName=AnnotationToolbarRoot}">
                         <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
                         <Button Classes="editor-button toolbar-button"
-                                MinWidth="44"
                                 IsEnabled="{Binding CanUndo}"
                                 Click="OnUndoClick"
                                 ToolTip.Tip="Undo (Ctrl+Z)"
                                 Content="{x:Static theming:EditorIcons.ActionUndo}"/>
                         <Button Classes="editor-button toolbar-button"
-                                MinWidth="44"
                                 IsEnabled="{Binding CanRedo}"
                                 Click="OnRedoClick"
                                 ToolTip.Tip="Redo (Ctrl+Y)"
                                 Content="{x:Static theming:EditorIcons.ActionRedo}"/>
                         <Button Classes="editor-button toolbar-button"
-                                MinWidth="44"
                                 IsEnabled="{Binding HasSelection}"
                                 Click="OnDeleteClick"
                                 ToolTip.Tip="Delete selected"
                                 Content="{x:Static theming:EditorIcons.ActionDelete}"/>
                         <Button Classes="editor-button toolbar-button"
-                                MinWidth="44"
                                 IsEnabled="{Binding HasAnnotations}"
                                 Click="OnClearClick"
                                 ToolTip.Tip="Clear all"
@@ -234,21 +230,18 @@
                                          ToolTip.Tip="Effect strength"/>
 
                 <Button Classes="editor-button toolbar-button"
-                        MinWidth="44"
                         Classes.active="{Binding TextBold}"
                         Click="OnTextBoldClick"
                         IsVisible="{Binding ShowTextStyle}"
                         ToolTip.Tip="Toggle bold"
                         Content="{x:Static theming:EditorIcons.FormatBold}"/>
                 <Button Classes="editor-button toolbar-button"
-                        MinWidth="44"
                         Classes.active="{Binding TextItalic}"
                         Click="OnTextItalicClick"
                         IsVisible="{Binding ShowTextStyle}"
                         ToolTip.Tip="Toggle italic"
                         Content="{x:Static theming:EditorIcons.FormatItalic}"/>
                 <Button Classes="editor-button toolbar-button"
-                        MinWidth="44"
                         Classes.active="{Binding TextUnderline}"
                         Click="OnTextUnderlineClick"
                         IsVisible="{Binding ShowTextStyle}"
@@ -256,7 +249,6 @@
                         Content="{x:Static theming:EditorIcons.FormatUnderline}"/>
                 <Button x:Name="ShadowToggleButton"
                         Classes="editor-button toolbar-button"
-                        MinWidth="44"
                         Classes.active="{Binding ShadowEnabled}"
                         Click="OnShadowClick"
                         IsVisible="{Binding ShowShadow}"

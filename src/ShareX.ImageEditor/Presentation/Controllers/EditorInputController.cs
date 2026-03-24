@@ -928,7 +928,6 @@ public class EditorInputController
     private const double CropHandleCornerArmLength = 24;
     private const double CropHandleCenterBarLength = 20;
     private const double CropHandleThickness = 4;
-    private const double CropHandleInsideOverlap = 6;
     private const double MinCropGuideSize = 24;
 
     private static readonly Color CropHandleFill = Color.FromRgb(255, 255, 255);
@@ -1147,30 +1146,31 @@ public class EditorInputController
         //   │   │
         //   P5  P4
         //
-        int horizontalDirection = tag.Contains("Right", StringComparison.Ordinal) ? 1 : -1;
-        int verticalDirection = tag.Contains("Bottom", StringComparison.Ordinal) ? 1 : -1;
+        bool extendsLeft = tag.Contains("Right", StringComparison.Ordinal);
+        bool extendsUp = tag.Contains("Bottom", StringComparison.Ordinal);
+        double horizontalEnd = extendsLeft ? half - arm : half + arm;
+        double verticalEnd = extendsUp ? half - arm : half + arm;
 
-        var panel = new Canvas
+        var geometry = new StreamGeometry();
+        using (StreamGeometryContext context = geometry.Open())
+        {
+            context.BeginFigure(new Point(horizontalEnd, half), false);
+            context.LineTo(new Point(half, half));
+            context.LineTo(new Point(half, verticalEnd));
+        }
+
+        return new global::Avalonia.Controls.Shapes.Path
         {
             Width = size,
             Height = size,
-            IsHitTestVisible = false,
-            ClipToBounds = false
+            Data = geometry,
+            Stroke = new SolidColorBrush(CropHandleFill),
+            StrokeThickness = w,
+            StrokeLineCap = PenLineCap.Round,
+            StrokeJoin = PenLineJoin.Round,
+            Stretch = Stretch.None,
+            IsHitTestVisible = false
         };
-
-        panel.Children.Add(CreateCropHandleRect(
-            horizontalDirection < 0 ? half - CropHandleInsideOverlap : half - arm + CropHandleInsideOverlap,
-            half - (w / 2.0),
-            arm,
-            w));
-
-        panel.Children.Add(CreateCropHandleRect(
-            half - (w / 2.0),
-            verticalDirection < 0 ? half - CropHandleInsideOverlap : half - arm + CropHandleInsideOverlap,
-            w,
-            arm));
-
-        return panel;
     }
 
     /// <summary>

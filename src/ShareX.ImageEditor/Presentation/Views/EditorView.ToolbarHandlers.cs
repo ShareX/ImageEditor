@@ -28,6 +28,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
 
 namespace ShareX.ImageEditor.Presentation.Views
@@ -250,17 +251,11 @@ namespace ShareX.ImageEditor.Presentation.Views
                 case OutlinedTextControl textBox:
                     textBox.InvalidateVisual();
                     break;
-                case Grid grid:
-                    foreach (var child in grid.Children)
-                    {
-                        if (child is Ellipse ellipse)
-                        {
-                            ellipse.Stroke = brush;
-                        }
-                    }
-                    break;
                 case SpeechBalloonControl balloonControl:
                     balloonControl.InvalidateVisual();
+                    break;
+                case StepControl stepControl:
+                    stepControl.InvalidateVisual();
                     break;
             }
 
@@ -305,14 +300,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 case SpeechBalloonControl balloonControl:
                     balloonControl.InvalidateVisual();
                     break;
-                case Grid grid:
-                    foreach (var child in grid.Children)
-                    {
-                        if (child is global::Avalonia.Controls.Shapes.Ellipse ellipse)
-                        {
-                            ellipse.Fill = colorHex == "#00000000" ? Brushes.Transparent : brush;
-                        }
-                    }
+                case StepControl stepControl:
+                    stepControl.InvalidateVisual();
                     break;
             }
 
@@ -347,16 +336,9 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 balloonControl.InvalidateVisual();
             }
-            else if (selected is Grid grid)
+            else if (selected is StepControl stepControl)
             {
-                // NumberAnnotation (Step) uses a Grid with a TextBlock
-                foreach (var child in grid.Children)
-                {
-                    if (child is TextBlock textBlock)
-                    {
-                        textBlock.Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(colorHex));
-                    }
-                }
+                stepControl.InvalidateVisual();
             }
 
             // ISSUE-LIVE-UPDATE: Update active text editor if present
@@ -382,20 +364,18 @@ namespace ShareX.ImageEditor.Presentation.Views
                     textBox.InvalidateMeasure();
                     textBox.InvalidateVisual();
                     break;
-                case Grid grid:
-                    foreach (var child in grid.Children)
-                    {
-                        if (child is Ellipse ellipse)
-                        {
-                            ellipse.StrokeThickness = Math.Max(1, width);
-                        }
-                    }
-                    break;
                 case SpeechBalloonControl balloon:
                     if (balloon.Annotation != null)
                     {
                         balloon.Annotation.StrokeWidth = width;
                         balloon.InvalidateVisual();
+                    }
+                    break;
+                case StepControl stepControl:
+                    if (stepControl.Annotation != null)
+                    {
+                        stepControl.Annotation.StrokeWidth = width;
+                        stepControl.InvalidateVisual();
                     }
                     break;
             }
@@ -444,19 +424,9 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 numAnn.FontSize = fontSize;
 
-                if (selected is Grid grid)
+                if (selected is StepControl stepControl)
                 {
-                    var radius = Math.Max(12, fontSize * 0.7f);
-                    grid.Width = radius * 2;
-                    grid.Height = radius * 2;
-
-                    foreach (var child in grid.Children)
-                    {
-                        if (child is TextBlock textBlock)
-                        {
-                            textBlock.FontSize = fontSize * 0.6;
-                        }
-                    }
+                    AnnotationVisualFactory.UpdateVisualControl(stepControl, numAnn);
                 }
             }
             else if (selected?.Tag is SpeechBalloonAnnotation balloonAnn)

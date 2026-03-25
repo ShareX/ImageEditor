@@ -623,7 +623,7 @@ public class EditorInputController
             }
             balloon.InvalidateVisual();
         }
-        else if (_currentShape is Grid && _currentShape.Tag is NumberAnnotation numberAnn)
+        else if (_currentShape is StepControl && _currentShape.Tag is NumberAnnotation numberAnn)
         {
             // Allow dragging the step shape immediately after inserting it
             var numberRadius = numberAnn.Radius;

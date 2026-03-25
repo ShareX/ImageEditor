@@ -71,6 +71,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             return null;
         }
 
+        internal bool IsEffectPreviewActive => _isPreviewingEffect;
+
+        internal SkiaSharp.SKBitmap? CreateSourceImageCopyForCore()
+        {
+            if (IsBitmapAlive(_currentSourceImage))
+            {
+                return SafeCopyBitmap(_currentSourceImage, "CreateSourceImageCopyForCore.Current");
+            }
+
+            SkiaSharp.SKBitmap? coreSource = _editorCore?.SourceImage;
+            if (IsBitmapAlive(coreSource))
+            {
+                return SafeCopyBitmap(coreSource, "CreateSourceImageCopyForCore.Core");
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Updates the preview image. **TAKES OWNERSHIP** of the bitmap parameter.
         /// </summary>

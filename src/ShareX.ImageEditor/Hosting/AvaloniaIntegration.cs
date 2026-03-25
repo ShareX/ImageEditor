@@ -82,11 +82,15 @@ namespace ShareX.ImageEditor.Hosting
 
                         if (Application.Current == null)
                         {
-                            AppBuilder.Configure<AvaloniaApp>()
+                            AppBuilder builder = AppBuilder.Configure<AvaloniaApp>()
                                 .UsePlatformDetect()
-                                .WithInterFont()
-                                .LogToTrace()
-                                .SetupWithoutStarting();
+                                .WithInterFont();
+
+#if DEBUG
+                            builder = builder.LogToTrace();
+#endif
+
+                            builder.SetupWithoutStarting();
                         }
 
                         initialized = true;

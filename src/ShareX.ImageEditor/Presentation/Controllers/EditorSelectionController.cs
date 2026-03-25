@@ -445,6 +445,15 @@ public class EditorSelectionController
             return;
         }
 
+        if (_selectedShape is StepControl stepControl && stepControl.Annotation is NumberAnnotation number && handleTag == "StepTail")
+        {
+            number.SetTailPoint(new SKPoint((float)currentPoint.X, (float)currentPoint.Y));
+            stepControl.InvalidateVisual();
+            _startPoint = currentPoint;
+            UpdateSelectionHandles();
+            return;
+        }
+
         // Rotation handling for OutlinedTextControl (Text annotation)
         if (_selectedShape is OutlinedTextControl rotateTextBox && handleTag == "Rotate")
         {
@@ -656,6 +665,27 @@ public class EditorSelectionController
             return;
         }
 
+        if (_selectedShape is StepControl stepControl && stepControl.Annotation is NumberAnnotation number)
+        {
+            number.StartPoint = new SKPoint(number.StartPoint.X + (float)deltaX, number.StartPoint.Y + (float)deltaY);
+            number.EndPoint = new SKPoint(number.EndPoint.X + (float)deltaX, number.EndPoint.Y + (float)deltaY);
+
+            if (number.HasTailPoint)
+            {
+                number.SetTailPoint(new SKPoint(number.TailPoint.X + (float)deltaX, number.TailPoint.Y + (float)deltaY));
+            }
+
+            var newLeft = Canvas.GetLeft(stepControl) + deltaX;
+            var newTop = Canvas.GetTop(stepControl) + deltaY;
+            Canvas.SetLeft(stepControl, newLeft);
+            Canvas.SetTop(stepControl, newTop);
+
+            stepControl.InvalidateVisual();
+            _lastDragPoint = currentPoint;
+            UpdateSelectionHandles();
+            return;
+        }
+
         // Handle Path (Freehand/SmartEraser) movement by translating all points
         if (_selectedShape is global::Avalonia.Controls.Shapes.Path path && path.Tag is FreehandAnnotation freehand)
         {
@@ -771,6 +801,14 @@ public class EditorSelectionController
             var tailX = (double)tailPoint.X;
             var tailY = (double)tailPoint.Y;
             CreateHandle(tailX, tailY, "BalloonTail");
+            UpdateHoverOutline();
+            return;
+        }
+
+        if (_selectedShape is StepControl stepControl && stepControl.Annotation is NumberAnnotation number)
+        {
+            var tailHandlePoint = number.GetTailHandlePoint();
+            CreateHandle(tailHandlePoint.X, tailHandlePoint.Y, "StepTail");
             UpdateHoverOutline();
             return;
         }
@@ -1329,6 +1367,10 @@ public class EditorSelectionController
             {
                 shapeBounds = ToRect(balloonAnnotation.GetInteractionBounds(5));
             }
+            else if (child.Tag is NumberAnnotation numberAnnotation)
+            {
+                shapeBounds = ToRect(numberAnnotation.GetInteractionBounds(5));
+            }
 
             // Start with rough bounds check
             bool isRotated = false;
@@ -1467,6 +1509,11 @@ public class EditorSelectionController
             var b = sa.GetBounds();
             left = b.Left; top = b.Top; width = b.Width; height = b.Height;
         }
+        else if (_hoveredShape is StepControl hoveredStep && hoveredStep.Annotation is NumberAnnotation hoveredNumber && hoveredNumber.IsTailVisible())
+        {
+            var b = hoveredNumber.GetInteractionBounds();
+            left = b.Left; top = b.Top; width = b.Width; height = b.Height;
+        }
         else
         {
             var hoveredRect = GetLogicalRect(_hoveredShape);
@@ -1479,7 +1526,7 @@ public class EditorSelectionController
         if (width <= 0 || height <= 0) return;
 
         // 3. Ellipse Outline (for Ellipse and Step/Number)
-        if (_hoveredShape is Ellipse || (_hoveredShape is Grid && _hoveredShape.Tag is NumberAnnotation))
+        if (_hoveredShape is Ellipse || (_hoveredShape is StepControl hoveredStepControl && hoveredStepControl.Annotation is NumberAnnotation hoveredNumberAnnotation && !hoveredNumberAnnotation.IsTailVisible()))
         {
             if (_hoverEllipseBlack == null)
             {

@@ -617,23 +617,7 @@
                     Margin="16,125,16,125"
                     Width="800">
 
-                <controls:EffectBrowserPanel x:Name="EffectBrowserPanel"
-                    EffectDialogRequested="OnEffectDialogRequested"
-                    CropImageRequested="OnCropImageRequested"
-                    AutoCropImageRequested="OnAutoCropImageRequested"
-                    Rotate90CWRequested="OnRotate90CWRequested"
-                    Rotate90CCWRequested="OnRotate90CCWRequested"
-                    Rotate180Requested="OnRotate180Requested"
-                    RotateCustomAngleRequested="OnRotateCustomAngleRequested"
-                    FlipHorizontalRequested="OnFlipHorizontalRequested"
-                    FlipVerticalRequested="OnFlipVerticalRequested"
-                    InvertRequested="OnInvertRequested"
-                    BlackAndWhiteRequested="OnBlackAndWhiteRequested"
-                    PolaroidRequested="OnPolaroidRequested"
-                    EdgeDetectRequested="OnEdgeDetectRequested"
-                    EmbossRequested="OnEmbossRequested"
-                    MeanRemovalRequested="OnMeanRemovalRequested"
-                    SmoothRequested="OnSmoothRequested"/>
+                <ContentControl x:Name="EffectBrowserHost"/>
             </Border>
         </Grid>
 

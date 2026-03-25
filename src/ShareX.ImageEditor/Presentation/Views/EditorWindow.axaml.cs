@@ -25,7 +25,6 @@
 
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media.Imaging;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
@@ -117,13 +116,15 @@ namespace ShareX.ImageEditor.Presentation.Views
             try
             {
                 using var stream = File.OpenRead(filePath);
-                var bitmap = new Bitmap(stream);
-                _viewModel.RequestZoomToFitOnNextImageLoad();
-                _viewModel.PreviewImage = bitmap;
+                SKBitmap? bitmap = SKBitmap.Decode(stream);
+                if (bitmap == null)
+                {
+                    throw new InvalidOperationException("SkiaSharp returned no bitmap.");
+                }
+
+                _viewModel.UpdatePreview(bitmap);
                 _viewModel.LastSavedPath = filePath;
                 _viewModel.ImageFilePath = filePath;
-                _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
-                _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);
                 _viewModel.IsDirty = false;
             }
             catch (Exception ex)
@@ -145,11 +146,13 @@ namespace ShareX.ImageEditor.Presentation.Views
                 if (stream.CanSeek && stream.Position != 0)
                     stream.Position = 0;
 
-                var bitmap = new Bitmap(stream);
-                _viewModel.RequestZoomToFitOnNextImageLoad();
-                _viewModel.PreviewImage = bitmap;
-                _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
-                _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);
+                SKBitmap? bitmap = SKBitmap.Decode(stream);
+                if (bitmap == null)
+                {
+                    throw new InvalidOperationException("SkiaSharp returned no bitmap.");
+                }
+
+                _viewModel.UpdatePreview(bitmap);
                 _viewModel.IsDirty = false;
             }
             catch (Exception ex)

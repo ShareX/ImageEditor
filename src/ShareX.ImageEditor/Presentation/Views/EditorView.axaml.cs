@@ -69,6 +69,8 @@ namespace ShareX.ImageEditor.Presentation.Views
         private int _pendingAutoCopyImageVersion;
         private Rect? _lastOverlayCanvasRect;
         private double _lastOverlayCanvasZoom = -1;
+        private EffectBrowserPanel? _effectBrowserPanel;
+        private ImageEditorOptions? _effectBrowserPanelOptions;
 
         // Window-level key handler reference (so shortcuts work regardless of focus)
         private Window? _parentWindow;
@@ -322,9 +324,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.AttachEditorCore(_editorCore);
                 _editorCore.ActiveTool = vm.ActiveTool;
                 HookAnnotationToolbarEvents();
-
-                var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
-                effectPanel?.SetOptions(vm.Options);
 
                 vm.DeleteRequested += (s, args) => PerformDelete();
                 vm.UndoRequested += (s, args) => PerformUndo();
@@ -764,11 +763,48 @@ namespace ShareX.ImageEditor.Presentation.Views
                 {
                     if (vm.IsEffectBrowserVisible)
                     {
-                        var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
-                        effectPanel?.FocusSearchBox();
+                        EnsureEffectBrowserPanel(vm).FocusSearchBox();
                     }
                 }
             }
+        }
+
+        private EffectBrowserPanel EnsureEffectBrowserPanel(MainViewModel vm)
+        {
+            if (_effectBrowserPanel == null)
+            {
+                _effectBrowserPanel = new EffectBrowserPanel();
+                _effectBrowserPanel.EffectDialogRequested += OnEffectDialogRequested;
+                _effectBrowserPanel.CropImageRequested += OnCropImageRequested;
+                _effectBrowserPanel.AutoCropImageRequested += OnAutoCropImageRequested;
+                _effectBrowserPanel.Rotate90CWRequested += OnRotate90CWRequested;
+                _effectBrowserPanel.Rotate90CCWRequested += OnRotate90CCWRequested;
+                _effectBrowserPanel.Rotate180Requested += OnRotate180Requested;
+                _effectBrowserPanel.RotateCustomAngleRequested += OnRotateCustomAngleRequested;
+                _effectBrowserPanel.FlipHorizontalRequested += OnFlipHorizontalRequested;
+                _effectBrowserPanel.FlipVerticalRequested += OnFlipVerticalRequested;
+                _effectBrowserPanel.InvertRequested += OnInvertRequested;
+                _effectBrowserPanel.BlackAndWhiteRequested += OnBlackAndWhiteRequested;
+                _effectBrowserPanel.PolaroidRequested += OnPolaroidRequested;
+                _effectBrowserPanel.EdgeDetectRequested += OnEdgeDetectRequested;
+                _effectBrowserPanel.EmbossRequested += OnEmbossRequested;
+                _effectBrowserPanel.MeanRemovalRequested += OnMeanRemovalRequested;
+                _effectBrowserPanel.SmoothRequested += OnSmoothRequested;
+
+                var effectBrowserHost = this.FindControl<ContentControl>("EffectBrowserHost");
+                if (effectBrowserHost != null)
+                {
+                    effectBrowserHost.Content = _effectBrowserPanel;
+                }
+            }
+
+            if (!ReferenceEquals(_effectBrowserPanelOptions, vm.Options))
+            {
+                _effectBrowserPanel.SetOptions(vm.Options);
+                _effectBrowserPanelOptions = vm.Options;
+            }
+
+            return _effectBrowserPanel;
         }
 
         /// <summary>
@@ -818,9 +854,9 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 _isSyncingFromVM = true;
 
-                // One-time conversion from Avalonia Bitmap to SKBitmap for the Core
-                // In a full refactor, VM would hold SKBitmap source of truth
-                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+                using var skBitmap = !vm.IsEffectPreviewActive
+                    ? vm.CreateSourceImageCopyForCore() ?? BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage)
+                    : BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
                 if (skBitmap != null)
                 {
                     // We must copy because ToSKBitmap might return a disposable wrapper or we need ownership
@@ -849,7 +885,9 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             if (vm.PreviewImage == null || _canvasControl == null) return;
 
-            using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+            using var skBitmap = !vm.IsEffectPreviewActive
+                ? vm.CreateSourceImageCopyForCore() ?? BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage)
+                : BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
             if (skBitmap != null)
             {
                 _skipNextCoreImageChanged = true;

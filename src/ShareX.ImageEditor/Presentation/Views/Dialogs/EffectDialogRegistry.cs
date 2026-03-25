@@ -111,15 +111,15 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
         /// </returns>
         public static bool TryCreate(string effectId, out UserControl? dialog)
         {
-            if (FilterCatalog.TryGetDefinition(effectId, out FilterDefinition? definition) && definition != null)
-            {
-                dialog = new SchemaDrivenFilterDialog(definition);
-                return true;
-            }
-
             if (_factories.TryGetValue(effectId, out var factory))
             {
                 dialog = factory();
+                return true;
+            }
+
+            if (FilterCatalog.TryGetDefinition(effectId, out FilterDefinition? definition) && definition != null)
+            {
+                dialog = new SchemaDrivenFilterDialog(definition);
                 return true;
             }
 

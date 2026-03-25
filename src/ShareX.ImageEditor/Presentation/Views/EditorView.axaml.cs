@@ -65,8 +65,6 @@ namespace ShareX.ImageEditor.Presentation.Views
         private bool _pendingZoomToFitOnOpen;
         private int _pendingZoomToFitRetryCount;
         private int _pendingAutoCopyImageVersion;
-        private Rect? _lastOverlayCanvasRect;
-        private double _lastOverlayCanvasZoom = -1;
         private EffectBrowserPanel? _effectBrowserPanel;
         private ImageEditorOptions? _effectBrowserPanelOptions;
 
@@ -714,21 +712,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 _effectBrowserPanel = new EffectBrowserPanel();
                 _effectBrowserPanel.EffectDialogRequested += OnEffectDialogRequested;
-                _effectBrowserPanel.CropImageRequested += OnCropImageRequested;
-                _effectBrowserPanel.AutoCropImageRequested += OnAutoCropImageRequested;
-                _effectBrowserPanel.Rotate90CWRequested += OnRotate90CWRequested;
-                _effectBrowserPanel.Rotate90CCWRequested += OnRotate90CCWRequested;
-                _effectBrowserPanel.Rotate180Requested += OnRotate180Requested;
-                _effectBrowserPanel.RotateCustomAngleRequested += OnRotateCustomAngleRequested;
-                _effectBrowserPanel.FlipHorizontalRequested += OnFlipHorizontalRequested;
-                _effectBrowserPanel.FlipVerticalRequested += OnFlipVerticalRequested;
-                _effectBrowserPanel.InvertRequested += OnInvertRequested;
-                _effectBrowserPanel.BlackAndWhiteRequested += OnBlackAndWhiteRequested;
-                _effectBrowserPanel.PolaroidRequested += OnPolaroidRequested;
-                _effectBrowserPanel.EdgeDetectRequested += OnEdgeDetectRequested;
-                _effectBrowserPanel.EmbossRequested += OnEmbossRequested;
-                _effectBrowserPanel.MeanRemovalRequested += OnMeanRemovalRequested;
-                _effectBrowserPanel.SmoothRequested += OnSmoothRequested;
 
                 var effectBrowserHost = this.FindControl<ContentControl>("EffectBrowserHost");
                 if (effectBrowserHost != null)

@@ -34,7 +34,7 @@ namespace ShareX.ImageEditor.Core.Annotations;
 public partial class NumberAnnotation : Annotation
 {
     private const float GeometryEpsilon = 0.001f;
-    private const float TailWidthMultiplier = 0.6f;
+    private const float TailWidthMultiplier = 1.5f;
 
     public override AnnotationCategory Category => AnnotationCategory.Text;
     /// <summary>

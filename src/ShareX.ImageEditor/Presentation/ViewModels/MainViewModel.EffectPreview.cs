@@ -368,6 +368,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         /// <summary>
+        /// Ends dialog-driven effect preview without committing via effect delegates.
+        /// Used when a dialog should apply through <c>EditorCore</c> to keep annotation transforms unified.
+        /// </summary>
+        public void EndEffectPreview()
+        {
+            _latestEffectPreviewImage?.Dispose();
+            _latestEffectPreviewImage = null;
+
+            _preEffectImage?.Dispose();
+            _preEffectImage = null;
+
+            _isPreviewingEffect = false;
+            OnPropertyChanged(nameof(AreBackgroundEffectsActive));
+            OnPropertyChanged(nameof(EffectiveCanvasBackground));
+            UpdateCanvasProperties();
+        }
+
+        /// <summary>
         /// Applies the effect function to the pre-effect image and updates the preview.
         /// </summary>
         public void PreviewEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect)

@@ -244,6 +244,8 @@ namespace ShareX.ImageEditor.Presentation.Controls
             ["canvas"] = "resize_canvas",
             ["crop"] = "crop_image",
             ["auto_crop"] = "auto_crop_image",
+            // Back-compat for older persisted ids (e.g. favorites/recent) which exposed a broken host shortcut.
+            ["editor_auto_crop"] = "auto_crop_image",
             ["rotate_90"] = "rotate_90_clockwise",
             ["rotate_90_cc"] = "rotate_90_counter_clockwise"
         };
@@ -624,7 +626,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
             AddHost("rotate_custom_angle");
             AddHost("flip_horizontal");
             AddHost("flip_vertical");
-            AddHost("editor_auto_crop");
         }
 
         private void AddCatalogDrivenEffects(EffectCategory category, ImageEffectCategory targetCategory)

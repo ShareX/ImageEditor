@@ -25,9 +25,8 @@
 
 using Avalonia.Controls;
 using ShareX.ImageEditor.Core.Annotations;
-using ShareX.ImageEditor.Hosting;
-using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views.Dialogs;
 using SkiaSharp;
@@ -40,7 +39,26 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         private void OnCropImageRequested(object? sender, EventArgs e)
         {
-            ShowCropImageDialog(new CropImageDialog());
+            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
+            {
+                var dialog = new CropImageDialog();
+                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
+
+                dialog.ApplyRequested += (s, args) =>
+                {
+                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
+                    _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+
+                dialog.CancelRequested += (s, args) =>
+                {
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+
+                vm.EffectsPanelContent = dialog;
+                vm.IsEffectsPanelOpen = true;
+            }
         }
 
         private void OnAutoCropImageRequested(object? sender, EventArgs e)
@@ -182,111 +200,21 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
-            EditorServices.ReportDebug(nameof(EditorView), $"EffectDialogRequested effectId={e.EffectId}");
-
-            if (TryDispatchEditorHostEffect(e.EffectId))
-            {
+            if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
+
+            switch (dialog)
+            {
+                case IEffectDialog effectDialog:
+                    ShowEffectDialog(dialog, effectDialog);
+                    break;
+                case ResizeImageDialog resizeImageDialog:
+                    ShowResizeImageDialog(resizeImageDialog);
+                    break;
+                case ResizeCanvasDialog resizeCanvasDialog:
+                    ShowResizeCanvasDialog(resizeCanvasDialog);
+                    break;
             }
-
-            if (EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) && dialog != null)
-            {
-                EditorServices.ReportDebug(nameof(EditorView), $"TryCreate succeeded effectId={e.EffectId} dialogType={dialog.GetType().Name}");
-
-                switch (dialog)
-                {
-                    case IEffectDialog effectDialog:
-                        ShowEffectDialog(dialog, effectDialog);
-                        break;
-                    case CropImageDialog cropImageDialog:
-                        ShowCropImageDialog(cropImageDialog);
-                        break;
-                    case ResizeImageDialog resizeImageDialog:
-                        ShowResizeImageDialog(resizeImageDialog);
-                        break;
-                    case ResizeCanvasDialog resizeCanvasDialog:
-                        ShowResizeCanvasDialog(resizeCanvasDialog);
-                        break;
-                }
-                return;
-            }
-
-            EditorServices.ReportDebug(nameof(EditorView), $"TryCreate failed for effectId={e.EffectId}; checking ApplyImmediately catalog path.");
-
-            if (ImageEffectCatalog.TryGetDefinition(e.EffectId, out EffectDefinition? definition) &&
-                definition != null &&
-                definition.ApplyImmediately &&
-                DataContext is MainViewModel vm)
-            {
-                vm.ApplyEffect(
-                    img => definition.CreateConfiguredEffect([]).Apply(img),
-                    $"Applied {definition.Name}");
-                vm.CloseEffectsPanelCommand.Execute(null);
-            }
-        }
-
-        /// <summary>
-        /// Handles effect ids that are not backed by <see cref="ImageEffect"/> instances (editor core / VM shortcuts).
-        /// Handles effect ids dispatched by the browser for quick rotate, flip, and auto crop (host / view-model commands).
-        /// </summary>
-        private bool TryDispatchEditorHostEffect(string effectId)
-        {
-            if (string.IsNullOrWhiteSpace(effectId))
-            {
-                return false;
-            }
-
-            switch (effectId.Trim().ToLowerInvariant())
-            {
-                case "rotate_90_clockwise":
-                    OnRotate90CWRequested(this, EventArgs.Empty);
-                    return true;
-                case "rotate_90_counter_clockwise":
-                    OnRotate90CCWRequested(this, EventArgs.Empty);
-                    return true;
-                case "rotate_180":
-                    OnRotate180Requested(this, EventArgs.Empty);
-                    return true;
-                case "rotate_custom_angle":
-                    OnRotateCustomAngleRequested(this, EventArgs.Empty);
-                    return true;
-                case "flip_horizontal":
-                    OnFlipHorizontalRequested(this, EventArgs.Empty);
-                    return true;
-                case "flip_vertical":
-                    OnFlipVerticalRequested(this, EventArgs.Empty);
-                    return true;
-                case "editor_auto_crop":
-                    OnAutoCropImageRequested(this, EventArgs.Empty);
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        private void ShowCropImageDialog(CropImageDialog dialog)
-        {
-            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
-            {
-                return;
-            }
-
-            dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-
-            dialog.ApplyRequested += (s, args) =>
-            {
-                // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-
-            dialog.CancelRequested += (s, args) =>
-            {
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-
-            vm.EffectsPanelContent = dialog;
-            vm.IsEffectsPanelOpen = true;
         }
 
         /// <summary>
@@ -295,26 +223,57 @@ namespace ShareX.ImageEditor.Presentation.Views
         private void ShowEffectDialog(UserControl dialog, IEffectDialog effectDialog)
         {
             var vm = DataContext as MainViewModel;
-            if (vm == null)
-            {
-                EditorServices.ReportDebug(nameof(EditorView), "ShowEffectDialog: DataContext is not MainViewModel; aborting.");
-                return;
-            }
+            if (vm == null) return;
 
-            EditorServices.ReportDebug(nameof(EditorView), $"ShowEffectDialog: wiring preview/apply for {dialog.GetType().Name}");
             vm.StartEffectPreview();
 
-            effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
-            effectDialog.ApplyRequested += (s, e) =>
+            // Special-case schema-driven auto-crop so Apply goes through EditorCore:
+            // - keeps annotation transforms unified (develop behavior)
+            // - still uses the dialog UI/slider for tolerance
+            if (effectDialog is SchemaDrivenEffectDialog schemaDialog &&
+                string.Equals(schemaDialog.Definition.Id, "auto_crop_image", StringComparison.OrdinalIgnoreCase))
             {
-                vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-            effectDialog.CancelRequested += (s, e) =>
+                effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+                effectDialog.ApplyRequested += (s, e) =>
+                {
+                    int tolerance = 0;
+                    foreach (var state in schemaDialog.ParameterStates)
+                    {
+                        if (string.Equals(state.Key, "tolerance", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (state is SliderParameterState slider)
+                            {
+                                tolerance = (int)System.Math.Round(slider.Value);
+                            }
+
+                            break;
+                        }
+                    }
+
+                    _editorCore.AutoCrop(tolerance);
+                    vm.EndEffectPreview();
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+                effectDialog.CancelRequested += (s, e) =>
+                {
+                    vm.CancelEffectPreview();
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+            }
+            else
             {
-                vm.CancelEffectPreview();
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
+                effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+                effectDialog.ApplyRequested += (s, e) =>
+                {
+                    vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+                effectDialog.CancelRequested += (s, e) =>
+                {
+                    vm.CancelEffectPreview();
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+            }
 
             vm.EffectsPanelContent = dialog;
             vm.IsEffectsPanelOpen = true;

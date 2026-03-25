@@ -50,7 +50,9 @@ public static partial class ImageEffectCatalog
                 FloatSlider<Rotate3DBoxImageEffect>("rotate_y", "Rotate Y", -180, 180, 0, (e, v) => e.RotateY = v),
                 FloatSlider<Rotate3DBoxImageEffect>("rotate_z", "Rotate Z", -180, 180, 0, (e, v) => e.RotateZ = v),
                 BoolParameter<Rotate3DBoxImageEffect>("auto_resize", "Auto resize", true, (e, v) => e.AutoResize = v)),
-            Effect("auto_crop_image", ImageEffectCategory.Manipulations, static () => new AutoCropImageEffect(SKColors.Transparent, 0), IntSlider<AutoCropImageEffect>("tolerance", "Tolerance", 0, 255, 0, (_, _) => { })),
+            Effect("auto_crop_image", ImageEffectCategory.Manipulations,
+                static () => new AutoCropImageEffect(SKColors.Transparent, 0),
+                IntSlider<AutoCropImageEffect>("tolerance", "Tolerance", 0, 255, 0, (e, v) => e.Tolerance = v)),
             Effect<DisplacementMapImageEffect>(
                 "displacement_map", ImageEffectCategory.Manipulations,
                 FloatSlider<DisplacementMapImageEffect>("amount_x", "Amount X", -200, 200, 20, (e, v) => e.AmountX = v),

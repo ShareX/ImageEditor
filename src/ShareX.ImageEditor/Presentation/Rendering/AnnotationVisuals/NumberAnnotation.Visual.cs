@@ -24,56 +24,28 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
+using ShareX.ImageEditor.Presentation.Controls;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
 public partial class NumberAnnotation
 {
     /// <summary>
-    /// Creates the Avalonia visual for this annotation (Grid with Ellipse and TextBlock)
+    /// Creates the Avalonia visual for this annotation.
     /// </summary>
     public Control CreateVisual()
     {
-        var radius = CalculateRadius();
-        IBrush fillBrush = string.IsNullOrEmpty(FillColor) || FillColor == "#00000000"
-            ? Brushes.Transparent
-            : new SolidColorBrush(Color.Parse(FillColor));
-
-        var strokeColor = Color.Parse(StrokeColor);
-        var textColor = Color.Parse(TextColor);
-
-        var grid = new Grid
+        var control = new StepControl
         {
-            Width = radius * 2,
-            Height = radius * 2,
+            Width = Radius * 2,
+            Height = Radius * 2,
+            Annotation = this,
             Tag = this
         };
 
-        var bg = new Avalonia.Controls.Shapes.Ellipse
-        {
-            Fill = fillBrush,
-            Stroke = new SolidColorBrush(strokeColor),
-            StrokeThickness = StrokeWidth
-        };
-
-        var numText = new TextBlock
-        {
-            Text = Number.ToString(),
-            Foreground = new SolidColorBrush(textColor),
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontWeight = FontWeight.Bold,
-            FontSize = FontSize * 0.6
-        };
-
-        grid.Children.Add(bg);
-        grid.Children.Add(numText);
-
         if (ShadowEnabled)
         {
-            grid.Effect = new Avalonia.Media.DropShadowEffect
+            control.Effect = new Avalonia.Media.DropShadowEffect
             {
                 OffsetX = 3,
                 OffsetY = 3,
@@ -82,6 +54,6 @@ public partial class NumberAnnotation
             };
         }
 
-        return grid;
+        return control;
     }
 }

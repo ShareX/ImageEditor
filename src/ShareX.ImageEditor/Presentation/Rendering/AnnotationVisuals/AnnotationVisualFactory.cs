@@ -110,8 +110,10 @@ public static class AnnotationVisualFactory
                 freehandPath.Data = freehand.CreateSmoothedGeometry();
                 break;
 
-            case NumberAnnotation number when control is Grid numberGrid:
-                UpdateNumberGrid(numberGrid, number);
+            case NumberAnnotation number when control is StepControl stepControl:
+                stepControl.Annotation = number;
+                ApplyBoundsControl(stepControl, number.GetBounds(), ensureMinimumSize);
+                stepControl.InvalidateVisual();
                 break;
 
             case TextAnnotation text when mode == AnnotationVisualMode.Preview && control is Rectangle:
@@ -327,30 +329,5 @@ public static class AnnotationVisualFactory
         Canvas.SetTop(control, top);
         control.Width = width;
         control.Height = height;
-    }
-
-    private static void UpdateNumberGrid(Grid grid, NumberAnnotation number)
-    {
-        double radius = number.Radius;
-        Canvas.SetLeft(grid, number.StartPoint.X - radius);
-        Canvas.SetTop(grid, number.StartPoint.Y - radius);
-        grid.Width = radius * 2;
-        grid.Height = radius * 2;
-
-        if (grid.Children.Count > 0 && grid.Children[0] is Avalonia.Controls.Shapes.Ellipse ellipse)
-        {
-            IBrush fillBrush = string.IsNullOrEmpty(number.FillColor) || number.FillColor == "#00000000"
-                ? Brushes.Transparent
-                : new SolidColorBrush(Color.Parse(number.FillColor));
-            ellipse.Fill = fillBrush;
-            ellipse.Stroke = new SolidColorBrush(Color.Parse(number.StrokeColor));
-            ellipse.StrokeThickness = number.StrokeWidth;
-        }
-
-        if (grid.Children.Count > 1 && grid.Children[1] is TextBlock textBlock)
-        {
-            textBlock.Text = number.Number.ToString();
-            textBlock.FontSize = number.FontSize * 0.6;
-        }
     }
 }

@@ -440,6 +440,10 @@ public class EditorCore : IDisposable
                 for (int i = 0; i < freehand.Points.Count; i++)
                     freehand.Points[i] = transformPoint(freehand.Points[i]);
             }
+            else if (ann is NumberAnnotation number && number.HasTailPoint)
+            {
+                number.SetTailPoint(transformPoint(number.TailPoint));
+            }
             else if (ann is SpeechBalloonAnnotation balloon)
             {
                 balloon.SetTailPoint(transformPoint(balloon.GetEffectiveTailPoint()));
@@ -1603,6 +1607,12 @@ public class EditorCore : IDisposable
                     tailPoint.X + offsetX,
                     tailPoint.Y + offsetY));
             }
+            else if (annotation is NumberAnnotation number && number.HasTailPoint)
+            {
+                number.SetTailPoint(new SKPoint(
+                    number.TailPoint.X + offsetX,
+                    number.TailPoint.Y + offsetY));
+            }
 
             // Update effect annotations with new bounds
             if (annotation is BaseEffectAnnotation effect)
@@ -1831,6 +1841,15 @@ public class EditorCore : IDisposable
                         tailX = cutX;
                     balloon.SetTailPoint(new SKPoint(tailX, tailPoint.Y));
                 }
+                else if (annotation is NumberAnnotation number && number.HasTailPoint)
+                {
+                    float tailX = number.TailPoint.X;
+                    if (tailX >= cutEnd)
+                        tailX -= cutWidth;
+                    else if (tailX > cutX)
+                        tailX = cutX;
+                    number.SetTailPoint(new SKPoint(tailX, number.TailPoint.Y));
+                }
 
                 // Update effect annotations
                 if (annotation is BaseEffectAnnotation effect && SourceImage != null)
@@ -1916,6 +1935,15 @@ public class EditorCore : IDisposable
                     else if (tailY > cutY)
                         tailY = cutY;
                     balloon.SetTailPoint(new SKPoint(tailPoint.X, tailY));
+                }
+                else if (annotation is NumberAnnotation number && number.HasTailPoint)
+                {
+                    float tailY = number.TailPoint.Y;
+                    if (tailY >= cutEnd)
+                        tailY -= cutHeight;
+                    else if (tailY > cutY)
+                        tailY = cutY;
+                    number.SetTailPoint(new SKPoint(number.TailPoint.X, tailY));
                 }
 
                 // Update effect annotations

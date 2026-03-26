@@ -1,17 +1,31 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class WaveEdgeImageEffect : FilterImageEffect
+public sealed class WaveEdgeImageEffect : ImageEffectBase
 {
+    public override string Id => "wave_edge";
+    public override string Name => "Wave edge";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "WavesLadder";
+    public override string Description => "Adds a wavy edge to the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<WaveEdgeImageEffect>("depth", "Depth", 1, 100, 15, (effect, value) => effect.Depth = value, isSnapToTickEnabled: false),
+        EffectParameters.IntSlider<WaveEdgeImageEffect>("range", "Range", 1, 100, 20, (effect, value) => effect.Range = value, isSnapToTickEnabled: false),
+        EffectParameters.Bool<WaveEdgeImageEffect>("top", "Top", true, (effect, value) => effect.Top = value),
+        EffectParameters.Bool<WaveEdgeImageEffect>("right", "Right", true, (effect, value) => effect.Right = value),
+        EffectParameters.Bool<WaveEdgeImageEffect>("bottom", "Bottom", true, (effect, value) => effect.Bottom = value),
+        EffectParameters.Bool<WaveEdgeImageEffect>("left", "Left", true, (effect, value) => effect.Left = value)
+    ];
+
     public int Depth { get; set; } = 15;
     public int Range { get; set; } = 20;
     public bool Top { get; set; } = true;
     public bool Right { get; set; } = true;
     public bool Bottom { get; set; } = true;
     public bool Left { get; set; } = true;
-
-    public override string Name => "Wave edge";
 
     public WaveEdgeImageEffect()
     {
@@ -33,7 +47,7 @@ public class WaveEdgeImageEffect : FilterImageEffect
         if (Depth < 1 || Range < 1) return source.Copy();
         if (!Top && !Right && !Bottom && !Left) return source.Copy();
 
-        List<SKPoint> points = new List<SKPoint>();
+        List<SKPoint> points = [];
 
         int horizontalWaveCount = Math.Max(2, (source.Width / Range + 1) / 2 * 2) - 1;
         int verticalWaveCount = Math.Max(2, (source.Height / Range + 1) / 2 * 2) - 1;
@@ -55,6 +69,7 @@ public class WaveEdgeImageEffect : FilterImageEffect
             {
                 points.Add(new SKPoint(x, WaveFunction(x, horizontalWaveRange, Depth)));
             }
+
             points.Add(new SKPoint(endX, WaveFunction(endX, horizontalWaveRange, Depth)));
         }
         else
@@ -70,6 +85,7 @@ public class WaveEdgeImageEffect : FilterImageEffect
             {
                 points.Add(new SKPoint(source.Width - Depth + WaveFunction(y, verticalWaveRange, Depth), y));
             }
+
             points.Add(new SKPoint(source.Width - Depth + WaveFunction(endY, verticalWaveRange, Depth), endY));
         }
         else
@@ -85,6 +101,7 @@ public class WaveEdgeImageEffect : FilterImageEffect
             {
                 points.Add(new SKPoint(x, source.Height - Depth + WaveFunction(x, horizontalWaveRange, Depth)));
             }
+
             points.Add(new SKPoint(endX, source.Height - Depth + WaveFunction(endX, horizontalWaveRange, Depth)));
         }
         else
@@ -100,6 +117,7 @@ public class WaveEdgeImageEffect : FilterImageEffect
             {
                 points.Add(new SKPoint(WaveFunction(y, verticalWaveRange, Depth), y));
             }
+
             points.Add(new SKPoint(WaveFunction(endY, verticalWaveRange, Depth), endY));
         }
         else
@@ -112,28 +130,25 @@ public class WaveEdgeImageEffect : FilterImageEffect
             points[0] = new SKPoint(points[^1].X, 0);
         }
 
-        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-        using SKCanvas canvas = new SKCanvas(result);
+        SKBitmap result = new(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using SKCanvas canvas = new(result);
         canvas.Clear(SKColors.Transparent);
 
         using SKShader shader = SKShader.CreateBitmap(source, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp);
-        using SKPaint paint = new SKPaint
+        using SKPaint paint = new()
         {
             Shader = shader,
             IsAntialias = true
         };
 
-        using SKPath path = new SKPath();
-        if (points.Count > 2)
-        {
-            path.AddPoly(points.ToArray(), true);
-            canvas.DrawPath(path, paint);
-        }
-        else
+        using SKPath path = new();
+        if (points.Count <= 2)
         {
             return source.Copy();
         }
 
+        path.AddPoly(points.ToArray(), true);
+        canvas.DrawPath(path, paint);
         return result;
     }
 }

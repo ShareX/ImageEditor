@@ -404,15 +404,6 @@ public static partial class ImageEffectCatalog
                 FloatSlider<OldCameraFlashBurnImageEffect>("center_x", "Flash center X (%)", 0, 100, 50, (effect, value) => effect.CenterX = value),
                 FloatSlider<OldCameraFlashBurnImageEffect>("center_y", "Flash center Y (%)", 0, 100, 50, (effect, value) => effect.CenterY = value)),
 
-            Effect(
-                "outline",
-                ImageEffectCategory.Filters,
-                static () => new OutlineImageEffect(3, 0, outlineOnly: false, ToSkColor(Colors.Black)),
-                IntSlider<OutlineImageEffect>("size", "Size", 1, 50, 3, (effect, value) => effect.Size = value, isSnapToTickEnabled: false),
-                IntSlider<OutlineImageEffect>("padding", "Padding", 0, 100, 0, (effect, value) => effect.Padding = value, isSnapToTickEnabled: false),
-                BoolParameter<OutlineImageEffect>("outline_only", "Outline only", false, (effect, value) => effect.OutlineOnly = value),
-                ColorParameter<OutlineImageEffect>("color", "Color", Colors.Black, (effect, value) => effect.Color = ToSkColor(value))),
-
             Effect<PaperStencilMaskImageEffect>(
                 "paper_stencil_mask",
                 ImageEffectCategory.Filters,
@@ -470,17 +461,6 @@ public static partial class ImageEffectCatalog
                 FloatSlider<RainyWindowImageEffect>("streak_density", "Streak density (%)", 0, 100, 45, (effect, value) => effect.StreakDensity = value),
                 FloatSlider<RainyWindowImageEffect>("mist_amount", "Mist (%)", 0, 100, 25, (effect, value) => effect.MistAmount = value),
                 FloatSlider<RainyWindowImageEffect>("droplet_amount", "Droplets (%)", 0, 100, 35, (effect, value) => effect.DropletAmount = value)),
-
-            Effect(
-                "reflection",
-                ImageEffectCategory.Filters,
-                static () => new ReflectionImageEffect(20, 255, 0, 0, skew: false, skewSize: 25),
-                IntSlider<ReflectionImageEffect>("percentage", "Percentage", 1, 100, 20, (effect, value) => effect.Percentage = value, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0}%"),
-                IntSlider<ReflectionImageEffect>("max_alpha", "Max Alpha", 0, 255, 255, (effect, value) => effect.MaxAlpha = value, isSnapToTickEnabled: false),
-                IntSlider<ReflectionImageEffect>("min_alpha", "Min Alpha", 0, 255, 0, (effect, value) => effect.MinAlpha = value, isSnapToTickEnabled: false),
-                IntSlider<ReflectionImageEffect>("offset", "Offset", 0, 100, 0, (effect, value) => effect.Offset = value, isSnapToTickEnabled: false),
-                BoolParameter<ReflectionImageEffect>("skew", "Skew", false, (effect, value) => effect.Skew = value),
-                IntSlider<ReflectionImageEffect>("skew_size", "Skew Size", 1, 100, 25, (effect, value) => effect.SkewSize = value, isSnapToTickEnabled: false)),
 
             Effect<RGBSplitImageEffect>(
                 "rgb_split",
@@ -587,18 +567,6 @@ public static partial class ImageEffectCatalog
                 FloatSlider<TiltShiftImageEffect>("falloff", "Falloff (%)", 1, 60, 24, (effect, value) => effect.Falloff = value),
                 FloatSlider<TiltShiftImageEffect>("saturation_boost", "Saturation boost (%)", 0, 100, 35, (effect, value) => effect.SaturationBoost = value)),
 
-            Effect(
-                "torn_edge",
-                ImageEffectCategory.Filters,
-                static () => new TornEdgeImageEffect(20, 20, top: true, right: true, bottom: true, left: true, curved: false),
-                IntSlider<TornEdgeImageEffect>("depth", "Depth", 1, 100, 20, (effect, value) => effect.Depth = value, isSnapToTickEnabled: false),
-                IntSlider<TornEdgeImageEffect>("range", "Range", 1, 100, 20, (effect, value) => effect.Range = value, isSnapToTickEnabled: false),
-                BoolParameter<TornEdgeImageEffect>("top", "Top", true, (effect, value) => effect.Top = value),
-                BoolParameter<TornEdgeImageEffect>("right", "Right", true, (effect, value) => effect.Right = value),
-                BoolParameter<TornEdgeImageEffect>("bottom", "Bottom", true, (effect, value) => effect.Bottom = value),
-                BoolParameter<TornEdgeImageEffect>("left", "Left", true, (effect, value) => effect.Left = value),
-                BoolParameter<TornEdgeImageEffect>("curved", "Curved edges", false, (effect, value) => effect.Curved = value)),
-
             Effect<UnsharpMaskImageEffect>(
                 "unsharp_mask",
                 ImageEffectCategory.Filters,
@@ -621,16 +589,6 @@ public static partial class ImageEffectCatalog
                 IntSlider<WatercolorKuwaharaImageEffect>("radius", "Radius (px)", 2, 10, 4, (effect, value) => effect.Radius = value),
                 FloatSlider<WatercolorKuwaharaImageEffect>("saturation_boost", "Saturation boost (%)", 0, 100, 20, (effect, value) => effect.SaturationBoost = value),
                 FloatSlider<WatercolorKuwaharaImageEffect>("detail_blend", "Detail blend (%)", 0, 100, 18, (effect, value) => effect.DetailBlend = value)),
-
-            Effect<WaveEdgeImageEffect>(
-                "wave_edge",
-                ImageEffectCategory.Filters,
-                IntSlider<WaveEdgeImageEffect>("depth", "Depth", 1, 100, 15, (effect, value) => effect.Depth = value, isSnapToTickEnabled: false),
-                IntSlider<WaveEdgeImageEffect>("range", "Range", 1, 100, 20, (effect, value) => effect.Range = value, isSnapToTickEnabled: false),
-                BoolParameter<WaveEdgeImageEffect>("top", "Top", true, (effect, value) => effect.Top = value),
-                BoolParameter<WaveEdgeImageEffect>("right", "Right", true, (effect, value) => effect.Right = value),
-                BoolParameter<WaveEdgeImageEffect>("bottom", "Bottom", true, (effect, value) => effect.Bottom = value),
-                BoolParameter<WaveEdgeImageEffect>("left", "Left", true, (effect, value) => effect.Left = value)),
 
             Effect<ZoomBlurImageEffect>(
                 "zoom_blur",

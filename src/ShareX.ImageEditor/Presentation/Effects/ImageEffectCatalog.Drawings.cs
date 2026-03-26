@@ -20,27 +20,6 @@ public static partial class ImageEffectCatalog
                 IntSlider<DrawCheckerboardEffect>("size", "Size", 1, 200, 10, (e, v) => e.Size = v),
                 ColorParameter<DrawCheckerboardEffect>("color", "Color 1", Color.FromRgb(211, 211, 211), (e, v) => e.Color = ToSkColor(v)),
                 ColorParameter<DrawCheckerboardEffect>("color2", "Color 2", Colors.White, (e, v) => e.Color2 = ToSkColor(v))),
-            Effect(
-                "border", ImageEffectCategory.Drawings,
-                static () => new BorderImageEffect(ImageHelpers.BorderType.Outside, 5, ImageHelpers.DashStyle.Solid, ToSkColor(Colors.Black)),
-                EnumParameter<BorderImageEffect, ImageHelpers.BorderType>(
-                    "type",
-                    "Type",
-                    ImageHelpers.BorderType.Outside,
-                    (effect, value) => effect.Type = value,
-                    ("Outside", ImageHelpers.BorderType.Outside),
-                    ("Inside", ImageHelpers.BorderType.Inside)),
-                IntSlider<BorderImageEffect>("size", "Size", 1, 100, 5, (effect, value) => effect.Size = value),
-                EnumParameter<BorderImageEffect, ImageHelpers.DashStyle>(
-                    "dash_style",
-                    "Dash style",
-                    ImageHelpers.DashStyle.Solid,
-                    (effect, value) => effect.DashStyle = value,
-                    ("Solid", ImageHelpers.DashStyle.Solid),
-                    ("Dash", ImageHelpers.DashStyle.Dash),
-                    ("Dot", ImageHelpers.DashStyle.Dot),
-                    ("Dash Dot", ImageHelpers.DashStyle.DashDot)),
-                ColorParameter<BorderImageEffect>("color", "Color", Colors.Black, (effect, value) => effect.Color = ToSkColor(value))),
             Effect<DrawBackgroundImageEffect>(
                 "draw_background_image", ImageEffectCategory.Drawings,
                 FilePathParameter<DrawBackgroundImageEffect>("image_file_path", "Image file", "", (e, v) => e.ImageFilePath = v, "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.webp"),

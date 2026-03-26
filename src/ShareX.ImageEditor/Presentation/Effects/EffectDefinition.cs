@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using ShareX.ImageEditor.Core.ImageEffects;
+using CoreEffectParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.EffectParameter;
 
 namespace ShareX.ImageEditor.Presentation.Effects;
 
@@ -45,6 +46,8 @@ public sealed class EffectDefinition
 
     public IReadOnlyList<EffectParameterDefinition> Parameters { get; }
 
+    public IReadOnlyList<CoreEffectParameter> CoreParameters { get; }
+
     /// <summary>
     /// When set, indicates this effect requires a bespoke editor rather than the generic schema-driven dialog.
     /// The value is a key used to resolve the bespoke editor control.
@@ -65,6 +68,7 @@ public sealed class EffectDefinition
         ImageEffectCategory category,
         Func<ImageEffect> createEffect,
         IReadOnlyList<EffectParameterDefinition> parameters,
+        IReadOnlyList<CoreEffectParameter>? coreParameters = null,
         string? customEditorKey = null,
         bool applyImmediately = false)
         : this(
@@ -76,6 +80,7 @@ public sealed class EffectDefinition
             category,
             createEffect,
             parameters,
+            coreParameters,
             customEditorKey,
             applyImmediately)
     {
@@ -90,6 +95,7 @@ public sealed class EffectDefinition
         ImageEffectCategory category,
         Func<ImageEffect> createEffect,
         IReadOnlyList<EffectParameterDefinition> parameters,
+        IReadOnlyList<CoreEffectParameter>? coreParameters = null,
         string? customEditorKey = null,
         bool applyImmediately = false)
     {
@@ -101,6 +107,7 @@ public sealed class EffectDefinition
         Category = category;
         CreateEffect = createEffect ?? throw new ArgumentNullException(nameof(createEffect));
         Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+        CoreParameters = coreParameters ?? [];
         CustomEditorKey = customEditorKey;
         ApplyImmediately = applyImmediately;
     }
@@ -111,7 +118,7 @@ public sealed class EffectDefinition
 
         foreach (EffectParameterState parameterState in parameterStates)
         {
-            parameterState.Definition.ApplyValue(effect, parameterState.GetValue());
+            parameterState.ApplyValue(effect);
         }
 
         return effect;

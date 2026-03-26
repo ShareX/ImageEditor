@@ -127,11 +127,6 @@ public static partial class ImageEffectCatalog
                 FloatSlider<RippleRefractionImageEffect>("refraction", "Refraction (%)", 0, 100, 35, (e, v) => e.Refraction = v),
                 FloatSlider<RippleRefractionImageEffect>("center_x_percentage", "Center X (%)", 0, 100, 50, (e, v) => e.CenterXPercentage = v),
                 FloatSlider<RippleRefractionImageEffect>("center_y_percentage", "Center Y (%)", 0, 100, 50, (e, v) => e.CenterYPercentage = v)),
-            Effect<RemoveBackgroundImageEffect>(
-                "remove_background", ImageEffectCategory.Manipulations,
-                FloatSlider<RemoveBackgroundImageEffect>("sensitivity", "Sensitivity (%)", 0, 100, 60, (e, v) => e.Sensitivity = v),
-                FloatSlider<RemoveBackgroundImageEffect>("center_protection", "Center protection (%)", 0, 100, 65, (e, v) => e.CenterProtection = v),
-                FloatSlider<RemoveBackgroundImageEffect>("edge_feather", "Edge feather (px)", 0, 24, 4, (e, v) => e.EdgeFeather = v, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}")),
             BespokeEffect<PerspectiveWarpImageEffect>("perspective_warp", ImageEffectCategory.Manipulations, "perspective_warp"),
             BespokeEffect<ResizeImageEffect>("resize_image", ImageEffectCategory.Manipulations, "resize_image"),
             BespokeEffect<ResizeImageEffect>("resize_canvas", ImageEffectCategory.Manipulations, "resize_canvas"),

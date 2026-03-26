@@ -1,12 +1,19 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
-
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ContrastImageEffect : AdjustmentImageEffect
+public sealed class ContrastImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "contrast";
     public override string Name => "Contrast";
-    public override string IconKey => "IconAdjust";
+    public override string IconKey => "Contrast";
+    public override string Description => "Adjusts image contrast.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<ContrastImageEffect>("amount", "Amount", -100, 100, 0, (effect, value) => effect.Amount = value)
+    ];
+
     public float Amount { get; set; } = 0; // -100 to 100
 
     public override SKBitmap Apply(SKBitmap source)

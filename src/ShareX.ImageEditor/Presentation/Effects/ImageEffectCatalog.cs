@@ -104,10 +104,24 @@ public static partial class ImageEffectCatalog
     private static IReadOnlyList<EffectDefinition> BuildAllDefinitions()
     {
         var all = new List<EffectDefinition>();
-        all.AddRange(BuildFilterDefinitions());
-        all.AddRange(BuildAdjustmentDefinitions());
-        all.AddRange(BuildManipulationDefinitions());
-        all.AddRange(BuildDrawingDefinitions());
+        var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        void AddDefinitions(IEnumerable<EffectDefinition> definitions)
+        {
+            foreach (EffectDefinition definition in definitions)
+            {
+                if (seenIds.Add(definition.Id))
+                {
+                    all.Add(definition);
+                }
+            }
+        }
+
+        AddDefinitions(DiscoveredEffectRegistry.Definitions);
+        AddDefinitions(BuildFilterDefinitions());
+        AddDefinitions(BuildAdjustmentDefinitions());
+        AddDefinitions(BuildManipulationDefinitions());
+        AddDefinitions(BuildDrawingDefinitions());
         return all.AsReadOnly();
     }
 

@@ -1,12 +1,19 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
-
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class GammaImageEffect : AdjustmentImageEffect
+public sealed class GammaImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "gamma";
     public override string Name => "Gamma";
-    public override string IconKey => "IconWaveSquare";
+    public override string IconKey => "Gauge";
+    public override string Description => "Adjusts the gamma level.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<GammaImageEffect>("amount", "Amount", 0.1, 5, 1, (effect, value) => effect.Amount = value, tickFrequency: 0.1, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.0}")
+    ];
+
     public float Amount { get; set; } = 1f;
 
     private float _cachedAmount = float.NaN;

@@ -11,11 +11,8 @@ public static partial class ImageEffectCatalog
     {
         return
         [
-            Effect<BrightnessImageEffect>("brightness", ImageEffectCategory.Adjustments, FloatSlider<BrightnessImageEffect>("amount", "Amount", -100, 100, 0, (e, v) => e.Amount = v)),
-            Effect<ContrastImageEffect>("contrast", ImageEffectCategory.Adjustments, FloatSlider<ContrastImageEffect>("amount", "Amount", -100, 100, 0, (e, v) => e.Amount = v)),
             Effect<HueImageEffect>("hue", ImageEffectCategory.Adjustments, FloatSlider<HueImageEffect>("amount", "Amount", -180, 180, 0, (e, v) => e.Amount = v)),
             Effect<SaturationImageEffect>("saturation", ImageEffectCategory.Adjustments, FloatSlider<SaturationImageEffect>("amount", "Amount", -100, 100, 0, (e, v) => e.Amount = v)),
-            Effect<GammaImageEffect>("gamma", ImageEffectCategory.Adjustments, FloatSlider<GammaImageEffect>("amount", "Amount", 0.1, 5, 1, (e, v) => e.Amount = v, tickFrequency: 0.1, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.0}")),
             Effect<AlphaImageEffect>("alpha", ImageEffectCategory.Adjustments, FloatSlider<AlphaImageEffect>("amount", "Alpha", 0, 100, 100, (e, v) => e.Amount = v)),
             Effect<ExposureImageEffect>("exposure", ImageEffectCategory.Adjustments, FloatSlider<ExposureImageEffect>("amount", "Exposure", -100, 100, 0, (e, v) => e.Amount = v)),
             Effect<ThresholdImageEffect>("threshold", ImageEffectCategory.Adjustments, IntSlider<ThresholdImageEffect>("value", "Threshold", 0, 255, 128, (e, v) => e.Value = v)),
@@ -92,10 +89,7 @@ public static partial class ImageEffectCatalog
                 FloatSlider<FilmEmulationImageEffect>("grain_amount", "Grain amount", 0, 100, 12, (e, v) => e.GrainAmount = v),
                 FloatSlider<FilmEmulationImageEffect>("fade_amount", "Fade amount", 0, 100, 10, (e, v) => e.FadeAmount = v),
                 FloatSlider<FilmEmulationImageEffect>("contrast_amount", "Contrast amount", 50, 150, 110, (e, v) => e.ContrastAmount = v)),
-            Effect<AutoContrastImageEffect>("auto_contrast", ImageEffectCategory.Adjustments, FloatSlider<AutoContrastImageEffect>("clip_percent", "Clip percent", 0, 20, 0.5, (e, v) => e.ClipPercent = v, tickFrequency: 0.1, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.0}")),
-            ImmediateEffect<InvertImageEffect>("invert", ImageEffectCategory.Adjustments),
-            ImmediateEffect<BlackAndWhiteImageEffect>("black_and_white", ImageEffectCategory.Adjustments),
-            ImmediateEffect<PolaroidImageEffect>("polaroid", ImageEffectCategory.Adjustments)
+            Effect<AutoContrastImageEffect>("auto_contrast", ImageEffectCategory.Adjustments, FloatSlider<AutoContrastImageEffect>("clip_percent", "Clip percent", 0, 20, 0.5, (e, v) => e.ClipPercent = v, tickFrequency: 0.1, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.0}"))
         ];
     }
 }

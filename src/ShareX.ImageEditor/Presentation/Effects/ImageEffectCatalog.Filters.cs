@@ -446,11 +446,6 @@ public static partial class ImageEffectCatalog
                 FloatSlider<PencilSketchImageEffect>("pencil_darkness", "Pencil darkness (%)", 0, 100, 70, (effect, value) => effect.PencilDarkness = value),
                 FloatSlider<PencilSketchImageEffect>("paper_brightness", "Paper brightness (%)", 40, 130, 100, (effect, value) => effect.PaperBrightness = value)),
 
-            Effect<PixelateImageEffect>(
-                "pixelate",
-                ImageEffectCategory.Filters,
-                IntSlider<PixelateImageEffect>("size", "Size", 2, 200, 10, (effect, value) => effect.Size = value, valueStringFormat: "{}{0:0} px")),
-
             Effect<PixelSortingImageEffect>(
                 "pixel_sorting",
                 ImageEffectCategory.Filters,

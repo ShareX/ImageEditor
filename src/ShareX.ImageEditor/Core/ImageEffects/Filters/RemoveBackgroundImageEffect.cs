@@ -1,17 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RemoveBackgroundImageEffect : ImageEffect
+public sealed class RemoveBackgroundImageEffect : ImageEffectBase
 {
     private const byte TransparentAlphaThreshold = 20;
     private const int MaxProcessDimension = 256;
 
+    public override string Id => "remove_background";
     public override string Name => "Remove background";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "IconScissors";
-    public override bool HasParameters => true;
+    public override string IconKey => "Scissors";
+    public override string Description => "Removes border-connected background colors and turns them transparent.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<RemoveBackgroundImageEffect>("sensitivity", "Sensitivity (%)", 0, 100, 60, (effect, value) => effect.Sensitivity = value),
+        EffectParameters.FloatSlider<RemoveBackgroundImageEffect>("center_protection", "Center protection (%)", 0, 100, 65, (effect, value) => effect.CenterProtection = value),
+        EffectParameters.FloatSlider<RemoveBackgroundImageEffect>("edge_feather", "Edge feather (px)", 0, 24, 4, (effect, value) => effect.EdgeFeather = value, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}")
+    ];
 
     public float Sensitivity { get; set; } = 60f; // 0..100
     public float CenterProtection { get; set; } = 65f; // 0..100

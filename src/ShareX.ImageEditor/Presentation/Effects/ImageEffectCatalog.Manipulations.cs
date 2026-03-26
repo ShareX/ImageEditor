@@ -55,6 +55,7 @@ public static partial class ImageEffectCatalog
                 IntSlider<AutoCropImageEffect>("tolerance", "Tolerance", 0, 255, 0, (e, v) => e.Tolerance = v)),
             Effect<DisplacementMapImageEffect>(
                 "displacement_map", ImageEffectCategory.Manipulations,
+                FilePathParameter<DisplacementMapImageEffect>("map_file_path", "Map image", "", (e, v) => e.MapFilePath = v, "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.webp"),
                 FloatSlider<DisplacementMapImageEffect>("amount_x", "Amount X", -200, 200, 20, (e, v) => e.AmountX = v),
                 FloatSlider<DisplacementMapImageEffect>("amount_y", "Amount Y", -200, 200, 20, (e, v) => e.AmountY = v)),
             Effect<CylinderWrapImageEffect>(

@@ -176,7 +176,7 @@ public static partial class ImageEffectCatalog
             ["scale"] = new("Scale...", LucideIcons.Scale, "Scales the image."),
             ["flip"] = new("Flip...", LucideIcons.FlipHorizontal2, "Flip the image."),
             ["auto_crop_image"] = new("Auto crop image...", LucideIcons.Scan, "Automatically crops the image using tolerance on edge pixels."),
-            ["displacement_map"] = new("Displacement map...", LucideIcons.Map, "Applies a displacement map."),
+            ["displacement_map"] = new("Displacement map...", LucideIcons.Map, "Applies a displacement map from the source image or a selected map image."),
             ["perspective_warp"] = new("Perspective warp...", LucideIcons.Waypoints, "Warps the image perspective."),
             ["resize_image"] = new("Resize image...", LucideIcons.ImageUpscale, "Resizes the image."),
             ["resize_canvas"] = new("Resize canvas...", LucideIcons.Maximize, "Resizes the canvas."),

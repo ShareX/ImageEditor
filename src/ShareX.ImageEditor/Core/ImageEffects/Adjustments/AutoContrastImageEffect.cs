@@ -1,11 +1,18 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class AutoContrastImageEffect : AdjustmentImageEffect
+public sealed class AutoContrastImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "auto_contrast";
     public override string Name => "Auto contrast";
-    public override string IconKey => "IconAdjust";
+    public override string IconKey => "Wand2";
+    public override string Description => "Automatically adjusts the contrast.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<AutoContrastImageEffect>("clip_percent", "Clip percent", 0, 20, 0.5, (effect, value) => effect.ClipPercent = value, tickFrequency: 0.1, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.0}")
+    ];
 
     // Histogram clipping amount per side in percent.
     public float ClipPercent { get; set; } = 0.5f;

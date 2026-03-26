@@ -1,11 +1,19 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ShadowsHighlightsImageEffect : AdjustmentImageEffect
+public sealed class ShadowsHighlightsImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "shadows_highlights";
     public override string Name => "Shadows / Highlights";
-    public override string IconKey => "IconArrowsV";
+    public override string IconKey => "Lightbulb";
+    public override string Description => "Adjusts shadows and highlights.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<ShadowsHighlightsImageEffect>("shadows", "Shadows", -100, 100, 0, (effect, value) => effect.Shadows = value),
+        EffectParameters.FloatSlider<ShadowsHighlightsImageEffect>("highlights", "Highlights", -100, 100, 0, (effect, value) => effect.Highlights = value)
+    ];
 
     // Positive Shadows brightens dark areas; positive Highlights darkens bright areas.
     public float Shadows { get; set; } // -100..100

@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class DuotoneGradientMapImageEffect : AdjustmentImageEffect
+public sealed class DuotoneGradientMapImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "duotone_gradient_map";
     public override string Name => "Duotone / Gradient map";
-    public override string IconKey => "IconDroplets";
+    public override string IconKey => "Blend";
+    public override string Description => "Maps grayscale tones to a custom multi-color gradient.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Color<DuotoneGradientMapImageEffect>("shadow_color", "Shadow color", new SKColor(24, 28, 78), (effect, value) => effect.ShadowColor = value),
+        EffectParameters.Color<DuotoneGradientMapImageEffect>("midtone_color", "Midtone color", new SKColor(182, 60, 132), (effect, value) => effect.MidtoneColor = value),
+        EffectParameters.Color<DuotoneGradientMapImageEffect>("highlight_color", "Highlight color", new SKColor(255, 224, 132), (effect, value) => effect.HighlightColor = value),
+        EffectParameters.FloatSlider<DuotoneGradientMapImageEffect>("contrast", "Contrast", 50, 200, 110, (effect, value) => effect.Contrast = value),
+        EffectParameters.FloatSlider<DuotoneGradientMapImageEffect>("gamma", "Gamma", 0.1, 5, 1, (effect, value) => effect.Gamma = value, tickFrequency: 0.1, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.0}"),
+        EffectParameters.FloatSlider<DuotoneGradientMapImageEffect>("blend", "Blend", 0, 100, 100, (effect, value) => effect.Blend = value)
+    ];
 
     public SKColor ShadowColor { get; set; } = new SKColor(24, 28, 78);
     public SKColor MidtoneColor { get; set; } = new SKColor(182, 60, 132);

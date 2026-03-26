@@ -109,11 +109,6 @@ public static partial class ImageEffectCatalog
                 FloatSlider<BlueprintDrawingImageEffect>("texture", "Paper texture (%)", 0, 100, 25, (effect, value) => effect.Texture = value),
                 FloatSlider<BlueprintDrawingImageEffect>("glow", "Cyan glow (%)", 0, 100, 35, (effect, value) => effect.Glow = value)),
 
-            Effect<BlurImageEffect>(
-                "blur",
-                ImageEffectCategory.Filters,
-                IntSlider<BlurImageEffect>("radius", "Radius", 1, 200, 10, (effect, value) => effect.Radius = value)),
-
             Effect<CartoonStickerCutoutImageEffect>(
                 "cartoon_sticker_cutout",
                 ImageEffectCategory.Filters,
@@ -226,11 +221,6 @@ public static partial class ImageEffectCatalog
                 IntSlider<FrostedGlassIceEdgesImageEffect>("edge_threshold", "Edge threshold", 1, 120, 28, (effect, value) => effect.EdgeThreshold = value),
                 FloatSlider<FrostedGlassIceEdgesImageEffect>("ice_strength", "Ice strength (%)", 0, 100, 75, (effect, value) => effect.IceStrength = value),
                 FloatSlider<FrostedGlassIceEdgesImageEffect>("tint", "Cool tint (%)", 0, 100, 35, (effect, value) => effect.Tint = value)),
-
-            Effect<GaussianBlurImageEffect>(
-                "gaussian_blur",
-                ImageEffectCategory.Filters,
-                IntSlider<GaussianBlurImageEffect>("radius", "Radius", 1, 200, 15, (effect, value) => effect.Radius = value)),
 
             Effect(
                 "glow",
@@ -524,11 +514,6 @@ public static partial class ImageEffectCatalog
                 ColorParameter<ShadowImageEffect>("color", "Color", Colors.Black, (effect, value) => effect.Color = ToSkColor(value)),
                 BoolParameter<ShadowImageEffect>("auto_resize", "Auto resize", true, (effect, value) => effect.AutoResize = value)),
 
-            Effect<SharpenImageEffect>(
-                "sharpen",
-                ImageEffectCategory.Filters,
-                IntSlider<SharpenImageEffect>("strength", "Strength", 0, 100, 50, (effect, value) => effect.Strength = value, valueStringFormat: "{}{0:0}%")),
-
             Effect(
                 "slice",
                 ImageEffectCategory.Filters,
@@ -620,12 +605,6 @@ public static partial class ImageEffectCatalog
                 FloatSlider<UnsharpMaskImageEffect>("radius", "Radius", 1, 100, 5, (effect, value) => effect.Radius = value, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}"),
                 FloatSlider<UnsharpMaskImageEffect>("amount", "Amount (%)", 0, 500, 150, (effect, value) => effect.Amount = value, valueStringFormat: "{}{0:0}%"),
                 IntSlider<UnsharpMaskImageEffect>("threshold", "Threshold", 0, 255, 0, (effect, value) => effect.Threshold = value)),
-
-            Effect<VignetteImageEffect>(
-                "vignette",
-                ImageEffectCategory.Filters,
-                FloatSlider<VignetteImageEffect>("strength", "Strength", 0, 1, 0.5, (effect, value) => effect.Strength = value, tickFrequency: 0.01, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.##}"),
-                FloatSlider<VignetteImageEffect>("radius", "Radius", 0.05, 1, 0.75, (effect, value) => effect.Radius = value, tickFrequency: 0.01, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.##}")),
 
             Effect<VintagePrintDamageImageEffect>(
                 "vintage_print_damage",

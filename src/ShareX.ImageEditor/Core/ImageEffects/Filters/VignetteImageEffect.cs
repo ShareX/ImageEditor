@@ -1,12 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class VignetteImageEffect : FilterImageEffect
+public sealed class VignetteImageEffect : ImageEffectBase
 {
+    public override string Id => "vignette";
     public override string Name => "Vignette";
-    public override string IconKey => "IconEyeDropper";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "CircleDashed";
+    public override string Description => "Applies a vignette effect.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<VignetteImageEffect>("strength", "Strength", 0, 1, 0.5, (effect, value) => effect.Strength = value, tickFrequency: 0.05, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.00}"),
+        EffectParameters.FloatSlider<VignetteImageEffect>("radius", "Radius", 0.05, 0.999, 0.75, (effect, value) => effect.Radius = value, tickFrequency: 0.01, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.00}")
+    ];
 
     public float Strength { get; set; } = 0.5f;
     public float Radius { get; set; } = 0.75f;

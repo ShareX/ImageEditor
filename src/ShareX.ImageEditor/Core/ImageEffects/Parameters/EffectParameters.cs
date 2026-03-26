@@ -148,6 +148,30 @@ public static class EffectParameters
             description);
     }
 
+    public static NumericEffectParameter DoubleNumeric<TEffect>(
+        string key,
+        string label,
+        double minimum,
+        double maximum,
+        double defaultValue,
+        Action<TEffect, double> applyValue,
+        double increment = 1,
+        string formatString = "0.0",
+        string? description = null)
+        where TEffect : ImageEffect
+    {
+        return new NumericEffectParameter(
+            key,
+            label,
+            (decimal)minimum,
+            (decimal)maximum,
+            (decimal)defaultValue,
+            (decimal)increment,
+            formatString,
+            (effect, value) => applyValue((TEffect)effect, (double)value),
+            description);
+    }
+
     public static TextEffectParameter Text<TEffect>(
         string key,
         string label,

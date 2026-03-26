@@ -8,6 +8,7 @@ public sealed class PinchBulgeImageEffect : ImageEffectBase
     public override string Id => "pinch_bulge";
     public override string Name => "Pinch / bulge";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "Maximize";
     public override string Description => "Applies a pinch or bulge distortion to the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

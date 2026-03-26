@@ -9,7 +9,7 @@ public sealed class NeonEdgeGlowImageEffect : ImageEffectBase
     public override string Id => "neon_edge_glow";
     public override string Name => "Neon edge glow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconZap";
+    public override string IconKey => "Zap";
     public override string Description => "Detects edges and applies a neon glow effect.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

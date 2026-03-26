@@ -9,7 +9,7 @@ public sealed class RainyWindowImageEffect : ImageEffectBase
     public override string Id => "rainy_window";
     public override string Name => "Rainy window";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconCloud";
+    public override string IconKey => "CloudRain";
     public override string Description => "Simulates looking through a rain-streaked window with distortion and mist.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

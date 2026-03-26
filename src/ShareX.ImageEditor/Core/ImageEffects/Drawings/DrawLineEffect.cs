@@ -8,6 +8,7 @@ public sealed class DrawLineEffect : ImageEffectBase
     public override string Id => "draw_line";
     public override string Name => "Line";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string IconKey => "Minus";
     public override string Description => "Draws a line on the image.";
     public override string? EditorKey => "draw_line";
     public override IReadOnlyList<EffectParameter> Parameters =>

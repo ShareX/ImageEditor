@@ -13,7 +13,7 @@ public sealed class LensBlurImageEffect : ImageEffectBase
     public override string Id => "lens_blur";
     public override string Name => "Lens blur (bokeh)";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconCircle";
+    public override string IconKey => "Circle";
     public override string Description => "Applies a disc-shaped lens blur with highlight boost.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

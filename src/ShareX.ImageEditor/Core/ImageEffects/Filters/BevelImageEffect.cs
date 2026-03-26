@@ -9,7 +9,7 @@ public sealed class BevelImageEffect : ImageEffectBase
     public override string Id => "bevel";
     public override string Name => "Bevel";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconAdjust";
+    public override string IconKey => "Combine";
     public override string Description => "Adds a beveled edge effect with highlights and shadows.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

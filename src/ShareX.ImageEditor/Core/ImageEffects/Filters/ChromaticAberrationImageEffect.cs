@@ -9,7 +9,7 @@ public sealed class ChromaticAberrationImageEffect : ImageEffectBase
     public override string Id => "chromatic_aberration";
     public override string Name => "Chromatic aberration";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconAdjust";
+    public override string IconKey => "Aperture";
     public override string Description => "Simulates lens chromatic aberration with RGB channel splitting.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

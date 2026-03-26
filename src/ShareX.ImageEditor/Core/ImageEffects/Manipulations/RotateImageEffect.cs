@@ -8,6 +8,7 @@ public sealed class RotateImageEffect : ImageEffectBase
     public override string Id => "rotate";
     public override string Name => "Rotate";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "RotateCw";
     public override string Description => "Rotates the image by a specified angle.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

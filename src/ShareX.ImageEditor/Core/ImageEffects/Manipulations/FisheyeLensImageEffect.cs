@@ -9,6 +9,7 @@ public sealed class FisheyeLensImageEffect : ImageEffectBase
     public override string Id => "fisheye_lens";
     public override string Name => "Fisheye lens";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "CircleGauge";
     public override string Description => "Applies a fisheye lens distortion effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -15,7 +15,7 @@ public sealed class MosaicPolygonImageEffect : ImageEffectBase
     public override string Id => "mosaic_polygon";
     public override string Name => "Mosaic polygon";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconShapes";
+    public override string IconKey => "Hexagon";
     public override string Description => "Creates a mosaic using hexagonal or triangular polygon tiles.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

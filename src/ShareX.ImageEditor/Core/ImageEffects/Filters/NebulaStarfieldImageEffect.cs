@@ -9,6 +9,7 @@ public sealed class NebulaStarfieldImageEffect : ImageEffectBase
     public override string Id => "nebula_starfield";
     public override string Name => "Nebula starfield";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Sparkles";
     public override string Description => "Generates a procedural nebula and starfield overlay.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

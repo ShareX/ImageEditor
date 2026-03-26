@@ -9,7 +9,7 @@ public sealed class BloodSplashImageEffect : ImageEffectBase
     public override string Id => "blood_splash";
     public override string Name => "Blood splash";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconDroplet";
+    public override string IconKey => "Droplet";
     public override string Description => "Overlays procedural blood splash and drip effects.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

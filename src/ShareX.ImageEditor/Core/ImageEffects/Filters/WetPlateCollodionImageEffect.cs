@@ -9,6 +9,7 @@ public sealed class WetPlateCollodionImageEffect : ImageEffectBase
     public override string Id => "wet_plate_collodion";
     public override string Name => "Wet plate collodion";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Film";
     public override string Description => "Simulates the wet plate collodion photographic process with stains and silvering.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

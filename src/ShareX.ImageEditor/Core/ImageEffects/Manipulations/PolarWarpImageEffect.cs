@@ -15,6 +15,7 @@ public sealed class PolarWarpImageEffect : ImageEffectBase
     public override string Id => "polar_warp";
     public override string Name => "Polar warp";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "Waypoints";
     public override string Description => "Converts between Cartesian and polar coordinate systems.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

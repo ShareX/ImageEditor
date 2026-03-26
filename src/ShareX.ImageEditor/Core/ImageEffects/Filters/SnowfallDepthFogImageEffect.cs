@@ -9,7 +9,7 @@ public sealed class SnowfallDepthFogImageEffect : ImageEffectBase
     public override string Id => "snowfall_depth_fog";
     public override string Name => "Snowfall + depth fog";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconWeatherSnow";
+    public override string IconKey => "CloudSnow";
     public override string Description => "Simulates snowfall with depth-based fog.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

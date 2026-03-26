@@ -9,7 +9,7 @@ public sealed class OilSlickInterferenceImageEffect : ImageEffectBase
     public override string Id => "oil_slick_interference";
     public override string Name => "Oil slick interference";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconWandSparkles";
+    public override string IconKey => "Rainbow";
     public override string Description => "Simulates iridescent oil slick interference patterns.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

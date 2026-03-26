@@ -9,6 +9,7 @@ public sealed class RippleRefractionImageEffect : ImageEffectBase
     public override string Id => "ripple_refraction";
     public override string Name => "Ripple refraction";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "Waves";
     public override string Description => "Applies a ripple refraction distortion effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

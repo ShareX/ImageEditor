@@ -9,7 +9,7 @@ public sealed class AnamorphicLensFlareImageEffect : ImageEffectBase
     public override string Id => "anamorphic_lens_flare";
     public override string Name => "Anamorphic lens flare";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconAperture";
+    public override string IconKey => "Sparkle";
     public override string Description => "Adds cinematic horizontal lens flare streaks to bright areas.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

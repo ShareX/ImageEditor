@@ -9,7 +9,7 @@ public sealed class HalationImageEffect : ImageEffectBase
     public override string Id => "halation";
     public override string Name => "Halation";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconSun";
+    public override string IconKey => "Sunset";
     public override string Description => "Simulates film halation where bright areas bleed warm light into surrounding regions.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

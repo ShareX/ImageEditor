@@ -9,6 +9,7 @@ public sealed class LuminanceContourLinesImageEffect : ImageEffectBase
     public override string Id => "luminance_contour_lines";
     public override string Name => "Luminance contour lines";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Waypoints";
     public override string Description => "Draws contour lines based on luminance quantization levels.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

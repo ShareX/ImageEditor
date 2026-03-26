@@ -15,6 +15,7 @@ public sealed class DatamoshSmearImageEffect : ImageEffectBase
     public override string Id => "datamosh_smear";
     public override string Name => "Datamosh smear";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Cpu";
     public override string Description => "Simulates digital datamoshing with smeared pixel blocks and channel splitting.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -9,7 +9,7 @@ public sealed class BloomImageEffect : ImageEffectBase
     public override string Id => "bloom";
     public override string Name => "Bloom";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconSparkles";
+    public override string IconKey => "Sparkle";
     public override string Description => "Adds a soft glow bloom effect to bright areas.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

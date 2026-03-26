@@ -9,6 +9,7 @@ public sealed class SoftDiffusionImageEffect : ImageEffectBase
     public override string Id => "soft_diffusion";
     public override string Name => "Soft diffusion";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Sparkle";
     public override string Description => "Applies a soft diffusion glow with bloom and warmth.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -9,7 +9,7 @@ public sealed class PencilSketchImageEffect : ImageEffectBase
     public override string Id => "pencil_sketch";
     public override string Name => "Pencil sketch";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconPencil";
+    public override string IconKey => "PencilLine";
     public override string Description => "Converts the image to a pencil sketch style drawing.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

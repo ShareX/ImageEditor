@@ -16,6 +16,7 @@ public class FlipImageEffect : ImageEffectBase
     public override string Id => "flip";
     public override string Name => _name;
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "FlipHorizontal";
     public override string Description => "Flips the image horizontally or vertically.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

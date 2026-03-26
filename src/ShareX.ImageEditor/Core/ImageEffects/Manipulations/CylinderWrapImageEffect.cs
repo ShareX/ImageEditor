@@ -15,6 +15,7 @@ public sealed class CylinderWrapImageEffect : ImageEffectBase
     public override string Id => "cylinder_wrap";
     public override string Name => "Cylinder wrap";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "Orbit";
     public override string Description => "Wraps the image around a cylindrical surface.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

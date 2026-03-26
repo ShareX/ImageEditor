@@ -8,7 +8,7 @@ public sealed class AddNoiseImageEffect : ImageEffectBase
     public override string Id => "add_noise";
     public override string Name => "Add noise";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconCloud";
+    public override string IconKey => "SprayCan";
     public override string Description => "Adds random noise to the image.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -9,7 +9,7 @@ public sealed class LiquidGlassImageEffect : ImageEffectBase
     public override string Id => "liquid_glass";
     public override string Name => "Liquid glass";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconDroplet";
+    public override string IconKey => "GlassWater";
     public override string Description => "Distorts the image as if viewed through liquid glass.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

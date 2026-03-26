@@ -9,7 +9,7 @@ public sealed class BlueprintDrawingImageEffect : ImageEffectBase
     public override string Id => "blueprint_drawing";
     public override string Name => "Blueprint drawing";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconDesignIdeas";
+    public override string IconKey => "DraftingCompass";
     public override string Description => "Transforms the image into a blueprint-style drawing.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

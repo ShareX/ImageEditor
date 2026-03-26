@@ -9,7 +9,7 @@ public sealed class ClaymationTextureImageEffect : ImageEffectBase
     public override string Id => "claymation_texture";
     public override string Name => "Claymation texture";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconFoodCake";
+    public override string IconKey => "PaintRoller";
     public override string Description => "Gives the image a sculpted claymation look with chunky quantization and relief texture.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

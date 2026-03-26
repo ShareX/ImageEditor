@@ -9,7 +9,7 @@ public sealed class InnerShadowImageEffect : ImageEffectBase
     public override string Id => "inner_shadow";
     public override string Name => "Inner shadow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconCloudMoon";
+    public override string IconKey => "CloudMoon";
     public override string Description => "Adds an inner shadow along the edges of opaque regions.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -10,6 +10,7 @@ public sealed class DrawCheckerboardEffect : ImageEffectBase
     public override string Id => "draw_checkerboard";
     public override string Name => "Checkerboard";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string IconKey => "Grid2X2Check";
     public override string Description => "Draws a checkerboard pattern behind the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

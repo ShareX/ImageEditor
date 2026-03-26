@@ -8,7 +8,7 @@ public sealed class UnsharpMaskImageEffect : ImageEffectBase
     public override string Id => "unsharp_mask";
     public override string Name => "Unsharp mask";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconMagic";
+    public override string IconKey => "Wand2";
     public override string Description => "Sharpens the image using an unsharp mask technique.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

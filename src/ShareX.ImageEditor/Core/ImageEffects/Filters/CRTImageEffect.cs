@@ -8,7 +8,7 @@ public sealed class CRTImageEffect : ImageEffectBase
     public override string Id => "crt";
     public override string Name => "CRT";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconDisplay";
+    public override string IconKey => "Monitor";
     public override string Description => "Simulates a CRT monitor with scanlines, RGB shift, noise, and vignette.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

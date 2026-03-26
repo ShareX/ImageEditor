@@ -9,7 +9,7 @@ public sealed class NightVisionImageEffect : ImageEffectBase
     public override string Id => "night_vision";
     public override string Name => "Night vision";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconMoon";
+    public override string IconKey => "ScanEye";
     public override string Description => "Simulates a night vision green phosphor display effect.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -9,7 +9,7 @@ public sealed class PointillismImageEffect : ImageEffectBase
     public override string Id => "pointillism";
     public override string Name => "Pointillism";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconSparkles";
+    public override string IconKey => "Dot";
     public override string Description => "Renders the image as a pointillist painting with colored dots.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

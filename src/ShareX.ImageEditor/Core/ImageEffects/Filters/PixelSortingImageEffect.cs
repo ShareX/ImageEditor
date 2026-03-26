@@ -21,7 +21,7 @@ public sealed class PixelSortingImageEffect : ImageEffectBase
     public override string Id => "pixel_sorting";
     public override string Name => "Pixel sorting";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconArrowsH";
+    public override string IconKey => "ArrowDownWideNarrow";
     public override string Description => "Sorts pixels along rows or columns based on brightness or hue thresholds.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

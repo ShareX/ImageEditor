@@ -9,7 +9,7 @@ public sealed class VintagePrintDamageImageEffect : ImageEffectBase
     public override string Id => "vintage_print_damage";
     public override string Name => "Vintage print damage";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconFileImage";
+    public override string IconKey => "Newspaper";
     public override string Description => "Simulates aged print damage with sepia toning, grain, scratches, and dust.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

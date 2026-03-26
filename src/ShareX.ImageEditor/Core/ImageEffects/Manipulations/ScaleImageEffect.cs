@@ -8,6 +8,7 @@ public sealed class ScaleImageEffect : ImageEffectBase
     public override string Id => "scale";
     public override string Name => "Scale";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "ImageUpscale";
     public override string Description => "Scales the image by width and height percentages.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

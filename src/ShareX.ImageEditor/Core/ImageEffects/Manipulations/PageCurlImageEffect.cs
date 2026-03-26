@@ -17,6 +17,7 @@ public sealed class PageCurlImageEffect : ImageEffectBase
     public override string Id => "page_curl";
     public override string Name => "Page curl";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "RotateCwSquare";
     public override string Description => "Simulates a page curl at a corner of the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

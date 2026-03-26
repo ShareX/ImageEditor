@@ -9,7 +9,7 @@ public sealed class CrosshatchImageEffect : ImageEffectBase
     public override string Id => "crosshatch";
     public override string Name => "Crosshatch";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconHash";
+    public override string IconKey => "Hash";
     public override string Description => "Renders the image as a crosshatch pen drawing.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

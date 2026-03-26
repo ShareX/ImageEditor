@@ -9,6 +9,7 @@ public sealed class RisoPrintImageEffect : ImageEffectBase
     public override string Id => "riso_print";
     public override string Name => "Riso print";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Newspaper";
     public override string Description => "Simulates a risograph print with halftone dots and ink colors.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

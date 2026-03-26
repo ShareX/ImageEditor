@@ -9,7 +9,7 @@ public sealed class HalftoneImageEffect : ImageEffectBase
     public override string Id => "halftone";
     public override string Name => "Halftone";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconCircle";
+    public override string IconKey => "DotSquare";
     public override string Description => "Converts the image into a CMYK halftone dot pattern.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

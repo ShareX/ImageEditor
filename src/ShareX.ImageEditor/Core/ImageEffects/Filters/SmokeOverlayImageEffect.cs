@@ -9,7 +9,7 @@ public sealed class SmokeOverlayImageEffect : ImageEffectBase
     public override string Id => "smoke_overlay";
     public override string Name => "Smoke overlay";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconCloud";
+    public override string IconKey => "Cloud";
     public override string Description => "Adds a soft procedural smoke overlay to the image.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

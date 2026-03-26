@@ -9,7 +9,7 @@ public sealed class ConvolutionMatrixImageEffect : ImageEffectBase
     public override string Id => "convolution_matrix";
     public override string Name => "Convolution matrix";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconAdjust";
+    public override string IconKey => "Grid3X3";
     public override string Description => "Applies a custom 3x3 convolution kernel to the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -9,6 +9,7 @@ public sealed class InfraredFalseColorImageEffect : ImageEffectBase
     public override string Id => "infrared_false_color";
     public override string Name => "Infrared false color";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Sunset";
     public override string Description => "Simulates infrared false color photography.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

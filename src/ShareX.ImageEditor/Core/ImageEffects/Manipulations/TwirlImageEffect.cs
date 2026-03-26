@@ -8,6 +8,7 @@ public sealed class TwirlImageEffect : ImageEffectBase
     public override string Id => "twirl";
     public override string Name => "Twirl";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "RotateCcwSquare";
     public override string Description => "Applies a twirl distortion to the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

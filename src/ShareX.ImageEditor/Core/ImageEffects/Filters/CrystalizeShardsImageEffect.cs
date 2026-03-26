@@ -9,7 +9,7 @@ public sealed class CrystalizeShardsImageEffect : ImageEffectBase
     public override string Id => "crystalize_shards";
     public override string Name => "Crystalize shards";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconGem";
+    public override string IconKey => "Diamond";
     public override string Description => "Breaks the image into crystalline Voronoi shards with edge highlights.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -9,7 +9,7 @@ public sealed class CartoonStickerCutoutImageEffect : ImageEffectBase
     public override string Id => "cartoon_sticker_cutout";
     public override string Name => "Cartoon sticker cutout";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconNoteSticky";
+    public override string IconKey => "Sticker";
     public override string Description => "Applies a cartoon sticker cutout effect with quantized colors and ink edges.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

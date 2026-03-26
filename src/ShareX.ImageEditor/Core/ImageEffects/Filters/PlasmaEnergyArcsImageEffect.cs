@@ -9,7 +9,7 @@ public sealed class PlasmaEnergyArcsImageEffect : ImageEffectBase
     public override string Id => "plasma_energy_arcs";
     public override string Name => "Plasma energy arcs";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconZap";
+    public override string IconKey => "Zap";
     public override string Description => "Generates plasma-like energy arcs overlaid on the image.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

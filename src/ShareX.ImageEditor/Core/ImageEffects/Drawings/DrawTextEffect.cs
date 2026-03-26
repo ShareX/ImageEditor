@@ -8,6 +8,7 @@ public sealed class DrawTextEffect : ImageEffectBase
     public override string Id => "draw_text";
     public override string Name => "Text";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string IconKey => "Type";
     public override string Description => "Draws text on the image.";
     public override string? EditorKey => "draw_text";
     public override IReadOnlyList<EffectParameter> Parameters =>

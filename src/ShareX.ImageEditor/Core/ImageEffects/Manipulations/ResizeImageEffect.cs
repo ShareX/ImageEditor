@@ -8,6 +8,7 @@ public sealed class ResizeImageEffect : ImageEffectBase
     public override string Id => "resize_image";
     public override string Name => "Resize image";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "Scale";
     public override string Description => "Resizes the image to a specified width and height.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

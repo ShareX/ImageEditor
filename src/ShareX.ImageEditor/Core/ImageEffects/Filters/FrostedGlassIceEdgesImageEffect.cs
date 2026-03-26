@@ -9,7 +9,7 @@ public sealed class FrostedGlassIceEdgesImageEffect : ImageEffectBase
     public override string Id => "frosted_glass_ice_edges";
     public override string Name => "Frosted glass + ice edges";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconSnowflake";
+    public override string IconKey => "CloudSnow";
     public override string Description => "Combines frosted glass distortion with icy edge highlights and cool tinting.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

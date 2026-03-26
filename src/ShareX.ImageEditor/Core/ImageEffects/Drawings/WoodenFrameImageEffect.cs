@@ -17,6 +17,7 @@ public sealed class WoodenFrameImageEffect : ImageEffectBase
     public override string Id => "wooden_frame";
     public override string Name => "Wooden frame";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string IconKey => "Frame";
     public override string Description => "Adds a procedural wooden frame around the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

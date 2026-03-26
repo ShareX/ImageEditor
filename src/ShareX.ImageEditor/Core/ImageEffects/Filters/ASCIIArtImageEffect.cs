@@ -9,7 +9,7 @@ public sealed class ASCIIArtImageEffect : ImageEffectBase
     public override string Id => "ascii_art";
     public override string Name => "ASCII art";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconText";
+    public override string IconKey => "SquareTerminal";
     public override string Description => "Converts the image into ASCII character art.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

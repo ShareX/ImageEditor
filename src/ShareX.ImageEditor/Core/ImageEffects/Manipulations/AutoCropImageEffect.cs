@@ -9,6 +9,7 @@ public sealed class AutoCropImageEffect : ImageEffectBase
     public override string Id => "auto_crop";
     public override string Name => "Auto crop image";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "Crop";
     public override string Description => "Automatically crops the image by removing uniform borders.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

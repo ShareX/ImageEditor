@@ -9,7 +9,7 @@ public sealed class HolographicFoilShimmerImageEffect : ImageEffectBase
     public override string Id => "holographic_foil_shimmer";
     public override string Name => "Holographic foil shimmer";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconWandSparkles";
+    public override string IconKey => "Rainbow";
     public override string Description => "Overlays a rainbow holographic foil shimmer effect.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

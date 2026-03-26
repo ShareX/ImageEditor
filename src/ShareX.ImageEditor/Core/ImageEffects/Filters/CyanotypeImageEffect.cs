@@ -9,6 +9,7 @@ public sealed class CyanotypeImageEffect : ImageEffectBase
     public override string Id => "cyanotype";
     public override string Name => "Cyanotype";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "SwatchBook";
     public override string Description => "Simulates a cyanotype photographic printing process with blue-toned output.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

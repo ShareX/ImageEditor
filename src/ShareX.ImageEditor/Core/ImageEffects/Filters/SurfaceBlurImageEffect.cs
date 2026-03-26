@@ -9,7 +9,7 @@ public sealed class SurfaceBlurImageEffect : ImageEffectBase
     public override string Id => "surface_blur";
     public override string Name => "Surface blur";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconWater";
+    public override string IconKey => "Waves";
     public override string Description => "Blurs while preserving edges based on color similarity.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

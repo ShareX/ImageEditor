@@ -9,7 +9,7 @@ public sealed class XRayScanImageEffect : ImageEffectBase
     public override string Id => "x_ray_scan";
     public override string Name => "X-ray scan";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconScanEye";
+    public override string IconKey => "ScanEye";
     public override string Description => "Simulates an X-ray scan with edge detection and glow effects.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

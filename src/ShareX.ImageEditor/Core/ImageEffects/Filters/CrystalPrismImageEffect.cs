@@ -9,7 +9,7 @@ public sealed class CrystalPrismImageEffect : ImageEffectBase
     public override string Id => "crystal_prism";
     public override string Name => "Crystal prism";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconGem";
+    public override string IconKey => "Gem";
     public override string Description => "Refracts and disperses light through crystal-like facets.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

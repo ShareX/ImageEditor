@@ -9,7 +9,7 @@ public sealed class AnimeSpeedLinesImageEffect : ImageEffectBase
     public override string Id => "anime_speed_lines";
     public override string Name => "Anime speed lines";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconBurst";
+    public override string IconKey => "ScanLine";
     public override string Description => "Overlays radial speed lines in a manga/anime style.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

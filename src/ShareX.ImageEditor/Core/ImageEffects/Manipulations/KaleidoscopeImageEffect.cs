@@ -9,6 +9,7 @@ public sealed class KaleidoscopeImageEffect : ImageEffectBase
     public override string Id => "kaleidoscope";
     public override string Name => "Kaleidoscope";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => "LoaderPinwheel";
     public override string Description => "Creates a kaleidoscope mirror pattern.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

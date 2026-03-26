@@ -9,7 +9,7 @@ public sealed class ZoomBlurImageEffect : ImageEffectBase
     public override string Id => "zoom_blur";
     public override string Name => "Zoom blur";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconMagnifyingGlass";
+    public override string IconKey => "Search";
     public override string Description => "Applies a radial zoom blur emanating from a center point.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

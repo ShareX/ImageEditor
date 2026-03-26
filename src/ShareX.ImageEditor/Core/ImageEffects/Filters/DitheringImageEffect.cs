@@ -23,7 +23,7 @@ public sealed class DitheringImageEffect : ImageEffectBase
     public override string Id => "dithering";
     public override string Name => "Dithering";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconTableCells";
+    public override string IconKey => "Grid2X2Check";
     public override string Description => "Applies dithering to reduce color depth with various methods and palettes.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

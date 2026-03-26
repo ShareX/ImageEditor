@@ -9,7 +9,7 @@ public sealed class SpinBlurImageEffect : ImageEffectBase
     public override string Id => "spin_blur";
     public override string Name => "Spin blur";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconArrowsSpin";
+    public override string IconKey => "RotateCw";
     public override string Description => "Applies a rotational motion blur around a center point.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

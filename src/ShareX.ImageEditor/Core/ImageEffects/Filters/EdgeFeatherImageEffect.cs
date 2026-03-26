@@ -11,7 +11,7 @@ public sealed class EdgeFeatherImageEffect : ImageEffectBase
     public override string Id => "edge_feather";
     public override string Name => "Edge feather";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "IconBlend";
+    public override string IconKey => "CircleDotDashed";
     public override string Description => "Softens the edges of non-transparent regions with a feathered alpha falloff.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

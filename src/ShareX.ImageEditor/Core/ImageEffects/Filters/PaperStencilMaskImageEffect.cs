@@ -9,6 +9,7 @@ public sealed class PaperStencilMaskImageEffect : ImageEffectBase
     public override string Id => "paper_stencil_mask";
     public override string Name => "Paper stencil mask";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Stamp";
     public override string Description => "Applies a paper stencil mask effect with adjustable threshold and edge strength.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

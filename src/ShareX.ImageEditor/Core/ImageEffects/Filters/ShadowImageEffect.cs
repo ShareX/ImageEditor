@@ -1,17 +1,35 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ShadowImageEffect : FilterImageEffect
+public sealed class ShadowImageEffect : ImageEffectBase
 {
-    public float Opacity { get; set; }
-    public int Size { get; set; }
-    public SKColor Color { get; set; }
-    public int OffsetX { get; set; }
-    public int OffsetY { get; set; }
-    public bool AutoResize { get; set; }
-
+    public override string Id => "shadow";
     public override string Name => "Shadow";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "CloudMoon";
+    public override string Description => "Adds a drop shadow to the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<ShadowImageEffect>("opacity", "Opacity", 0, 100, 80, (effect, value) => effect.Opacity = value, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0}%"),
+        EffectParameters.IntSlider<ShadowImageEffect>("size", "Size", 0, 100, 20, (effect, value) => effect.Size = value, isSnapToTickEnabled: false),
+        EffectParameters.IntNumeric<ShadowImageEffect>("offset_x", "Offset X", -1000, 1000, 5, (effect, value) => effect.OffsetX = value),
+        EffectParameters.IntNumeric<ShadowImageEffect>("offset_y", "Offset Y", -1000, 1000, 5, (effect, value) => effect.OffsetY = value),
+        EffectParameters.Color<ShadowImageEffect>("color", "Color", SKColors.Black, (effect, value) => effect.Color = value),
+        EffectParameters.Bool<ShadowImageEffect>("auto_resize", "Auto resize", true, (effect, value) => effect.AutoResize = value)
+    ];
+
+    public float Opacity { get; set; } = 80f;
+    public int Size { get; set; } = 20;
+    public SKColor Color { get; set; } = SKColors.Black;
+    public int OffsetX { get; set; } = 5;
+    public int OffsetY { get; set; } = 5;
+    public bool AutoResize { get; set; } = true;
+
+    public ShadowImageEffect()
+    {
+    }
 
     public ShadowImageEffect(float opacity, int size, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
@@ -27,11 +45,7 @@ public class ShadowImageEffect : FilterImageEffect
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        // Compute one-sided canvas expansion based on offset direction:
-        // Positive offset → shadow extends right/down → expand right/bottom.
-        // Negative offset → shadow extends left/up  → expand left/top.
-        int blurPad = Size;  // room needed for blur to not get clipped
-
+        int blurPad = Size;
         int expandLeft = AutoResize ? Math.Max(0, -OffsetX) + blurPad : 0;
         int expandRight = AutoResize ? Math.Max(0, OffsetX) + blurPad : 0;
         int expandTop = AutoResize ? Math.Max(0, -OffsetY) + blurPad : 0;
@@ -40,20 +54,18 @@ public class ShadowImageEffect : FilterImageEffect
         int newWidth = source.Width + expandLeft + expandRight;
         int newHeight = source.Height + expandTop + expandBottom;
 
-        SKBitmap result = new SKBitmap(newWidth, newHeight);
-        using SKCanvas canvas = new SKCanvas(result);
+        SKBitmap result = new(newWidth, newHeight);
+        using SKCanvas canvas = new(result);
         canvas.Clear(SKColors.Transparent);
 
-        // The original image is always placed at (expandLeft, expandTop).
         int imageX = expandLeft;
         int imageY = expandTop;
         int shadowX = imageX + OffsetX;
         int shadowY = imageY + OffsetY;
 
-        // Shadow color: chosen Color with Opacity as alpha.
-        SKColor shadowColor = new SKColor(Color.Red, Color.Green, Color.Blue, (byte)(255 * Opacity / 100f));
+        SKColor shadowColor = new(Color.Red, Color.Green, Color.Blue, (byte)(255 * Opacity / 100f));
 
-        using SKPaint shadowPaint = new SKPaint
+        using SKPaint shadowPaint = new()
         {
             ColorFilter = SKColorFilter.CreateBlendMode(shadowColor, SKBlendMode.SrcIn),
             ImageFilter = SKImageFilter.CreateBlur(Size / 2f, Size / 2f)
@@ -65,4 +77,3 @@ public class ShadowImageEffect : FilterImageEffect
         return result;
     }
 }
-

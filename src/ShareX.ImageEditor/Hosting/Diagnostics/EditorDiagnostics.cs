@@ -29,7 +29,11 @@ public enum EditorDiagnosticLevel
 {
     Information,
     Warning,
-    Error
+    Error,
+    /// <summary>
+    /// Verbose troubleshooting (e.g. effect preview pipeline). Hosts may filter or write to debug log only.
+    /// </summary>
+    Debug
 }
 
 /// <summary>

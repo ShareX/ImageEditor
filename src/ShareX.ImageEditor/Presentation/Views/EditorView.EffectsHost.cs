@@ -26,6 +26,7 @@
 using Avalonia.Controls;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views.Dialogs;
 using SkiaSharp;
@@ -199,6 +200,16 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
+            if (TryHandleImmediateCatalogEffect(e.EffectId))
+            {
+                return;
+            }
+
+            if (TryHandleHostEffectShortcut(e.EffectId))
+            {
+                return;
+            }
+
             if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
 
@@ -216,6 +227,55 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private bool TryHandleImmediateCatalogEffect(string effectId)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
+            {
+                return false;
+            }
+
+            if (!ImageEffectCatalog.TryGetDefinition(effectId, out EffectDefinition? definition) ||
+                definition == null ||
+                !definition.ApplyImmediately)
+            {
+                return false;
+            }
+
+            vm.StartEffectPreview();
+            vm.ApplyEffect(
+                definition.CreateConfiguredEffect(Array.Empty<EffectParameterState>()).Apply,
+                $"Applied {definition.Name}");
+            vm.CloseEffectsPanelCommand.Execute(null);
+            return true;
+        }
+
+        private bool TryHandleHostEffectShortcut(string effectId)
+        {
+            switch (effectId)
+            {
+                case "rotate_90_clockwise":
+                    OnRotate90CWRequested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_90_counter_clockwise":
+                    OnRotate90CCWRequested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_180":
+                    OnRotate180Requested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_custom_angle":
+                    OnRotateCustomAngleRequested(this, EventArgs.Empty);
+                    return true;
+                case "flip_horizontal":
+                    OnFlipHorizontalRequested(this, EventArgs.Empty);
+                    return true;
+                case "flip_vertical":
+                    OnFlipVerticalRequested(this, EventArgs.Empty);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         /// <summary>
         /// Wires preview/apply/cancel lifecycle for a dialog-based effect and opens the effects panel.
         /// </summary>
@@ -226,17 +286,53 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             vm.StartEffectPreview();
 
-            effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
-            effectDialog.ApplyRequested += (s, e) =>
+            // Special-case schema-driven auto-crop so Apply goes through EditorCore:
+            // - keeps annotation transforms unified (develop behavior)
+            // - still uses the dialog UI/slider for tolerance
+            if (effectDialog is SchemaDrivenEffectDialog schemaDialog &&
+                string.Equals(schemaDialog.Definition.Id, "auto_crop_image", StringComparison.OrdinalIgnoreCase))
             {
-                vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-            effectDialog.CancelRequested += (s, e) =>
+                effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+                effectDialog.ApplyRequested += (s, e) =>
+                {
+                    int tolerance = 0;
+                    foreach (var state in schemaDialog.ParameterStates)
+                    {
+                        if (string.Equals(state.Key, "tolerance", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (state is SliderParameterState slider)
+                            {
+                                tolerance = (int)System.Math.Round(slider.Value);
+                            }
+
+                            break;
+                        }
+                    }
+
+                    _editorCore.AutoCrop(tolerance);
+                    vm.EndEffectPreview();
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+                effectDialog.CancelRequested += (s, e) =>
+                {
+                    vm.CancelEffectPreview();
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+            }
+            else
             {
-                vm.CancelEffectPreview();
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
+                effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+                effectDialog.ApplyRequested += (s, e) =>
+                {
+                    vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+                effectDialog.CancelRequested += (s, e) =>
+                {
+                    vm.CancelEffectPreview();
+                    vm.CloseEffectsPanelCommand.Execute(null);
+                };
+            }
 
             vm.EffectsPanelContent = dialog;
             vm.IsEffectsPanelOpen = true;

@@ -32,7 +32,6 @@ using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
@@ -49,7 +48,6 @@ namespace ShareX.ImageEditor.Presentation.Views
     public partial class EditorView : UserControl
     {
         private static readonly Cursor ArrowCursor = new(StandardCursorType.Arrow);
-        internal const double OverlayCanvasBleed = 24;
 
         private readonly EditorZoomController _zoomController;
         private readonly EditorSelectionController _selectionController;
@@ -67,8 +65,6 @@ namespace ShareX.ImageEditor.Presentation.Views
         private bool _pendingZoomToFitOnOpen;
         private int _pendingZoomToFitRetryCount;
         private int _pendingAutoCopyImageVersion;
-        private Rect? _lastOverlayCanvasRect;
-        private double _lastOverlayCanvasZoom = -1;
         private EffectBrowserPanel? _effectBrowserPanel;
         private ImageEditorOptions? _effectBrowserPanelOptions;
 
@@ -94,7 +90,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             // Subscribe to selection controller events
             _selectionController.RequestUpdateEffect += OnRequestUpdateEffect;
             _selectionController.SelectionChanged += OnSelectionChanged;
-            LayoutUpdated += OnLayoutUpdated;
 
             // SIP0018: Subscribe to Core events
             _editorCore.InvalidateRequested += () => Avalonia.Threading.Dispatcher.UIThread.Post(RenderCore);
@@ -156,64 +151,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             AddHandler(DragDrop.DragOverEvent, OnDragOver);
 
             DataContextChanged += OnEditorDataContextChanged;
-        }
-
-        private void OnLayoutUpdated(object? sender, EventArgs e)
-        {
-            UpdateOverlayCanvasLayout();
-        }
-
-        private void OnCanvasScrollChanged(object? sender, ScrollChangedEventArgs e)
-        {
-            UpdateOverlayCanvasLayout();
-        }
-
-        private void UpdateOverlayCanvasLayout()
-        {
-            var overlayCanvas = this.FindControl<Canvas>("OverlayCanvas");
-            var overlayHost = this.FindControl<Canvas>("OverlayHost");
-            var canvasContainer = this.FindControl<Grid>("CanvasContainer");
-            var vm = DataContext as MainViewModel;
-            if (overlayCanvas == null || overlayHost == null || canvasContainer == null)
-            {
-                return;
-            }
-
-            double contentWidth = canvasContainer.Bounds.Width;
-            double contentHeight = canvasContainer.Bounds.Height;
-
-            if (contentWidth <= 0 || contentHeight <= 0)
-            {
-                return;
-            }
-
-            var contentOrigin = canvasContainer.TranslatePoint(default, overlayHost);
-            if (!contentOrigin.HasValue)
-            {
-                return;
-            }
-
-            double zoom = vm?.Zoom ?? 1;
-            var overlayRect = new Rect(
-                contentOrigin.Value.X - (OverlayCanvasBleed * zoom),
-                contentOrigin.Value.Y - (OverlayCanvasBleed * zoom),
-                contentWidth + (OverlayCanvasBleed * 2),
-                contentHeight + (OverlayCanvasBleed * 2));
-
-            if (_lastOverlayCanvasRect == overlayRect && Math.Abs(_lastOverlayCanvasZoom - zoom) < 0.0001)
-            {
-                return;
-            }
-
-            _lastOverlayCanvasRect = overlayRect;
-            _lastOverlayCanvasZoom = zoom;
-
-            overlayCanvas.Width = overlayRect.Width;
-            overlayCanvas.Height = overlayRect.Height;
-            Canvas.SetLeft(overlayCanvas, overlayRect.Left);
-            Canvas.SetTop(overlayCanvas, overlayRect.Top);
-            overlayCanvas.RenderTransformOrigin = new RelativePoint(0, 0, RelativeUnit.Absolute);
-            overlayCanvas.RenderTransform = new ScaleTransform(zoom, zoom);
         }
 
         private void OnSelectionChanged(bool hasSelection)
@@ -775,21 +712,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 _effectBrowserPanel = new EffectBrowserPanel();
                 _effectBrowserPanel.EffectDialogRequested += OnEffectDialogRequested;
-                _effectBrowserPanel.CropImageRequested += OnCropImageRequested;
-                _effectBrowserPanel.AutoCropImageRequested += OnAutoCropImageRequested;
-                _effectBrowserPanel.Rotate90CWRequested += OnRotate90CWRequested;
-                _effectBrowserPanel.Rotate90CCWRequested += OnRotate90CCWRequested;
-                _effectBrowserPanel.Rotate180Requested += OnRotate180Requested;
-                _effectBrowserPanel.RotateCustomAngleRequested += OnRotateCustomAngleRequested;
-                _effectBrowserPanel.FlipHorizontalRequested += OnFlipHorizontalRequested;
-                _effectBrowserPanel.FlipVerticalRequested += OnFlipVerticalRequested;
-                _effectBrowserPanel.InvertRequested += OnInvertRequested;
-                _effectBrowserPanel.BlackAndWhiteRequested += OnBlackAndWhiteRequested;
-                _effectBrowserPanel.PolaroidRequested += OnPolaroidRequested;
-                _effectBrowserPanel.EdgeDetectRequested += OnEdgeDetectRequested;
-                _effectBrowserPanel.EmbossRequested += OnEmbossRequested;
-                _effectBrowserPanel.MeanRemovalRequested += OnMeanRemovalRequested;
-                _effectBrowserPanel.SmoothRequested += OnSmoothRequested;
 
                 var effectBrowserHost = this.FindControl<ContentControl>("EffectBrowserHost");
                 if (effectBrowserHost != null)
@@ -1250,10 +1172,10 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (cropOverlay != null && cropOverlay.IsVisible && DataContext is MainViewModel vm)
             {
                 var rect = new SkiaSharp.SKRect(
-                    (float)(Canvas.GetLeft(cropOverlay) - OverlayCanvasBleed),
-                    (float)(Canvas.GetTop(cropOverlay) - OverlayCanvasBleed),
-                    (float)(Canvas.GetLeft(cropOverlay) - OverlayCanvasBleed + cropOverlay.Width),
-                    (float)(Canvas.GetTop(cropOverlay) - OverlayCanvasBleed + cropOverlay.Height));
+                    (float)Canvas.GetLeft(cropOverlay),
+                    (float)Canvas.GetTop(cropOverlay),
+                    (float)(Canvas.GetLeft(cropOverlay) + cropOverlay.Width),
+                    (float)(Canvas.GetTop(cropOverlay) + cropOverlay.Height));
 
                 if (rect.Width > 0 && rect.Height > 0)
                 {

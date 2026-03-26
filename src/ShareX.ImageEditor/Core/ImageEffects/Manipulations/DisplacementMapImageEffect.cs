@@ -8,7 +8,9 @@ public class DisplacementMapImageEffect : ImageEffect
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
     public override bool HasParameters => true;
 
-    // Uses source red channel as X-map and green channel as Y-map.
+    // Uses the selected map image when available; otherwise falls back to the source image.
+    public string MapFilePath { get; set; } = string.Empty;
+
     public float AmountX { get; set; } = 20f;
     public float AmountY { get; set; } = 20f;
 
@@ -27,6 +29,10 @@ public class DisplacementMapImageEffect : ImageEffect
         }
 
         SKColor[] srcPixels = source.Pixels;
+        using SKBitmap? displacementMap = TryLoadDisplacementMap();
+        SKColor[] mapPixels = displacementMap?.Pixels ?? srcPixels;
+        int mapWidth = displacementMap?.Width ?? width;
+        int mapHeight = displacementMap?.Height ?? height;
         SKColor[] dstPixels = new SKColor[srcPixels.Length];
 
         for (int y = 0; y < height; y++)
@@ -34,7 +40,7 @@ public class DisplacementMapImageEffect : ImageEffect
             int row = y * width;
             for (int x = 0; x < width; x++)
             {
-                SKColor map = srcPixels[row + x];
+                SKColor map = mapPixels[GetMapPixelIndex(x, y, width, height, mapWidth, mapHeight)];
                 float dx = ((map.Red / 255f) - 0.5f) * 2f * AmountX;
                 float dy = ((map.Green / 255f) - 0.5f) * 2f * AmountY;
 
@@ -46,6 +52,42 @@ public class DisplacementMapImageEffect : ImageEffect
         }
 
         return new SKBitmap(width, height, source.ColorType, source.AlphaType) { Pixels = dstPixels };
+    }
+
+    private SKBitmap? TryLoadDisplacementMap()
+    {
+        string mapPath = Environment.ExpandEnvironmentVariables(MapFilePath);
+        if (string.IsNullOrWhiteSpace(mapPath) || !File.Exists(mapPath))
+        {
+            return null;
+        }
+
+        SKBitmap? map = SKBitmap.Decode(mapPath);
+        if (map == null || map.Width <= 0 || map.Height <= 0)
+        {
+            map?.Dispose();
+            return null;
+        }
+
+        return map;
+    }
+
+    private static int GetMapPixelIndex(int x, int y, int sourceWidth, int sourceHeight, int mapWidth, int mapHeight)
+    {
+        int mapX = ScaleCoordinate(x, sourceWidth, mapWidth);
+        int mapY = ScaleCoordinate(y, sourceHeight, mapHeight);
+        return mapY * mapWidth + mapX;
+    }
+
+    private static int ScaleCoordinate(int coordinate, int sourceLength, int targetLength)
+    {
+        if (targetLength <= 1 || sourceLength <= 1)
+        {
+            return 0;
+        }
+
+        float scaled = (float)coordinate * (targetLength - 1) / (sourceLength - 1);
+        return Clamp((int)MathF.Round(scaled), 0, targetLength - 1);
     }
 
     private static int Clamp(int value, int min, int max)

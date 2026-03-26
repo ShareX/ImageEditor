@@ -23,6 +23,7 @@
 
 #endregion License Information (GPL v3)
 
+using System.Diagnostics;
 using ShareX.ImageEditor.Hosting.Diagnostics;
 
 namespace ShareX.ImageEditor.Hosting;
@@ -63,6 +64,21 @@ public static class EditorServices
     public static void ReportError(string source, string message, Exception? exception = null)
     {
         ReportDiagnostic(EditorDiagnosticLevel.Error, source, message, exception);
+    }
+
+    /// <summary>
+    /// Emits a debug-level diagnostic for effect UI / preview tracing. Uses <see cref="Diagnostics"/> when set;
+    /// otherwise writes to <see cref="Debug"/> so standalone runs still get console output.
+    /// </summary>
+    public static void ReportDebug(string source, string message)
+    {
+        if (Diagnostics != null)
+        {
+            ReportDiagnostic(EditorDiagnosticLevel.Debug, source, message, null);
+            return;
+        }
+
+        Debug.WriteLine($"[ImageEditor:Debug:{source}] {message}");
     }
 
     public static void ReportDiagnostic(EditorDiagnosticLevel level, string source, string message, Exception? exception = null)

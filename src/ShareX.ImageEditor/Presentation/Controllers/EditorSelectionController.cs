@@ -17,8 +17,6 @@ namespace ShareX.ImageEditor.Presentation.Controllers;
 public class EditorSelectionController
 {
     private static readonly Cursor SelectToolCursor = new(StandardCursorType.Arrow);
-    private static double ToOverlayCoordinate(double value) => value + EditorView.OverlayCanvasBleed;
-    private static Point ToOverlayPoint(Point value) => new(ToOverlayCoordinate(value.X), ToOverlayCoordinate(value.Y));
 
     private readonly EditorView _view;
     private Control? _selectedShape;
@@ -883,8 +881,8 @@ public class EditorSelectionController
             {
                 _rotationLine = new global::Avalonia.Controls.Shapes.Line
                 {
-                    StartPoint = ToOverlayPoint(rotLineStart),
-                    EndPoint = ToOverlayPoint(rotHandlePos),
+                    StartPoint = rotLineStart,
+                    EndPoint = rotHandlePos,
                     Stroke = new SolidColorBrush(Color.FromRgb(30, 144, 255)), // DodgerBlue
                     StrokeThickness = 1.5,
                     StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 4, 4 },
@@ -968,8 +966,8 @@ public class EditorSelectionController
             })
         };
 
-        Canvas.SetLeft(handleBorder, ToOverlayCoordinate(x) - handleBorder.Width / 2);
-        Canvas.SetTop(handleBorder, ToOverlayCoordinate(y) - handleBorder.Height / 2);
+        Canvas.SetLeft(handleBorder, x - handleBorder.Width / 2);
+        Canvas.SetTop(handleBorder, y - handleBorder.Height / 2);
 
         overlay.Children.Add(handleBorder);
         _selectionHandles.Add(handleBorder);
@@ -1162,8 +1160,8 @@ public class EditorSelectionController
         // We can't put TextBox in Overlay because Overlay is for handles.
         textBox.SetValue(Panel.ZIndexProperty, 9999);
 
-        Canvas.SetLeft(textBox, ToOverlayCoordinate(balloonLeft));
-        Canvas.SetTop(textBox, ToOverlayCoordinate(balloonTop));
+        Canvas.SetLeft(textBox, balloonLeft);
+        Canvas.SetTop(textBox, balloonTop);
         textBox.Width = balloonWidth;
         textBox.Height = balloonHeight;
 
@@ -1498,9 +1496,8 @@ public class EditorSelectionController
                 overlay.Children.Add(_hoverPolylineWhite);
             }
 
-            var overlayPoints = new Avalonia.Collections.AvaloniaList<Point>(outlinePoints.Select(ToOverlayPoint));
-            _hoverPolylineBlack.Points = overlayPoints;
-            _hoverPolylineWhite.Points = overlayPoints;
+            _hoverPolylineBlack.Points = outlinePoints;
+            _hoverPolylineWhite.Points = outlinePoints;
             return;
         }
 
@@ -1555,13 +1552,13 @@ public class EditorSelectionController
                 overlay.Children.Add(_hoverEllipseWhite);
             }
 
-            Canvas.SetLeft(_hoverEllipseBlack, ToOverlayCoordinate(left - 2));
-            Canvas.SetTop(_hoverEllipseBlack, ToOverlayCoordinate(top - 2));
+            Canvas.SetLeft(_hoverEllipseBlack, left - 2);
+            Canvas.SetTop(_hoverEllipseBlack, top - 2);
             _hoverEllipseBlack.Width = width + 4;
             _hoverEllipseBlack.Height = height + 4;
 
-            Canvas.SetLeft(_hoverEllipseWhite, ToOverlayCoordinate(left - 2));
-            Canvas.SetTop(_hoverEllipseWhite, ToOverlayCoordinate(top - 2));
+            Canvas.SetLeft(_hoverEllipseWhite, left - 2);
+            Canvas.SetTop(_hoverEllipseWhite, top - 2);
             _hoverEllipseWhite.Width = width + 4;
             _hoverEllipseWhite.Height = height + 4;
             return;
@@ -1595,13 +1592,13 @@ public class EditorSelectionController
             overlay.Children.Add(_hoverOutlineWhite);
         }
 
-        Canvas.SetLeft(_hoverOutlineBlack, ToOverlayCoordinate(left - 2));
-        Canvas.SetTop(_hoverOutlineBlack, ToOverlayCoordinate(top - 2));
+        Canvas.SetLeft(_hoverOutlineBlack, left - 2);
+        Canvas.SetTop(_hoverOutlineBlack, top - 2);
         _hoverOutlineBlack.Width = width + 4;
         _hoverOutlineBlack.Height = height + 4;
 
-        Canvas.SetLeft(_hoverOutlineWhite, ToOverlayCoordinate(left - 2));
-        Canvas.SetTop(_hoverOutlineWhite, ToOverlayCoordinate(top - 2));
+        Canvas.SetLeft(_hoverOutlineWhite, left - 2);
+        Canvas.SetTop(_hoverOutlineWhite, top - 2);
         _hoverOutlineWhite.Width = width + 4;
         _hoverOutlineWhite.Height = height + 4;
 
@@ -1790,8 +1787,8 @@ public class EditorSelectionController
         }
 
         var annotationBounds = annotation.GetBounds();
-        Canvas.SetLeft(textBox, ToOverlayCoordinate(annotationBounds.Left));
-        Canvas.SetTop(textBox, ToOverlayCoordinate(annotationBounds.Top));
+        Canvas.SetLeft(textBox, annotationBounds.Left);
+        Canvas.SetTop(textBox, annotationBounds.Top);
 
         EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
         EventHandler<KeyEventArgs>? keyDownHandler = null;
@@ -1907,12 +1904,6 @@ public class EditorSelectionController
         var top = Canvas.GetTop(control);
         if (double.IsNaN(left)) left = 0;
         if (double.IsNaN(top)) top = 0;
-
-        if (control.Parent is Canvas parent && parent.Name == "OverlayCanvas")
-        {
-            left -= EditorView.OverlayCanvasBleed;
-            top -= EditorView.OverlayCanvasBleed;
-        }
 
         var width = control.Width;
         var height = control.Height;

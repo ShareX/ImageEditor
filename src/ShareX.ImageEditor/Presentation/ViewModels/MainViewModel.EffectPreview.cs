@@ -167,14 +167,20 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             SkiaSharp.SKBitmap? source = GetBestAvailableSourceBitmap();
             if (source == null)
             {
+                EditorServices.ReportDebug(nameof(MainViewModel), "StartEffectPreview: no source bitmap (GetBestAvailableSourceBitmap returned null).");
                 return;
             }
 
             SkiaSharp.SKBitmap? copy = SafeCopyBitmap(source, "StartEffectPreview");
             if (copy == null)
             {
+                EditorServices.ReportDebug(nameof(MainViewModel), $"StartEffectPreview: SafeCopyBitmap failed (source {source.Width}x{source.Height}).");
                 return;
             }
+
+            EditorServices.ReportDebug(
+                nameof(MainViewModel),
+                $"StartEffectPreview: captured {copy.Width}x{copy.Height} for live effect preview.");
 
             if (_latestEffectPreviewImage != null && !ReferenceEquals(_latestEffectPreviewImage, _preEffectImage))
             {
@@ -291,6 +297,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
                 if (!applied)
                 {
+                    EditorServices.ReportDebug(
+                        nameof(MainViewModel),
+                        $"CommitEffectAndCleanup: EditorCore.ApplyImageOperation returned false (result {result.Width}x{result.Height}).");
+
                     if (!ReferenceEquals(result, preEffectImage))
                     {
                         result.Dispose();
@@ -358,11 +368,39 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         /// <summary>
+        /// Ends dialog-driven effect preview without committing via effect delegates.
+        /// Used when a dialog should apply through <c>EditorCore</c> to keep annotation transforms unified.
+        /// </summary>
+        public void EndEffectPreview()
+        {
+            _latestEffectPreviewImage?.Dispose();
+            _latestEffectPreviewImage = null;
+
+            _preEffectImage?.Dispose();
+            _preEffectImage = null;
+
+            _isPreviewingEffect = false;
+            OnPropertyChanged(nameof(AreBackgroundEffectsActive));
+            OnPropertyChanged(nameof(EffectiveCanvasBackground));
+            UpdateCanvasProperties();
+        }
+
+        /// <summary>
         /// Applies the effect function to the pre-effect image and updates the preview.
         /// </summary>
         public void PreviewEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect)
         {
-            if (_preEffectImage == null || effect == null) return;
+            if (_preEffectImage == null)
+            {
+                EditorServices.ReportDebug(nameof(MainViewModel), "PreviewEffect: skipped (_preEffectImage is null).");
+                return;
+            }
+
+            if (effect == null)
+            {
+                EditorServices.ReportDebug(nameof(MainViewModel), "PreviewEffect: skipped (effect delegate is null).");
+                return;
+            }
 
             SkiaSharp.SKBitmap? result = null;
 
@@ -371,11 +409,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 result = effect(_preEffectImage);
                 if (result == null)
                 {
+                    EditorServices.ReportDebug(nameof(MainViewModel), "PreviewEffect: effect returned null bitmap.");
                     return;
                 }
 
                 if (!IsBitmapAlive(result))
                 {
+                    EditorServices.ReportDebug(nameof(MainViewModel), "PreviewEffect: effect returned dead bitmap; disposing.");
                     result.Dispose();
                     return;
                 }
@@ -386,11 +426,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     SkiaSharp.SKBitmap? copied = SafeCopyBitmap(result, "PreviewEffect.ReferenceEqual");
                     if (copied == null)
                     {
+                        EditorServices.ReportDebug(nameof(MainViewModel), "PreviewEffect: SafeCopyBitmap failed for ReferenceEqual result.");
                         return;
                     }
 
                     result = copied;
                 }
+
+                EditorServices.ReportDebug(
+                    nameof(MainViewModel),
+                    $"PreviewEffect: ok source={_preEffectImage.Width}x{_preEffectImage.Height} -> result={result.Width}x{result.Height} refEqSource={ReferenceEquals(result, _preEffectImage)}");
 
                 UpdatePreviewImageOnly(result, syncSourceState: false);
 
@@ -414,11 +459,18 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         /// </summary>
         public void ApplyEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect, string statusMessage)
         {
-            if (_preEffectImage == null) return;
+            if (_preEffectImage == null)
+            {
+                EditorServices.ReportDebug(nameof(MainViewModel), $"ApplyEffect(Func): skipped (_preEffectImage null) status={statusMessage}");
+                return;
+            }
 
             if (IsBitmapAlive(_latestEffectPreviewImage))
             {
                 SkiaSharp.SKBitmap previewResult = _latestEffectPreviewImage!;
+                EditorServices.ReportDebug(
+                    nameof(MainViewModel),
+                    $"ApplyEffect(Func): committing latest preview bitmap {previewResult.Width}x{previewResult.Height} status={statusMessage}");
                 _latestEffectPreviewImage = null;
                 CommitEffectAndCleanup(previewResult, statusMessage);
                 return;
@@ -427,9 +479,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _latestEffectPreviewImage?.Dispose();
             _latestEffectPreviewImage = null;
 
+            EditorServices.ReportDebug(nameof(MainViewModel), $"ApplyEffect(Func): running effect fresh (no preview bitmap) status={statusMessage}");
             SkiaSharp.SKBitmap? result = effect(_preEffectImage);
             if (!IsBitmapAlive(result))
             {
+                EditorServices.ReportDebug(nameof(MainViewModel), "ApplyEffect(Func): effect returned null or dead bitmap.");
                 result?.Dispose();
                 return;
             }

@@ -1,15 +1,10 @@
-# Normalize text files to LF in the repository and on checkout.
-* text=auto eol=lf
+# Auto detect text files and perform LF normalization
+* text=auto
 
-# Keep common Windows shell scripts in CRLF for maximum compatibility.
-*.bat text eol=crlf
-*.cmd text eol=crlf
-*.ps1 text eol=crlf
-
-# Custom for Visual Studio / Git diffs.
+# Custom for Visual Studio
 *.cs diff=csharp
 
-# Standard textconv helpers.
+# Standard to msysgit
 *.doc diff=astextplain
 *.DOC diff=astextplain
 *.docx diff=astextplain
@@ -20,3 +15,9 @@
 *.PDF diff=astextplain
 *.rtf diff=astextplain
 *.RTF diff=astextplain
+
+# Declare files that will always have CRLF line endings on checkout
+*.sln text eol=crlf
+*.csproj text eol=crlf
+*.cs text eol=crlf
+*.resx text eol=crlf

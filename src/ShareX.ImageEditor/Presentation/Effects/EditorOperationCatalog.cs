@@ -1,44 +1,28 @@
 using ShareX.ImageEditor.Core.ImageEffects;
-using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
-using ShareX.ImageEditor.Core.ImageEffects.Parameters;
-using ShareX.ImageEditor.Presentation.Theming;
-using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Effects;
 
 internal static class EditorOperationCatalog
 {
-    private static readonly IReadOnlyList<EditorOperationDefinition> _definitions =
+    /// <summary>
+    /// Maps effect IDs to their <see cref="EditorOperationKind"/> routing.
+    /// Each entry corresponds to an <see cref="ImageEffectBase"/> subclass that is auto-discovered.
+    /// </summary>
+    private static readonly (string Id, EditorOperationKind Kind)[] _operationMappings =
     [
-        new(
-            "auto_crop_image",
-            "Auto crop image...",
-            LucideIcons.Scan,
-            "Automatically crops the image using tolerance on edge pixels.",
-            ImageEffectCategory.Manipulations,
-            EditorOperationKind.AutoCropImage,
-            new EffectDefinition(
-                "auto_crop_image",
-                "Auto crop image",
-                "Auto crop image...",
-                LucideIcons.Scan,
-                "Automatically crops the image using tolerance on edge pixels.",
-                ImageEffectCategory.Manipulations,
-                static () => new AutoCropImageEffect(SKColors.Transparent, 0),
-                [],
-                [
-                    EffectParameters.IntSlider<AutoCropImageEffect>("tolerance", "Tolerance", 0, 255, 0, (effect, value) => effect.Tolerance = value)
-                ])),
-        new("crop_image", "Crop image...", LucideIcons.Crop, "Crops the image.", ImageEffectCategory.Manipulations, EditorOperationKind.CropImage),
-        new("resize_image", "Resize image...", LucideIcons.ImageUpscale, "Resizes the image.", ImageEffectCategory.Manipulations, EditorOperationKind.ResizeImage),
-        new("resize_canvas", "Resize canvas...", LucideIcons.Maximize, "Resizes the canvas.", ImageEffectCategory.Manipulations, EditorOperationKind.ResizeCanvas),
-        new("rotate_90_clockwise", "Rotate 90° clockwise", LucideIcons.Redo2, "Rotates the image 90 degrees clockwise.", ImageEffectCategory.Manipulations, EditorOperationKind.Rotate90Clockwise),
-        new("rotate_90_counter_clockwise", "Rotate 90° counter clockwise", LucideIcons.Undo2, "Rotates the image 90 degrees counter-clockwise.", ImageEffectCategory.Manipulations, EditorOperationKind.Rotate90CounterClockwise),
-        new("rotate_180", "Rotate 180°", LucideIcons.RotateCwSquare, "Rotates the image by 180 degrees.", ImageEffectCategory.Manipulations, EditorOperationKind.Rotate180),
-        new("rotate_custom_angle", "Rotate...", LucideIcons.RotateCw, "Rotates the image by a custom angle.", ImageEffectCategory.Manipulations, EditorOperationKind.RotateCustomAngle),
-        new("flip_horizontal", "Flip horizontal", LucideIcons.FlipHorizontal, "Flips the image horizontally.", ImageEffectCategory.Manipulations, EditorOperationKind.FlipHorizontal),
-        new("flip_vertical", "Flip vertical", LucideIcons.FlipVertical, "Flips the image vertically.", ImageEffectCategory.Manipulations, EditorOperationKind.FlipVertical)
+        ("auto_crop_image", EditorOperationKind.AutoCropImage),
+        ("crop_image", EditorOperationKind.CropImage),
+        ("resize_image", EditorOperationKind.ResizeImage),
+        ("resize_canvas", EditorOperationKind.ResizeCanvas),
+        ("rotate_90_clockwise", EditorOperationKind.Rotate90Clockwise),
+        ("rotate_90_counter_clockwise", EditorOperationKind.Rotate90CounterClockwise),
+        ("rotate_180", EditorOperationKind.Rotate180),
+        ("rotate_custom_angle", EditorOperationKind.RotateCustomAngle),
+        ("flip_horizontal", EditorOperationKind.FlipHorizontal),
+        ("flip_vertical", EditorOperationKind.FlipVertical)
     ];
+
+    private static readonly IReadOnlyList<EditorOperationDefinition> _definitions = BuildDefinitions();
 
     private static readonly IReadOnlyDictionary<string, EditorOperationDefinition> _definitionsById =
         _definitions.ToDictionary(definition => definition.Id, StringComparer.OrdinalIgnoreCase);
@@ -60,5 +44,35 @@ internal static class EditorOperationCatalog
         return _definitionsByCategory.TryGetValue(category, out IReadOnlyList<EditorOperationDefinition>? definitions)
             ? definitions
             : [];
+    }
+
+    private static IReadOnlyList<EditorOperationDefinition> BuildDefinitions()
+    {
+        // Index discovered effects by ID so we can look up metadata.
+        var discoveredById = DiscoveredEffectRegistry.Definitions
+            .ToDictionary(d => d.Id, StringComparer.OrdinalIgnoreCase);
+
+        var definitions = new List<EditorOperationDefinition>();
+
+        foreach ((string id, EditorOperationKind kind) in _operationMappings)
+        {
+            if (!discoveredById.TryGetValue(id, out EffectDefinition? effect))
+            {
+                continue;
+            }
+
+            EffectDefinition? schemaDefinition = effect.CoreParameters.Count > 0 ? effect : null;
+
+            definitions.Add(new EditorOperationDefinition(
+                effect.Id,
+                effect.BrowserLabel,
+                effect.Icon,
+                effect.Description,
+                effect.Category,
+                kind,
+                schemaDefinition));
+        }
+
+        return definitions;
     }
 }

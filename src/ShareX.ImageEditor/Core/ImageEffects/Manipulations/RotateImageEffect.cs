@@ -5,11 +5,11 @@ namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
 public sealed class RotateImageEffect : ImageEffectBase
 {
-    public override string Id => "rotate";
+    public override string Id => "rotate_custom_angle";
     public override string Name => "Rotate";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
     public override string IconKey => "RotateCw";
-    public override string Description => "Rotates the image by a specified angle.";
+    public override string Description => "Rotates the image by a custom angle.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
         EffectParameters.FloatSlider<RotateImageEffect>("angle", "Angle", -360f, 360f, 0f, (e, v) => e.Angle = v),

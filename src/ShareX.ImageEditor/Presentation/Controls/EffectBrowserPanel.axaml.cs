@@ -246,6 +246,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             ["auto_crop"] = "auto_crop_image",
             // Back-compat for older persisted ids (e.g. favorites/recent) which exposed a broken host shortcut.
             ["editor_auto_crop"] = "auto_crop_image",
+            ["rotate"] = "rotate_custom_angle",
             ["rotate_90"] = "rotate_90_clockwise",
             ["rotate_90_cc"] = "rotate_90_counter_clockwise"
         };
@@ -612,6 +613,12 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             foreach (EffectDefinition definition in ImageEffectCatalog.GetByCategory(targetCategory))
             {
+                // Skip effects that are registered as editor operations — they are added separately.
+                if (EditorOperationCatalog.TryGetDefinition(definition.Id, out _))
+                {
+                    continue;
+                }
+
                 category.AddEffect(
                     definition.BrowserLabel,
                     definition.Icon,

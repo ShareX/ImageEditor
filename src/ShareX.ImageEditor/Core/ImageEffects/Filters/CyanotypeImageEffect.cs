@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CyanotypeImageEffect : FilterImageEffect
+public sealed class CyanotypeImageEffect : ImageEffectBase
 {
+    public override string Id => "cyanotype";
     public override string Name => "Cyanotype";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Simulates a cyanotype photographic printing process with blue-toned output.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<CyanotypeImageEffect>("contrast", "Contrast", 50, 200, 118, (e, v) => e.Contrast = v),
+        EffectParameters.FloatSlider<CyanotypeImageEffect>("paper_texture", "Paper texture", 0, 100, 34, (e, v) => e.PaperTexture = v),
+        EffectParameters.FloatSlider<CyanotypeImageEffect>("stain", "Stain", 0, 100, 28, (e, v) => e.Stain = v),
+        EffectParameters.FloatSlider<CyanotypeImageEffect>("grain", "Grain", 0, 100, 12, (e, v) => e.Grain = v),
+        EffectParameters.FloatSlider<CyanotypeImageEffect>("vignette", "Vignette", 0, 100, 20, (e, v) => e.Vignette = v)
+    ];
 
     public float Contrast { get; set; } = 118f;
     public float PaperTexture { get; set; } = 34f;

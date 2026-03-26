@@ -1,12 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class AddNoiseImageEffect : FilterImageEffect
+public sealed class AddNoiseImageEffect : ImageEffectBase
 {
+    public override string Id => "add_noise";
     public override string Name => "Add noise";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconCloud";
-    public override bool HasParameters => true;
+    public override string Description => "Adds random noise to the image.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<AddNoiseImageEffect>("amount", "Amount", 0, 100, 8, (e, v) => e.Amount = v)
+    ];
 
     public float Amount { get; set; } = 8f;
     public int Seed { get; set; } = 1337;

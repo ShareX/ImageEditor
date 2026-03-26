@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class MotionBlurImageEffect : FilterImageEffect
+public sealed class MotionBlurImageEffect : ImageEffectBase
 {
+    public override string Id => "motion_blur";
     public override string Name => "Motion blur";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconRotateCW";
-    public override bool HasParameters => true;
+    public override string Description => "Applies a directional motion blur at a specified angle.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<MotionBlurImageEffect>("distance", "Distance", 1, 200, 12, (e, v) => e.Distance = v),
+        EffectParameters.FloatSlider<MotionBlurImageEffect>("angle", "Angle", 0, 360, 0, (e, v) => e.Angle = v),
+    ];
 
     public int Distance { get; set; } = 12;
     public float Angle { get; set; }

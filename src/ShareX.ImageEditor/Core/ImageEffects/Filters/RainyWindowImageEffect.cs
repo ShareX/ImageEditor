@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RainyWindowImageEffect : FilterImageEffect
+public sealed class RainyWindowImageEffect : ImageEffectBase
 {
+    public override string Id => "rainy_window";
     public override string Name => "Rainy window";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconCloud";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates looking through a rain-streaked window with distortion and mist.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<RainyWindowImageEffect>("distortion", "Distortion", 0f, 30f, 8f, (e, v) => e.Distortion = v),
+        EffectParameters.FloatSlider<RainyWindowImageEffect>("streak_density", "Streak density", 0f, 100f, 45f, (e, v) => e.StreakDensity = v),
+        EffectParameters.FloatSlider<RainyWindowImageEffect>("mist_amount", "Mist amount", 0f, 100f, 25f, (e, v) => e.MistAmount = v),
+        EffectParameters.FloatSlider<RainyWindowImageEffect>("droplet_amount", "Droplet amount", 0f, 100f, 35f, (e, v) => e.DropletAmount = v),
+    ];
 
     public float Distortion { get; set; } = 8f; // 0..30
     public float StreakDensity { get; set; } = 45f; // 0..100

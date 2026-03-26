@@ -1,13 +1,26 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ASCIIArtImageEffect : FilterImageEffect
+public sealed class ASCIIArtImageEffect : ImageEffectBase
 {
+    public override string Id => "ascii_art";
     public override string Name => "ASCII art";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconText";
-    public override bool HasParameters => true;
+    public override string Description => "Converts the image into ASCII character art.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<ASCIIArtImageEffect>("cell_size", "Cell size", 4, 24, 8, (e, v) => e.CellSize = v),
+        EffectParameters.FloatSlider<ASCIIArtImageEffect>("contrast", "Contrast", 50, 200, 110, (e, v) => e.Contrast = v),
+        EffectParameters.Text<ASCIIArtImageEffect>("character_set", "Character set", "@%#*+=-:. ", (e, v) => e.CharacterSet = v),
+        EffectParameters.Bool<ASCIIArtImageEffect>("invert", "Invert", false, (e, v) => e.Invert = v),
+        EffectParameters.Bool<ASCIIArtImageEffect>("dark_background", "Dark background", true, (e, v) => e.DarkBackground = v),
+        EffectParameters.Bool<ASCIIArtImageEffect>("use_source_color", "Use source color", true, (e, v) => e.UseSourceColor = v)
+    ];
 
     public int CellSize { get; set; } = 8; // 4..24
     public float Contrast { get; set; } = 110f; // 50..200

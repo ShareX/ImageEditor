@@ -1,9 +1,10 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class WoodenFrameImageEffect : ImageEffect
+public sealed class WoodenFrameImageEffect : ImageEffectBase
 {
     private enum FrameSide
     {
@@ -13,17 +14,24 @@ public sealed class WoodenFrameImageEffect : ImageEffect
         Right
     }
 
+    public override string Id => "wooden_frame";
+    public override string Name => "Wooden frame";
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string Description => "Adds a procedural wooden frame around the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntNumeric<WoodenFrameImageEffect>("frame_width", "Frame width", 2, 300, 48, (e, v) => e.FrameWidth = v),
+        EffectParameters.FloatSlider<WoodenFrameImageEffect>("grain_strength", "Grain strength", 0, 100, 60, (e, v) => e.GrainStrength = v),
+        EffectParameters.FloatSlider<WoodenFrameImageEffect>("bevel_strength", "Bevel strength", 0, 100, 65, (e, v) => e.BevelStrength = v),
+        EffectParameters.Color<WoodenFrameImageEffect>("wood_color", "Wood color", new SKColor(139, 94, 60), (e, v) => e.WoodColor = v),
+        EffectParameters.IntNumeric<WoodenFrameImageEffect>("seed", "Seed", 0, 99999, 1649, (e, v) => e.Seed = v)
+    ];
+
     public int FrameWidth { get; set; } = 48;
     public float GrainStrength { get; set; } = 60f; // 0..100
     public float BevelStrength { get; set; } = 65f; // 0..100
     public SKColor WoodColor { get; set; } = new SKColor(139, 94, 60);
     public int Seed { get; set; } = 1649;
-
-    public override string Name => "Wooden frame";
-
-    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-
-    public override bool HasParameters => true;
 
     public override SKBitmap Apply(SKBitmap source)
     {

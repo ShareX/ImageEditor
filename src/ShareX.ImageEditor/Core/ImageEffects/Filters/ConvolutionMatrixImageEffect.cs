@@ -1,13 +1,30 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ConvolutionMatrixImageEffect : FilterImageEffect
+public sealed class ConvolutionMatrixImageEffect : ImageEffectBase
 {
+    public override string Id => "convolution_matrix";
     public override string Name => "Convolution matrix";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconAdjust";
-    public override bool HasParameters => true;
+    public override string Description => "Applies a custom 3x3 convolution kernel to the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x0y0", "X0 Y0", -99, 99, 0, (e, v) => e.X0Y0 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x1y0", "X1 Y0", -99, 99, 0, (e, v) => e.X1Y0 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x2y0", "X2 Y0", -99, 99, 0, (e, v) => e.X2Y0 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x0y1", "X0 Y1", -99, 99, 0, (e, v) => e.X0Y1 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x1y1", "X1 Y1", -99, 99, 1, (e, v) => e.X1Y1 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x2y1", "X2 Y1", -99, 99, 0, (e, v) => e.X2Y1 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x0y2", "X0 Y2", -99, 99, 0, (e, v) => e.X0Y2 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x1y2", "X1 Y2", -99, 99, 0, (e, v) => e.X1Y2 = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x2y2", "X2 Y2", -99, 99, 0, (e, v) => e.X2Y2 = v),
+        EffectParameters.FloatSlider<ConvolutionMatrixImageEffect>("factor", "Factor", 0.01f, 10f, 1f, (e, v) => e.Factor = v),
+        EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("offset", "Offset", -255, 255, 0, (e, v) => e.Offset = v),
+    ];
 
     public int X0Y0 { get; set; }
     public int X1Y0 { get; set; }

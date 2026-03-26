@@ -1,12 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class PaperStencilMaskImageEffect : FilterImageEffect
+public sealed class PaperStencilMaskImageEffect : ImageEffectBase
 {
+    public override string Id => "paper_stencil_mask";
     public override string Name => "Paper stencil mask";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Applies a paper stencil mask effect with adjustable threshold and edge strength.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<PaperStencilMaskImageEffect>("threshold", "Threshold", 0f, 255f, 140f, (e, v) => e.Threshold = v),
+        EffectParameters.FloatSlider<PaperStencilMaskImageEffect>("feather_radius", "Feather radius", 0f, 200f, 8f, (e, v) => e.FeatherRadius = v),
+        EffectParameters.FloatSlider<PaperStencilMaskImageEffect>("edge_strength", "Edge strength", 0f, 100f, 70f, (e, v) => e.EdgeStrength = v),
+        EffectParameters.FloatSlider<PaperStencilMaskImageEffect>("background_dim", "Background dim", 0f, 100f, 35f, (e, v) => e.BackgroundDim = v),
+        EffectParameters.Bool<PaperStencilMaskImageEffect>("invert_mask", "Invert mask", false, (e, v) => e.InvertMask = v),
+        EffectParameters.Color<PaperStencilMaskImageEffect>("stencil_color", "Stencil color", new SKColor(0, 0, 0, 220), (e, v) => e.StencilColor = v),
+    ];
 
     public float Threshold { get; set; } = 140f; // 0..255
     public float FeatherRadius { get; set; } = 8f; // 0..200 heuristic

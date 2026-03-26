@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
@@ -11,11 +12,21 @@ public enum PageCurlCorner
     BottomLeft
 }
 
-public class PageCurlImageEffect : ImageEffect
+public sealed class PageCurlImageEffect : ImageEffectBase
 {
+    public override string Id => "page_curl";
     public override string Name => "Page curl";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string Description => "Simulates a page curl at a corner of the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<PageCurlImageEffect, PageCurlCorner>("corner", "Corner", PageCurlCorner.BottomRight, (e, v) => e.Corner = v,
+            new (string, PageCurlCorner)[] { ("Top left", PageCurlCorner.TopLeft), ("Top right", PageCurlCorner.TopRight), ("Bottom right", PageCurlCorner.BottomRight), ("Bottom left", PageCurlCorner.BottomLeft) }),
+        EffectParameters.FloatSlider<PageCurlImageEffect>("curl_size", "Curl size", 5f, 80f, 28f, (e, v) => e.CurlSize = v),
+        EffectParameters.FloatSlider<PageCurlImageEffect>("curl_depth", "Curl depth", 0f, 100f, 55f, (e, v) => e.CurlDepth = v),
+        EffectParameters.FloatSlider<PageCurlImageEffect>("shadow_strength", "Shadow strength", 0f, 100f, 60f, (e, v) => e.ShadowStrength = v),
+        EffectParameters.Color<PageCurlImageEffect>("back_color", "Back color", new SKColor(248, 244, 236), (e, v) => e.BackColor = v)
+    ];
 
     public PageCurlCorner Corner { get; set; } = PageCurlCorner.BottomRight;
     public float CurlSize { get; set; } = 28f;

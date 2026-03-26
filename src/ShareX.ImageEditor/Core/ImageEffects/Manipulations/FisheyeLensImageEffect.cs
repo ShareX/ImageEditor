@@ -1,13 +1,22 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class FisheyeLensImageEffect : ImageEffect
+public sealed class FisheyeLensImageEffect : ImageEffectBase
 {
+    public override string Id => "fisheye_lens";
     public override string Name => "Fisheye lens";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string Description => "Applies a fisheye lens distortion effect.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<FisheyeLensImageEffect>("strength", "Strength", 0f, 100f, 58f, (e, v) => e.Strength = v),
+        EffectParameters.FloatSlider<FisheyeLensImageEffect>("radius_percentage", "Radius percentage", 1f, 100f, 100f, (e, v) => e.RadiusPercentage = v),
+        EffectParameters.FloatSlider<FisheyeLensImageEffect>("center_x_percentage", "Center X percentage", 0f, 100f, 50f, (e, v) => e.CenterXPercentage = v),
+        EffectParameters.FloatSlider<FisheyeLensImageEffect>("center_y_percentage", "Center Y percentage", 0f, 100f, 50f, (e, v) => e.CenterYPercentage = v)
+    ];
 
     public float Strength { get; set; } = 58f;
     public float RadiusPercentage { get; set; } = 100f;

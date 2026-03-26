@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SoftDiffusionImageEffect : FilterImageEffect
+public sealed class SoftDiffusionImageEffect : ImageEffectBase
 {
+    public override string Id => "soft_diffusion";
     public override string Name => "Soft diffusion";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Applies a soft diffusion glow with bloom and warmth.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<SoftDiffusionImageEffect>("amount", "Amount", 0f, 100f, 52f, (e, v) => e.Amount = v),
+        EffectParameters.FloatSlider<SoftDiffusionImageEffect>("radius", "Radius", 0f, 30f, 12f, (e, v) => e.Radius = v),
+        EffectParameters.FloatSlider<SoftDiffusionImageEffect>("highlight_bloom", "Highlight bloom", 0f, 100f, 40f, (e, v) => e.HighlightBloom = v),
+        EffectParameters.FloatSlider<SoftDiffusionImageEffect>("contrast_softening", "Contrast softening", 0f, 100f, 28f, (e, v) => e.ContrastSoftening = v),
+        EffectParameters.FloatSlider<SoftDiffusionImageEffect>("warmth", "Warmth", 0f, 100f, 22f, (e, v) => e.Warmth = v),
+    ];
 
     public float Amount { get; set; } = 52f;
     public float Radius { get; set; } = 12f;

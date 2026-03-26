@@ -1,12 +1,22 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class Rotate3DBoxImageEffect : ImageEffect
+public sealed class Rotate3DBoxImageEffect : ImageEffectBase
 {
+    public override string Id => "rotate_3d_box";
     public override string Name => "3D Box / Extrude";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string Description => "Creates a 3D box extrusion effect with rotation.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<Rotate3DBoxImageEffect>("depth", "Depth", 0f, 500f, 50f, (e, v) => e.Depth = v),
+        EffectParameters.FloatSlider<Rotate3DBoxImageEffect>("rotate_x", "Rotate X", -180f, 180f, 0f, (e, v) => e.RotateX = v),
+        EffectParameters.FloatSlider<Rotate3DBoxImageEffect>("rotate_y", "Rotate Y", -180f, 180f, 0f, (e, v) => e.RotateY = v),
+        EffectParameters.FloatSlider<Rotate3DBoxImageEffect>("rotate_z", "Rotate Z", -180f, 180f, 0f, (e, v) => e.RotateZ = v),
+        EffectParameters.Bool<Rotate3DBoxImageEffect>("auto_resize", "Auto resize", true, (e, v) => e.AutoResize = v)
+    ];
 
     /// <summary>
     /// Depth of the 3D box or extrusion in pixels.

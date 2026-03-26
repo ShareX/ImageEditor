@@ -30,10 +30,13 @@ public struct SelectiveColorAdjustment
     }
 }
 
-public class SelectiveColorImageEffect : AdjustmentImageEffect
+public sealed class SelectiveColorImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "selective_color";
     public override string Name => "Selective Color";
     public override string IconKey => "IconHighlighter";
+    public override string Description => "Adjusts hue, saturation, and lightness for individual color ranges.";
+    public override string? EditorKey => "selective_color";
 
     public Dictionary<SelectiveColorRange, SelectiveColorAdjustment> Adjustments { get; set; } = new();
 

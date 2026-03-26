@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class PlasmaEnergyArcsImageEffect : FilterImageEffect
+public sealed class PlasmaEnergyArcsImageEffect : ImageEffectBase
 {
+    public override string Id => "plasma_energy_arcs";
     public override string Name => "Plasma energy arcs";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconZap";
-    public override bool HasParameters => true;
+    public override string Description => "Generates plasma-like energy arcs overlaid on the image.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<PlasmaEnergyArcsImageEffect>("energy", "Energy", 0f, 100f, 65f, (e, v) => e.Energy = v),
+        EffectParameters.FloatSlider<PlasmaEnergyArcsImageEffect>("arc_density", "Arc density", 0f, 100f, 46f, (e, v) => e.ArcDensity = v),
+        EffectParameters.FloatSlider<PlasmaEnergyArcsImageEffect>("glow", "Glow", 0f, 100f, 70f, (e, v) => e.Glow = v),
+        EffectParameters.FloatSlider<PlasmaEnergyArcsImageEffect>("turbulence", "Turbulence", 0f, 100f, 52f, (e, v) => e.Turbulence = v),
+        EffectParameters.FloatSlider<PlasmaEnergyArcsImageEffect>("thickness", "Thickness", 0f, 100f, 38f, (e, v) => e.Thickness = v),
+    ];
 
     public float Energy { get; set; } = 65f; // 0..100
     public float ArcDensity { get; set; } = 46f; // 0..100

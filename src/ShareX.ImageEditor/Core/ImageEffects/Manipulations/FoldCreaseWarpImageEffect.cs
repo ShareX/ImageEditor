@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
@@ -9,11 +10,20 @@ public enum FoldCreaseOrientation
     Horizontal
 }
 
-public class FoldCreaseWarpImageEffect : ImageEffect
+public sealed class FoldCreaseWarpImageEffect : ImageEffectBase
 {
+    public override string Id => "fold_crease_warp";
     public override string Name => "Fold crease warp";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string Description => "Simulates a folded paper crease distortion.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<FoldCreaseWarpImageEffect, FoldCreaseOrientation>("orientation", "Orientation", FoldCreaseOrientation.Vertical, (e, v) => e.Orientation = v,
+            new (string, FoldCreaseOrientation)[] { ("Vertical", FoldCreaseOrientation.Vertical), ("Horizontal", FoldCreaseOrientation.Horizontal) }),
+        EffectParameters.IntSlider<FoldCreaseWarpImageEffect>("fold_count", "Fold count", 1, 10, 3, (e, v) => e.FoldCount = v),
+        EffectParameters.FloatSlider<FoldCreaseWarpImageEffect>("fold_depth", "Fold depth", 0f, 100f, 30f, (e, v) => e.FoldDepth = v),
+        EffectParameters.FloatSlider<FoldCreaseWarpImageEffect>("shadow_strength", "Shadow strength", 0f, 100f, 40f, (e, v) => e.ShadowStrength = v)
+    ];
 
     public FoldCreaseOrientation Orientation { get; set; } = FoldCreaseOrientation.Vertical;
     public int FoldCount { get; set; } = 3;

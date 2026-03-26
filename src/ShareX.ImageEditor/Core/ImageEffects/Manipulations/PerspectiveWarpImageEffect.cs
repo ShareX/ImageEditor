@@ -1,12 +1,15 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class PerspectiveWarpImageEffect : ImageEffect
+public sealed class PerspectiveWarpImageEffect : ImageEffectBase
 {
+    public override string Id => "perspective_warp";
     public override string Name => "Perspective warp";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string Description => "Applies a perspective warp transformation.";
+    public override string? EditorKey => "perspective_warp";
 
     public float TopLeftX { get; set; }
     public float TopLeftY { get; set; }

@@ -1,12 +1,24 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class StainedGlassImageEffect : FilterImageEffect
+public sealed class StainedGlassImageEffect : ImageEffectBase
 {
+    public override string Id => "stained_glass";
     public override string Name => "Stained glass";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconGrid";
-    public override bool HasParameters => true;
+    public override string Description => "Creates a stained glass mosaic effect with lead borders.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<StainedGlassImageEffect>("tile_size", "Tile size", 6, 120, 22, (e, v) => e.TileSize = v),
+        EffectParameters.FloatSlider<StainedGlassImageEffect>("irregularity", "Irregularity", 0f, 100f, 55f, (e, v) => e.Irregularity = v),
+        EffectParameters.FloatSlider<StainedGlassImageEffect>("lead_width", "Lead width", 0f, 12f, 1.8f, (e, v) => e.LeadWidth = v),
+        EffectParameters.FloatSlider<StainedGlassImageEffect>("lead_opacity", "Lead opacity", 0f, 100f, 85f, (e, v) => e.LeadOpacity = v),
+        EffectParameters.FloatSlider<StainedGlassImageEffect>("color_boost", "Color boost", 0f, 100f, 20f, (e, v) => e.ColorBoost = v),
+    ];
 
     public int TileSize { get; set; } = 22; // 6..120
     public float Irregularity { get; set; } = 55f; // 0..100

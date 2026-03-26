@@ -1,19 +1,31 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BevelImageEffect : FilterImageEffect
+public sealed class BevelImageEffect : ImageEffectBase
 {
+    public override string Id => "bevel";
+    public override string Name => "Bevel";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "IconAdjust";
+    public override string Description => "Adds a beveled edge effect with highlights and shadows.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<BevelImageEffect>("size", "Size", 1, 40, 10, (e, v) => e.Size = v),
+        EffectParameters.FloatSlider<BevelImageEffect>("strength", "Strength", 0, 100, 70, (e, v) => e.Strength = v),
+        EffectParameters.FloatSlider<BevelImageEffect>("light_angle", "Light angle", 0, 360, 225, (e, v) => e.LightAngle = v),
+        EffectParameters.Color<BevelImageEffect>("highlight_color", "Highlight color", new SKColor(255, 255, 255, 217), (e, v) => e.HighlightColor = v),
+        EffectParameters.Color<BevelImageEffect>("shadow_color", "Shadow color", new SKColor(0, 0, 0, 176), (e, v) => e.ShadowColor = v)
+    ];
+
     public int Size { get; set; } = 10;
     public float Strength { get; set; } = 70f; // 0..100
     public float LightAngle { get; set; } = 225f; // degrees
     public SKColor HighlightColor { get; set; } = new SKColor(255, 255, 255, 217);
     public SKColor ShadowColor { get; set; } = new SKColor(0, 0, 0, 176);
-
-    public override string Name => "Bevel";
-    public override bool HasParameters => true;
-    public override string IconKey => "IconAdjust";
 
     public override SKBitmap Apply(SKBitmap source)
     {

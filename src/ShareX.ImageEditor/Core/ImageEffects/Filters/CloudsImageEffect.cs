@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CloudsImageEffect : FilterImageEffect
+public sealed class CloudsImageEffect : ImageEffectBase
 {
+    public override string Id => "clouds";
     public override string Name => "Clouds";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconCloud";
-    public override bool HasParameters => true;
+    public override string Description => "Overlays procedurally generated clouds onto the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<CloudsImageEffect>("coverage", "Coverage", 0f, 100f, 55f, (e, v) => e.Coverage = v),
+        EffectParameters.FloatSlider<CloudsImageEffect>("scale", "Scale", 0f, 100f, 72f, (e, v) => e.Scale = v),
+        EffectParameters.FloatSlider<CloudsImageEffect>("heightBias", "Height bias", 0f, 100f, 62f, (e, v) => e.HeightBias = v),
+        EffectParameters.FloatSlider<CloudsImageEffect>("softness", "Softness", 0f, 100f, 64f, (e, v) => e.Softness = v),
+        EffectParameters.FloatSlider<CloudsImageEffect>("sunlight", "Sunlight", 0f, 100f, 38f, (e, v) => e.Sunlight = v),
+    ];
 
     public float Coverage { get; set; } = 55f; // 0..100
     public float Scale { get; set; } = 72f; // 0..100

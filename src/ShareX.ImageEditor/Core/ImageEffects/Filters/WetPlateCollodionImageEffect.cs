@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class WetPlateCollodionImageEffect : FilterImageEffect
+public sealed class WetPlateCollodionImageEffect : ImageEffectBase
 {
+    public override string Id => "wet_plate_collodion";
     public override string Name => "Wet plate collodion";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Simulates the wet plate collodion photographic process with stains and silvering.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<WetPlateCollodionImageEffect>("contrast", "Contrast", 50, 200, 132, (e, v) => e.Contrast = v),
+        EffectParameters.FloatSlider<WetPlateCollodionImageEffect>("plate_stains", "Plate stains", 0, 100, 34, (e, v) => e.PlateStains = v),
+        EffectParameters.FloatSlider<WetPlateCollodionImageEffect>("scratches", "Scratches", 0, 100, 24, (e, v) => e.Scratches = v),
+        EffectParameters.FloatSlider<WetPlateCollodionImageEffect>("silvering", "Silvering", 0, 100, 36, (e, v) => e.Silvering = v),
+        EffectParameters.FloatSlider<WetPlateCollodionImageEffect>("vignette", "Vignette", 0, 100, 58, (e, v) => e.Vignette = v)
+    ];
 
     public float Contrast { get; set; } = 132f;
     public float PlateStains { get; set; } = 34f;

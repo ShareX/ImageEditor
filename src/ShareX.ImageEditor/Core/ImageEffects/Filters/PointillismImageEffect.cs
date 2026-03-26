@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class PointillismImageEffect : FilterImageEffect
+public sealed class PointillismImageEffect : ImageEffectBase
 {
+    public override string Id => "pointillism";
     public override string Name => "Pointillism";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconSparkles";
-    public override bool HasParameters => true;
+    public override string Description => "Renders the image as a pointillist painting with colored dots.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<PointillismImageEffect>("dot_size", "Dot size", 2, 24, 7, (e, v) => e.DotSize = v),
+        EffectParameters.FloatSlider<PointillismImageEffect>("density", "Density", 10f, 100f, 72f, (e, v) => e.Density = v),
+        EffectParameters.FloatSlider<PointillismImageEffect>("jitter", "Jitter", 0f, 100f, 65f, (e, v) => e.Jitter = v),
+        EffectParameters.FloatSlider<PointillismImageEffect>("color_boost", "Color boost", 0f, 100f, 20f, (e, v) => e.ColorBoost = v),
+        EffectParameters.FloatSlider<PointillismImageEffect>("background_mix", "Background mix", 0f, 100f, 20f, (e, v) => e.BackgroundMix = v),
+    ];
 
     public int DotSize { get; set; } = 7; // 2..24
     public float Density { get; set; } = 72f; // 10..100

@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class OilPaintImageEffect : FilterImageEffect
+public sealed class OilPaintImageEffect : ImageEffectBase
 {
+    public override string Id => "oil_paint";
     public override string Name => "Oil paint";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconPalette";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates an oil painting by quantizing color intensity levels.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<OilPaintImageEffect>("radius", "Radius", 1, 6, 3, (e, v) => e.Radius = v),
+        EffectParameters.IntSlider<OilPaintImageEffect>("levels", "Levels", 8, 64, 24, (e, v) => e.Levels = v),
+    ];
 
     public int Radius { get; set; } = 3;
     public int Levels { get; set; } = 24;

@@ -1,10 +1,22 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class DrawCheckerboardEffect : ImageEffect
+public sealed class DrawCheckerboardEffect : ImageEffectBase
 {
     private int _size = 10;
+
+    public override string Id => "draw_checkerboard";
+    public override string Name => "Checkerboard";
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string Description => "Draws a checkerboard pattern behind the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntNumeric<DrawCheckerboardEffect>("size", "Size", 1, 100, 10, (e, v) => e.Size = v),
+        EffectParameters.Color<DrawCheckerboardEffect>("color", "Color", new SKColor(211, 211, 211), (e, v) => e.Color = v),
+        EffectParameters.Color<DrawCheckerboardEffect>("color2", "Color 2", SKColors.White, (e, v) => e.Color2 = v)
+    ];
 
     public int Size
     {
@@ -15,12 +27,6 @@ public sealed class DrawCheckerboardEffect : ImageEffect
     public SKColor Color { get; set; } = new SKColor(211, 211, 211);
 
     public SKColor Color2 { get; set; } = SKColors.White;
-
-    public override string Name => "Checkerboard";
-
-    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-
-    public override bool HasParameters => true;
 
     public override SKBitmap Apply(SKBitmap source)
     {

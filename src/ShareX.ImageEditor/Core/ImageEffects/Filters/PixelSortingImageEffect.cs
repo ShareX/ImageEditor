@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
@@ -15,11 +16,26 @@ public enum PixelSortMetric
     Hue
 }
 
-public class PixelSortingImageEffect : FilterImageEffect
+public sealed class PixelSortingImageEffect : ImageEffectBase
 {
+    public override string Id => "pixel_sorting";
     public override string Name => "Pixel sorting";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconArrowsH";
-    public override bool HasParameters => true;
+    public override string Description => "Sorts pixels along rows or columns based on brightness or hue thresholds.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<PixelSortingImageEffect, PixelSortDirection>("direction", "Direction", PixelSortDirection.Vertical, (e, v) => e.Direction = v,
+            new (string, PixelSortDirection)[] { ("Horizontal", PixelSortDirection.Horizontal), ("Vertical", PixelSortDirection.Vertical) }),
+        EffectParameters.Enum<PixelSortingImageEffect, PixelSortMetric>("metric", "Metric", PixelSortMetric.Brightness, (e, v) => e.Metric = v,
+            new (string, PixelSortMetric)[] { ("Brightness", PixelSortMetric.Brightness), ("Hue", PixelSortMetric.Hue) }),
+        EffectParameters.FloatSlider<PixelSortingImageEffect>("threshold_low", "Threshold low", 0f, 100f, 12f, (e, v) => e.ThresholdLow = v),
+        EffectParameters.FloatSlider<PixelSortingImageEffect>("threshold_high", "Threshold high", 0f, 100f, 85f, (e, v) => e.ThresholdHigh = v),
+        EffectParameters.IntSlider<PixelSortingImageEffect>("min_span_length", "Min span length", 2, 256, 8, (e, v) => e.MinSpanLength = v),
+        EffectParameters.IntSlider<PixelSortingImageEffect>("max_span_length", "Max span length", 2, 512, 120, (e, v) => e.MaxSpanLength = v),
+        EffectParameters.FloatSlider<PixelSortingImageEffect>("sort_probability", "Sort probability", 0f, 100f, 85f, (e, v) => e.SortProbability = v),
+    ];
 
     public PixelSortDirection Direction { get; set; } = PixelSortDirection.Vertical;
     public PixelSortMetric Metric { get; set; } = PixelSortMetric.Brightness;

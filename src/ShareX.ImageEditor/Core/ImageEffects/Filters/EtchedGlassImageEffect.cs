@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class EtchedGlassImageEffect : FilterImageEffect
+public sealed class EtchedGlassImageEffect : ImageEffectBase
 {
+    public override string Id => "etched_glass";
     public override string Name => "Etched glass";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconGlasses";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates an etched glass surface with frost, engraving, and refraction effects.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<EtchedGlassImageEffect>("frost", "Frost", 0, 100, 48, (e, v) => e.Frost = v),
+        EffectParameters.FloatSlider<EtchedGlassImageEffect>("engrave", "Engrave", 0, 100, 68, (e, v) => e.Engrave = v),
+        EffectParameters.FloatSlider<EtchedGlassImageEffect>("refraction", "Refraction", 0, 100, 18, (e, v) => e.Refraction = v),
+        EffectParameters.FloatSlider<EtchedGlassImageEffect>("highlight", "Highlight", 0, 100, 42, (e, v) => e.Highlight = v),
+        EffectParameters.FloatSlider<EtchedGlassImageEffect>("background_fade", "Background fade", 0, 100, 38, (e, v) => e.BackgroundFade = v)
+    ];
 
     public float Frost { get; set; } = 48f; // 0..100
     public float Engrave { get; set; } = 68f; // 0..100

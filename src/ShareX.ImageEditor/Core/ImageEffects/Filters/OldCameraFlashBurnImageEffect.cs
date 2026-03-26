@@ -1,13 +1,27 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class OldCameraFlashBurnImageEffect : FilterImageEffect
+public sealed class OldCameraFlashBurnImageEffect : ImageEffectBase
 {
+    public override string Id => "old_camera_flash_burn";
     public override string Name => "Old camera flash burn";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconFlash";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates an old camera flash burn with warm glow and edge burn effects.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<OldCameraFlashBurnImageEffect>("flash_strength", "Flash strength", 0f, 100f, 70f, (e, v) => e.FlashStrength = v),
+        EffectParameters.FloatSlider<OldCameraFlashBurnImageEffect>("flash_radius", "Flash radius", 20f, 100f, 68f, (e, v) => e.FlashRadius = v),
+        EffectParameters.FloatSlider<OldCameraFlashBurnImageEffect>("edge_burn", "Edge burn", 0f, 100f, 45f, (e, v) => e.EdgeBurn = v),
+        EffectParameters.FloatSlider<OldCameraFlashBurnImageEffect>("warmth", "Warmth", 0f, 100f, 35f, (e, v) => e.Warmth = v),
+        EffectParameters.FloatSlider<OldCameraFlashBurnImageEffect>("grain", "Grain", 0f, 100f, 20f, (e, v) => e.Grain = v),
+        EffectParameters.FloatSlider<OldCameraFlashBurnImageEffect>("center_x", "Center X", 0f, 100f, 50f, (e, v) => e.CenterX = v),
+        EffectParameters.FloatSlider<OldCameraFlashBurnImageEffect>("center_y", "Center Y", 0f, 100f, 50f, (e, v) => e.CenterY = v),
+    ];
 
     public float FlashStrength { get; set; } = 70f; // 0..100
     public float FlashRadius { get; set; } = 68f; // 20..100

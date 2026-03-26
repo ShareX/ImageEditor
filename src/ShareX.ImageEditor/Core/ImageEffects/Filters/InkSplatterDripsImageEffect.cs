@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class InkSplatterDripsImageEffect : FilterImageEffect
+public sealed class InkSplatterDripsImageEffect : ImageEffectBase
 {
+    public override string Id => "ink_splatter_drips";
     public override string Name => "Ink splatter + drips";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconInkStroke";
-    public override bool HasParameters => true;
+    public override string Description => "Adds ink splatter blobs and vertical drip marks.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<InkSplatterDripsImageEffect>("ink_amount", "Ink amount", 0, 100, 55, (e, v) => e.InkAmount = v),
+        EffectParameters.FloatSlider<InkSplatterDripsImageEffect>("drip_length", "Drip length", 0, 100, 45, (e, v) => e.DripLength = v),
+        EffectParameters.FloatSlider<InkSplatterDripsImageEffect>("spread", "Spread", 0, 100, 35, (e, v) => e.Spread = v),
+        EffectParameters.FloatSlider<InkSplatterDripsImageEffect>("paper_fade", "Paper fade", 0, 100, 20, (e, v) => e.PaperFade = v)
+    ];
 
     public float InkAmount { get; set; } = 55f; // 0..100
     public float DripLength { get; set; } = 45f; // 0..100

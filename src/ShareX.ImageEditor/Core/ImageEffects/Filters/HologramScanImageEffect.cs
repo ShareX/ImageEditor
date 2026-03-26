@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HologramScanImageEffect : FilterImageEffect
+public sealed class HologramScanImageEffect : ImageEffectBase
 {
+    public override string Id => "hologram_scan";
     public override string Name => "Hologram scan";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconDisplay";
-    public override bool HasParameters => true;
+    public override string Description => "Applies a holographic scanline effect with glitch and glow.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<HologramScanImageEffect>("scanline_strength", "Scanline strength", 0, 100, 45, (e, v) => e.ScanlineStrength = v),
+        EffectParameters.FloatSlider<HologramScanImageEffect>("glitch_amount", "Glitch amount", 0, 100, 25, (e, v) => e.GlitchAmount = v),
+        EffectParameters.IntSlider<HologramScanImageEffect>("chroma_shift", "Chroma shift", 0, 12, 2, (e, v) => e.ChromaShift = v),
+        EffectParameters.FloatSlider<HologramScanImageEffect>("glow_amount", "Glow amount", 0, 100, 30, (e, v) => e.GlowAmount = v)
+    ];
 
     public float ScanlineStrength { get; set; } = 45f; // 0..100
     public float GlitchAmount { get; set; } = 25f; // 0..100

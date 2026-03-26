@@ -1,10 +1,21 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class AutoCropImageEffect : ImageEffect
+public sealed class AutoCropImageEffect : ImageEffectBase
 {
+    public override string Id => "auto_crop";
+    public override string Name => "Auto crop image";
+    public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string Description => "Automatically crops the image by removing uniform borders.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Color<AutoCropImageEffect>("color", "Color", SKColors.Transparent, (e, v) => e.Color = v),
+        EffectParameters.IntSlider<AutoCropImageEffect>("tolerance", "Tolerance", 0, 255, 0, (e, v) => e.Tolerance = v)
+    ];
+
     private SKColor _color;
     private int _tolerance;
 
@@ -21,9 +32,6 @@ public class AutoCropImageEffect : ImageEffect
         get => _tolerance;
         set => _tolerance = value;
     }
-
-    public override string Name => "Auto crop image";
-    public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
 
     public AutoCropImageEffect(SKColor color, int tolerance = 0)
     {

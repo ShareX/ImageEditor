@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BloodSplashImageEffect : FilterImageEffect
+public sealed class BloodSplashImageEffect : ImageEffectBase
 {
+    public override string Id => "blood_splash";
     public override string Name => "Blood splash";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconDroplet";
-    public override bool HasParameters => true;
+    public override string Description => "Overlays procedural blood splash and drip effects.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<BloodSplashImageEffect>("splash_amount", "Splash amount", 0, 100, 52, (e, v) => e.SplashAmount = v),
+        EffectParameters.FloatSlider<BloodSplashImageEffect>("drip_length", "Drip length", 0, 100, 48, (e, v) => e.DripLength = v),
+        EffectParameters.FloatSlider<BloodSplashImageEffect>("spread", "Spread", 0, 100, 42, (e, v) => e.Spread = v),
+        EffectParameters.FloatSlider<BloodSplashImageEffect>("darkness", "Darkness", 0, 100, 58, (e, v) => e.Darkness = v),
+        EffectParameters.FloatSlider<BloodSplashImageEffect>("wet_shine", "Wet shine", 0, 100, 30, (e, v) => e.WetShine = v)
+    ];
 
     public float SplashAmount { get; set; } = 52f; // 0..100
     public float DripLength { get; set; } = 48f; // 0..100

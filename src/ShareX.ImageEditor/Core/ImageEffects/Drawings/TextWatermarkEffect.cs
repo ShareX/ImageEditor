@@ -1,11 +1,58 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class TextWatermarkEffect : ImageEffect
+public sealed class TextWatermarkEffect : ImageEffectBase
 {
     private int _cornerRadius = 4;
     private int _borderSize = 1;
+
+    public override string Id => "text_watermark";
+    public override string Name => "Text watermark";
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string Description => "Draws a text watermark with background on the image.";
+    public override string? EditorKey => "text_watermark";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Text<TextWatermarkEffect>("text", "Text", "Text watermark", (e, v) => e.Text = v),
+        EffectParameters.Enum<TextWatermarkEffect, DrawingPlacement>(
+            "placement", "Placement", DrawingPlacement.BottomRight, (e, v) => e.Placement = v,
+            new (string Label, DrawingPlacement Value)[]
+            {
+                ("Top left", DrawingPlacement.TopLeft),
+                ("Top center", DrawingPlacement.TopCenter),
+                ("Top right", DrawingPlacement.TopRight),
+                ("Middle left", DrawingPlacement.MiddleLeft),
+                ("Middle center", DrawingPlacement.MiddleCenter),
+                ("Middle right", DrawingPlacement.MiddleRight),
+                ("Bottom left", DrawingPlacement.BottomLeft),
+                ("Bottom center", DrawingPlacement.BottomCenter),
+                ("Bottom right", DrawingPlacement.BottomRight)
+            }),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("offset_x", "Offset X", -10000, 10000, 5, (e, v) => e.Offset = new SKPointI(v, e.Offset.Y)),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("offset_y", "Offset Y", -10000, 10000, 5, (e, v) => e.Offset = new SKPointI(e.Offset.X, v)),
+        EffectParameters.Bool<TextWatermarkEffect>("auto_hide", "Auto hide", false, (e, v) => e.AutoHide = v),
+        EffectParameters.Text<TextWatermarkEffect>("font_family", "Font family", "Arial", (e, v) => e.FontFamily = v),
+        EffectParameters.FloatSlider<TextWatermarkEffect>("font_size", "Font size", 1, 500, 15, (e, v) => e.FontSize = v),
+        EffectParameters.Bool<TextWatermarkEffect>("bold", "Bold", false, (e, v) => e.Bold = v),
+        EffectParameters.Bool<TextWatermarkEffect>("italic", "Italic", false, (e, v) => e.Italic = v),
+        EffectParameters.Color<TextWatermarkEffect>("text_color", "Text color", new SKColor(235, 235, 235), (e, v) => e.TextColor = v),
+        EffectParameters.Bool<TextWatermarkEffect>("draw_text_shadow", "Draw text shadow", false, (e, v) => e.DrawTextShadow = v),
+        EffectParameters.Color<TextWatermarkEffect>("text_shadow_color", "Text shadow color", SKColors.Black, (e, v) => e.TextShadowColor = v),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("text_shadow_offset_x", "Text shadow offset X", -1000, 1000, -1, (e, v) => e.TextShadowOffset = new SKPointI(v, e.TextShadowOffset.Y)),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("text_shadow_offset_y", "Text shadow offset Y", -1000, 1000, -1, (e, v) => e.TextShadowOffset = new SKPointI(e.TextShadowOffset.X, v)),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("corner_radius", "Corner radius", 0, 100, 4, (e, v) => e.CornerRadius = v),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("padding_left", "Padding left", 0, 100, 5, (e, v) => e.PaddingLeft = v),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("padding_top", "Padding top", 0, 100, 5, (e, v) => e.PaddingTop = v),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("padding_right", "Padding right", 0, 100, 5, (e, v) => e.PaddingRight = v),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("padding_bottom", "Padding bottom", 0, 100, 5, (e, v) => e.PaddingBottom = v),
+        EffectParameters.Bool<TextWatermarkEffect>("draw_border", "Draw border", true, (e, v) => e.DrawBorder = v),
+        EffectParameters.Color<TextWatermarkEffect>("border_color", "Border color", SKColors.Black, (e, v) => e.BorderColor = v),
+        EffectParameters.IntNumeric<TextWatermarkEffect>("border_size", "Border size", 0, 50, 1, (e, v) => e.BorderSize = v),
+        EffectParameters.Bool<TextWatermarkEffect>("draw_background", "Draw background", true, (e, v) => e.DrawBackground = v),
+        EffectParameters.Color<TextWatermarkEffect>("background_color", "Background color", new SKColor(42, 47, 56), (e, v) => e.BackgroundColor = v)
+    ];
 
     public string Text { get; set; } = "Text watermark";
 
@@ -58,12 +105,6 @@ public sealed class TextWatermarkEffect : ImageEffect
     public bool DrawBackground { get; set; } = true;
 
     public SKColor BackgroundColor { get; set; } = new SKColor(42, 47, 56);
-
-    public override string Name => "Text watermark";
-
-    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-
-    public override bool HasParameters => true;
 
     public override SKBitmap Apply(SKBitmap source)
     {

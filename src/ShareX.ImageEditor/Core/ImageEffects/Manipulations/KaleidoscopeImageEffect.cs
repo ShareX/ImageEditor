@@ -1,13 +1,23 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class KaleidoscopeImageEffect : ImageEffect
+public sealed class KaleidoscopeImageEffect : ImageEffectBase
 {
+    public override string Id => "kaleidoscope";
     public override string Name => "Kaleidoscope";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string Description => "Creates a kaleidoscope mirror pattern.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<KaleidoscopeImageEffect>("segments", "Segments", 2, 24, 8, (e, v) => e.Segments = v),
+        EffectParameters.FloatSlider<KaleidoscopeImageEffect>("rotation", "Rotation", 0f, 360f, 0f, (e, v) => e.Rotation = v),
+        EffectParameters.FloatSlider<KaleidoscopeImageEffect>("zoom", "Zoom", 20f, 300f, 100f, (e, v) => e.Zoom = v),
+        EffectParameters.FloatSlider<KaleidoscopeImageEffect>("center_x_percentage", "Center X percentage", 0f, 100f, 50f, (e, v) => e.CenterXPercentage = v),
+        EffectParameters.FloatSlider<KaleidoscopeImageEffect>("center_y_percentage", "Center Y percentage", 0f, 100f, 50f, (e, v) => e.CenterYPercentage = v)
+    ];
 
     public int Segments { get; set; } = 8;
     public float Rotation { get; set; } = 0f;

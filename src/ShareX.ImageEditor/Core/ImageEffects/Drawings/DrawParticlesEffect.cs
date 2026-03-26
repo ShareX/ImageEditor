@@ -1,12 +1,37 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class DrawParticlesEffect : ImageEffect
+public sealed class DrawParticlesEffect : ImageEffectBase
 {
     private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg"];
 
     private int _imageCount = 1;
+
+    public override string Id => "draw_particles";
+    public override string Name => "Particles";
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string Description => "Draws particle images on the source image.";
+    public override string? EditorKey => "draw_particles";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FilePath<DrawParticlesEffect>("image_folder", "Image folder", string.Empty, (e, v) => e.ImageFolder = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("image_count", "Image count", 1, 1000, 1, (e, v) => e.ImageCount = v),
+        EffectParameters.Bool<DrawParticlesEffect>("background", "Background", false, (e, v) => e.Background = v),
+        EffectParameters.Bool<DrawParticlesEffect>("random_size", "Random size", false, (e, v) => e.RandomSize = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("random_size_min", "Random size min", 1, 10000, 64, (e, v) => e.RandomSizeMin = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("random_size_max", "Random size max", 1, 10000, 128, (e, v) => e.RandomSizeMax = v),
+        EffectParameters.Bool<DrawParticlesEffect>("random_angle", "Random angle", false, (e, v) => e.RandomAngle = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("random_angle_min", "Random angle min", 0, 360, 0, (e, v) => e.RandomAngleMin = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("random_angle_max", "Random angle max", 0, 360, 360, (e, v) => e.RandomAngleMax = v),
+        EffectParameters.Bool<DrawParticlesEffect>("random_opacity", "Random opacity", false, (e, v) => e.RandomOpacity = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("random_opacity_min", "Random opacity min", 0, 100, 0, (e, v) => e.RandomOpacityMin = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("random_opacity_max", "Random opacity max", 0, 100, 100, (e, v) => e.RandomOpacityMax = v),
+        EffectParameters.Bool<DrawParticlesEffect>("no_overlap", "No overlap", false, (e, v) => e.NoOverlap = v),
+        EffectParameters.IntNumeric<DrawParticlesEffect>("no_overlap_offset", "No overlap offset", 0, 1000, 0, (e, v) => e.NoOverlapOffset = v),
+        EffectParameters.Bool<DrawParticlesEffect>("edge_overlap", "Edge overlap", false, (e, v) => e.EdgeOverlap = v)
+    ];
 
     public string ImageFolder { get; set; } = string.Empty;
 
@@ -41,12 +66,6 @@ public sealed class DrawParticlesEffect : ImageEffect
     public int NoOverlapOffset { get; set; }
 
     public bool EdgeOverlap { get; set; }
-
-    public override string Name => "Particles";
-
-    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-
-    public override bool HasParameters => true;
 
     public override SKBitmap Apply(SKBitmap source)
     {

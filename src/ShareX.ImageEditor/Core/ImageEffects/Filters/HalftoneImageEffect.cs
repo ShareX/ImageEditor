@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HalftoneImageEffect : FilterImageEffect
+public sealed class HalftoneImageEffect : ImageEffectBase
 {
+    public override string Id => "halftone";
     public override string Name => "Halftone";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconCircle";
-    public override bool HasParameters => true;
+    public override string Description => "Converts the image into a CMYK halftone dot pattern.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<HalftoneImageEffect>("cell_size", "Cell size", 3, 24, 8, (e, v) => e.CellSize = v),
+        EffectParameters.FloatSlider<HalftoneImageEffect>("dot_softness", "Dot softness", 0, 100, 18, (e, v) => e.DotSoftness = v),
+        EffectParameters.FloatSlider<HalftoneImageEffect>("ink_strength", "Ink strength", 0, 100, 90, (e, v) => e.InkStrength = v),
+        EffectParameters.FloatSlider<HalftoneImageEffect>("source_blend", "Source blend", 0, 100, 20, (e, v) => e.SourceBlend = v),
+        EffectParameters.FloatSlider<HalftoneImageEffect>("angle_offset", "Angle offset", -45, 45, 0, (e, v) => e.AngleOffset = v)
+    ];
 
     public int CellSize { get; set; } = 8; // 3..24
     public float DotSoftness { get; set; } = 18f; // 0..100

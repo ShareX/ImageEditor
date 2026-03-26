@@ -1,12 +1,22 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CRTImageEffect : FilterImageEffect
+public sealed class CRTImageEffect : ImageEffectBase
 {
+    public override string Id => "crt";
     public override string Name => "CRT";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconDisplay";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates a CRT monitor with scanlines, RGB shift, noise, and vignette.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<CRTImageEffect>("scanlineStrength", "Scanline strength", 0f, 100f, 35f, (e, v) => e.ScanlineStrength = v),
+        EffectParameters.IntSlider<CRTImageEffect>("rgbShift", "RGB shift", 0, 8, 1, (e, v) => e.RGBShift = v),
+        EffectParameters.FloatSlider<CRTImageEffect>("noiseAmount", "Noise amount", 0f, 100f, 8f, (e, v) => e.NoiseAmount = v),
+        EffectParameters.FloatSlider<CRTImageEffect>("vignetteStrength", "Vignette strength", 0f, 100f, 18f, (e, v) => e.VignetteStrength = v),
+    ];
 
     public float ScanlineStrength { get; set; } = 35f; // 0..100
     public int RGBShift { get; set; } = 1; // 0..8 px

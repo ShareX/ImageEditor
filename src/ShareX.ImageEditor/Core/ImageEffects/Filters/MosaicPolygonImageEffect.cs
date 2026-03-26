@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
@@ -9,11 +10,23 @@ public enum MosaicPolygonShape
     Triangle
 }
 
-public class MosaicPolygonImageEffect : FilterImageEffect
+public sealed class MosaicPolygonImageEffect : ImageEffectBase
 {
+    public override string Id => "mosaic_polygon";
     public override string Name => "Mosaic polygon";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconShapes";
-    public override bool HasParameters => true;
+    public override string Description => "Creates a mosaic using hexagonal or triangular polygon tiles.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<MosaicPolygonImageEffect>("cell_size", "Cell size", 8, 80, 24, (e, v) => e.CellSize = v),
+        EffectParameters.Enum<MosaicPolygonImageEffect, MosaicPolygonShape>("shape", "Shape", MosaicPolygonShape.Hexagon, (e, v) => e.Shape = v,
+            new (string Label, MosaicPolygonShape Value)[] { ("Hexagon", MosaicPolygonShape.Hexagon), ("Triangle", MosaicPolygonShape.Triangle) }),
+        EffectParameters.FloatSlider<MosaicPolygonImageEffect>("border_width", "Border width", 0, 6, 1, (e, v) => e.BorderWidth = v),
+        EffectParameters.FloatSlider<MosaicPolygonImageEffect>("border_opacity", "Border opacity", 0, 100, 45, (e, v) => e.BorderOpacity = v),
+        EffectParameters.FloatSlider<MosaicPolygonImageEffect>("randomness", "Randomness", 0, 100, 18, (e, v) => e.Randomness = v),
+    ];
 
     public int CellSize { get; set; } = 24; // 8..80
     public MosaicPolygonShape Shape { get; set; } = MosaicPolygonShape.Hexagon;

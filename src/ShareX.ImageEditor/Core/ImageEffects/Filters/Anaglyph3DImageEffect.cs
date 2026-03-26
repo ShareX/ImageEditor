@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
@@ -10,10 +11,30 @@ public enum AnaglyphMode
     GreenMagenta
 }
 
-public class Anaglyph3DImageEffect : FilterImageEffect
+public sealed class Anaglyph3DImageEffect : ImageEffectBase
 {
+    public override string Id => "anaglyph_3d";
     public override string Name => "Anaglyph 3D";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Simulates a retro anaglyph 3D stereoscopic effect.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<Anaglyph3DImageEffect, AnaglyphMode>(
+            "mode",
+            "Mode",
+            AnaglyphMode.RedCyan,
+            (e, v) => e.Mode = v,
+            new (string Label, AnaglyphMode Value)[]
+            {
+                ("Red / Cyan", AnaglyphMode.RedCyan),
+                ("Amber / Blue", AnaglyphMode.AmberBlue),
+                ("Green / Magenta", AnaglyphMode.GreenMagenta)
+            }),
+        EffectParameters.IntSlider<Anaglyph3DImageEffect>("separation_x", "Separation X", -100, 100, 10, (e, v) => e.SeparationX = v),
+        EffectParameters.IntSlider<Anaglyph3DImageEffect>("separation_y", "Separation Y", -100, 100, 0, (e, v) => e.SeparationY = v),
+        EffectParameters.FloatSlider<Anaglyph3DImageEffect>("ghost_reduction", "Ghost reduction", 0, 100, 45, (e, v) => e.GhostReduction = v)
+    ];
 
     public AnaglyphMode Mode { get; set; } = AnaglyphMode.RedCyan;
     public int SeparationX { get; set; } = 10;

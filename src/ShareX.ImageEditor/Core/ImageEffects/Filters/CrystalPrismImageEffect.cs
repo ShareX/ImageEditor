@@ -1,13 +1,23 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CrystalPrismImageEffect : FilterImageEffect
+public sealed class CrystalPrismImageEffect : ImageEffectBase
 {
+    public override string Id => "crystal_prism";
     public override string Name => "Crystal prism";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconGem";
-    public override bool HasParameters => true;
+    public override string Description => "Refracts and disperses light through crystal-like facets.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<CrystalPrismImageEffect>("facetSize", "Facet size", 6, 96, 24, (e, v) => e.FacetSize = v),
+        EffectParameters.FloatSlider<CrystalPrismImageEffect>("refraction", "Refraction", 0f, 30f, 8f, (e, v) => e.Refraction = v),
+        EffectParameters.FloatSlider<CrystalPrismImageEffect>("dispersion", "Dispersion", 0f, 20f, 4f, (e, v) => e.Dispersion = v),
+        EffectParameters.FloatSlider<CrystalPrismImageEffect>("sparkle", "Sparkle", 0f, 100f, 25f, (e, v) => e.Sparkle = v),
+    ];
 
     public int FacetSize { get; set; } = 24; // 6..96
     public float Refraction { get; set; } = 8f; // 0..30

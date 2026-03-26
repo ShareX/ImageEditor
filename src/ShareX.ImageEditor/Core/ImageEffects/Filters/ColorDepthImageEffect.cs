@@ -1,12 +1,19 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ColorDepthImageEffect : FilterImageEffect
+public sealed class ColorDepthImageEffect : ImageEffectBase
 {
+    public override string Id => "color_depth";
     public override string Name => "Color depth";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconAdjust";
-    public override bool HasParameters => true;
+    public override string Description => "Reduces the number of bits per color channel.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<ColorDepthImageEffect>("bitsPerChannel", "Bits per channel", 1, 8, 4, (e, v) => e.BitsPerChannel = v),
+    ];
 
     public int BitsPerChannel { get; set; } = 4;
 

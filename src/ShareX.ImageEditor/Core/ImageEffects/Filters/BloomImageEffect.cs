@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BloomImageEffect : FilterImageEffect
+public sealed class BloomImageEffect : ImageEffectBase
 {
+    public override string Id => "bloom";
     public override string Name => "Bloom";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconSparkles";
-    public override bool HasParameters => true;
+    public override string Description => "Adds a soft glow bloom effect to bright areas.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<BloomImageEffect>("threshold", "Threshold", 0, 100, 65, (e, v) => e.Threshold = v),
+        EffectParameters.FloatSlider<BloomImageEffect>("soft_knee", "Soft knee", 0, 100, 35, (e, v) => e.SoftKnee = v),
+        EffectParameters.FloatSlider<BloomImageEffect>("radius", "Radius", 1, 100, 24, (e, v) => e.Radius = v),
+        EffectParameters.FloatSlider<BloomImageEffect>("intensity", "Intensity", 0, 200, 85, (e, v) => e.Intensity = v)
+    ];
 
     public float Threshold { get; set; } = 65f; // 0..100
     public float SoftKnee { get; set; } = 35f; // 0..100

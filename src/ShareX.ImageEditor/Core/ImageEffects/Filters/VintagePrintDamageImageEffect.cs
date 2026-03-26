@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class VintagePrintDamageImageEffect : FilterImageEffect
+public sealed class VintagePrintDamageImageEffect : ImageEffectBase
 {
+    public override string Id => "vintage_print_damage";
     public override string Name => "Vintage print damage";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconFileImage";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates aged print damage with sepia toning, grain, scratches, and dust.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<VintagePrintDamageImageEffect>("sepia_amount", "Sepia amount", 0, 100, 65, (e, v) => e.SepiaAmount = v),
+        EffectParameters.FloatSlider<VintagePrintDamageImageEffect>("fade_amount", "Fade amount", 0, 100, 30, (e, v) => e.FadeAmount = v),
+        EffectParameters.FloatSlider<VintagePrintDamageImageEffect>("grain_amount", "Grain amount", 0, 100, 25, (e, v) => e.GrainAmount = v),
+        EffectParameters.FloatSlider<VintagePrintDamageImageEffect>("scratch_amount", "Scratch amount", 0, 100, 25, (e, v) => e.ScratchAmount = v),
+        EffectParameters.FloatSlider<VintagePrintDamageImageEffect>("dust_amount", "Dust amount", 0, 100, 20, (e, v) => e.DustAmount = v)
+    ];
 
     public float SepiaAmount { get; set; } = 65f; // 0..100
     public float FadeAmount { get; set; } = 30f; // 0..100

@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class DisposableCameraImageEffect : FilterImageEffect
+public sealed class DisposableCameraImageEffect : ImageEffectBase
 {
+    public override string Id => "disposable_camera";
     public override string Name => "Disposable camera";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Simulates the look of a disposable film camera with flash, grain, and warmth.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<DisposableCameraImageEffect>("flash", "Flash", 0, 100, 55, (e, v) => e.Flash = v),
+        EffectParameters.FloatSlider<DisposableCameraImageEffect>("softness", "Softness", 0, 24, 8, (e, v) => e.Softness = v),
+        EffectParameters.FloatSlider<DisposableCameraImageEffect>("grain", "Grain", 0, 100, 24, (e, v) => e.Grain = v),
+        EffectParameters.FloatSlider<DisposableCameraImageEffect>("vignette", "Vignette", 0, 100, 34, (e, v) => e.Vignette = v),
+        EffectParameters.FloatSlider<DisposableCameraImageEffect>("warmth", "Warmth", 0, 100, 42, (e, v) => e.Warmth = v)
+    ];
 
     public float Flash { get; set; } = 55f;
     public float Softness { get; set; } = 8f;

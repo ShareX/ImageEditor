@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
@@ -9,11 +10,28 @@ public enum TiltShiftMode
     Radial
 }
 
-public class TiltShiftImageEffect : FilterImageEffect
+public sealed class TiltShiftImageEffect : ImageEffectBase
 {
+    public override string Id => "tilt_shift";
     public override string Name => "Tilt-shift";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconCamera";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates a tilt-shift lens with selective focus.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<TiltShiftImageEffect, TiltShiftMode>("mode", "Mode", TiltShiftMode.Linear, (e, v) => e.Mode = v, new (string Label, TiltShiftMode Value)[]
+        {
+            ("Linear", TiltShiftMode.Linear),
+            ("Radial", TiltShiftMode.Radial),
+        }),
+        EffectParameters.FloatSlider<TiltShiftImageEffect>("blur_radius", "Blur radius", 0f, 30f, 12f, (e, v) => e.BlurRadius = v),
+        EffectParameters.FloatSlider<TiltShiftImageEffect>("focus_size", "Focus size", 5f, 90f, 30f, (e, v) => e.FocusSize = v),
+        EffectParameters.FloatSlider<TiltShiftImageEffect>("focus_position_x", "Focus position X", 0f, 100f, 50f, (e, v) => e.FocusPositionX = v),
+        EffectParameters.FloatSlider<TiltShiftImageEffect>("focus_position_y", "Focus position Y", 0f, 100f, 50f, (e, v) => e.FocusPositionY = v),
+        EffectParameters.FloatSlider<TiltShiftImageEffect>("falloff", "Falloff", 1f, 60f, 24f, (e, v) => e.Falloff = v),
+        EffectParameters.FloatSlider<TiltShiftImageEffect>("saturation_boost", "Saturation boost", 0f, 100f, 35f, (e, v) => e.SaturationBoost = v),
+    ];
 
     public TiltShiftMode Mode { get; set; } = TiltShiftMode.Linear;
     public float BlurRadius { get; set; } = 12f; // 0..30

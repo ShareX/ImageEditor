@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class NightVisionImageEffect : FilterImageEffect
+public sealed class NightVisionImageEffect : ImageEffectBase
 {
+    public override string Id => "night_vision";
     public override string Name => "Night vision";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconMoon";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates a night vision green phosphor display effect.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<NightVisionImageEffect>("intensity", "Intensity", 0, 100, 78, (e, v) => e.Intensity = v),
+        EffectParameters.FloatSlider<NightVisionImageEffect>("glow", "Glow", 0, 100, 42, (e, v) => e.Glow = v),
+        EffectParameters.FloatSlider<NightVisionImageEffect>("noise", "Noise", 0, 100, 18, (e, v) => e.Noise = v),
+        EffectParameters.FloatSlider<NightVisionImageEffect>("vignette", "Vignette", 0, 100, 45, (e, v) => e.Vignette = v),
+        EffectParameters.FloatSlider<NightVisionImageEffect>("scanlines", "Scanlines", 0, 100, 35, (e, v) => e.Scanlines = v),
+    ];
 
     public float Intensity { get; set; } = 78f; // 0..100
     public float Glow { get; set; } = 42f; // 0..100

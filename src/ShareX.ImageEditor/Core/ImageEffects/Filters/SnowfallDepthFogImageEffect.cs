@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SnowfallDepthFogImageEffect : FilterImageEffect
+public sealed class SnowfallDepthFogImageEffect : ImageEffectBase
 {
+    public override string Id => "snowfall_depth_fog";
     public override string Name => "Snowfall + depth fog";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconWeatherSnow";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates snowfall with depth-based fog.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<SnowfallDepthFogImageEffect>("snow_amount", "Snow amount", 0f, 100f, 55f, (e, v) => e.SnowAmount = v),
+        EffectParameters.FloatSlider<SnowfallDepthFogImageEffect>("flake_size", "Flake size", 1f, 14f, 5f, (e, v) => e.FlakeSize = v),
+        EffectParameters.FloatSlider<SnowfallDepthFogImageEffect>("wind", "Wind", -100f, 100f, 20f, (e, v) => e.Wind = v),
+        EffectParameters.FloatSlider<SnowfallDepthFogImageEffect>("fog_amount", "Fog amount", 0f, 100f, 40f, (e, v) => e.FogAmount = v),
+        EffectParameters.FloatSlider<SnowfallDepthFogImageEffect>("fog_height", "Fog height", 10f, 100f, 65f, (e, v) => e.FogHeight = v),
+    ];
 
     public float SnowAmount { get; set; } = 55f; // 0..100
     public float FlakeSize { get; set; } = 5f; // 1..14

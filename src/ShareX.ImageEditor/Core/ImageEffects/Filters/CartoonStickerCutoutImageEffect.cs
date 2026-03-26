@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CartoonStickerCutoutImageEffect : FilterImageEffect
+public sealed class CartoonStickerCutoutImageEffect : ImageEffectBase
 {
+    public override string Id => "cartoon_sticker_cutout";
     public override string Name => "Cartoon sticker cutout";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconNoteSticky";
-    public override bool HasParameters => true;
+    public override string Description => "Applies a cartoon sticker cutout effect with quantized colors and ink edges.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<CartoonStickerCutoutImageEffect>("colorLevels", "Color levels", 2, 20, 8, (e, v) => e.ColorLevels = v),
+        EffectParameters.IntSlider<CartoonStickerCutoutImageEffect>("edgeThreshold", "Edge threshold", 5, 120, 32, (e, v) => e.EdgeThreshold = v),
+        EffectParameters.FloatSlider<CartoonStickerCutoutImageEffect>("inkStrength", "Ink strength", 0f, 100f, 85f, (e, v) => e.InkStrength = v),
+        EffectParameters.IntSlider<CartoonStickerCutoutImageEffect>("stickerBorder", "Sticker border", 0, 10, 3, (e, v) => e.StickerBorder = v),
+        EffectParameters.FloatSlider<CartoonStickerCutoutImageEffect>("borderStrength", "Border strength", 0f, 100f, 90f, (e, v) => e.BorderStrength = v),
+    ];
 
     public int ColorLevels { get; set; } = 8; // 2..20
     public int EdgeThreshold { get; set; } = 32; // 5..120

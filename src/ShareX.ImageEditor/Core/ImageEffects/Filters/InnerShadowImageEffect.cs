@@ -1,19 +1,31 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class InnerShadowImageEffect : FilterImageEffect
+public sealed class InnerShadowImageEffect : ImageEffectBase
 {
+    public override string Id => "inner_shadow";
+    public override string Name => "Inner shadow";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "IconCloudMoon";
+    public override string Description => "Adds an inner shadow along the edges of opaque regions.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<InnerShadowImageEffect>("opacity", "Opacity", 0, 100, 70, (e, v) => e.Opacity = v),
+        EffectParameters.IntSlider<InnerShadowImageEffect>("size", "Size", 0, 300, 20, (e, v) => e.Size = v),
+        EffectParameters.Color<InnerShadowImageEffect>("color", "Color", SKColors.Black, (e, v) => e.Color = v),
+        EffectParameters.IntNumeric<InnerShadowImageEffect>("offset_x", "Offset X", -300, 300, 0, (e, v) => e.OffsetX = v),
+        EffectParameters.IntNumeric<InnerShadowImageEffect>("offset_y", "Offset Y", -300, 300, 0, (e, v) => e.OffsetY = v)
+    ];
+
     public float Opacity { get; set; } = 70f; // 0..100
     public int Size { get; set; } = 20; // 0..300
     public SKColor Color { get; set; } = SKColors.Black;
     public int OffsetX { get; set; } = 0;
     public int OffsetY { get; set; } = 0;
-
-    public override string Name => "Inner shadow";
-    public override bool HasParameters => true;
-    public override string IconKey => "IconCloudMoon";
 
     public override SKBitmap Apply(SKBitmap source)
     {

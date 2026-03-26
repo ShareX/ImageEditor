@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SmokeOverlayImageEffect : FilterImageEffect
+public sealed class SmokeOverlayImageEffect : ImageEffectBase
 {
+    public override string Id => "smoke_overlay";
     public override string Name => "Smoke overlay";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconCloud";
-    public override bool HasParameters => true;
+    public override string Description => "Adds a soft procedural smoke overlay to the image.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<SmokeOverlayImageEffect>("density", "Density", 0f, 100f, 42f, (e, v) => e.Density = v),
+        EffectParameters.FloatSlider<SmokeOverlayImageEffect>("scale", "Scale", 0f, 100f, 68f, (e, v) => e.Scale = v),
+        EffectParameters.FloatSlider<SmokeOverlayImageEffect>("drift", "Drift", -100f, 100f, 18f, (e, v) => e.Drift = v),
+        EffectParameters.FloatSlider<SmokeOverlayImageEffect>("softness", "Softness", 0f, 100f, 55f, (e, v) => e.Softness = v),
+        EffectParameters.FloatSlider<SmokeOverlayImageEffect>("contrast", "Contrast", 0f, 100f, 48f, (e, v) => e.Contrast = v),
+    ];
 
     public float Density { get; set; } = 42f; // 0..100
     public float Scale { get; set; } = 68f; // 0..100

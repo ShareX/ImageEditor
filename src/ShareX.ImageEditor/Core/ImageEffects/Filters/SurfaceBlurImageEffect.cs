@@ -1,13 +1,22 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SurfaceBlurImageEffect : FilterImageEffect
+public sealed class SurfaceBlurImageEffect : ImageEffectBase
 {
+    public override string Id => "surface_blur";
     public override string Name => "Surface blur";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconWater";
-    public override bool HasParameters => true;
+    public override string Description => "Blurs while preserving edges based on color similarity.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<SurfaceBlurImageEffect>("radius", "Radius", 1, 8, 3, (e, v) => e.Radius = v),
+        EffectParameters.IntSlider<SurfaceBlurImageEffect>("threshold", "Threshold", 1, 100, 24, (e, v) => e.Threshold = v),
+    ];
 
     public int Radius { get; set; } = 3; // 1..8
     public int Threshold { get; set; } = 24; // 1..100

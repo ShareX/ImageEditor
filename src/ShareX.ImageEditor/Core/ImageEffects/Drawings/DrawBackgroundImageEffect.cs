@@ -1,20 +1,26 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class DrawBackgroundImageEffect : ImageEffect
+public sealed class DrawBackgroundImageEffect : ImageEffectBase
 {
+    public override string Id => "draw_background_image";
+    public override string Name => "Background image";
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string Description => "Draws a background image behind the source image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FilePath<DrawBackgroundImageEffect>("image_file_path", "Image file path", string.Empty, (e, v) => e.ImageFilePath = v),
+        EffectParameters.Bool<DrawBackgroundImageEffect>("center", "Center", true, (e, v) => e.Center = v),
+        EffectParameters.Bool<DrawBackgroundImageEffect>("tile", "Tile", false, (e, v) => e.Tile = v)
+    ];
+
     public string ImageFilePath { get; set; } = string.Empty;
 
     public bool Center { get; set; } = true;
 
     public bool Tile { get; set; }
-
-    public override string Name => "Background image";
-
-    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-
-    public override bool HasParameters => true;
 
     public override SKBitmap Apply(SKBitmap source)
     {

@@ -1,12 +1,22 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class UnsharpMaskImageEffect : FilterImageEffect
+public sealed class UnsharpMaskImageEffect : ImageEffectBase
 {
+    public override string Id => "unsharp_mask";
     public override string Name => "Unsharp mask";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconMagic";
-    public override bool HasParameters => true;
+    public override string Description => "Sharpens the image using an unsharp mask technique.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<UnsharpMaskImageEffect>("radius", "Radius", 1, 100, 5, (e, v) => e.Radius = v),
+        EffectParameters.FloatSlider<UnsharpMaskImageEffect>("amount", "Amount", 0, 500, 150, (e, v) => e.Amount = v),
+        EffectParameters.IntSlider<UnsharpMaskImageEffect>("threshold", "Threshold", 0, 255, 0, (e, v) => e.Threshold = v)
+    ];
 
     public float Radius { get; set; } = 5f;
     public float Amount { get; set; } = 150f;

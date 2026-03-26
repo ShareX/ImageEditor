@@ -1,13 +1,26 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class AnimeSpeedLinesImageEffect : FilterImageEffect
+public sealed class AnimeSpeedLinesImageEffect : ImageEffectBase
 {
+    public override string Id => "anime_speed_lines";
     public override string Name => "Anime speed lines";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconBurst";
-    public override bool HasParameters => true;
+    public override string Description => "Overlays radial speed lines in a manga/anime style.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<AnimeSpeedLinesImageEffect>("density", "Density", 10, 100, 70, (e, v) => e.Density = v),
+        EffectParameters.FloatSlider<AnimeSpeedLinesImageEffect>("strength", "Strength", 0, 100, 65, (e, v) => e.Strength = v),
+        EffectParameters.FloatSlider<AnimeSpeedLinesImageEffect>("focus_radius", "Focus radius", 0, 80, 18, (e, v) => e.FocusRadius = v),
+        EffectParameters.FloatSlider<AnimeSpeedLinesImageEffect>("center_x", "Center X", 0, 100, 50, (e, v) => e.CenterX = v),
+        EffectParameters.FloatSlider<AnimeSpeedLinesImageEffect>("center_y", "Center Y", 0, 100, 50, (e, v) => e.CenterY = v),
+        EffectParameters.FloatSlider<AnimeSpeedLinesImageEffect>("contrast", "Contrast", 0, 100, 35, (e, v) => e.Contrast = v)
+    ];
 
     public float Density { get; set; } = 70f; // 10..100
     public float Strength { get; set; } = 65f; // 0..100

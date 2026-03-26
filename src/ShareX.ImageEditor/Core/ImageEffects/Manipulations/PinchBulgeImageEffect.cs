@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class PinchBulgeImageEffect : ImageEffect
+public sealed class PinchBulgeImageEffect : ImageEffectBase
 {
+    public override string Id => "pinch_bulge";
     public override string Name => "Pinch / bulge";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string Description => "Applies a pinch or bulge distortion to the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<PinchBulgeImageEffect>("strength", "Strength", -100f, 100f, 35f, (e, v) => e.Strength = v),
+        EffectParameters.FloatSlider<PinchBulgeImageEffect>("radius_percentage", "Radius %", 1f, 100f, 50f, (e, v) => e.RadiusPercentage = v),
+        EffectParameters.FloatSlider<PinchBulgeImageEffect>("center_x_percentage", "Center X %", 0f, 100f, 50f, (e, v) => e.CenterXPercentage = v),
+        EffectParameters.FloatSlider<PinchBulgeImageEffect>("center_y_percentage", "Center Y %", 0f, 100f, 50f, (e, v) => e.CenterYPercentage = v)
+    ];
 
     public float Strength { get; set; } = 35f; // -100 pinch, +100 bulge
     public float RadiusPercentage { get; set; } = 50f;

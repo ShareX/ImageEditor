@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HeatHazeRefractionImageEffect : FilterImageEffect
+public sealed class HeatHazeRefractionImageEffect : ImageEffectBase
 {
+    public override string Id => "heat_haze_refraction";
     public override string Name => "Heat haze refraction";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Simulates heat haze refraction with wavy distortion.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<HeatHazeRefractionImageEffect>("strength", "Strength", 0, 100, 45, (e, v) => e.Strength = v),
+        EffectParameters.FloatSlider<HeatHazeRefractionImageEffect>("frequency", "Frequency", 0, 100, 40, (e, v) => e.Frequency = v),
+        EffectParameters.FloatSlider<HeatHazeRefractionImageEffect>("blur_radius", "Blur radius", 0, 200, 10, (e, v) => e.BlurRadius = v),
+        EffectParameters.FloatSlider<HeatHazeRefractionImageEffect>("offset", "Offset", -200, 200, 6, (e, v) => e.Offset = v),
+        EffectParameters.FloatSlider<HeatHazeRefractionImageEffect>("luminance_influence", "Luminance influence", 0, 100, 55, (e, v) => e.LuminanceInfluence = v)
+    ];
 
     public float Strength { get; set; } = 45f; // 0..100
     public float Frequency { get; set; } = 40f; // 0..100

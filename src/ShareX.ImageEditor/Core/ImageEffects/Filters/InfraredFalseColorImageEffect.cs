@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class InfraredFalseColorImageEffect : FilterImageEffect
+public sealed class InfraredFalseColorImageEffect : ImageEffectBase
 {
+    public override string Id => "infrared_false_color";
     public override string Name => "Infrared false color";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Simulates infrared false color photography.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<InfraredFalseColorImageEffect>("intensity", "Intensity", 0, 100, 68, (e, v) => e.Intensity = v),
+        EffectParameters.FloatSlider<InfraredFalseColorImageEffect>("foliage_shift", "Foliage shift", 0, 100, 78, (e, v) => e.FoliageShift = v),
+        EffectParameters.FloatSlider<InfraredFalseColorImageEffect>("sky_darkening", "Sky darkening", 0, 100, 44, (e, v) => e.SkyDarkening = v),
+        EffectParameters.FloatSlider<InfraredFalseColorImageEffect>("glow", "Glow", 0, 100, 20, (e, v) => e.Glow = v),
+        EffectParameters.FloatSlider<InfraredFalseColorImageEffect>("contrast", "Contrast", 50, 200, 118, (e, v) => e.Contrast = v)
+    ];
 
     public float Intensity { get; set; } = 68f;
     public float FoliageShift { get; set; } = 78f;

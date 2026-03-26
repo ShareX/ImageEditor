@@ -1,16 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class DrawBackgroundEffect : ImageEffect
+public sealed class DrawBackgroundEffect : ImageEffectBase
 {
-    public SKColor Color { get; set; } = SKColors.Black;
-
+    public override string Id => "draw_background";
     public override string Name => "Background";
-
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string Description => "Draws a solid color background behind the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Color<DrawBackgroundEffect>("color", "Color", SKColors.Black, (e, v) => e.Color = v)
+    ];
 
-    public override bool HasParameters => true;
+    public SKColor Color { get; set; } = SKColors.Black;
 
     public override SKBitmap Apply(SKBitmap source)
     {

@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class StarFilterImageEffect : FilterImageEffect
+public sealed class StarFilterImageEffect : ImageEffectBase
 {
+    public override string Id => "star_filter";
     public override string Name => "Star filter";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string Description => "Adds star-shaped light streaks to bright areas.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<StarFilterImageEffect>("threshold", "Threshold", 0f, 100f, 74f, (e, v) => e.Threshold = v),
+        EffectParameters.FloatSlider<StarFilterImageEffect>("length", "Length", 4f, 80f, 40f, (e, v) => e.Length = v),
+        EffectParameters.FloatSlider<StarFilterImageEffect>("strength", "Strength", 0f, 100f, 58f, (e, v) => e.Strength = v),
+        EffectParameters.FloatSlider<StarFilterImageEffect>("rotation", "Rotation", 0f, 360f, 0f, (e, v) => e.Rotation = v),
+        EffectParameters.FloatSlider<StarFilterImageEffect>("warmth", "Warmth", 0f, 100f, 48f, (e, v) => e.Warmth = v),
+    ];
 
     public float Threshold { get; set; } = 74f;
     public float Length { get; set; } = 40f;

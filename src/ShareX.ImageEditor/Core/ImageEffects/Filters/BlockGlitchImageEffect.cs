@@ -1,13 +1,28 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BlockGlitchImageEffect : FilterImageEffect
+public sealed class BlockGlitchImageEffect : ImageEffectBase
 {
+    public override string Id => "block_glitch";
     public override string Name => "Block glitch / Databending";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => "IconFileImage";
-    public override bool HasParameters => true;
+    public override string Description => "Simulates digital glitch artifacts with displaced color blocks.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<BlockGlitchImageEffect>("block_count", "Block count", 1, 240, 36, (e, v) => e.BlockCount = v),
+        EffectParameters.IntSlider<BlockGlitchImageEffect>("min_block_width", "Min block width", 4, 400, 24, (e, v) => e.MinBlockWidth = v),
+        EffectParameters.IntSlider<BlockGlitchImageEffect>("max_block_width", "Max block width", 4, 900, 200, (e, v) => e.MaxBlockWidth = v),
+        EffectParameters.IntSlider<BlockGlitchImageEffect>("min_block_height", "Min block height", 2, 200, 6, (e, v) => e.MinBlockHeight = v),
+        EffectParameters.IntSlider<BlockGlitchImageEffect>("max_block_height", "Max block height", 2, 500, 50, (e, v) => e.MaxBlockHeight = v),
+        EffectParameters.IntSlider<BlockGlitchImageEffect>("max_displacement", "Max displacement", 0, 500, 50, (e, v) => e.MaxDisplacement = v),
+        EffectParameters.IntSlider<BlockGlitchImageEffect>("channel_shift", "Channel shift", 0, 64, 4, (e, v) => e.ChannelShift = v),
+        EffectParameters.FloatSlider<BlockGlitchImageEffect>("noise_amount", "Noise amount", 0, 100, 10, (e, v) => e.NoiseAmount = v)
+    ];
 
     public int BlockCount { get; set; } = 36; // 1..240
     public int MinBlockWidth { get; set; } = 24; // 4..400

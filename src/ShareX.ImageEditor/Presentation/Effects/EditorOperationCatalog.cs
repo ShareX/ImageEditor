@@ -1,5 +1,8 @@
 using ShareX.ImageEditor.Core.ImageEffects;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
+using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Effects;
 
@@ -7,6 +10,25 @@ internal static class EditorOperationCatalog
 {
     private static readonly IReadOnlyList<EditorOperationDefinition> _definitions =
     [
+        new(
+            "auto_crop_image",
+            "Auto crop image...",
+            LucideIcons.Scan,
+            "Automatically crops the image using tolerance on edge pixels.",
+            ImageEffectCategory.Manipulations,
+            EditorOperationKind.AutoCropImage,
+            new EffectDefinition(
+                "auto_crop_image",
+                "Auto crop image",
+                "Auto crop image...",
+                LucideIcons.Scan,
+                "Automatically crops the image using tolerance on edge pixels.",
+                ImageEffectCategory.Manipulations,
+                static () => new AutoCropImageEffect(SKColors.Transparent, 0),
+                [],
+                [
+                    EffectParameters.IntSlider<AutoCropImageEffect>("tolerance", "Tolerance", 0, 255, 0, (effect, value) => effect.Tolerance = value)
+                ])),
         new("crop_image", "Crop image...", LucideIcons.Crop, "Crops the image.", ImageEffectCategory.Manipulations, EditorOperationKind.CropImage),
         new("resize_image", "Resize image...", LucideIcons.ImageUpscale, "Resizes the image.", ImageEffectCategory.Manipulations, EditorOperationKind.ResizeImage),
         new("resize_canvas", "Resize canvas...", LucideIcons.Maximize, "Resizes the canvas.", ImageEffectCategory.Manipulations, EditorOperationKind.ResizeCanvas),

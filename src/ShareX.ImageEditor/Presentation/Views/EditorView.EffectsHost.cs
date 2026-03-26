@@ -256,8 +256,16 @@ namespace ShareX.ImageEditor.Presentation.Views
                 return false;
             }
 
+            if (operation.SchemaDefinition != null)
+            {
+                ShowEditorOperationDialog(operation);
+                return true;
+            }
+
             switch (operation.Kind)
             {
+                case EditorOperationKind.AutoCropImage:
+                    return false;
                 case EditorOperationKind.CropImage:
                     OnCropImageRequested(this, EventArgs.Empty);
                     return true;
@@ -290,6 +298,53 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private void ShowEditorOperationDialog(EditorOperationDefinition operation)
+        {
+            if (operation.SchemaDefinition == null || DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            SchemaDrivenEffectDialog dialog = new(operation.SchemaDefinition);
+            vm.StartEffectPreview();
+
+            dialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+            dialog.ApplyRequested += (s, e) =>
+            {
+                switch (operation.Kind)
+                {
+                    case EditorOperationKind.AutoCropImage:
+                        int tolerance = 0;
+                        foreach (EffectParameterState state in dialog.ParameterStates)
+                        {
+                            if (string.Equals(state.Key, "tolerance", StringComparison.OrdinalIgnoreCase) &&
+                                state is SliderParameterState slider)
+                            {
+                                tolerance = (int)Math.Round(slider.Value);
+                                break;
+                            }
+                        }
+
+                        _editorCore.AutoCrop(tolerance);
+                        vm.EndEffectPreview();
+                        vm.CloseEffectsPanelCommand.Execute(null);
+                        break;
+                    default:
+                        vm.CancelEffectPreview();
+                        vm.CloseEffectsPanelCommand.Execute(null);
+                        break;
+                }
+            };
+            dialog.CancelRequested += (s, e) =>
+            {
+                vm.CancelEffectPreview();
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+
+            vm.EffectsPanelContent = dialog;
+            vm.IsEffectsPanelOpen = true;
+        }
+
         /// <summary>
         /// Wires preview/apply/cancel lifecycle for a dialog-based effect and opens the effects panel.
         /// </summary>
@@ -300,53 +355,17 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             vm.StartEffectPreview();
 
-            // Special-case schema-driven auto-crop so Apply goes through EditorCore:
-            // - keeps annotation transforms unified (develop behavior)
-            // - still uses the dialog UI/slider for tolerance
-            if (effectDialog is SchemaDrivenEffectDialog schemaDialog &&
-                string.Equals(schemaDialog.Definition.Id, "auto_crop_image", StringComparison.OrdinalIgnoreCase))
+            effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+            effectDialog.ApplyRequested += (s, e) =>
             {
-                effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
-                effectDialog.ApplyRequested += (s, e) =>
-                {
-                    int tolerance = 0;
-                    foreach (var state in schemaDialog.ParameterStates)
-                    {
-                        if (string.Equals(state.Key, "tolerance", StringComparison.OrdinalIgnoreCase))
-                        {
-                            if (state is SliderParameterState slider)
-                            {
-                                tolerance = (int)System.Math.Round(slider.Value);
-                            }
-
-                            break;
-                        }
-                    }
-
-                    _editorCore.AutoCrop(tolerance);
-                    vm.EndEffectPreview();
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-                effectDialog.CancelRequested += (s, e) =>
-                {
-                    vm.CancelEffectPreview();
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-            }
-            else
+                vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+            effectDialog.CancelRequested += (s, e) =>
             {
-                effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
-                effectDialog.ApplyRequested += (s, e) =>
-                {
-                    vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-                effectDialog.CancelRequested += (s, e) =>
-                {
-                    vm.CancelEffectPreview();
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-            }
+                vm.CancelEffectPreview();
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
 
             vm.EffectsPanelContent = dialog;
             vm.IsEffectsPanelOpen = true;

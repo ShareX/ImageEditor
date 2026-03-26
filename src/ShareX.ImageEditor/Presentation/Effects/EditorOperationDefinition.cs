@@ -8,4 +8,5 @@ internal sealed record EditorOperationDefinition(
     string Icon,
     string Description,
     ImageEffectCategory Category,
-    EditorOperationKind Kind);
+    EditorOperationKind Kind,
+    EffectDefinition? SchemaDefinition = null);

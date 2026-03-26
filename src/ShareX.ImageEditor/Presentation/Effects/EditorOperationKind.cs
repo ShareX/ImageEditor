@@ -2,6 +2,7 @@ namespace ShareX.ImageEditor.Presentation.Effects;
 
 internal enum EditorOperationKind
 {
+    AutoCropImage,
     CropImage,
     ResizeImage,
     ResizeCanvas,

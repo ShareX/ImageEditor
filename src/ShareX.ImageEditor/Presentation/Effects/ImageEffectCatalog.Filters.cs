@@ -218,11 +218,6 @@ public static partial class ImageEffectCatalog
                 ImageEffectCategory.Filters,
                 FloatSlider<EdgeFeatherImageEffect>("radius", "Radius (px)", 0, 100, 12, (effect, value) => effect.Radius = value, tickFrequency: 0.5, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.#}")),
 
-            ImmediateEffect<EdgeDetectImageEffect>("edge_detect", ImageEffectCategory.Filters),
-            ImmediateEffect<EmbossImageEffect>("emboss", ImageEffectCategory.Filters),
-            ImmediateEffect<MeanRemovalImageEffect>("mean_removal", ImageEffectCategory.Filters),
-            ImmediateEffect<SmoothImageEffect>("smooth", ImageEffectCategory.Filters),
-
             Effect<FrostedGlassIceEdgesImageEffect>(
                 "frosted_glass_ice_edges",
                 ImageEffectCategory.Filters,

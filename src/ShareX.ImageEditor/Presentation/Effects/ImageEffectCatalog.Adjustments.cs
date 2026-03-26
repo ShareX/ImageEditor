@@ -13,14 +13,6 @@ public static partial class ImageEffectCatalog
         [
             Effect<HueImageEffect>("hue", ImageEffectCategory.Adjustments, FloatSlider<HueImageEffect>("amount", "Amount", -180, 180, 0, (e, v) => e.Amount = v)),
             Effect<SaturationImageEffect>("saturation", ImageEffectCategory.Adjustments, FloatSlider<SaturationImageEffect>("amount", "Amount", -100, 100, 0, (e, v) => e.Amount = v)),
-            Effect<AlphaImageEffect>("alpha", ImageEffectCategory.Adjustments, FloatSlider<AlphaImageEffect>("amount", "Alpha", 0, 100, 100, (e, v) => e.Amount = v)),
-            Effect<ExposureImageEffect>("exposure", ImageEffectCategory.Adjustments, FloatSlider<ExposureImageEffect>("amount", "Exposure", -100, 100, 0, (e, v) => e.Amount = v)),
-            Effect<ThresholdImageEffect>("threshold", ImageEffectCategory.Adjustments, IntSlider<ThresholdImageEffect>("value", "Threshold", 0, 255, 128, (e, v) => e.Value = v)),
-            Effect<PosterizeImageEffect>("posterize", ImageEffectCategory.Adjustments, IntSlider<PosterizeImageEffect>("levels", "Levels", 2, 64, 8, (e, v) => e.Levels = v)),
-            Effect<SolarizeImageEffect>("solarize", ImageEffectCategory.Adjustments, IntSlider<SolarizeImageEffect>("threshold", "Threshold", 0, 255, 128, (e, v) => e.Threshold = v)),
-            Effect<VibranceImageEffect>("vibrance", ImageEffectCategory.Adjustments, FloatSlider<VibranceImageEffect>("amount", "Amount", -100, 100, 0, (e, v) => e.Amount = v)),
-            Effect<SepiaImageEffect>("sepia", ImageEffectCategory.Adjustments, FloatSlider<SepiaImageEffect>("strength", "Strength", 0, 100, 100, (e, v) => e.Strength = v)),
-            Effect<GrayscaleImageEffect>("grayscale", ImageEffectCategory.Adjustments, FloatSlider<GrayscaleImageEffect>("strength", "Strength", 0, 100, 100, (e, v) => e.Strength = v)),
             Effect<ColorizeImageEffect>(
                 "colorize", ImageEffectCategory.Adjustments,
                 ColorParameter<ColorizeImageEffect>("color", "Color", Colors.Orange, (e, v) => e.Color = new SKColor(v.R, v.G, v.B, v.A)),

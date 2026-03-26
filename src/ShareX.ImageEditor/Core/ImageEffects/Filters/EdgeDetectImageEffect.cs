@@ -3,10 +3,14 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class EdgeDetectImageEffect : FilterImageEffect
+public sealed class EdgeDetectImageEffect : ImageEffectBase
 {
+    public override string Id => "edge_detect";
     public override string Name => "Edge detect";
-    public override string IconKey => "IconMagic";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "ScanSearch";
+    public override string Description => "Detects visible edges in the image.";
+    public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 
     private static readonly float[] Kernel =
     {

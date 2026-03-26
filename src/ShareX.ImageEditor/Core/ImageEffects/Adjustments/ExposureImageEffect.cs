@@ -1,11 +1,18 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ExposureImageEffect : AdjustmentImageEffect
+public sealed class ExposureImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "exposure";
     public override string Name => "Exposure";
-    public override string IconKey => "IconRotateCW";
+    public override string IconKey => "Aperture";
+    public override string Description => "Adjusts the exposure level.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<ExposureImageEffect>("amount", "Exposure", -100, 100, 0, (effect, value) => effect.Amount = value)
+    ];
 
     // Exposure in stops. Typical range: -5..5
     public float Amount { get; set; }

@@ -1,11 +1,18 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class SolarizeImageEffect : AdjustmentImageEffect
+public sealed class SolarizeImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "solarize";
     public override string Name => "Solarize";
-    public override string IconKey => "IconSun";
+    public override string IconKey => "Sun";
+    public override string Description => "Applies a solarize effect.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<SolarizeImageEffect>("threshold", "Threshold", 0, 255, 128, (effect, value) => effect.Threshold = value)
+    ];
 
     public int Threshold { get; set; } = 128;
 

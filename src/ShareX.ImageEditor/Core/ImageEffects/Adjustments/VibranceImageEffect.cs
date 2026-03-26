@@ -1,11 +1,18 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class VibranceImageEffect : AdjustmentImageEffect
+public sealed class VibranceImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "vibrance";
     public override string Name => "Vibrance";
-    public override string IconKey => "IconTint";
+    public override string IconKey => "Sparkles";
+    public override string Description => "Adjusts the color vibrance.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<VibranceImageEffect>("amount", "Amount", -100, 100, 0, (effect, value) => effect.Amount = value)
+    ];
 
     // Similar to photo editors: boosts low-saturation colors more than already-saturated ones.
     public float Amount { get; set; } = 25f;

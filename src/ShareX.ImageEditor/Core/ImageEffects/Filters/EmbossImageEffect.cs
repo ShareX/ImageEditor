@@ -3,10 +3,14 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class EmbossImageEffect : FilterImageEffect
+public sealed class EmbossImageEffect : ImageEffectBase
 {
+    public override string Id => "emboss";
     public override string Name => "Emboss";
-    public override string IconKey => "IconMagic";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Stamp";
+    public override string Description => "Applies an emboss effect.";
+    public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 
     private static readonly float[] Kernel =
     {

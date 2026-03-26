@@ -200,6 +200,11 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
+            if (TryHandleImmediateCatalogEffect(e.EffectId))
+            {
+                return;
+            }
+
             if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
 
@@ -215,6 +220,28 @@ namespace ShareX.ImageEditor.Presentation.Views
                     ShowResizeCanvasDialog(resizeCanvasDialog);
                     break;
             }
+        }
+
+        private bool TryHandleImmediateCatalogEffect(string effectId)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
+            {
+                return false;
+            }
+
+            if (!ImageEffectCatalog.TryGetDefinition(effectId, out EffectDefinition? definition) ||
+                definition == null ||
+                !definition.ApplyImmediately)
+            {
+                return false;
+            }
+
+            vm.StartEffectPreview();
+            vm.ApplyEffect(
+                definition.CreateConfiguredEffect(Array.Empty<EffectParameterState>()).Apply,
+                $"Applied {definition.Name}");
+            vm.CloseEffectsPanelCommand.Execute(null);
+            return true;
         }
 
         /// <summary>

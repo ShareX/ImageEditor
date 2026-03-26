@@ -205,6 +205,11 @@ namespace ShareX.ImageEditor.Presentation.Views
                 return;
             }
 
+            if (TryHandleHostEffectShortcut(e.EffectId))
+            {
+                return;
+            }
+
             if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
 
@@ -242,6 +247,33 @@ namespace ShareX.ImageEditor.Presentation.Views
                 $"Applied {definition.Name}");
             vm.CloseEffectsPanelCommand.Execute(null);
             return true;
+        }
+
+        private bool TryHandleHostEffectShortcut(string effectId)
+        {
+            switch (effectId)
+            {
+                case "rotate_90_clockwise":
+                    OnRotate90CWRequested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_90_counter_clockwise":
+                    OnRotate90CCWRequested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_180":
+                    OnRotate180Requested(this, EventArgs.Empty);
+                    return true;
+                case "rotate_custom_angle":
+                    OnRotateCustomAngleRequested(this, EventArgs.Empty);
+                    return true;
+                case "flip_horizontal":
+                    OnFlipHorizontalRequested(this, EventArgs.Empty);
+                    return true;
+                case "flip_vertical":
+                    OnFlipVerticalRequested(this, EventArgs.Empty);
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

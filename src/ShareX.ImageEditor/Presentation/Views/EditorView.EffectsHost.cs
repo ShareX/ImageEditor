@@ -200,12 +200,12 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
-            if (TryHandleImmediateCatalogEffect(e.EffectId))
+            if (TryHandleEditorOperation(e.EffectId))
             {
                 return;
             }
 
-            if (TryHandleHostEffectShortcut(e.EffectId))
+            if (TryHandleImmediateCatalogEffect(e.EffectId))
             {
                 return;
             }
@@ -249,26 +249,40 @@ namespace ShareX.ImageEditor.Presentation.Views
             return true;
         }
 
-        private bool TryHandleHostEffectShortcut(string effectId)
+        private bool TryHandleEditorOperation(string effectId)
         {
-            switch (effectId)
+            if (!EditorOperationCatalog.TryGetDefinition(effectId, out EditorOperationDefinition? operation) || operation == null)
             {
-                case "rotate_90_clockwise":
+                return false;
+            }
+
+            switch (operation.Kind)
+            {
+                case EditorOperationKind.CropImage:
+                    OnCropImageRequested(this, EventArgs.Empty);
+                    return true;
+                case EditorOperationKind.ResizeImage:
+                    ShowResizeImageDialog(new ResizeImageDialog());
+                    return true;
+                case EditorOperationKind.ResizeCanvas:
+                    ShowResizeCanvasDialog(new ResizeCanvasDialog());
+                    return true;
+                case EditorOperationKind.Rotate90Clockwise:
                     OnRotate90CWRequested(this, EventArgs.Empty);
                     return true;
-                case "rotate_90_counter_clockwise":
+                case EditorOperationKind.Rotate90CounterClockwise:
                     OnRotate90CCWRequested(this, EventArgs.Empty);
                     return true;
-                case "rotate_180":
+                case EditorOperationKind.Rotate180:
                     OnRotate180Requested(this, EventArgs.Empty);
                     return true;
-                case "rotate_custom_angle":
+                case EditorOperationKind.RotateCustomAngle:
                     OnRotateCustomAngleRequested(this, EventArgs.Empty);
                     return true;
-                case "flip_horizontal":
+                case EditorOperationKind.FlipHorizontal:
                     OnFlipHorizontalRequested(this, EventArgs.Empty);
                     return true;
-                case "flip_vertical":
+                case EditorOperationKind.FlipVertical:
                     OnFlipVerticalRequested(this, EventArgs.Empty);
                     return true;
                 default:

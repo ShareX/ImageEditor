@@ -55,9 +55,6 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
             return key.ToLowerInvariant() switch
             {
                 "perspective_warp" => new PerspectiveWarpDialog(),
-                "resize_image" => new ResizeImageDialog(),
-                "resize_canvas" => new ResizeCanvasDialog(),
-                "crop_image" => new CropImageDialog(),
                 "draw_line" => new DrawLineDialog(),
                 "draw_particles" => new DrawParticlesDialog(),
                 "draw_shape" => new DrawShapeDialog(),

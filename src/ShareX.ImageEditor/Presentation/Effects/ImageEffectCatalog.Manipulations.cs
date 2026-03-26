@@ -127,10 +127,7 @@ public static partial class ImageEffectCatalog
                 FloatSlider<RippleRefractionImageEffect>("refraction", "Refraction (%)", 0, 100, 35, (e, v) => e.Refraction = v),
                 FloatSlider<RippleRefractionImageEffect>("center_x_percentage", "Center X (%)", 0, 100, 50, (e, v) => e.CenterXPercentage = v),
                 FloatSlider<RippleRefractionImageEffect>("center_y_percentage", "Center Y (%)", 0, 100, 50, (e, v) => e.CenterYPercentage = v)),
-            BespokeEffect<PerspectiveWarpImageEffect>("perspective_warp", ImageEffectCategory.Manipulations, "perspective_warp"),
-            BespokeEffect<ResizeImageEffect>("resize_image", ImageEffectCategory.Manipulations, "resize_image"),
-            BespokeEffect<ResizeImageEffect>("resize_canvas", ImageEffectCategory.Manipulations, "resize_canvas"),
-            BespokeEffect<ResizeImageEffect>("crop_image", ImageEffectCategory.Manipulations, "crop_image")
+            BespokeEffect<PerspectiveWarpImageEffect>("perspective_warp", ImageEffectCategory.Manipulations, "perspective_warp")
         ];
     }
 }

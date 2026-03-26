@@ -75,6 +75,14 @@ public static partial class ImageEffectCatalog
             return true;
         }
 
+        if (EditorOperationCatalog.TryGetDefinition(id, out EditorOperationDefinition? operation) && operation != null)
+        {
+            browserLabel = operation.BrowserLabel;
+            icon = operation.Icon;
+            description = operation.Description;
+            return true;
+        }
+
         browserLabel = string.Empty;
         icon = string.Empty;
         description = string.Empty;

@@ -276,6 +276,11 @@ namespace ShareX.ImageEditor.Presentation.Views
             dialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
             dialog.ApplyRequested += (s, e) =>
             {
+                // Restore EditorCore source to pre-effect state. During preview, the View's
+                // PropertyChanged sync path pushes the previewed image into EditorCore.SourceImage,
+                // so direct EditorCore operations would otherwise apply on already-effected data.
+                vm.RestorePreEffectSourceImage();
+
                 switch (operation.Kind)
                 {
                     case EditorOperationKind.AutoCropImage:

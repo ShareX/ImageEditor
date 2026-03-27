@@ -368,6 +368,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         /// <summary>
+        /// Restores EditorCore's source image to the clean pre-effect state.
+        /// Must be called before direct EditorCore operations (AutoCrop, Crop, Resize, etc.)
+        /// after a preview session, because preview updates may have pushed the already-effected
+        /// image into EditorCore.SourceImage via the View's PropertyChanged sync path.
+        /// </summary>
+        public void RestorePreEffectSourceImage()
+        {
+            if (_preEffectImage != null && _editorCore != null)
+            {
+                var cleanCopy = _preEffectImage.Copy();
+                if (cleanCopy != null)
+                {
+                    _editorCore.UpdateSourceImage(cleanCopy);
+                }
+            }
+        }
+
+        /// <summary>
         /// Ends dialog-driven effect preview without committing via effect delegates.
         /// Used when a dialog should apply through <c>EditorCore</c> to keep annotation transforms unified.
         /// </summary>

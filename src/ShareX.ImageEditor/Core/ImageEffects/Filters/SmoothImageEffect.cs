@@ -3,10 +3,14 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SmoothImageEffect : FilterImageEffect
+public sealed class SmoothImageEffect : ImageEffectBase
 {
+    public override string Id => "smooth";
     public override string Name => "Smooth";
-    public override string IconKey => "IconMagic";
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Waves";
+    public override string Description => "Applies a smoothing effect.";
+    public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 
     private static readonly float[] Kernel =
     {

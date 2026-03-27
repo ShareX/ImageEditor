@@ -2,14 +2,13 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public abstract class AdjustmentImageEffect : ShareX.ImageEditor.Core.ImageEffects.ImageEffect
+public abstract class AdjustmentImageEffectBase : ImageEffectBase
 {
     public override ImageEffectCategory Category => ImageEffectCategory.Adjustments;
-    public override bool HasParameters => true;
 
     protected static SKBitmap ApplyColorMatrix(SKBitmap source, float[] matrix)
     {
-        using var filter = SKColorFilter.CreateColorMatrix(matrix);
+        using SKColorFilter filter = SKColorFilter.CreateColorMatrix(matrix);
         return ApplyColorFilter(source, filter);
     }
 
@@ -17,16 +16,12 @@ public abstract class AdjustmentImageEffect : ShareX.ImageEditor.Core.ImageEffec
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-        using (SKCanvas canvas = new SKCanvas(result))
-        {
-            canvas.Clear(SKColors.Transparent);
-            using (SKPaint paint = new SKPaint())
-            {
-                paint.ColorFilter = filter;
-                canvas.DrawBitmap(source, 0, 0, paint);
-            }
-        }
+        SKBitmap result = new(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using SKCanvas canvas = new(result);
+        canvas.Clear(SKColors.Transparent);
+
+        using SKPaint paint = new() { ColorFilter = filter };
+        canvas.DrawBitmap(source, 0, 0, paint);
         return result;
     }
 
@@ -34,7 +29,7 @@ public abstract class AdjustmentImageEffect : ShareX.ImageEditor.Core.ImageEffec
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+        SKBitmap result = new(source.Width, source.Height, source.ColorType, source.AlphaType);
 
         if (source.ColorType == SKColorType.Bgra8888)
         {
@@ -49,8 +44,8 @@ public abstract class AdjustmentImageEffect : ShareX.ImageEditor.Core.ImageEffec
         }
         else
         {
-            var srcPixels = source.Pixels;
-            var dstPixels = new SKColor[srcPixels.Length];
+            SKColor[] srcPixels = source.Pixels;
+            SKColor[] dstPixels = new SKColor[srcPixels.Length];
 
             for (int i = 0; i < srcPixels.Length; i++)
             {
@@ -63,4 +58,3 @@ public abstract class AdjustmentImageEffect : ShareX.ImageEditor.Core.ImageEffec
         return result;
     }
 }
-

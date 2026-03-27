@@ -105,25 +105,26 @@ All effect categories are enumerated in `Core/ImageEffects/ImageEffectCategory.c
 
 ```text
 Core/ImageEffects/
-|-- ImageEffect.cs
+|-- ImageEffect.cs           Root abstraction
+|-- ImageEffectBase.cs       Self-describing base (Id, Name, Category, Parameters, Apply)
 |-- ImageEffectCategory.cs
-|-- Adjustments/      AdjustmentImageEffect.cs + 26 concrete effects
-|-- Drawings/         8 drawing effects plus drawing helpers/enums
-|-- Filters/          FilterImageEffect.cs + 65 concrete effects
-|-- Helpers/          ConvolutionHelper, ImageHelpers, ProceduralEffectHelper, TypeExtensions
-`-- Manipulations/    13 concrete effects
+|-- Adjustments/             AdjustmentImageEffectBase.cs + 28 concrete effects
+|-- Drawings/                10 drawing effects plus drawing helpers/enums
+|-- Filters/                 87 concrete filter effects
+|-- Helpers/                 ConvolutionHelper, ImageHelpers, ProceduralEffectHelper, TypeExtensions
+`-- Manipulations/           22 concrete effects
 ```
 
 Base class note:
 - `ImageEffect.cs` is the root abstraction.
-- `AdjustmentImageEffect` and `FilterImageEffect` are per-category abstract bases.
-- Drawing and manipulation effects derive directly from `ImageEffect`.
+- `ImageEffectBase` extends `ImageEffect` with self-contained `Id`, `Name`, `Category`, `Description`, `IconKey`, `Parameters`, and `Apply()`. All concrete effects extend this.
+- `AdjustmentImageEffectBase` is a category-specific base for adjustments, providing `ApplyColorMatrix()`, `ApplyColorFilter()`, and `ApplyPixelOperation()` helpers.
+- Effects are auto-discovered at startup by `DiscoveredEffectRegistry` via reflection — no manual registration required.
 
 To add a new image effect:
-1. Create the effect class in the matching `Core/ImageEffects/<Category>/` folder.
-2. If the effect needs a dialog, add it under the matching `Presentation/Views/Dialogs/<Category>/` folder.
-3. If the dialog is registry-backed, register it in `Presentation/Views/Dialogs/EffectDialogRegistry.cs`.
-4. Add the effect entry to `Presentation/Controls/EffectBrowserPanel.axaml.cs`.
+1. Create a single sealed class in the matching `Core/ImageEffects/<Category>/` folder extending `ImageEffectBase` (or `AdjustmentImageEffectBase` for adjustments).
+2. Override `Id`, `Name`, `Category`, `Description`, `IconKey`, `Parameters`, and `Apply()`. That's it — the effect is auto-discovered.
+3. If the effect needs a bespoke editor dialog, set `EditorKey` and register the control in `Presentation/Views/Dialogs/EffectDialogRegistry.cs`.
 
 ### Editor / History / Abstractions
 

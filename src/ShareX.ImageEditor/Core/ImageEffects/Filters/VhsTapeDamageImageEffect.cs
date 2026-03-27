@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class VhsTapeDamageImageEffect : FilterImageEffect
+public sealed class VhsTapeDamageImageEffect : ImageEffectBase
 {
+    public override string Id => "vhs_tape_damage";
     public override string Name => "VHS tape damage";
-    public override string IconKey => "IconDisplay";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Monitor";
+    public override string Description => "Simulates VHS tape degradation with distortion, noise, and color bleeding.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<VhsTapeDamageImageEffect>("distortion", "Distortion", 0, 100, 55, (e, v) => e.Distortion = v),
+        EffectParameters.FloatSlider<VhsTapeDamageImageEffect>("noise", "Noise", 0, 100, 28, (e, v) => e.Noise = v),
+        EffectParameters.FloatSlider<VhsTapeDamageImageEffect>("color_bleed", "Color bleed", 0, 100, 30, (e, v) => e.ColorBleed = v),
+        EffectParameters.FloatSlider<VhsTapeDamageImageEffect>("tracking", "Tracking", 0, 100, 24, (e, v) => e.Tracking = v),
+        EffectParameters.FloatSlider<VhsTapeDamageImageEffect>("scanlines", "Scanlines", 0, 100, 48, (e, v) => e.Scanlines = v)
+    ];
 
     public float Distortion { get; set; } = 55f; // 0..100
     public float Noise { get; set; } = 28f; // 0..100

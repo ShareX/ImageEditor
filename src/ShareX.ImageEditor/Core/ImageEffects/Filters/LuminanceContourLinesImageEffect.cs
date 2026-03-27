@@ -1,12 +1,27 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class LuminanceContourLinesImageEffect : FilterImageEffect
+public sealed class LuminanceContourLinesImageEffect : ImageEffectBase
 {
+    public override string Id => "luminance_contour_lines";
     public override string Name => "Luminance contour lines";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Waypoints";
+    public override string Description => "Draws contour lines based on luminance quantization levels.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<LuminanceContourLinesImageEffect>("levels", "Levels", 2, 64, 12, (e, v) => e.Levels = v),
+        EffectParameters.FloatSlider<LuminanceContourLinesImageEffect>("line_width", "Line width", 0, 200, 6, (e, v) => e.LineWidth = v),
+        EffectParameters.FloatSlider<LuminanceContourLinesImageEffect>("line_strength", "Line strength", 0, 100, 65, (e, v) => e.LineStrength = v),
+        EffectParameters.FloatSlider<LuminanceContourLinesImageEffect>("background_strength", "Background strength", 0, 100, 20, (e, v) => e.BackgroundStrength = v),
+        EffectParameters.FloatSlider<LuminanceContourLinesImageEffect>("threshold", "Threshold", 0, 255, 0, (e, v) => e.Threshold = v),
+        EffectParameters.Bool<LuminanceContourLinesImageEffect>("invert", "Invert", false, (e, v) => e.Invert = v),
+        EffectParameters.Color<LuminanceContourLinesImageEffect>("line_color", "Line color", new SKColor(0, 0, 0, 255), (e, v) => e.LineColor = v),
+    ];
 
     public int Levels { get; set; } = 12; // ~2..64
     public float LineWidth { get; set; } = 6f; // 0..200

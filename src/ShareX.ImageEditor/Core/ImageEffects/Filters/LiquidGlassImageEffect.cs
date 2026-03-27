@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class LiquidGlassImageEffect : FilterImageEffect
+public sealed class LiquidGlassImageEffect : ImageEffectBase
 {
+    public override string Id => "liquid_glass";
     public override string Name => "Liquid glass";
-    public override string IconKey => "IconDroplet";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "GlassWater";
+    public override string Description => "Distorts the image as if viewed through liquid glass.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<LiquidGlassImageEffect>("distortion", "Distortion", 0, 35, 9, (e, v) => e.Distortion = v),
+        EffectParameters.FloatSlider<LiquidGlassImageEffect>("refraction", "Refraction", 0, 100, 45, (e, v) => e.Refraction = v),
+        EffectParameters.IntSlider<LiquidGlassImageEffect>("chroma_shift", "Chroma shift", 0, 8, 1, (e, v) => e.ChromaShift = v),
+        EffectParameters.FloatSlider<LiquidGlassImageEffect>("gloss", "Gloss", 0, 100, 40, (e, v) => e.Gloss = v),
+        EffectParameters.FloatSlider<LiquidGlassImageEffect>("flow_scale", "Flow scale", 40, 220, 100, (e, v) => e.FlowScale = v)
+    ];
 
     public float Distortion { get; set; } = 9f; // 0..35
     public float Refraction { get; set; } = 45f; // 0..100

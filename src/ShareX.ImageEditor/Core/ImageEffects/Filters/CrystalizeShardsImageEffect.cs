@@ -1,13 +1,23 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CrystalizeShardsImageEffect : FilterImageEffect
+public sealed class CrystalizeShardsImageEffect : ImageEffectBase
 {
+    public override string Id => "crystalize_shards";
     public override string Name => "Crystalize shards";
-    public override string IconKey => "IconGem";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Diamond";
+    public override string Description => "Breaks the image into crystalline Voronoi shards with edge highlights.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<CrystalizeShardsImageEffect>("shardSize", "Shard size", 6, 80, 22, (e, v) => e.ShardSize = v),
+        EffectParameters.FloatSlider<CrystalizeShardsImageEffect>("jitter", "Jitter", 0f, 100f, 65f, (e, v) => e.Jitter = v),
+        EffectParameters.FloatSlider<CrystalizeShardsImageEffect>("edgeStrength", "Edge strength", 0f, 100f, 75f, (e, v) => e.EdgeStrength = v),
+        EffectParameters.FloatSlider<CrystalizeShardsImageEffect>("shine", "Shine", 0f, 100f, 30f, (e, v) => e.Shine = v),
+    ];
 
     public int ShardSize { get; set; } = 22; // 6..80
     public float Jitter { get; set; } = 65f; // 0..100

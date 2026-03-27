@@ -1,12 +1,25 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RGBSplitImageEffect : FilterImageEffect
+public sealed class RGBSplitImageEffect : ImageEffectBase
 {
+    public override string Id => "rgb_split";
     public override string Name => "RGB split";
-    public override string IconKey => "IconAdjust";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "SplitSquareHorizontal";
+    public override string Description => "Splits and offsets the red, green, and blue color channels.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<RGBSplitImageEffect>("offset_red_x", "Offset red X", -100, 100, -5, (e, v) => e.OffsetRedX = v),
+        EffectParameters.IntSlider<RGBSplitImageEffect>("offset_red_y", "Offset red Y", -100, 100, 0, (e, v) => e.OffsetRedY = v),
+        EffectParameters.IntSlider<RGBSplitImageEffect>("offset_green_x", "Offset green X", -100, 100, 0, (e, v) => e.OffsetGreenX = v),
+        EffectParameters.IntSlider<RGBSplitImageEffect>("offset_green_y", "Offset green Y", -100, 100, 0, (e, v) => e.OffsetGreenY = v),
+        EffectParameters.IntSlider<RGBSplitImageEffect>("offset_blue_x", "Offset blue X", -100, 100, 5, (e, v) => e.OffsetBlueX = v),
+        EffectParameters.IntSlider<RGBSplitImageEffect>("offset_blue_y", "Offset blue Y", -100, 100, 0, (e, v) => e.OffsetBlueY = v),
+    ];
 
     public int OffsetRedX { get; set; } = -5;
     public int OffsetRedY { get; set; }

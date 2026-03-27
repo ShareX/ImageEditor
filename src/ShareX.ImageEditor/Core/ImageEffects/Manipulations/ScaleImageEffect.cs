@@ -1,12 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class ScaleImageEffect : ImageEffect
+public sealed class ScaleImageEffect : ImageEffectBase
 {
+    public override string Id => "scale";
     public override string Name => "Scale";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "ImageUpscale";
+    public override string Description => "Scales the image by width and height percentages.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<ScaleImageEffect>("width_percentage", "Width %", 0f, 500f, 100f, (e, v) => e.WidthPercentage = v),
+        EffectParameters.FloatSlider<ScaleImageEffect>("height_percentage", "Height %", 0f, 500f, 0f, (e, v) => e.HeightPercentage = v)
+    ];
 
     public float WidthPercentage { get; set; } = 100f;
     public float HeightPercentage { get; set; } = 0f;

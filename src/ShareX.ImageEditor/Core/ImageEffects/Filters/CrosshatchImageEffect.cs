@@ -1,13 +1,23 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class CrosshatchImageEffect : FilterImageEffect
+public sealed class CrosshatchImageEffect : ImageEffectBase
 {
+    public override string Id => "crosshatch";
     public override string Name => "Crosshatch";
-    public override string IconKey => "IconHash";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Hash";
+    public override string Description => "Renders the image as a crosshatch pen drawing.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<CrosshatchImageEffect>("lineSpacing", "Line spacing", 4, 24, 8, (e, v) => e.LineSpacing = v),
+        EffectParameters.FloatSlider<CrosshatchImageEffect>("lineThickness", "Line thickness", 0.5f, 4f, 1.2f, (e, v) => e.LineThickness = v),
+        EffectParameters.FloatSlider<CrosshatchImageEffect>("contrast", "Contrast", 50f, 200f, 120f, (e, v) => e.Contrast = v),
+        EffectParameters.IntSlider<CrosshatchImageEffect>("layerCount", "Layer count", 1, 6, 4, (e, v) => e.LayerCount = v),
+    ];
 
     public int LineSpacing { get; set; } = 8; // 4..24
     public float LineThickness { get; set; } = 1.2f; // 0.5..4

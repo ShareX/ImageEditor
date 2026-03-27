@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class FrostedGlassIceEdgesImageEffect : FilterImageEffect
+public sealed class FrostedGlassIceEdgesImageEffect : ImageEffectBase
 {
+    public override string Id => "frosted_glass_ice_edges";
     public override string Name => "Frosted glass + ice edges";
-    public override string IconKey => "IconSnowflake";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "CloudSnow";
+    public override string Description => "Combines frosted glass distortion with icy edge highlights and cool tinting.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<FrostedGlassIceEdgesImageEffect>("distortion", "Distortion", 0, 30, 10, (e, v) => e.Distortion = v),
+        EffectParameters.FloatSlider<FrostedGlassIceEdgesImageEffect>("blur", "Blur", 0, 100, 35, (e, v) => e.Blur = v),
+        EffectParameters.IntSlider<FrostedGlassIceEdgesImageEffect>("edge_threshold", "Edge threshold", 1, 120, 28, (e, v) => e.EdgeThreshold = v),
+        EffectParameters.FloatSlider<FrostedGlassIceEdgesImageEffect>("ice_strength", "Ice strength", 0, 100, 75, (e, v) => e.IceStrength = v),
+        EffectParameters.FloatSlider<FrostedGlassIceEdgesImageEffect>("tint", "Tint", 0, 100, 35, (e, v) => e.Tint = v)
+    ];
 
     public float Distortion { get; set; } = 10f; // 0..30
     public float Blur { get; set; } = 35f; // 0..100

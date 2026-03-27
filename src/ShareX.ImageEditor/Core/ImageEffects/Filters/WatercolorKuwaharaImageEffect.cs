@@ -1,13 +1,23 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class WatercolorKuwaharaImageEffect : FilterImageEffect
+public sealed class WatercolorKuwaharaImageEffect : ImageEffectBase
 {
+    public override string Id => "watercolor_kuwahara";
     public override string Name => "Watercolor / Kuwahara";
-    public override string IconKey => "IconPalette";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Brush";
+    public override string Description => "Applies a Kuwahara filter for a watercolor painting effect.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<WatercolorKuwaharaImageEffect>("radius", "Radius", 2, 10, 4, (e, v) => e.Radius = v),
+        EffectParameters.FloatSlider<WatercolorKuwaharaImageEffect>("saturation_boost", "Saturation boost", 0, 100, 20, (e, v) => e.SaturationBoost = v),
+        EffectParameters.FloatSlider<WatercolorKuwaharaImageEffect>("detail_blend", "Detail blend", 0, 100, 18, (e, v) => e.DetailBlend = v)
+    ];
 
     public int Radius { get; set; } = 4; // 2..10
     public float SaturationBoost { get; set; } = 20f; // 0..100

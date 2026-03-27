@@ -183,7 +183,7 @@ public static class ImageHelpers
     public static SKBitmap Resize(SKBitmap source, int width, int height, bool maintainAspectRatio = false, SKFilterQuality quality = SKFilterQuality.High)
     {
         // Quality ignored in Effect currently or hardcoded to High
-        return new ResizeImageEffect(width, height, maintainAspectRatio).Apply(source);
+        return new ResizeImageEffect { Width = width, Height = height, MaintainAspectRatio = maintainAspectRatio }.Apply(source);
     }
 
     /// <summary>

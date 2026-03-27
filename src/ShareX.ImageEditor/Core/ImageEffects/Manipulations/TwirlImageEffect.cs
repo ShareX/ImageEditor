@@ -1,12 +1,22 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class TwirlImageEffect : ImageEffect
+public sealed class TwirlImageEffect : ImageEffectBase
 {
+    public override string Id => "twirl";
     public override string Name => "Twirl";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "RotateCcwSquare";
+    public override string Description => "Applies a twirl distortion to the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<TwirlImageEffect>("angle", "Angle", -360f, 360f, 90f, (e, v) => e.Angle = v),
+        EffectParameters.FloatSlider<TwirlImageEffect>("radius_percentage", "Radius %", 1f, 100f, 50f, (e, v) => e.RadiusPercentage = v),
+        EffectParameters.FloatSlider<TwirlImageEffect>("center_x_percentage", "Center X %", 0f, 100f, 50f, (e, v) => e.CenterXPercentage = v),
+        EffectParameters.FloatSlider<TwirlImageEffect>("center_y_percentage", "Center Y %", 0f, 100f, 50f, (e, v) => e.CenterYPercentage = v)
+    ];
 
     public float Angle { get; set; } = 90f; // degrees
     public float RadiusPercentage { get; set; } = 50f;

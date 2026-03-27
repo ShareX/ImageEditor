@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RustCorrosionImageEffect : FilterImageEffect
+public sealed class RustCorrosionImageEffect : ImageEffectBase
 {
+    public override string Id => "rust_corrosion";
     public override string Name => "Rust / corrosion";
-    public override string IconKey => "IconStamp";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "BrushCleaning";
+    public override string Description => "Simulates rust and corrosion effects with pitting and streaks.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<RustCorrosionImageEffect>("corrosion", "Corrosion", 0f, 100f, 58f, (e, v) => e.Corrosion = v),
+        EffectParameters.FloatSlider<RustCorrosionImageEffect>("pitting", "Pitting", 0f, 100f, 44f, (e, v) => e.Pitting = v),
+        EffectParameters.FloatSlider<RustCorrosionImageEffect>("streaks", "Streaks", 0f, 100f, 36f, (e, v) => e.Streaks = v),
+        EffectParameters.FloatSlider<RustCorrosionImageEffect>("dirt", "Dirt", 0f, 100f, 26f, (e, v) => e.Dirt = v),
+        EffectParameters.FloatSlider<RustCorrosionImageEffect>("edge_wear", "Edge wear", 0f, 100f, 52f, (e, v) => e.EdgeWear = v),
+    ];
 
     public float Corrosion { get; set; } = 58f; // 0..100
     public float Pitting { get; set; } = 44f; // 0..100

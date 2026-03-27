@@ -1,12 +1,15 @@
 using SkiaSharp;
 
-
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class PolaroidImageEffect : AdjustmentImageEffect
+public sealed class PolaroidImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "polaroid";
     public override string Name => "Polaroid";
-    public override string IconKey => "IconCameraRetro";
+    public override string IconKey => "Camera";
+    public override string Description => "Applies a Polaroid effect.";
+    public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
+
     public override SKBitmap Apply(SKBitmap source)
     {
         float[] matrix = {

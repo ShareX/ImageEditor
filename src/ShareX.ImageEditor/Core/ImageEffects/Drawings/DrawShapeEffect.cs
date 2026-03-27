@@ -1,9 +1,48 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class DrawShapeEffect : ImageEffect
+public sealed class DrawShapeEffect : ImageEffectBase
 {
+    public override string Id => "draw_shape";
+    public override string Name => "Shape";
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string IconKey => "Square";
+    public override string Description => "Draws a shape on the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<DrawShapeEffect, DrawingShapeType>(
+            "shape", "Shape", DrawingShapeType.Rectangle, (e, v) => e.Shape = v,
+            new (string Label, DrawingShapeType Value)[]
+            {
+                ("Rectangle", DrawingShapeType.Rectangle),
+                ("Rounded rectangle", DrawingShapeType.RoundedRectangle),
+                ("Ellipse", DrawingShapeType.Ellipse),
+                ("Triangle", DrawingShapeType.Triangle),
+                ("Diamond", DrawingShapeType.Diamond)
+            }),
+        EffectParameters.Enum<DrawShapeEffect, DrawingPlacement>(
+            "placement", "Placement", DrawingPlacement.TopLeft, (e, v) => e.Placement = v,
+            new (string Label, DrawingPlacement Value)[]
+            {
+                ("Top left", DrawingPlacement.TopLeft),
+                ("Top center", DrawingPlacement.TopCenter),
+                ("Top right", DrawingPlacement.TopRight),
+                ("Middle left", DrawingPlacement.MiddleLeft),
+                ("Middle center", DrawingPlacement.MiddleCenter),
+                ("Middle right", DrawingPlacement.MiddleRight),
+                ("Bottom left", DrawingPlacement.BottomLeft),
+                ("Bottom center", DrawingPlacement.BottomCenter),
+                ("Bottom right", DrawingPlacement.BottomRight)
+            }),
+        EffectParameters.IntNumeric<DrawShapeEffect>("offset_x", "Offset X", -10000, 10000, 0, (e, v) => e.Offset = new SKPointI(v, e.Offset.Y)),
+        EffectParameters.IntNumeric<DrawShapeEffect>("offset_y", "Offset Y", -10000, 10000, 0, (e, v) => e.Offset = new SKPointI(e.Offset.X, v)),
+        EffectParameters.IntNumeric<DrawShapeEffect>("size_width", "Size width", -1, 10000, 100, (e, v) => e.Size = new SKSizeI(v, e.Size.Height)),
+        EffectParameters.IntNumeric<DrawShapeEffect>("size_height", "Size height", -1, 10000, 100, (e, v) => e.Size = new SKSizeI(e.Size.Width, v)),
+        EffectParameters.Color<DrawShapeEffect>("color", "Color", new SKColor(255, 255, 255, 255), (e, v) => e.Color = v)
+    ];
+
     public DrawingShapeType Shape { get; set; } = DrawingShapeType.Rectangle;
 
     public DrawingPlacement Placement { get; set; } = DrawingPlacement.TopLeft;
@@ -13,12 +52,6 @@ public sealed class DrawShapeEffect : ImageEffect
     public SKSizeI Size { get; set; } = new SKSizeI(100, 100);
 
     public SKColor Color { get; set; } = new SKColor(255, 255, 255, 255);
-
-    public override string Name => "Shape";
-
-    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-
-    public override bool HasParameters => true;
 
     public override SKBitmap Apply(SKBitmap source)
     {

@@ -1,13 +1,22 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ChromaticAberrationImageEffect : FilterImageEffect
+public sealed class ChromaticAberrationImageEffect : ImageEffectBase
 {
+    public override string Id => "chromatic_aberration";
     public override string Name => "Chromatic aberration";
-    public override string IconKey => "IconAdjust";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Aperture";
+    public override string Description => "Simulates lens chromatic aberration with RGB channel splitting.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<ChromaticAberrationImageEffect>("amount", "Amount", 0f, 40f, 8f, (e, v) => e.Amount = v),
+        EffectParameters.FloatSlider<ChromaticAberrationImageEffect>("edgeStart", "Edge start", 0f, 0.95f, 0.20f, (e, v) => e.EdgeStart = v),
+        EffectParameters.FloatSlider<ChromaticAberrationImageEffect>("strength", "Strength", 0f, 100f, 75f, (e, v) => e.Strength = v),
+    ];
 
     public float Amount { get; set; } = 8f; // 0..40 px
     public float EdgeStart { get; set; } = 0.20f; // 0..0.95

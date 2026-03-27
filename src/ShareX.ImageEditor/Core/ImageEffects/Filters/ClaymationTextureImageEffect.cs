@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ClaymationTextureImageEffect : FilterImageEffect
+public sealed class ClaymationTextureImageEffect : ImageEffectBase
 {
+    public override string Id => "claymation_texture";
     public override string Name => "Claymation texture";
-    public override string IconKey => "IconFoodCake";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "PaintRoller";
+    public override string Description => "Gives the image a sculpted claymation look with chunky quantization and relief texture.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<ClaymationTextureImageEffect>("chunkSize", "Chunk size", 3, 18, 8, (e, v) => e.ChunkSize = v),
+        EffectParameters.FloatSlider<ClaymationTextureImageEffect>("smoothness", "Smoothness", 0f, 100f, 55f, (e, v) => e.Smoothness = v),
+        EffectParameters.FloatSlider<ClaymationTextureImageEffect>("relief", "Relief", 0f, 100f, 35f, (e, v) => e.Relief = v),
+        EffectParameters.FloatSlider<ClaymationTextureImageEffect>("saturation", "Saturation", -100f, 100f, 20f, (e, v) => e.Saturation = v),
+        EffectParameters.FloatSlider<ClaymationTextureImageEffect>("textureGrain", "Texture grain", 0f, 100f, 30f, (e, v) => e.TextureGrain = v),
+    ];
 
     public int ChunkSize { get; set; } = 8; // 3..18
     public float Smoothness { get; set; } = 55f; // 0..100

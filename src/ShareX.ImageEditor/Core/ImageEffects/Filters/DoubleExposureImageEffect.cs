@@ -1,12 +1,26 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class DoubleExposureImageEffect : FilterImageEffect
+public sealed class DoubleExposureImageEffect : ImageEffectBase
 {
+    public override string Id => "double_exposure";
     public override string Name => "Double exposure";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "ImagePlus";
+    public override string Description => "Blends a blurred ghost of the image over itself to simulate double exposure.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<DoubleExposureImageEffect>("blend_amount", "Blend amount", 0, 100, 62, (e, v) => e.BlendAmount = v),
+        EffectParameters.IntNumeric<DoubleExposureImageEffect>("offset_x", "Offset X", -500, 500, 22, (e, v) => e.OffsetX = v),
+        EffectParameters.IntNumeric<DoubleExposureImageEffect>("offset_y", "Offset Y", -500, 500, -14, (e, v) => e.OffsetY = v),
+        EffectParameters.FloatSlider<DoubleExposureImageEffect>("ghost_blur", "Ghost blur", 0, 30, 8, (e, v) => e.GhostBlur = v),
+        EffectParameters.FloatSlider<DoubleExposureImageEffect>("highlight_bias", "Highlight bias", 0, 100, 55, (e, v) => e.HighlightBias = v),
+        EffectParameters.FloatSlider<DoubleExposureImageEffect>("contrast", "Contrast", 50, 200, 112, (e, v) => e.Contrast = v)
+    ];
 
     public float BlendAmount { get; set; } = 62f;
     public int OffsetX { get; set; } = 22;

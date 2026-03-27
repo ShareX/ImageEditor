@@ -1,12 +1,27 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class RisoPrintImageEffect : FilterImageEffect
+public sealed class RisoPrintImageEffect : ImageEffectBase
 {
+    public override string Id => "riso_print";
     public override string Name => "Riso print";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Newspaper";
+    public override string Description => "Simulates a risograph print with halftone dots and ink colors.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<RisoPrintImageEffect>("ink_strength", "Ink strength", 0f, 100f, 70f, (e, v) => e.InkStrength = v),
+        EffectParameters.FloatSlider<RisoPrintImageEffect>("paper_fade", "Paper fade", 0f, 100f, 25f, (e, v) => e.PaperFade = v),
+        EffectParameters.FloatSlider<RisoPrintImageEffect>("offset", "Offset", -200f, 200f, 3f, (e, v) => e.Offset = v),
+        EffectParameters.FloatSlider<RisoPrintImageEffect>("dot_scale", "Dot scale", 0f, 100f, 18f, (e, v) => e.DotScale = v),
+        EffectParameters.FloatSlider<RisoPrintImageEffect>("ink_noise", "Ink noise", 0f, 100f, 35f, (e, v) => e.InkNoise = v),
+        EffectParameters.Color<RisoPrintImageEffect>("ink_color_a", "Ink color A", new SKColor(220, 70, 70, 255), (e, v) => e.InkColorA = v),
+        EffectParameters.Color<RisoPrintImageEffect>("ink_color_b", "Ink color B", new SKColor(70, 200, 210, 255), (e, v) => e.InkColorB = v),
+    ];
 
     public float InkStrength { get; set; } = 70f; // 0..100
     public float PaperFade { get; set; } = 25f; // 0..100

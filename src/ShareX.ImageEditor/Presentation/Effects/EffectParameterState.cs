@@ -25,149 +25,367 @@
 
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using ShareX.ImageEditor.Core.ImageEffects;
+using CoreCheckboxParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.CheckboxEffectParameter;
+using CoreColorParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.ColorEffectParameter;
+using CoreEffectOption = ShareX.ImageEditor.Core.ImageEffects.Parameters.EffectOption;
+using CoreEffectParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.EffectParameter;
+using CoreEnumParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.EnumEffectParameter;
+using CoreFilePathParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.FilePathEffectParameter;
+using CoreNumericParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.NumericEffectParameter;
+using CoreSliderParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.SliderEffectParameter;
+using CoreTextParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.TextEffectParameter;
+using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Effects;
 
 public abstract partial class EffectParameterState : ObservableObject
 {
-    protected EffectParameterState(EffectParameterDefinition definition)
+    protected EffectParameterState(string key, string label)
     {
-        Definition = definition ?? throw new ArgumentNullException(nameof(definition));
+        Key = key ?? throw new ArgumentNullException(nameof(key));
+        Label = label ?? throw new ArgumentNullException(nameof(label));
     }
 
-    public EffectParameterDefinition Definition { get; }
+    public string Key { get; }
 
-    public string Key => Definition.Key;
-
-    public string Label => Definition.Label;
+    public string Label { get; }
 
     internal abstract object? GetValue();
+
+    internal abstract void ApplyValue(ImageEffect effect);
+
+    public static EffectParameterState Create(EffectParameterDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+
+        return definition switch
+        {
+            SliderParameterDefinition slider => new SliderParameterState(slider),
+            CheckboxParameterDefinition checkbox => new CheckboxParameterState(checkbox),
+            EnumParameterDefinition enumParameter => new EnumParameterState(enumParameter),
+            ColorParameterDefinition color => new ColorParameterState(color),
+            NumericParameterDefinition numeric => new NumericParameterState(numeric),
+            TextParameterDefinition text => new TextParameterState(text),
+            FilePathParameterDefinition filePath => new FilePathParameterState(filePath),
+            _ => throw new NotSupportedException($"Unsupported legacy parameter definition '{definition.GetType().FullName}'.")
+        };
+    }
+
+    public static EffectParameterState Create(CoreEffectParameter parameter)
+    {
+        ArgumentNullException.ThrowIfNull(parameter);
+
+        return parameter switch
+        {
+            CoreSliderParameter slider => new SliderParameterState(slider),
+            CoreCheckboxParameter checkbox => new CheckboxParameterState(checkbox),
+            CoreEnumParameter enumParameter => new EnumParameterState(enumParameter),
+            CoreColorParameter color => new ColorParameterState(color),
+            CoreNumericParameter numeric => new NumericParameterState(numeric),
+            CoreTextParameter text => new TextParameterState(text),
+            CoreFilePathParameter filePath => new FilePathParameterState(filePath),
+            _ => throw new NotSupportedException($"Unsupported core parameter definition '{parameter.GetType().FullName}'.")
+        };
+    }
+
+    protected static Color ToAvaloniaColor(SKColor color) => Color.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
+
+    protected static SKColor ToSkColor(Color color) => new(color.R, color.G, color.B, color.A);
 }
 
 public sealed partial class SliderParameterState : EffectParameterState
 {
+    private readonly EffectParameterDefinition? _legacyDefinition;
+    private readonly CoreSliderParameter? _coreParameter;
+
     [ObservableProperty]
     private double _value;
 
-    public SliderParameterDefinition SliderDefinition => (SliderParameterDefinition)Definition;
+    public double Minimum { get; }
 
-    public double Minimum => SliderDefinition.Minimum;
+    public double Maximum { get; }
 
-    public double Maximum => SliderDefinition.Maximum;
+    public double TickFrequency { get; }
 
-    public double TickFrequency => SliderDefinition.TickFrequency;
+    public bool IsSnapToTickEnabled { get; }
 
-    public bool IsSnapToTickEnabled => SliderDefinition.IsSnapToTickEnabled;
-
-    public string ValueStringFormat => SliderDefinition.ValueStringFormat;
+    public string ValueStringFormat { get; }
 
     public SliderParameterState(SliderParameterDefinition definition)
-        : base(definition)
+        : base(definition.Key, definition.Label)
     {
+        _legacyDefinition = definition;
+        Minimum = definition.Minimum;
+        Maximum = definition.Maximum;
+        TickFrequency = definition.TickFrequency;
+        IsSnapToTickEnabled = definition.IsSnapToTickEnabled;
+        ValueStringFormat = definition.ValueStringFormat;
         _value = definition.DefaultValue;
     }
 
+    public SliderParameterState(CoreSliderParameter parameter)
+        : base(parameter.Key, parameter.Label)
+    {
+        _coreParameter = parameter;
+        Minimum = parameter.Minimum;
+        Maximum = parameter.Maximum;
+        TickFrequency = parameter.TickFrequency;
+        IsSnapToTickEnabled = parameter.IsSnapToTickEnabled;
+        ValueStringFormat = parameter.ValueStringFormat;
+        _value = parameter.DefaultValue;
+    }
+
     internal override object? GetValue() => Value;
+
+    internal override void ApplyValue(ImageEffect effect)
+    {
+        if (_legacyDefinition != null)
+        {
+            _legacyDefinition.ApplyValue(effect, Value);
+            return;
+        }
+
+        _coreParameter!.Apply(effect, Value);
+    }
 }
 
 public sealed partial class CheckboxParameterState : EffectParameterState
 {
+    private readonly EffectParameterDefinition? _legacyDefinition;
+    private readonly CoreCheckboxParameter? _coreParameter;
+
     [ObservableProperty]
     private bool _value;
 
     public CheckboxParameterState(CheckboxParameterDefinition definition)
-        : base(definition)
+        : base(definition.Key, definition.Label)
     {
+        _legacyDefinition = definition;
         _value = definition.DefaultValue;
     }
 
+    public CheckboxParameterState(CoreCheckboxParameter parameter)
+        : base(parameter.Key, parameter.Label)
+    {
+        _coreParameter = parameter;
+        _value = parameter.DefaultValue;
+    }
+
     internal override object? GetValue() => Value;
+
+    internal override void ApplyValue(ImageEffect effect)
+    {
+        if (_legacyDefinition != null)
+        {
+            _legacyDefinition.ApplyValue(effect, Value);
+            return;
+        }
+
+        _coreParameter!.Apply(effect, Value);
+    }
 }
 
 public sealed partial class EnumParameterState : EffectParameterState
 {
+    private readonly EffectParameterDefinition? _legacyDefinition;
+    private readonly CoreEnumParameter? _coreParameter;
+
     [ObservableProperty]
     private EffectOptionDefinition _selectedOption;
 
-    public EnumParameterDefinition EnumDefinition => (EnumParameterDefinition)Definition;
-
-    public IReadOnlyList<EffectOptionDefinition> Options => EnumDefinition.Options;
+    public IReadOnlyList<EffectOptionDefinition> Options { get; }
 
     public EnumParameterState(EnumParameterDefinition definition)
-        : base(definition)
+        : base(definition.Key, definition.Label)
     {
+        _legacyDefinition = definition;
+        Options = definition.Options;
         _selectedOption = definition.Options[definition.DefaultIndex];
     }
 
+    public EnumParameterState(CoreEnumParameter parameter)
+        : base(parameter.Key, parameter.Label)
+    {
+        _coreParameter = parameter;
+        Options = parameter.Options.Select(static option => new EffectOptionDefinition(option.Label, option.Value)).ToArray();
+        _selectedOption = Options[parameter.DefaultIndex];
+    }
+
     internal override object? GetValue() => SelectedOption.Value;
+
+    internal override void ApplyValue(ImageEffect effect)
+    {
+        if (_legacyDefinition != null)
+        {
+            _legacyDefinition.ApplyValue(effect, SelectedOption.Value);
+            return;
+        }
+
+        _coreParameter!.Apply(effect, SelectedOption.Value);
+    }
 }
 
 public sealed partial class ColorParameterState : EffectParameterState
 {
+    private readonly EffectParameterDefinition? _legacyDefinition;
+    private readonly CoreColorParameter? _coreParameter;
+
     [ObservableProperty]
     private Color _value;
 
     public ColorParameterState(ColorParameterDefinition definition)
-        : base(definition)
+        : base(definition.Key, definition.Label)
     {
+        _legacyDefinition = definition;
         _value = definition.DefaultValue;
     }
 
+    public ColorParameterState(CoreColorParameter parameter)
+        : base(parameter.Key, parameter.Label)
+    {
+        _coreParameter = parameter;
+        _value = ToAvaloniaColor(parameter.DefaultValue);
+    }
+
     internal override object? GetValue() => Value;
+
+    internal override void ApplyValue(ImageEffect effect)
+    {
+        if (_legacyDefinition != null)
+        {
+            _legacyDefinition.ApplyValue(effect, Value);
+            return;
+        }
+
+        _coreParameter!.Apply(effect, ToSkColor(Value));
+    }
 }
 
 public sealed partial class NumericParameterState : EffectParameterState
 {
+    private readonly EffectParameterDefinition? _legacyDefinition;
+    private readonly CoreNumericParameter? _coreParameter;
+
     [ObservableProperty]
     private decimal? _value;
 
-    public NumericParameterDefinition NumericDefinition => (NumericParameterDefinition)Definition;
+    public decimal Minimum { get; }
 
-    public decimal Minimum => NumericDefinition.Minimum;
+    public decimal Maximum { get; }
 
-    public decimal Maximum => NumericDefinition.Maximum;
+    public decimal Increment { get; }
 
-    public decimal Increment => NumericDefinition.Increment;
-
-    public string FormatString => NumericDefinition.FormatString;
+    public string FormatString { get; }
 
     public NumericParameterState(NumericParameterDefinition definition)
-        : base(definition)
+        : base(definition.Key, definition.Label)
     {
+        _legacyDefinition = definition;
+        Minimum = definition.Minimum;
+        Maximum = definition.Maximum;
+        Increment = definition.Increment;
+        FormatString = definition.FormatString;
         _value = definition.DefaultValue;
     }
 
+    public NumericParameterState(CoreNumericParameter parameter)
+        : base(parameter.Key, parameter.Label)
+    {
+        _coreParameter = parameter;
+        Minimum = parameter.Minimum;
+        Maximum = parameter.Maximum;
+        Increment = parameter.Increment;
+        FormatString = parameter.FormatString;
+        _value = parameter.DefaultValue;
+    }
+
     internal override object? GetValue() => Value;
+
+    internal override void ApplyValue(ImageEffect effect)
+    {
+        if (_legacyDefinition != null)
+        {
+            _legacyDefinition.ApplyValue(effect, Value);
+            return;
+        }
+
+        _coreParameter!.Apply(effect, Value);
+    }
 }
 
 public sealed partial class TextParameterState : EffectParameterState
 {
+    private readonly EffectParameterDefinition? _legacyDefinition;
+    private readonly CoreTextParameter? _coreParameter;
+
     [ObservableProperty]
     private string _value;
 
     public TextParameterState(TextParameterDefinition definition)
-        : base(definition)
+        : base(definition.Key, definition.Label)
     {
+        _legacyDefinition = definition;
         _value = definition.DefaultValue;
     }
 
+    public TextParameterState(CoreTextParameter parameter)
+        : base(parameter.Key, parameter.Label)
+    {
+        _coreParameter = parameter;
+        _value = parameter.DefaultValue;
+    }
+
     internal override object? GetValue() => Value;
+
+    internal override void ApplyValue(ImageEffect effect)
+    {
+        if (_legacyDefinition != null)
+        {
+            _legacyDefinition.ApplyValue(effect, Value);
+            return;
+        }
+
+        _coreParameter!.Apply(effect, Value);
+    }
 }
 
 public sealed partial class FilePathParameterState : EffectParameterState
 {
+    private readonly EffectParameterDefinition? _legacyDefinition;
+    private readonly CoreFilePathParameter? _coreParameter;
+
     [ObservableProperty]
     private string _value;
 
-    public FilePathParameterDefinition FilePathDefinition => (FilePathParameterDefinition)Definition;
-
-    public string? FileFilter => FilePathDefinition.FileFilter;
+    public string? FileFilter { get; }
 
     public FilePathParameterState(FilePathParameterDefinition definition)
-        : base(definition)
+        : base(definition.Key, definition.Label)
     {
+        _legacyDefinition = definition;
+        FileFilter = definition.FileFilter;
         _value = definition.DefaultValue;
     }
 
+    public FilePathParameterState(CoreFilePathParameter parameter)
+        : base(parameter.Key, parameter.Label)
+    {
+        _coreParameter = parameter;
+        FileFilter = parameter.FileFilter;
+        _value = parameter.DefaultValue;
+    }
+
     internal override object? GetValue() => Value;
+
+    internal override void ApplyValue(ImageEffect effect)
+    {
+        if (_legacyDefinition != null)
+        {
+            _legacyDefinition.ApplyValue(effect, Value);
+            return;
+        }
+
+        _coreParameter!.Apply(effect, Value);
+    }
 }

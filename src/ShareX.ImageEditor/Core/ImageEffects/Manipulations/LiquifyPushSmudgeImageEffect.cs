@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class LiquifyPushSmudgeImageEffect : ImageEffect
+public sealed class LiquifyPushSmudgeImageEffect : ImageEffectBase
 {
+    public override string Id => "liquify_push_smudge";
     public override string Name => "Liquify push / smudge";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "Droplet";
+    public override string Description => "Pushes and smudges pixels in a direction.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<LiquifyPushSmudgeImageEffect>("angle", "Angle", 0f, 360f, 0f, (e, v) => e.Angle = v),
+        EffectParameters.FloatSlider<LiquifyPushSmudgeImageEffect>("distance", "Distance", -200f, 200f, 40f, (e, v) => e.Distance = v),
+        EffectParameters.FloatSlider<LiquifyPushSmudgeImageEffect>("radius_percentage", "Radius percentage", 1f, 100f, 25f, (e, v) => e.RadiusPercentage = v),
+        EffectParameters.FloatSlider<LiquifyPushSmudgeImageEffect>("smudge", "Smudge", 0f, 100f, 35f, (e, v) => e.Smudge = v),
+        EffectParameters.FloatSlider<LiquifyPushSmudgeImageEffect>("center_x_percentage", "Center X percentage", 0f, 100f, 50f, (e, v) => e.CenterXPercentage = v),
+        EffectParameters.FloatSlider<LiquifyPushSmudgeImageEffect>("center_y_percentage", "Center Y percentage", 0f, 100f, 50f, (e, v) => e.CenterYPercentage = v)
+    ];
 
     public float Angle { get; set; } = 0f;
     public float Distance { get; set; } = 40f;

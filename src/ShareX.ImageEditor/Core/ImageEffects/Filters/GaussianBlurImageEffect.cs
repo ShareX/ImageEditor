@@ -1,12 +1,19 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class GaussianBlurImageEffect : FilterImageEffect
+public sealed class GaussianBlurImageEffect : ImageEffectBase
 {
+    public override string Id => "gaussian_blur";
     public override string Name => "Gaussian blur";
-    public override string IconKey => "IconCloud";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "CircleGauge";
+    public override string Description => "Applies a Gaussian blur effect.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<GaussianBlurImageEffect>("radius", "Radius", 1, 200, 15, (effect, value) => effect.Radius = value)
+    ];
 
     public int Radius { get; set; } = 15;
 

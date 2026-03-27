@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class LiquidMercuryImageEffect : FilterImageEffect
+public sealed class LiquidMercuryImageEffect : ImageEffectBase
 {
+    public override string Id => "liquid_mercury";
     public override string Name => "Liquid mercury";
-    public override string IconKey => "IconDroplet";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Droplet";
+    public override string Description => "Transforms the image into a reflective liquid mercury surface.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<LiquidMercuryImageEffect>("reflection", "Reflection", 0, 100, 78, (e, v) => e.Reflection = v),
+        EffectParameters.FloatSlider<LiquidMercuryImageEffect>("ripple", "Ripple", 0, 100, 42, (e, v) => e.Ripple = v),
+        EffectParameters.FloatSlider<LiquidMercuryImageEffect>("shine", "Shine", 0, 100, 82, (e, v) => e.Shine = v),
+        EffectParameters.FloatSlider<LiquidMercuryImageEffect>("fluidity", "Fluidity", 0, 100, 55, (e, v) => e.Fluidity = v),
+        EffectParameters.FloatSlider<LiquidMercuryImageEffect>("depth", "Depth", 0, 100, 65, (e, v) => e.Depth = v)
+    ];
 
     public float Reflection { get; set; } = 78f; // 0..100
     public float Ripple { get; set; } = 42f; // 0..100

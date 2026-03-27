@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class RippleRefractionImageEffect : ImageEffect
+public sealed class RippleRefractionImageEffect : ImageEffectBase
 {
+    public override string Id => "ripple_refraction";
     public override string Name => "Ripple refraction";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "Waves";
+    public override string Description => "Applies a ripple refraction distortion effect.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<RippleRefractionImageEffect>("amplitude", "Amplitude", 0f, 80f, 12f, (e, v) => e.Amplitude = v),
+        EffectParameters.FloatSlider<RippleRefractionImageEffect>("wavelength", "Wavelength", 4f, 400f, 32f, (e, v) => e.Wavelength = v),
+        EffectParameters.FloatSlider<RippleRefractionImageEffect>("phase", "Phase", -360f, 360f, 0f, (e, v) => e.Phase = v),
+        EffectParameters.FloatSlider<RippleRefractionImageEffect>("refraction", "Refraction", 0f, 100f, 35f, (e, v) => e.Refraction = v),
+        EffectParameters.FloatSlider<RippleRefractionImageEffect>("center_x_percentage", "Center X %", 0f, 100f, 50f, (e, v) => e.CenterXPercentage = v),
+        EffectParameters.FloatSlider<RippleRefractionImageEffect>("center_y_percentage", "Center Y %", 0f, 100f, 50f, (e, v) => e.CenterYPercentage = v)
+    ];
 
     public float Amplitude { get; set; } = 12f;
     public float Wavelength { get; set; } = 32f;

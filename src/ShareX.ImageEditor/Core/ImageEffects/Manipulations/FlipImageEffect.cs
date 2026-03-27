@@ -1,8 +1,9 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class FlipImageEffect : ImageEffect
+public class FlipImageEffect : ImageEffectBase
 {
     public enum FlipDirection { Horizontal, Vertical }
 
@@ -12,9 +13,16 @@ public class FlipImageEffect : ImageEffect
     public bool Horizontally { get; set; }
     public bool Vertically { get; set; }
 
+    public override string Id => "flip";
     public override string Name => _name;
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => _direction == null;
+    public override string IconKey => "FlipHorizontal";
+    public override string Description => "Flips the image horizontally or vertically.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Bool<FlipImageEffect>("horizontally", "Horizontally", false, (e, v) => e.Horizontally = v),
+        EffectParameters.Bool<FlipImageEffect>("vertically", "Vertically", false, (e, v) => e.Vertically = v)
+    ];
 
     public FlipImageEffect()
     {

@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HolographicFoilShimmerImageEffect : FilterImageEffect
+public sealed class HolographicFoilShimmerImageEffect : ImageEffectBase
 {
+    public override string Id => "holographic_foil_shimmer";
     public override string Name => "Holographic foil shimmer";
-    public override string IconKey => "IconWandSparkles";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Rainbow";
+    public override string Description => "Overlays a rainbow holographic foil shimmer effect.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<HolographicFoilShimmerImageEffect>("intensity", "Intensity", 0, 100, 65, (e, v) => e.Intensity = v),
+        EffectParameters.FloatSlider<HolographicFoilShimmerImageEffect>("scale", "Scale", 40, 300, 120, (e, v) => e.Scale = v),
+        EffectParameters.FloatSlider<HolographicFoilShimmerImageEffect>("shift", "Shift", 0, 360, 0, (e, v) => e.Shift = v),
+        EffectParameters.FloatSlider<HolographicFoilShimmerImageEffect>("specular", "Specular", 0, 100, 45, (e, v) => e.Specular = v),
+        EffectParameters.FloatSlider<HolographicFoilShimmerImageEffect>("grain", "Grain", 0, 100, 20, (e, v) => e.Grain = v)
+    ];
 
     public float Intensity { get; set; } = 65f; // 0..100
     public float Scale { get; set; } = 120f; // 40..300

@@ -1,17 +1,27 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 using System.Collections.Concurrent;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class LensBlurImageEffect : FilterImageEffect
+public sealed class LensBlurImageEffect : ImageEffectBase
 {
     private readonly record struct KernelOffset(int X, int Y, float Weight);
     private static readonly ConcurrentDictionary<int, KernelOffset[]> KernelCache = new();
 
+    public override string Id => "lens_blur";
     public override string Name => "Lens blur (bokeh)";
-    public override string IconKey => "IconCircle";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Circle";
+    public override string Description => "Applies a disc-shaped lens blur with highlight boost.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<LensBlurImageEffect>("radius", "Radius", 1, 15, 8, (e, v) => e.Radius = v),
+        EffectParameters.FloatSlider<LensBlurImageEffect>("highlight_threshold", "Highlight threshold", 0, 100, 70, (e, v) => e.HighlightThreshold = v),
+        EffectParameters.FloatSlider<LensBlurImageEffect>("highlight_boost", "Highlight boost", 0, 200, 85, (e, v) => e.HighlightBoost = v)
+    ];
 
     public int Radius { get; set; } = 8; // 1..15
     public float HighlightThreshold { get; set; } = 70f; // 0..100

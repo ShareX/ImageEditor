@@ -1,11 +1,18 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ThresholdImageEffect : AdjustmentImageEffect
+public sealed class ThresholdImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "threshold";
     public override string Name => "Threshold";
-    public override string IconKey => "IconHighlighter";
+    public override string IconKey => "Binary";
+    public override string Description => "Applies a contrast threshold.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<ThresholdImageEffect>("value", "Threshold", 0, 255, 128, (effect, value) => effect.Value = value)
+    ];
 
     public int Value { get; set; } = 128;
 

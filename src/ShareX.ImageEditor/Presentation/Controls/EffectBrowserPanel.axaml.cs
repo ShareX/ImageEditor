@@ -246,6 +246,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             ["auto_crop"] = "auto_crop_image",
             // Back-compat for older persisted ids (e.g. favorites/recent) which exposed a broken host shortcut.
             ["editor_auto_crop"] = "auto_crop_image",
+            ["rotate"] = "rotate_custom_angle",
             ["rotate_90"] = "rotate_90_clockwise",
             ["rotate_90_cc"] = "rotate_90_counter_clockwise"
         };
@@ -590,48 +591,34 @@ namespace ShareX.ImageEditor.Presentation.Controls
             {
                 var category = new EffectCategory(categoryEnum.ToString());
                 AddCatalogDrivenEffects(category, categoryEnum);
+                AddEditorOperations(category, categoryEnum);
                 Categories.Add(category);
-            }
-
-            EffectCategory? manipulations = Categories.FirstOrDefault(c => c.Name == nameof(ImageEffectCategory.Manipulations));
-            if (manipulations != null)
-            {
-                AddHostManipulationShortcuts(manipulations);
             }
         }
 
-        /// <summary>
-        /// Adds manipulation entries that are handled by the host / view model (not separate <see cref="ImageEffect"/> rows in the catalog).
-        /// </summary>
-        private void AddHostManipulationShortcuts(EffectCategory manipulations)
+        private void AddEditorOperations(EffectCategory category, ImageEffectCategory targetCategory)
         {
-            void AddHost(string effectId)
+            foreach (EditorOperationDefinition operation in EditorOperationCatalog.GetByCategory(targetCategory))
             {
-                if (!ImageEffectCatalog.TryGetBrowserPresentation(effectId, out string label, out string icon, out string description))
-                {
-                    return;
-                }
-
-                manipulations.AddEffect(
-                    label,
-                    icon,
-                    description,
-                    () => RaiseDialog(effectId),
-                    effectId);
+                category.AddEffect(
+                    operation.BrowserLabel,
+                    operation.Icon,
+                    operation.Description,
+                    () => RaiseDialog(operation.Id),
+                    operation.Id);
             }
-
-            AddHost("rotate_90_clockwise");
-            AddHost("rotate_90_counter_clockwise");
-            AddHost("rotate_180");
-            AddHost("rotate_custom_angle");
-            AddHost("flip_horizontal");
-            AddHost("flip_vertical");
         }
 
         private void AddCatalogDrivenEffects(EffectCategory category, ImageEffectCategory targetCategory)
         {
             foreach (EffectDefinition definition in ImageEffectCatalog.GetByCategory(targetCategory))
             {
+                // Skip effects that are registered as editor operations — they are added separately.
+                if (EditorOperationCatalog.TryGetDefinition(definition.Id, out _))
+                {
+                    continue;
+                }
+
                 category.AddEffect(
                     definition.BrowserLabel,
                     definition.Icon,

@@ -1,12 +1,27 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class NebulaStarfieldImageEffect : FilterImageEffect
+public sealed class NebulaStarfieldImageEffect : ImageEffectBase
 {
+    public override string Id => "nebula_starfield";
     public override string Name => "Nebula starfield";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Sparkles";
+    public override string Description => "Generates a procedural nebula and starfield overlay.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<NebulaStarfieldImageEffect>("intensity", "Intensity", 0, 100, 70, (e, v) => e.Intensity = v),
+        EffectParameters.FloatSlider<NebulaStarfieldImageEffect>("scale", "Scale", 0, 100, 80, (e, v) => e.Scale = v),
+        EffectParameters.FloatSlider<NebulaStarfieldImageEffect>("hue_shift", "Hue shift", -180, 180, -15, (e, v) => e.HueShift = v),
+        EffectParameters.FloatSlider<NebulaStarfieldImageEffect>("star_density", "Star density", 0, 100, 55, (e, v) => e.StarDensity = v),
+        EffectParameters.FloatSlider<NebulaStarfieldImageEffect>("star_size", "Star size", 0, 200, 10, (e, v) => e.StarSize = v),
+        EffectParameters.FloatSlider<NebulaStarfieldImageEffect>("twinkle", "Twinkle", 0, 100, 40, (e, v) => e.Twinkle = v),
+        EffectParameters.FloatSlider<NebulaStarfieldImageEffect>("vignette_strength", "Vignette strength", 0, 100, 18, (e, v) => e.VignetteStrength = v),
+    ];
 
     public float Intensity { get; set; } = 70f; // 0..100
     public float Scale { get; set; } = 80f; // 0..100

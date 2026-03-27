@@ -1,11 +1,19 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class TemperatureTintImageEffect : AdjustmentImageEffect
+public sealed class TemperatureTintImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "temperature_tint";
     public override string Name => "Temperature / Tint";
-    public override string IconKey => "IconArrowsH";
+    public override string IconKey => "Thermometer";
+    public override string Description => "Adjusts the color temperature and tint.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<TemperatureTintImageEffect>("temperature", "Temperature", -100, 100, 0, (effect, value) => effect.Temperature = value),
+        EffectParameters.FloatSlider<TemperatureTintImageEffect>("tint", "Tint", -100, 100, 0, (effect, value) => effect.Tint = value)
+    ];
 
     public float Temperature { get; set; } // -100..100
     public float Tint { get; set; } // -100..100

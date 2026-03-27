@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class HalationImageEffect : FilterImageEffect
+public sealed class HalationImageEffect : ImageEffectBase
 {
+    public override string Id => "halation";
     public override string Name => "Halation";
-    public override string IconKey => "IconSun";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Sunset";
+    public override string Description => "Simulates film halation where bright areas bleed warm light into surrounding regions.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<HalationImageEffect>("threshold", "Threshold", 0, 100, 72, (e, v) => e.Threshold = v),
+        EffectParameters.FloatSlider<HalationImageEffect>("radius", "Radius", 1, 100, 18, (e, v) => e.Radius = v),
+        EffectParameters.FloatSlider<HalationImageEffect>("strength", "Strength", 0, 150, 60, (e, v) => e.Strength = v),
+        EffectParameters.FloatSlider<HalationImageEffect>("warmth", "Warmth", 0, 100, 70, (e, v) => e.Warmth = v)
+    ];
 
     public float Threshold { get; set; } = 72f; // 0..100
     public float Radius { get; set; } = 18f; // 1..100

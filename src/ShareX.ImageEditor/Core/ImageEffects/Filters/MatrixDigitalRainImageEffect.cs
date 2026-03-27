@@ -1,13 +1,28 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class MatrixDigitalRainImageEffect : FilterImageEffect
+public sealed class MatrixDigitalRainImageEffect : ImageEffectBase
 {
+    public override string Id => "matrix_digital_rain";
     public override string Name => "Matrix digital rain";
-    public override string IconKey => "IconDisplay";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Terminal";
+    public override string Description => "Overlays a Matrix-style digital rain effect using source luminance.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<MatrixDigitalRainImageEffect>("cell_size", "Cell size", 6, 24, 12, (e, v) => e.CellSize = v),
+        EffectParameters.FloatSlider<MatrixDigitalRainImageEffect>("density", "Density", 0, 100, 85, (e, v) => e.Density = v),
+        EffectParameters.IntSlider<MatrixDigitalRainImageEffect>("trail_length", "Trail length", 3, 50, 12, (e, v) => e.TrailLength = v),
+        EffectParameters.FloatSlider<MatrixDigitalRainImageEffect>("glow_amount", "Glow amount", 0, 100, 40, (e, v) => e.GlowAmount = v),
+        EffectParameters.FloatSlider<MatrixDigitalRainImageEffect>("source_blend", "Source blend", 0, 100, 22, (e, v) => e.SourceBlend = v),
+        EffectParameters.FloatSlider<MatrixDigitalRainImageEffect>("rain_offset", "Rain offset", 0, 100, 0, (e, v) => e.RainOffset = v),
+        EffectParameters.FloatSlider<MatrixDigitalRainImageEffect>("luminance_influence", "Luminance influence", 0, 100, 65, (e, v) => e.LuminanceInfluence = v),
+        EffectParameters.Text<MatrixDigitalRainImageEffect>("character_set", "Character set", "01<>[]{}*+-/\\=#$%&", (e, v) => e.CharacterSet = v),
+    ];
 
     public int CellSize { get; set; } = 12; // 6..24
     public float Density { get; set; } = 85f; // 0..100

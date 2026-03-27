@@ -1,11 +1,22 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class LevelsImageEffect : AdjustmentImageEffect
+public sealed class LevelsImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "levels";
     public override string Name => "Levels";
-    public override string IconKey => "IconResizeCanvas";
+    public override string IconKey => "SlidersVertical";
+    public override string Description => "Adjusts image color levels.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<LevelsImageEffect>("input_black", "Input black", 0, 255, 0, (effect, value) => effect.InputBlack = value),
+        EffectParameters.IntSlider<LevelsImageEffect>("input_white", "Input white", 0, 255, 255, (effect, value) => effect.InputWhite = value),
+        EffectParameters.FloatSlider<LevelsImageEffect>("gamma", "Gamma", 0.1, 5, 1, (effect, value) => effect.Gamma = value, tickFrequency: 0.1, isSnapToTickEnabled: false, valueStringFormat: "{}{0:0.0}"),
+        EffectParameters.IntSlider<LevelsImageEffect>("output_black", "Output black", 0, 255, 0, (effect, value) => effect.OutputBlack = value),
+        EffectParameters.IntSlider<LevelsImageEffect>("output_white", "Output white", 0, 255, 255, (effect, value) => effect.OutputWhite = value)
+    ];
 
     public int InputBlack { get; set; }
     public int InputWhite { get; set; } = 255;

@@ -1,42 +1,37 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class ResizeImageEffect : ImageEffect
+public sealed class ResizeImageEffect : ImageEffectBase
 {
-    private readonly int _width;
-    private readonly int _height;
-    private readonly bool _maintainAspectRatio;
-    private readonly string _name;
-
-    public override string Name => _name;
+    public override string Id => "resize_image";
+    public override string Name => "Resize image";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "ImageUpscale";
+    public override string Description => "Resizes the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntNumeric<ResizeImageEffect>("width", "Width", 0, 10000, 0, (e, v) => e.Width = v),
+        EffectParameters.IntNumeric<ResizeImageEffect>("height", "Height", 0, 10000, 0, (e, v) => e.Height = v),
+        EffectParameters.Bool<ResizeImageEffect>("maintain_aspect_ratio", "Maintain aspect ratio", false, (e, v) => e.MaintainAspectRatio = v)
+    ];
 
-    public ResizeImageEffect(int width, int height, bool maintainAspectRatio = false)
-    {
-        _width = width;
-        _height = height;
-        _maintainAspectRatio = maintainAspectRatio;
-        _name = "Resize image";
-    }
-
-    public ResizeImageEffect()
-    {
-        _name = "Resize image";
-    }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public bool MaintainAspectRatio { get; set; }
 
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        int width = _width > 0 ? _width : source.Width;
-        int height = _height > 0 ? _height : source.Height;
+        int width = Width > 0 ? Width : source.Width;
+        int height = Height > 0 ? Height : source.Height;
 
         if (width <= 0) width = source.Width;
         if (height <= 0) height = source.Height;
 
-        if (_maintainAspectRatio)
+        if (MaintainAspectRatio)
         {
             double sourceAspect = (double)source.Width / source.Height;
             double targetAspect = (double)width / height;

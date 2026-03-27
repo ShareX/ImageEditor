@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class PencilSketchImageEffect : FilterImageEffect
+public sealed class PencilSketchImageEffect : ImageEffectBase
 {
+    public override string Id => "pencil_sketch";
     public override string Name => "Pencil sketch";
-    public override string IconKey => "IconPencil";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "PencilLine";
+    public override string Description => "Converts the image to a pencil sketch style drawing.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<PencilSketchImageEffect>("blur_radius", "Blur radius", 1, 24, 8, (e, v) => e.BlurRadius = v),
+        EffectParameters.FloatSlider<PencilSketchImageEffect>("edge_strength", "Edge strength", 0f, 160f, 65f, (e, v) => e.EdgeStrength = v),
+        EffectParameters.FloatSlider<PencilSketchImageEffect>("pencil_darkness", "Pencil darkness", 0f, 100f, 70f, (e, v) => e.PencilDarkness = v),
+        EffectParameters.FloatSlider<PencilSketchImageEffect>("paper_brightness", "Paper brightness", 40f, 130f, 100f, (e, v) => e.PaperBrightness = v),
+    ];
 
     public int BlurRadius { get; set; } = 8; // 1..24
     public float EdgeStrength { get; set; } = 65f; // 0..160

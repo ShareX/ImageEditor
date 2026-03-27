@@ -1,11 +1,37 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ColorMatrixImageEffect : AdjustmentImageEffect
+public sealed class ColorMatrixImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "color_matrix";
     public override string Name => "Color matrix";
-    public override string IconKey => "IconTableCells";
+    public override string IconKey => "TableProperties";
+    public override string Description => "Applies a color matrix transformation.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("rr", "Rr", -5, 5, 1, (effect, value) => effect.Rr = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("rg", "Rg", -5, 5, 0, (effect, value) => effect.Rg = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("rb", "Rb", -5, 5, 0, (effect, value) => effect.Rb = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ra", "Ra", -5, 5, 0, (effect, value) => effect.Ra = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ro", "Ro", -255, 255, 0, (effect, value) => effect.Ro = (float)value, increment: 1, formatString: "0"),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("gr", "Gr", -5, 5, 0, (effect, value) => effect.Gr = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("gg", "Gg", -5, 5, 1, (effect, value) => effect.Gg = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("gb", "Gb", -5, 5, 0, (effect, value) => effect.Gb = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ga", "Ga", -5, 5, 0, (effect, value) => effect.Ga = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("go", "Go", -255, 255, 0, (effect, value) => effect.Go = (float)value, increment: 1, formatString: "0"),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("br", "Br", -5, 5, 0, (effect, value) => effect.Br = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("bg", "Bg", -5, 5, 0, (effect, value) => effect.Bg = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("bb", "Bb", -5, 5, 1, (effect, value) => effect.Bb = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ba", "Ba", -5, 5, 0, (effect, value) => effect.Ba = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("bo", "Bo", -255, 255, 0, (effect, value) => effect.Bo = (float)value, increment: 1, formatString: "0"),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ar", "Ar", -5, 5, 0, (effect, value) => effect.Ar = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ag", "Ag", -5, 5, 0, (effect, value) => effect.Ag = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ab", "Ab", -5, 5, 0, (effect, value) => effect.Ab = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("aa", "Aa", -5, 5, 1, (effect, value) => effect.Aa = (float)value, increment: 0.1),
+        EffectParameters.DoubleNumeric<ColorMatrixImageEffect>("ao", "Ao", -255, 255, 0, (effect, value) => effect.Ao = (float)value, increment: 1, formatString: "0")
+    ];
 
     // Red output
     public float Rr { get; set; } = 1f;

@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class AnamorphicLensFlareImageEffect : FilterImageEffect
+public sealed class AnamorphicLensFlareImageEffect : ImageEffectBase
 {
+    public override string Id => "anamorphic_lens_flare";
     public override string Name => "Anamorphic lens flare";
-    public override string IconKey => "IconAperture";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Sparkle";
+    public override string Description => "Adds cinematic horizontal lens flare streaks to bright areas.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<AnamorphicLensFlareImageEffect>("intensity", "Intensity", 0, 100, 60, (e, v) => e.Intensity = v),
+        EffectParameters.FloatSlider<AnamorphicLensFlareImageEffect>("threshold", "Threshold", 0, 100, 72, (e, v) => e.Threshold = v),
+        EffectParameters.FloatSlider<AnamorphicLensFlareImageEffect>("streak_length", "Streak length", 0, 100, 55, (e, v) => e.StreakLength = v),
+        EffectParameters.FloatSlider<AnamorphicLensFlareImageEffect>("warmth", "Warmth", 0, 100, 45, (e, v) => e.Warmth = v),
+        EffectParameters.FloatSlider<AnamorphicLensFlareImageEffect>("ghosting", "Ghosting", 0, 100, 35, (e, v) => e.Ghosting = v)
+    ];
 
     public float Intensity { get; set; } = 60f; // 0..100
     public float Threshold { get; set; } = 72f; // 0..100

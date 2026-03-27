@@ -1,9 +1,50 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-public sealed class DrawTextEffect : ImageEffect
+public sealed class DrawTextEffect : ImageEffectBase
 {
+    public override string Id => "draw_text";
+    public override string Name => "Text";
+    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
+    public override string IconKey => "Type";
+    public override string Description => "Draws text on the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Text<DrawTextEffect>("text", "Text", "Text", (e, v) => e.Text = v),
+        EffectParameters.Enum<DrawTextEffect, DrawingPlacement>(
+            "placement", "Placement", DrawingPlacement.TopLeft, (e, v) => e.Placement = v,
+            new (string Label, DrawingPlacement Value)[]
+            {
+                ("Top left", DrawingPlacement.TopLeft),
+                ("Top center", DrawingPlacement.TopCenter),
+                ("Top right", DrawingPlacement.TopRight),
+                ("Middle left", DrawingPlacement.MiddleLeft),
+                ("Middle center", DrawingPlacement.MiddleCenter),
+                ("Middle right", DrawingPlacement.MiddleRight),
+                ("Bottom left", DrawingPlacement.BottomLeft),
+                ("Bottom center", DrawingPlacement.BottomCenter),
+                ("Bottom right", DrawingPlacement.BottomRight)
+            }),
+        EffectParameters.IntNumeric<DrawTextEffect>("offset_x", "Offset X", -10000, 10000, 0, (e, v) => e.Offset = new SKPointI(v, e.Offset.Y)),
+        EffectParameters.IntNumeric<DrawTextEffect>("offset_y", "Offset Y", -10000, 10000, 0, (e, v) => e.Offset = new SKPointI(e.Offset.X, v)),
+        EffectParameters.IntNumeric<DrawTextEffect>("angle", "Angle", -360, 360, 0, (e, v) => e.Angle = v),
+        EffectParameters.Bool<DrawTextEffect>("auto_hide", "Auto hide", false, (e, v) => e.AutoHide = v),
+        EffectParameters.Text<DrawTextEffect>("font_family", "Font family", "Arial", (e, v) => e.FontFamily = v),
+        EffectParameters.FloatSlider<DrawTextEffect>("font_size", "Font size", 1, 500, 36, (e, v) => e.FontSize = v),
+        EffectParameters.Bool<DrawTextEffect>("bold", "Bold", false, (e, v) => e.Bold = v),
+        EffectParameters.Bool<DrawTextEffect>("italic", "Italic", false, (e, v) => e.Italic = v),
+        EffectParameters.Color<DrawTextEffect>("color", "Color", new SKColor(235, 235, 235), (e, v) => e.Color = v),
+        EffectParameters.Bool<DrawTextEffect>("outline", "Outline", false, (e, v) => e.Outline = v),
+        EffectParameters.IntNumeric<DrawTextEffect>("outline_size", "Outline size", 1, 100, 5, (e, v) => e.OutlineSize = v),
+        EffectParameters.Color<DrawTextEffect>("outline_color", "Outline color", new SKColor(235, 0, 0), (e, v) => e.OutlineColor = v),
+        EffectParameters.Bool<DrawTextEffect>("shadow", "Shadow", false, (e, v) => e.Shadow = v),
+        EffectParameters.IntNumeric<DrawTextEffect>("shadow_offset_x", "Shadow offset X", -1000, 1000, 0, (e, v) => e.ShadowOffset = new SKPointI(v, e.ShadowOffset.Y)),
+        EffectParameters.IntNumeric<DrawTextEffect>("shadow_offset_y", "Shadow offset Y", -1000, 1000, 5, (e, v) => e.ShadowOffset = new SKPointI(e.ShadowOffset.X, v)),
+        EffectParameters.Color<DrawTextEffect>("shadow_color", "Shadow color", new SKColor(0, 0, 0, 125), (e, v) => e.ShadowColor = v)
+    ];
+
     public string Text { get; set; } = "Text";
 
     public DrawingPlacement Placement { get; set; } = DrawingPlacement.TopLeft;
@@ -35,12 +76,6 @@ public sealed class DrawTextEffect : ImageEffect
     public SKPointI ShadowOffset { get; set; } = new SKPointI(0, 5);
 
     public SKColor ShadowColor { get; set; } = new SKColor(0, 0, 0, 125);
-
-    public override string Name => "Text";
-
-    public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-
-    public override bool HasParameters => true;
 
     public override SKBitmap Apply(SKBitmap source)
     {

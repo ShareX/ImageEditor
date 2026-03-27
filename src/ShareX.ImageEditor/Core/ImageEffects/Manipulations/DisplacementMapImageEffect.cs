@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class DisplacementMapImageEffect : ImageEffect
+public sealed class DisplacementMapImageEffect : ImageEffectBase
 {
+    public override string Id => "displacement_map";
     public override string Name => "Displacement map";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "Map";
+    public override string Description => "Displaces pixels using a map image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FilePath<DisplacementMapImageEffect>("map_file_path", "Map file path", string.Empty, (e, v) => e.MapFilePath = v),
+        EffectParameters.FloatSlider<DisplacementMapImageEffect>("amount_x", "Amount X", -200f, 200f, 20f, (e, v) => e.AmountX = v),
+        EffectParameters.FloatSlider<DisplacementMapImageEffect>("amount_y", "Amount Y", -200f, 200f, 20f, (e, v) => e.AmountY = v)
+    ];
 
     // Uses the selected map image when available; otherwise falls back to the source image.
     public string MapFilePath { get; set; } = string.Empty;

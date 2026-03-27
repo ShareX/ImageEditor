@@ -1,12 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class RoundedCornersImageEffect : ImageEffect
+public sealed class RoundedCornersImageEffect : ImageEffectBase
 {
+    public override string Id => "rounded_corners";
     public override string Name => "Rounded Corners";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "SquareRoundCorner";
+    public override string Description => "Rounds the corners of the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<RoundedCornersImageEffect>("corner_radius", "Corner radius", 0, 500, 20, (e, v) => e.CornerRadius = v)
+    ];
+
     public int CornerRadius { get; set; } = 20;
 
     public override SKBitmap Apply(SKBitmap source)

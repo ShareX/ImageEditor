@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class XRayScanImageEffect : FilterImageEffect
+public sealed class XRayScanImageEffect : ImageEffectBase
 {
+    public override string Id => "x_ray_scan";
     public override string Name => "X-ray scan";
-    public override string IconKey => "IconScanEye";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "ScanEye";
+    public override string Description => "Simulates an X-ray scan with edge detection and glow effects.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<XRayScanImageEffect>("contrast", "Contrast", 0, 100, 70, (e, v) => e.Contrast = v),
+        EffectParameters.FloatSlider<XRayScanImageEffect>("glow", "Glow", 0, 100, 60, (e, v) => e.Glow = v),
+        EffectParameters.FloatSlider<XRayScanImageEffect>("edge_boost", "Edge boost", 0, 100, 68, (e, v) => e.EdgeBoost = v),
+        EffectParameters.FloatSlider<XRayScanImageEffect>("scanlines", "Scanlines", 0, 100, 40, (e, v) => e.Scanlines = v),
+        EffectParameters.FloatSlider<XRayScanImageEffect>("noise", "Noise", 0, 100, 14, (e, v) => e.Noise = v)
+    ];
 
     public float Contrast { get; set; } = 70f; // 0..100
     public float Glow { get; set; } = 60f; // 0..100

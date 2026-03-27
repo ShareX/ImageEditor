@@ -67,7 +67,11 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
     public SchemaDrivenEffectDialog(EffectDefinition definition)
     {
         Definition = definition ?? throw new ArgumentNullException(nameof(definition));
-        ParameterStates = new ObservableCollection<EffectParameterState>(definition.Parameters.Select(parameter => parameter.CreateState()));
+        IEnumerable<EffectParameterState> parameterStates = definition.CoreParameters.Count > 0
+            ? definition.CoreParameters.Select(EffectParameterState.Create)
+            : definition.Parameters.Select(EffectParameterState.Create);
+
+        ParameterStates = new ObservableCollection<EffectParameterState>(parameterStates);
 
         foreach (EffectParameterState parameterState in ParameterStates)
         {

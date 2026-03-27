@@ -1,15 +1,23 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class EdgeFeatherImageEffect : FilterImageEffect
+public sealed class EdgeFeatherImageEffect : ImageEffectBase
 {
     private const byte MaskThreshold = 16;
 
+    public override string Id => "edge_feather";
     public override string Name => "Edge feather";
-    public override string IconKey => "IconBlend";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "CircleDotDashed";
+    public override string Description => "Softens the edges of non-transparent regions with a feathered alpha falloff.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<EdgeFeatherImageEffect>("radius", "Radius", 0, 100, 12, (e, v) => e.Radius = v)
+    ];
 
     public float Radius { get; set; } = 12f; // 0..100
 

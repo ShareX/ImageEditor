@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BlueprintDrawingImageEffect : FilterImageEffect
+public sealed class BlueprintDrawingImageEffect : ImageEffectBase
 {
+    public override string Id => "blueprint_drawing";
     public override string Name => "Blueprint drawing";
-    public override string IconKey => "IconDesignIdeas";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "DraftingCompass";
+    public override string Description => "Transforms the image into a blueprint-style drawing.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<BlueprintDrawingImageEffect>("line_strength", "Line strength", 0, 100, 75, (e, v) => e.LineStrength = v),
+        EffectParameters.FloatSlider<BlueprintDrawingImageEffect>("detail", "Detail", 0, 100, 45, (e, v) => e.Detail = v),
+        EffectParameters.FloatSlider<BlueprintDrawingImageEffect>("grid_intensity", "Grid intensity", 0, 100, 30, (e, v) => e.GridIntensity = v),
+        EffectParameters.FloatSlider<BlueprintDrawingImageEffect>("texture", "Texture", 0, 100, 25, (e, v) => e.Texture = v),
+        EffectParameters.FloatSlider<BlueprintDrawingImageEffect>("glow", "Glow", 0, 100, 35, (e, v) => e.Glow = v)
+    ];
 
     public float LineStrength { get; set; } = 75f; // 0..100
     public float Detail { get; set; } = 45f; // 0..100

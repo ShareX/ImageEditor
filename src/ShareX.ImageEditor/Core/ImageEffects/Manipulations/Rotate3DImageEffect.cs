@@ -1,12 +1,22 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class Rotate3DImageEffect : ImageEffect
+public sealed class Rotate3DImageEffect : ImageEffectBase
 {
+    public override string Id => "rotate_3d";
     public override string Name => "Rotate 3D";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "Rotate3D";
+    public override string Description => "Rotates the image in 3D space with perspective.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<Rotate3DImageEffect>("rotate_x", "Rotate X", -180f, 180f, 0f, (e, v) => e.RotateX = v),
+        EffectParameters.FloatSlider<Rotate3DImageEffect>("rotate_y", "Rotate Y", -180f, 180f, 0f, (e, v) => e.RotateY = v),
+        EffectParameters.FloatSlider<Rotate3DImageEffect>("rotate_z", "Rotate Z", -180f, 180f, 0f, (e, v) => e.RotateZ = v),
+        EffectParameters.Bool<Rotate3DImageEffect>("auto_resize", "Auto resize", true, (e, v) => e.AutoResize = v)
+    ];
 
     /// <summary>
     /// Rotation around the X-axis in degrees (-180 to 180).

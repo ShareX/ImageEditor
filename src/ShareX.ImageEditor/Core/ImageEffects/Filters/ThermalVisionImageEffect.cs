@@ -1,13 +1,25 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ThermalVisionImageEffect : FilterImageEffect
+public sealed class ThermalVisionImageEffect : ImageEffectBase
 {
+    public override string Id => "thermal_vision";
     public override string Name => "Thermal vision";
-    public override string IconKey => "IconFlame";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "ThermometerSun";
+    public override string Description => "Maps image luminance to a thermal color gradient.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<ThermalVisionImageEffect>("levels", "Levels", 3, 16, 8, (e, v) => e.Levels = v),
+        EffectParameters.FloatSlider<ThermalVisionImageEffect>("contrast", "Contrast", 50f, 200f, 135f, (e, v) => e.Contrast = v),
+        EffectParameters.FloatSlider<ThermalVisionImageEffect>("glow", "Glow", 0f, 100f, 28f, (e, v) => e.Glow = v),
+        EffectParameters.FloatSlider<ThermalVisionImageEffect>("blend", "Blend", 0f, 100f, 100f, (e, v) => e.Blend = v),
+        EffectParameters.Bool<ThermalVisionImageEffect>("invert", "Invert", false, (e, v) => e.Invert = v),
+    ];
 
     public int Levels { get; set; } = 8; // 3..16
     public float Contrast { get; set; } = 135f; // 50..200

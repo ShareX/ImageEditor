@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
@@ -17,11 +18,21 @@ public enum DitheringPalette
     Grayscale4
 }
 
-public class DitheringImageEffect : FilterImageEffect
+public sealed class DitheringImageEffect : ImageEffectBase
 {
+    public override string Id => "dithering";
     public override string Name => "Dithering";
-    public override string IconKey => "IconTableCells";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Grid2X2Check";
+    public override string Description => "Applies dithering to reduce color depth with various methods and palettes.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<DitheringImageEffect, DitheringMethod>("method", "Method", DitheringMethod.FloydSteinberg, (e, v) => e.Method = v, new (string, DitheringMethod)[] { ("Floyd-Steinberg", DitheringMethod.FloydSteinberg), ("Bayer 4x4", DitheringMethod.Bayer4x4) }),
+        EffectParameters.Enum<DitheringImageEffect, DitheringPalette>("palette", "Palette", DitheringPalette.OneBitBW, (e, v) => e.Palette = v, new (string, DitheringPalette)[] { ("1-bit B&W", DitheringPalette.OneBitBW), ("Web safe 216", DitheringPalette.WebSafe216), ("RGB332", DitheringPalette.RGB332), ("Grayscale 4", DitheringPalette.Grayscale4) }),
+        EffectParameters.Bool<DitheringImageEffect>("serpentine", "Serpentine", true, (e, v) => e.Serpentine = v),
+        EffectParameters.FloatSlider<DitheringImageEffect>("strength", "Strength", 0, 100, 100, (e, v) => e.Strength = v)
+    ];
 
     public DitheringMethod Method { get; set; } = DitheringMethod.FloydSteinberg;
     public DitheringPalette Palette { get; set; } = DitheringPalette.OneBitBW;

@@ -1,12 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
-
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class ColorizeImageEffect : AdjustmentImageEffect
+public sealed class ColorizeImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "colorize";
     public override string Name => "Colorize";
-    public override string IconKey => "IconTint";
+    public override string IconKey => "Palette";
+    public override string Description => "Colorizes the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Color<ColorizeImageEffect>("color", "Color", SKColors.Orange, (effect, value) => effect.Color = value),
+        EffectParameters.FloatSlider<ColorizeImageEffect>("strength", "Strength", 0, 100, 50, (effect, value) => effect.Strength = value)
+    ];
+
     public SKColor Color { get; set; } = SKColors.Red; // Default
     public float Strength { get; set; } = 50f;
 

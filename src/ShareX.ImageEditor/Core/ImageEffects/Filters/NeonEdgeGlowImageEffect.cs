@@ -1,13 +1,26 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class NeonEdgeGlowImageEffect : FilterImageEffect
+public sealed class NeonEdgeGlowImageEffect : ImageEffectBase
 {
+    public override string Id => "neon_edge_glow";
     public override string Name => "Neon edge glow";
-    public override string IconKey => "IconZap";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Zap";
+    public override string Description => "Detects edges and applies a neon glow effect.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<NeonEdgeGlowImageEffect>("edge_strength", "Edge strength", 0.1, 6, 2.2, (e, v) => e.EdgeStrength = v),
+        EffectParameters.IntSlider<NeonEdgeGlowImageEffect>("threshold", "Threshold", 0, 255, 36, (e, v) => e.Threshold = v),
+        EffectParameters.FloatSlider<NeonEdgeGlowImageEffect>("glow_radius", "Glow radius", 0, 40, 8, (e, v) => e.GlowRadius = v),
+        EffectParameters.FloatSlider<NeonEdgeGlowImageEffect>("glow_intensity", "Glow intensity", 0, 250, 120, (e, v) => e.GlowIntensity = v),
+        EffectParameters.FloatSlider<NeonEdgeGlowImageEffect>("base_dim", "Base dim", 0, 100, 30, (e, v) => e.BaseDim = v),
+        EffectParameters.Color<NeonEdgeGlowImageEffect>("neon_color", "Neon color", new SKColor(0, 240, 255, 255), (e, v) => e.NeonColor = v),
+    ];
 
     public float EdgeStrength { get; set; } = 2.2f; // 0.1..6
     public int Threshold { get; set; } = 36; // 0..255

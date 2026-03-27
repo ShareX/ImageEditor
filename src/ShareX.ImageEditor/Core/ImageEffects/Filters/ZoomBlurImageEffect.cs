@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class ZoomBlurImageEffect : FilterImageEffect
+public sealed class ZoomBlurImageEffect : ImageEffectBase
 {
+    public override string Id => "zoom_blur";
     public override string Name => "Zoom blur";
-    public override string IconKey => "IconMagnifyingGlass";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Search";
+    public override string Description => "Applies a radial zoom blur emanating from a center point.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<ZoomBlurImageEffect>("strength", "Strength", 0, 100, 35, (e, v) => e.Strength = v),
+        EffectParameters.IntSlider<ZoomBlurImageEffect>("samples", "Samples", 4, 64, 24, (e, v) => e.Samples = v),
+        EffectParameters.FloatSlider<ZoomBlurImageEffect>("center_x", "Center X", 0, 100, 50, (e, v) => e.CenterX = v),
+        EffectParameters.FloatSlider<ZoomBlurImageEffect>("center_y", "Center Y", 0, 100, 50, (e, v) => e.CenterY = v)
+    ];
 
     public float Strength { get; set; } = 35f; // 0..100
     public int Samples { get; set; } = 24; // 4..64

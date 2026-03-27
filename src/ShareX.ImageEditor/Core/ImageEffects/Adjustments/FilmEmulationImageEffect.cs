@@ -1,9 +1,10 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-public class FilmEmulationImageEffect : AdjustmentImageEffect
+public sealed class FilmEmulationImageEffect : AdjustmentImageEffectBase
 {
     public enum FilmEmulationPreset
     {
@@ -14,8 +15,30 @@ public class FilmEmulationImageEffect : AdjustmentImageEffect
         CrossProcessed = 4
     }
 
+    public override string Id => "film_emulation";
     public override string Name => "Film emulation";
-    public override string IconKey => "IconFilm";
+    public override string IconKey => "Film";
+    public override string Description => "Applies cinematic analog film looks with grain and fade.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<FilmEmulationImageEffect, FilmEmulationPreset>(
+            "preset",
+            "Preset",
+            FilmEmulationPreset.Classic,
+            (effect, value) => effect.Preset = value,
+            new (string Label, FilmEmulationPreset Value)[]
+            {
+                ("Classic", FilmEmulationPreset.Classic),
+                ("Warm", FilmEmulationPreset.Warm),
+                ("Cool", FilmEmulationPreset.Cool),
+                ("Faded", FilmEmulationPreset.Faded),
+                ("Cross processed", FilmEmulationPreset.CrossProcessed)
+            }),
+        EffectParameters.FloatSlider<FilmEmulationImageEffect>("tone_strength", "Tone strength", 0, 100, 65, (effect, value) => effect.ToneStrength = value),
+        EffectParameters.FloatSlider<FilmEmulationImageEffect>("grain_amount", "Grain amount", 0, 100, 12, (effect, value) => effect.GrainAmount = value),
+        EffectParameters.FloatSlider<FilmEmulationImageEffect>("fade_amount", "Fade amount", 0, 100, 10, (effect, value) => effect.FadeAmount = value),
+        EffectParameters.FloatSlider<FilmEmulationImageEffect>("contrast_amount", "Contrast amount", 50, 150, 110, (effect, value) => effect.ContrastAmount = value)
+    ];
 
     public FilmEmulationPreset Preset { get; set; } = FilmEmulationPreset.Classic;
     public float ToneStrength { get; set; } = 65f; // 0..100

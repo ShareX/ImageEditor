@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
@@ -9,10 +10,23 @@ public enum DatamoshDirection
     Vertical
 }
 
-public class DatamoshSmearImageEffect : FilterImageEffect
+public sealed class DatamoshSmearImageEffect : ImageEffectBase
 {
+    public override string Id => "datamosh_smear";
     public override string Name => "Datamosh smear";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Cpu";
+    public override string Description => "Simulates digital datamoshing with smeared pixel blocks and channel splitting.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<DatamoshSmearImageEffect, DatamoshDirection>("direction", "Direction", DatamoshDirection.Horizontal, (e, v) => e.Direction = v, new (string, DatamoshDirection)[] { ("Horizontal", DatamoshDirection.Horizontal), ("Vertical", DatamoshDirection.Vertical) }),
+        EffectParameters.FloatSlider<DatamoshSmearImageEffect>("smear_amount", "Smear amount", 0, 100, 58, (e, v) => e.SmearAmount = v),
+        EffectParameters.FloatSlider<DatamoshSmearImageEffect>("corruption", "Corruption", 0, 100, 36, (e, v) => e.Corruption = v),
+        EffectParameters.IntSlider<DatamoshSmearImageEffect>("block_size", "Block size", 4, 64, 12, (e, v) => e.BlockSize = v),
+        EffectParameters.FloatSlider<DatamoshSmearImageEffect>("drift", "Drift", -100, 100, 24, (e, v) => e.Drift = v),
+        EffectParameters.FloatSlider<DatamoshSmearImageEffect>("channel_split", "Channel split", 0, 100, 25, (e, v) => e.ChannelSplit = v)
+    ];
 
     public DatamoshDirection Direction { get; set; } = DatamoshDirection.Horizontal;
     public float SmearAmount { get; set; } = 58f;

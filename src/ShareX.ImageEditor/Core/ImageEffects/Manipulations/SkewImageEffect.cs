@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class SkewImageEffect : ImageEffect
+public sealed class SkewImageEffect : ImageEffectBase
 {
+    public override string Id => "skew";
     public override string Name => "Skew";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "MoveDiagonal";
+    public override string Description => "Skews the image horizontally and vertically.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<SkewImageEffect>("horizontally", "Horizontally", -89f, 89f, 0f, (e, v) => e.Horizontally = v),
+        EffectParameters.FloatSlider<SkewImageEffect>("vertically", "Vertically", -89f, 89f, 0f, (e, v) => e.Vertically = v),
+        EffectParameters.Bool<SkewImageEffect>("auto_resize", "Auto resize", true, (e, v) => e.AutoResize = v)
+    ];
 
     public float Horizontally { get; set; } = 0;
     public float Vertically { get; set; } = 0;

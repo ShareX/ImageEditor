@@ -1,13 +1,23 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class MirrorTilesImageEffect : ImageEffect
+public sealed class MirrorTilesImageEffect : ImageEffectBase
 {
+    public override string Id => "mirror_tiles";
     public override string Name => "Mirror tiles";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "FlipHorizontal2";
+    public override string Description => "Tiles the image with alternating mirrored reflections.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<MirrorTilesImageEffect>("columns", "Columns", 1, 16, 3, (e, v) => e.Columns = v),
+        EffectParameters.IntSlider<MirrorTilesImageEffect>("rows", "Rows", 1, 16, 3, (e, v) => e.Rows = v),
+        EffectParameters.Bool<MirrorTilesImageEffect>("mirror_alternate_columns", "Mirror alternate columns", true, (e, v) => e.MirrorAlternateColumns = v),
+        EffectParameters.Bool<MirrorTilesImageEffect>("mirror_alternate_rows", "Mirror alternate rows", true, (e, v) => e.MirrorAlternateRows = v)
+    ];
 
     public int Columns { get; set; } = 3;
     public int Rows { get; set; } = 3;

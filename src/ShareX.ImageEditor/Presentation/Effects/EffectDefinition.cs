@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using ShareX.ImageEditor.Core.ImageEffects;
+using CoreEffectParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.EffectParameter;
 
 namespace ShareX.ImageEditor.Presentation.Effects;
 
@@ -45,11 +46,7 @@ public sealed class EffectDefinition
 
     public IReadOnlyList<EffectParameterDefinition> Parameters { get; }
 
-    /// <summary>
-    /// When set, indicates this effect requires a bespoke editor rather than the generic schema-driven dialog.
-    /// The value is a key used to resolve the bespoke editor control.
-    /// </summary>
-    public string? CustomEditorKey { get; }
+    public IReadOnlyList<CoreEffectParameter> CoreParameters { get; }
 
     /// <summary>
     /// When true, the effect is applied immediately from the browser without opening a dialog.
@@ -65,6 +62,7 @@ public sealed class EffectDefinition
         ImageEffectCategory category,
         Func<ImageEffect> createEffect,
         IReadOnlyList<EffectParameterDefinition> parameters,
+        IReadOnlyList<CoreEffectParameter>? coreParameters = null,
         string? customEditorKey = null,
         bool applyImmediately = false)
         : this(
@@ -76,7 +74,7 @@ public sealed class EffectDefinition
             category,
             createEffect,
             parameters,
-            customEditorKey,
+            coreParameters,
             applyImmediately)
     {
     }
@@ -90,7 +88,7 @@ public sealed class EffectDefinition
         ImageEffectCategory category,
         Func<ImageEffect> createEffect,
         IReadOnlyList<EffectParameterDefinition> parameters,
-        string? customEditorKey = null,
+        IReadOnlyList<CoreEffectParameter>? coreParameters = null,
         bool applyImmediately = false)
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
@@ -101,7 +99,7 @@ public sealed class EffectDefinition
         Category = category;
         CreateEffect = createEffect ?? throw new ArgumentNullException(nameof(createEffect));
         Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-        CustomEditorKey = customEditorKey;
+        CoreParameters = coreParameters ?? [];
         ApplyImmediately = applyImmediately;
     }
 
@@ -111,7 +109,7 @@ public sealed class EffectDefinition
 
         foreach (EffectParameterState parameterState in parameterStates)
         {
-            parameterState.Definition.ApplyValue(effect, parameterState.GetValue());
+            parameterState.ApplyValue(effect);
         }
 
         return effect;

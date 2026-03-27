@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
@@ -9,11 +10,21 @@ public enum PolarWarpMode
     PolarToCartesian
 }
 
-public class PolarWarpImageEffect : ImageEffect
+public sealed class PolarWarpImageEffect : ImageEffectBase
 {
+    public override string Id => "polar_warp";
     public override string Name => "Polar warp";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "Waypoints";
+    public override string Description => "Converts between Cartesian and polar coordinate systems.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<PolarWarpImageEffect, PolarWarpMode>("mode", "Mode", PolarWarpMode.CartesianToPolar, (e, v) => e.Mode = v, new (string Label, PolarWarpMode Value)[] { ("Cartesian to polar", PolarWarpMode.CartesianToPolar), ("Polar to Cartesian", PolarWarpMode.PolarToCartesian) }),
+        EffectParameters.FloatSlider<PolarWarpImageEffect>("rotation", "Rotation", -360f, 360f, 0f, (e, v) => e.Rotation = v),
+        EffectParameters.FloatSlider<PolarWarpImageEffect>("radius_scale", "Radius scale", 20f, 200f, 100f, (e, v) => e.RadiusScale = v),
+        EffectParameters.FloatSlider<PolarWarpImageEffect>("center_x_percentage", "Center X %", 0f, 100f, 50f, (e, v) => e.CenterXPercentage = v),
+        EffectParameters.FloatSlider<PolarWarpImageEffect>("center_y_percentage", "Center Y %", 0f, 100f, 50f, (e, v) => e.CenterYPercentage = v)
+    ];
 
     public PolarWarpMode Mode { get; set; } = PolarWarpMode.CartesianToPolar;
     public float Rotation { get; set; } = 0f;

@@ -1,13 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SpinBlurImageEffect : FilterImageEffect
+public sealed class SpinBlurImageEffect : ImageEffectBase
 {
+    public override string Id => "spin_blur";
     public override string Name => "Spin blur";
-    public override string IconKey => "IconArrowsSpin";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "RotateCw";
+    public override string Description => "Applies a rotational motion blur around a center point.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<SpinBlurImageEffect>("angle", "Angle", 0f, 180f, 20f, (e, v) => e.Angle = v),
+        EffectParameters.IntSlider<SpinBlurImageEffect>("samples", "Samples", 4, 64, 24, (e, v) => e.Samples = v),
+        EffectParameters.FloatSlider<SpinBlurImageEffect>("center_x", "Center X", 0f, 100f, 50f, (e, v) => e.CenterX = v),
+        EffectParameters.FloatSlider<SpinBlurImageEffect>("center_y", "Center Y", 0f, 100f, 50f, (e, v) => e.CenterY = v),
+    ];
 
     public float Angle { get; set; } = 20f; // 0..180
     public int Samples { get; set; } = 24; // 4..64

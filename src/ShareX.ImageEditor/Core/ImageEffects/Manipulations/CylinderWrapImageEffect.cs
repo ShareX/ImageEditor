@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
@@ -9,11 +10,20 @@ public enum CylinderWrapOrientation
     Horizontal
 }
 
-public class CylinderWrapImageEffect : ImageEffect
+public sealed class CylinderWrapImageEffect : ImageEffectBase
 {
+    public override string Id => "cylinder_wrap";
     public override string Name => "Cylinder wrap";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override bool HasParameters => true;
+    public override string IconKey => "Orbit";
+    public override string Description => "Wraps the image around a cylindrical surface.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.Enum<CylinderWrapImageEffect, CylinderWrapOrientation>("orientation", "Orientation", CylinderWrapOrientation.Vertical, (e, v) => e.Orientation = v,
+            new (string, CylinderWrapOrientation)[] { ("Vertical", CylinderWrapOrientation.Vertical), ("Horizontal", CylinderWrapOrientation.Horizontal) }),
+        EffectParameters.FloatSlider<CylinderWrapImageEffect>("curvature", "Curvature", 0f, 100f, 65f, (e, v) => e.Curvature = v),
+        EffectParameters.FloatSlider<CylinderWrapImageEffect>("edge_shading", "Edge shading", 0f, 100f, 35f, (e, v) => e.EdgeShading = v)
+    ];
 
     public CylinderWrapOrientation Orientation { get; set; } = CylinderWrapOrientation.Vertical;
     public float Curvature { get; set; } = 65f;

@@ -1,12 +1,24 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class JpegArtifactImageEffect : FilterImageEffect
+public sealed class JpegArtifactImageEffect : ImageEffectBase
 {
+    public override string Id => "jpeg_artifact";
     public override string Name => "JPEG artifact";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Image";
+    public override string Description => "Simulates JPEG compression artifacts with blocking and ringing.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<JpegArtifactImageEffect>("compression", "Compression", 0, 100, 62, (e, v) => e.Compression = v),
+        EffectParameters.IntSlider<JpegArtifactImageEffect>("block_size", "Block size", 4, 32, 8, (e, v) => e.BlockSize = v),
+        EffectParameters.FloatSlider<JpegArtifactImageEffect>("chroma_bleed", "Chroma bleed", 0, 100, 45, (e, v) => e.ChromaBleed = v),
+        EffectParameters.FloatSlider<JpegArtifactImageEffect>("ringing", "Ringing", 0, 100, 28, (e, v) => e.Ringing = v)
+    ];
 
     public float Compression { get; set; } = 62f;
     public int BlockSize { get; set; } = 8;

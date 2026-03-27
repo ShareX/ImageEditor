@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SobelEdgeImageEffect : FilterImageEffect
+public sealed class SobelEdgeImageEffect : ImageEffectBase
 {
+    public override string Id => "sobel_edge";
     public override string Name => "Sobel edge";
-    public override string IconKey => "IconHighlighter";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => "Scan";
+    public override string Description => "Detects edges using the Sobel operator.";
+
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<SobelEdgeImageEffect>("strength", "Strength", 0.1f, 5f, 1.2f, (e, v) => e.Strength = v),
+        EffectParameters.IntSlider<SobelEdgeImageEffect>("threshold", "Threshold", 0, 255, 20, (e, v) => e.Threshold = v),
+    ];
 
     public float Strength { get; set; } = 1.2f;
     public int Threshold { get; set; } = 20;

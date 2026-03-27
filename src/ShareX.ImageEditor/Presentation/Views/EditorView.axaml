@@ -349,6 +349,7 @@
                               Background="Transparent"
                               HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Auto"
+                              ScrollChanged="OnCanvasScrollChanged"
                               PointerPressed="OnScrollViewerPointerPressed"
                               PointerMoved="OnScrollViewerPointerMoved"
                               PointerReleased="OnScrollViewerPointerReleased">
@@ -377,69 +378,80 @@
                                     <Border Background="{Binding SmartPaddingColor}"
                                             Padding="{Binding SmartPaddingThickness}"
                                             CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
-                                            ClipToBounds="True">
-                                        <!-- Inner Border: Smart padding crops by clipping the viewport,
-                                             while the source image/canvas stay at full size. -->
-                                        <Border Background="Transparent"
+                                            ClipToBounds="False">
+                                        <Canvas Background="Transparent"
                                                 Width="{Binding SmartPaddingViewportWidth}"
                                                 Height="{Binding SmartPaddingViewportHeight}"
-                                                HorizontalAlignment="Left"
-                                                VerticalAlignment="Top"
-                                                ClipToBounds="True">
-                                            <Canvas Background="Transparent"
+                                                ClipToBounds="False">
+                                            <!-- Inner Border: Smart padding crops by clipping the viewport,
+                                                 while the source image/canvas stay at full size. -->
+                                            <Border Background="Transparent"
                                                     Width="{Binding SmartPaddingViewportWidth}"
                                                     Height="{Binding SmartPaddingViewportHeight}"
-                                                    ClipToBounds="True">
-                                                <Grid Name="CanvasContainer"
-                                                      Background="Transparent"
-                                                      Width="{Binding ImageWidth}"
-                                                      Height="{Binding ImageHeight}"
-                                                      Canvas.Left="{Binding SmartPaddingOffsetX}"
-                                                      Canvas.Top="{Binding SmartPaddingOffsetY}">
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Top"
+                                                    ClipToBounds="True"
+                                                    Canvas.Left="0"
+                                                    Canvas.Top="0">
+                                                <Canvas Background="Transparent"
+                                                        Width="{Binding SmartPaddingViewportWidth}"
+                                                        Height="{Binding SmartPaddingViewportHeight}"
+                                                        ClipToBounds="True">
+                                                    <Grid Name="CanvasContainer"
+                                                          Background="Transparent"
+                                                          Width="{Binding ImageWidth}"
+                                                          Height="{Binding ImageHeight}"
+                                                          Canvas.Left="{Binding SmartPaddingOffsetX}"
+                                                          Canvas.Top="{Binding SmartPaddingOffsetY}">
 
-                                                    <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
-                                                    <controls:SKCanvasControl Name="CanvasControl"
-                                                                            HorizontalAlignment="Stretch"
-                                                                            VerticalAlignment="Stretch"/>
+                                                        <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
+                                                        <controls:SKCanvasControl Name="CanvasControl"
+                                                                                  HorizontalAlignment="Stretch"
+                                                                                  VerticalAlignment="Stretch"/>
 
-                                                    <!-- Annotation Layer (Saved content) -->
-                                                    <Canvas Name="AnnotationCanvas"
-                                                            Background="Transparent"
-                                                            IsVisible="{Binding HasPreviewImage}"
-                                                            HorizontalAlignment="Stretch"
-                                                            VerticalAlignment="Stretch"
-                                                            Cursor="Arrow"
-                                                            PointerPressed="OnCanvasPointerPressed"
-                                                            PointerMoved="OnCanvasPointerMoved"
-                                                            PointerReleased="OnCanvasPointerReleased">
-                                                    </Canvas>
-
-                                                    <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
-                                                    <Canvas Name="OverlayCanvas"
-                                                            IsHitTestVisible="True"
-                                                            HorizontalAlignment="Stretch"
-                                                            VerticalAlignment="Stretch"
-                                                            Cursor="Arrow"
-                                                            PointerPressed="OnCanvasPointerPressed"
-                                                            PointerMoved="OnCanvasPointerMoved"
-                                                            PointerReleased="OnCanvasPointerReleased">
-                                                        <Rectangle Name="CropOverlay"
-                                                                   IsVisible="False"
-                                                                   Stroke="White"
-                                                                   StrokeThickness="2"
-                                                                   StrokeDashArray="4,2"
-                                                                   Fill="#80000000" />
-                                                    </Canvas>
-                                                </Grid>
-                                            </Canvas>
-                                        </Border>
+                                                        <!-- Annotation Layer (Saved content) -->
+                                                        <Canvas Name="AnnotationCanvas"
+                                                                Background="Transparent"
+                                                                IsVisible="{Binding HasPreviewImage}"
+                                                                HorizontalAlignment="Stretch"
+                                                                VerticalAlignment="Stretch"
+                                                                Cursor="Arrow"
+                                                                PointerPressed="OnCanvasPointerPressed"
+                                                                PointerMoved="OnCanvasPointerMoved"
+                                                                PointerReleased="OnCanvasPointerReleased">
+                                                        </Canvas>
+                                                    </Grid>
+                                                </Canvas>
+                                            </Border>
+                                        </Canvas>
                                     </Border>
                                 </Border>
                             </Border>
                         </Grid>
                     </LayoutTransformControl>
                 </ScrollViewer>
-                
+
+                <Canvas Name="OverlayHost"
+                        ClipToBounds="False"
+                        Panel.ZIndex="10">
+                    <Canvas Name="OverlayCanvas"
+                            Width="0"
+                            Height="0"
+                            Background="Transparent"
+                            ClipToBounds="False"
+                            IsHitTestVisible="True"
+                            Cursor="Arrow"
+                            PointerPressed="OnCanvasPointerPressed"
+                            PointerMoved="OnCanvasPointerMoved"
+                            PointerReleased="OnCanvasPointerReleased">
+                        <Rectangle Name="CropOverlay"
+                                   IsVisible="False"
+                                   Stroke="White"
+                                   StrokeThickness="2"
+                                   StrokeDashArray="4,2"
+                                   Fill="#80000000" />
+                    </Canvas>
+                </Canvas>
             </Grid>
 
             <!-- Right Sidebar (Effects Panel) -->

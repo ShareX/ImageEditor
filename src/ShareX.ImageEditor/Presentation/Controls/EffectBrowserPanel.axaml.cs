@@ -8,6 +8,7 @@ using ShareX.ImageEditor.Core.ImageEffects;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Effects;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace ShareX.ImageEditor.Presentation.Controls

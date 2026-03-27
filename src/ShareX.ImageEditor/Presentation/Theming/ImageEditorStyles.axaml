@@ -264,7 +264,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
 
-        <Style Selector="^.right ContentControl > :is(UserControl) > StackPanel > TextBlock:nth-child(1)">
+        <Style Selector="^.right ContentControl > :is(UserControl) > StackPanel > StackPanel:nth-child(1) > TextBlock">
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="Foreground">

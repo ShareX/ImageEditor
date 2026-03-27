@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class DoubleExposureImageEffect : ImageEffectBase
     public override string Id => "double_exposure";
     public override string Name => "Double exposure";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "ImagePlus";
+    public override string IconKey => LucideIcons.images;
     public override string Description => "Blends a blurred ghost of the image over itself to simulate double exposure.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

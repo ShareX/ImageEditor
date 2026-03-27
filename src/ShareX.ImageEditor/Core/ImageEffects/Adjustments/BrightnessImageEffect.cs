@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class BrightnessImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "brightness";
     public override string Name => "Brightness";
-    public override string IconKey => "SunMedium";
+    public override string IconKey => LucideIcons.sun_medium;
     public override string Description => "Adjusts image brightness.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

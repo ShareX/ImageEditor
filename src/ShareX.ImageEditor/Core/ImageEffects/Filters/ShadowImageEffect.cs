@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class ShadowImageEffect : ImageEffectBase
     public override string Id => "shadow";
     public override string Name => "Shadow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "CloudMoon";
+    public override string IconKey => LucideIcons.cloud_moon;
     public override string Description => "Adds a drop shadow to the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

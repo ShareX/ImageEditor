@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class LiquidGlassImageEffect : ImageEffectBase
     public override string Id => "liquid_glass";
     public override string Name => "Liquid glass";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "GlassWater";
+    public override string IconKey => LucideIcons.glass_water;
     public override string Description => "Distorts the image as if viewed through liquid glass.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

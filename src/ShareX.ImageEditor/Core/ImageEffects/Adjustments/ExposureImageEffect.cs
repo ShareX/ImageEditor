@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class ExposureImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "exposure";
     public override string Name => "Exposure";
-    public override string IconKey => "Aperture";
+    public override string IconKey => LucideIcons.aperture;
     public override string Description => "Adjusts the exposure level.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

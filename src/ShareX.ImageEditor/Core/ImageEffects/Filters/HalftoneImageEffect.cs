@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class HalftoneImageEffect : ImageEffectBase
     public override string Id => "halftone";
     public override string Name => "Halftone";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "DotSquare";
+    public override string IconKey => LucideIcons.circle_dot;
     public override string Description => "Converts the image into a CMYK halftone dot pattern.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

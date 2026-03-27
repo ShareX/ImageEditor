@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class BloodSplashImageEffect : ImageEffectBase
     public override string Id => "blood_splash";
     public override string Name => "Blood splash";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Droplet";
+    public override string IconKey => LucideIcons.droplet;
     public override string Description => "Overlays procedural blood splash and drip effects.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

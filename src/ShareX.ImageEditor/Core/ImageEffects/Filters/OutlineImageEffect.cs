@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class OutlineImageEffect : ImageEffectBase
     public override string Id => "outline";
     public override string Name => "Outline";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "VectorSquare";
+    public override string IconKey => LucideIcons.square_dashed;
     public override string Description => "Applies an outline effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

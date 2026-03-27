@@ -1,4 +1,5 @@
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -7,7 +8,7 @@ public sealed class Rotate90CCWImageEffect : ImageEffectBase
     public override string Id => "rotate_90_counter_clockwise";
     public override string Name => "Rotate 90\u00b0 counter clockwise";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Undo2";
+    public override string IconKey => LucideIcons.rotate_ccw;
     public override string Description => "Rotates the image 90 degrees counter-clockwise.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

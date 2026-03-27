@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class XRayScanImageEffect : ImageEffectBase
     public override string Id => "x_ray_scan";
     public override string Name => "X-ray scan";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "ScanEye";
+    public override string IconKey => LucideIcons.scan_eye;
     public override string Description => "Simulates an X-ray scan with edge detection and glow effects.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

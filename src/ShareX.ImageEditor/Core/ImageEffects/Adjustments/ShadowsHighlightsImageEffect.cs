@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class ShadowsHighlightsImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "shadows_highlights";
     public override string Name => "Shadows / Highlights";
-    public override string IconKey => "Lightbulb";
+    public override string IconKey => LucideIcons.sun_moon;
     public override string Description => "Adjusts shadows and highlights.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

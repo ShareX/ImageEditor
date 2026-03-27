@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class BlurImageEffect : ImageEffectBase
     public override string Id => "blur";
     public override string Name => "Blur";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Focus";
+    public override string IconKey => LucideIcons.focus;
     public override string Description => "Applies a blur effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

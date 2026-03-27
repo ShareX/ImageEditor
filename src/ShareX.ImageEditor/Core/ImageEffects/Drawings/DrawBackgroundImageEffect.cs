@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -8,7 +9,7 @@ public sealed class DrawBackgroundImageEffect : ImageEffectBase
     public override string Id => "draw_background_image";
     public override string Name => "Background image";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-    public override string IconKey => "Image";
+    public override string IconKey => LucideIcons.image;
     public override string Description => "Draws a background image behind the source image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

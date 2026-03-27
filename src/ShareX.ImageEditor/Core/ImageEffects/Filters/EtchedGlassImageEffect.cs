@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class EtchedGlassImageEffect : ImageEffectBase
     public override string Id => "etched_glass";
     public override string Name => "Etched glass";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "GlassWater";
+    public override string IconKey => LucideIcons.glass_water;
     public override string Description => "Simulates an etched glass surface with frost, engraving, and refraction effects.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

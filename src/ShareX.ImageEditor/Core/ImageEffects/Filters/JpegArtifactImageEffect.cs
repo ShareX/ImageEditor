@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class JpegArtifactImageEffect : ImageEffectBase
     public override string Id => "jpeg_artifact";
     public override string Name => "JPEG artifact";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Image";
+    public override string IconKey => LucideIcons.file_image;
     public override string Description => "Simulates JPEG compression artifacts with blocking and ringing.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

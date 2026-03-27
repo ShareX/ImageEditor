@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class SpinBlurImageEffect : ImageEffectBase
     public override string Id => "spin_blur";
     public override string Name => "Spin blur";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "RotateCw";
+    public override string IconKey => LucideIcons.rotate_cw;
     public override string Description => "Applies a rotational motion blur around a center point.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class GlowImageEffect : ImageEffectBase
     public override string Id => "glow";
     public override string Name => "Glow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Lightbulb";
+    public override string IconKey => LucideIcons.lightbulb;
     public override string Description => "Applies a glowing effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

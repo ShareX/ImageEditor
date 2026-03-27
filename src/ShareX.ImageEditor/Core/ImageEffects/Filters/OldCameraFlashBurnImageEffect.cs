@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class OldCameraFlashBurnImageEffect : ImageEffectBase
     public override string Id => "old_camera_flash_burn";
     public override string Name => "Old camera flash burn";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Flashlight";
+    public override string IconKey => LucideIcons.flashlight;
     public override string Description => "Simulates an old camera flash burn with warm glow and edge burn effects.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

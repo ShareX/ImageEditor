@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class CyanotypeImageEffect : ImageEffectBase
     public override string Id => "cyanotype";
     public override string Name => "Cyanotype";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "SwatchBook";
+    public override string IconKey => LucideIcons.swatch_book;
     public override string Description => "Simulates a cyanotype photographic printing process with blue-toned output.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

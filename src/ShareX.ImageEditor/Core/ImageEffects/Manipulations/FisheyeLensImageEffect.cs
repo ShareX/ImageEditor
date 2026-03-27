@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -9,7 +10,7 @@ public sealed class FisheyeLensImageEffect : ImageEffectBase
     public override string Id => "fisheye_lens";
     public override string Name => "Fisheye lens";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "CircleGauge";
+    public override string IconKey => LucideIcons.circle_gauge;
     public override string Description => "Applies a fisheye lens distortion effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

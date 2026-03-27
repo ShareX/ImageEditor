@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -8,7 +9,7 @@ public sealed class Rotate3DImageEffect : ImageEffectBase
     public override string Id => "rotate_3d";
     public override string Name => "Rotate 3D";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Rotate3D";
+    public override string IconKey => LucideIcons.rotate_3d;
     public override string Description => "Rotates the image in 3D space with perspective.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

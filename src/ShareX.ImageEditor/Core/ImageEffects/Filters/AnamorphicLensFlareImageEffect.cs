@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class AnamorphicLensFlareImageEffect : ImageEffectBase
     public override string Id => "anamorphic_lens_flare";
     public override string Name => "Anamorphic lens flare";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Sparkle";
+    public override string IconKey => LucideIcons.sparkle;
     public override string Description => "Adds cinematic horizontal lens flare streaks to bright areas.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

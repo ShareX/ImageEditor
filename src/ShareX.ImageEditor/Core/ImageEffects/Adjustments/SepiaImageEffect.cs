@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class SepiaImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "sepia";
     public override string Name => "Sepia";
-    public override string IconKey => "Coffee";
+    public override string IconKey => LucideIcons.coffee;
     public override string Description => "Applies a sepia tone effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

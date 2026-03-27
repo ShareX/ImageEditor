@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class LevelsImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "levels";
     public override string Name => "Levels";
-    public override string IconKey => "SlidersVertical";
+    public override string IconKey => LucideIcons.sliders_vertical;
     public override string Description => "Adjusts image color levels.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

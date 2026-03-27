@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class ReflectionImageEffect : ImageEffectBase
     public override string Id => "reflection";
     public override string Name => "Reflection";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "FlipVertical2";
+    public override string IconKey => LucideIcons.flip_vertical_2;
     public override string Description => "Adds a reflection to the bottom of the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

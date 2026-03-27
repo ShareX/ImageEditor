@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -15,7 +16,7 @@ public sealed class FoldCreaseWarpImageEffect : ImageEffectBase
     public override string Id => "fold_crease_warp";
     public override string Name => "Fold crease warp";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Newspaper";
+    public override string IconKey => LucideIcons.newspaper;
     public override string Description => "Simulates a folded paper crease distortion.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -11,7 +12,7 @@ public sealed class TextWatermarkEffect : ImageEffectBase
     public override string Id => "text_watermark";
     public override string Name => "Text watermark";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-    public override string IconKey => "TextCursor";
+    public override string IconKey => LucideIcons.text_cursor;
     public override string Description => "Draws a text watermark with background on the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

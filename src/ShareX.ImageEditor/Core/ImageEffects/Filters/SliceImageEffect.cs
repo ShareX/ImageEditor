@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class SliceImageEffect : ImageEffectBase
     public override string Id => "slice";
     public override string Name => "Slice";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Slice";
+    public override string IconKey => LucideIcons.slice;
     public override string Description => "Slices the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

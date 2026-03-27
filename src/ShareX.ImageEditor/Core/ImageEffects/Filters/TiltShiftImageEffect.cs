@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -15,7 +16,7 @@ public sealed class TiltShiftImageEffect : ImageEffectBase
     public override string Id => "tilt_shift";
     public override string Name => "Tilt-shift";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Target";
+    public override string IconKey => LucideIcons.focus;
     public override string Description => "Simulates a tilt-shift lens with selective focus.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

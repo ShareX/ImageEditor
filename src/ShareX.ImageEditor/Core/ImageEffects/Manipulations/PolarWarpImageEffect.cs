@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -15,7 +16,7 @@ public sealed class PolarWarpImageEffect : ImageEffectBase
     public override string Id => "polar_warp";
     public override string Name => "Polar warp";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Waypoints";
+    public override string IconKey => LucideIcons.orbit;
     public override string Description => "Converts between Cartesian and polar coordinate systems.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

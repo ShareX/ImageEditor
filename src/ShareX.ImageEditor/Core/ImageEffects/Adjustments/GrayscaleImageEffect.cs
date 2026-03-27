@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class GrayscaleImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "grayscale";
     public override string Name => "Grayscale";
-    public override string IconKey => "Moon";
+    public override string IconKey => LucideIcons.eclipse;
     public override string Description => "Converts the image to grayscale.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

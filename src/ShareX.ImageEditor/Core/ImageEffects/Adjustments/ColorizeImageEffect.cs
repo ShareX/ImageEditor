@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class ColorizeImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "colorize";
     public override string Name => "Colorize";
-    public override string IconKey => "Palette";
+    public override string IconKey => LucideIcons.palette;
     public override string Description => "Colorizes the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class VignetteImageEffect : ImageEffectBase
     public override string Id => "vignette";
     public override string Name => "Vignette";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "CircleDashed";
+    public override string IconKey => LucideIcons.circle_dashed;
     public override string Description => "Applies a vignette effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -10,7 +11,7 @@ public sealed class DrawCheckerboardEffect : ImageEffectBase
     public override string Id => "draw_checkerboard";
     public override string Name => "Checkerboard";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-    public override string IconKey => "Grid2X2Check";
+    public override string IconKey => LucideIcons.grid_2x2_check;
     public override string Description => "Draws a checkerboard pattern behind the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

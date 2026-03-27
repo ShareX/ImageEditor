@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -12,7 +13,7 @@ public sealed class DrawParticlesEffect : ImageEffectBase
     public override string Id => "draw_particles";
     public override string Name => "Particles";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-    public override string IconKey => "Sparkles";
+    public override string IconKey => LucideIcons.sparkles;
     public override string Description => "Draws particle images on the source image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

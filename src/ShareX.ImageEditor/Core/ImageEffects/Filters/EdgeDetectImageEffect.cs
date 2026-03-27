@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class EdgeDetectImageEffect : ImageEffectBase
     public override string Id => "edge_detect";
     public override string Name => "Edge detect";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "ScanSearch";
+    public override string IconKey => LucideIcons.scan_search;
     public override string Description => "Detects visible edges in the image.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

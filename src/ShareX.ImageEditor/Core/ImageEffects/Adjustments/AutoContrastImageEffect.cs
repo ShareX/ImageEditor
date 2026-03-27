@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class AutoContrastImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "auto_contrast";
     public override string Name => "Auto contrast";
-    public override string IconKey => "Wand2";
+    public override string IconKey => LucideIcons.wand_sparkles;
     public override string Description => "Automatically adjusts the contrast.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

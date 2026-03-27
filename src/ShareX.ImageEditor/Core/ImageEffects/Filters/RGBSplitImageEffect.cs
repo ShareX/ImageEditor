@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class RGBSplitImageEffect : ImageEffectBase
     public override string Id => "rgb_split";
     public override string Name => "RGB split";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "SplitSquareHorizontal";
+    public override string IconKey => LucideIcons.split;
     public override string Description => "Splits and offsets the red, green, and blue color channels.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

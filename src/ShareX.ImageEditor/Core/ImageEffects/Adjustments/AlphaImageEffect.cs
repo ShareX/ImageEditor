@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class AlphaImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "alpha";
     public override string Name => "Alpha";
-    public override string IconKey => "Droplet";
+    public override string IconKey => LucideIcons.droplet;
     public override string Description => "Adjusts the alpha transparency.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

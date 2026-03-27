@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -8,7 +9,7 @@ public sealed class DrawShapeEffect : ImageEffectBase
     public override string Id => "draw_shape";
     public override string Name => "Shape";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-    public override string IconKey => "Square";
+    public override string IconKey => LucideIcons.shapes;
     public override string Description => "Draws a shape on the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -8,7 +9,7 @@ public sealed class DuotoneGradientMapImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "duotone_gradient_map";
     public override string Name => "Duotone / Gradient map";
-    public override string IconKey => "Blend";
+    public override string IconKey => LucideIcons.blend;
     public override string Description => "Maps grayscale tones to a custom multi-color gradient.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

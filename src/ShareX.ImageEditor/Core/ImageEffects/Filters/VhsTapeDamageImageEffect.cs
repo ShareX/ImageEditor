@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class VhsTapeDamageImageEffect : ImageEffectBase
     public override string Id => "vhs_tape_damage";
     public override string Name => "VHS tape damage";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Monitor";
+    public override string IconKey => LucideIcons.videotape;
     public override string Description => "Simulates VHS tape degradation with distortion, noise, and color bleeding.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

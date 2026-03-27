@@ -1,4 +1,5 @@
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -7,7 +8,7 @@ public sealed class FlipHorizontalImageEffect : ImageEffectBase
     public override string Id => "flip_horizontal";
     public override string Name => "Flip horizontal";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "FlipHorizontal";
+    public override string IconKey => LucideIcons.flip_horizontal;
     public override string Description => "Flips the image horizontally.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

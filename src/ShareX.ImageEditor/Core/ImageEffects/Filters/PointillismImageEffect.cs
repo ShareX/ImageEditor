@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class PointillismImageEffect : ImageEffectBase
     public override string Id => "pointillism";
     public override string Name => "Pointillism";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Dot";
+    public override string IconKey => LucideIcons.circle_dot;
     public override string Description => "Renders the image as a pointillist painting with colored dots.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

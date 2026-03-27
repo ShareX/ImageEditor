@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -8,7 +9,7 @@ public sealed class RoundedCornersImageEffect : ImageEffectBase
     public override string Id => "rounded_corners";
     public override string Name => "Rounded Corners";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "SquareRoundCorner";
+    public override string IconKey => LucideIcons.square_round_corner;
     public override string Description => "Rounds the corners of the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

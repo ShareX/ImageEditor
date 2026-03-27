@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class MotionBlurImageEffect : ImageEffectBase
     public override string Id => "motion_blur";
     public override string Name => "Motion blur";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "MoveHorizontal";
+    public override string IconKey => LucideIcons.move_horizontal;
     public override string Description => "Applies a directional motion blur at a specified angle.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

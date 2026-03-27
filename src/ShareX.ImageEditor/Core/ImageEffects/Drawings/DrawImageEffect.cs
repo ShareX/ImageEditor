@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -10,7 +11,7 @@ public sealed class DrawImageEffect : ImageEffectBase
     public override string Id => "draw_image";
     public override string Name => "Image";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-    public override string IconKey => "ImagePlus";
+    public override string IconKey => LucideIcons.image_plus;
     public override string Description => "Draws an image overlay on the source image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

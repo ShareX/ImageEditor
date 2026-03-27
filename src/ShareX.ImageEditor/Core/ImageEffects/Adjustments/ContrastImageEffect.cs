@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class ContrastImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "contrast";
     public override string Name => "Contrast";
-    public override string IconKey => "Contrast";
+    public override string IconKey => LucideIcons.contrast;
     public override string Description => "Adjusts image contrast.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

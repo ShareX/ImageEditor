@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class TornEdgeImageEffect : ImageEffectBase
     public override string Id => "torn_edge";
     public override string Name => "Torn edge";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "ScissorsLineDashed";
+    public override string IconKey => LucideIcons.scissors_line_dashed;
     public override string Description => "Adds a torn edge border effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

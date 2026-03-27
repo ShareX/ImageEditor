@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class PixelateImageEffect : ImageEffectBase
     public override string Id => "pixelate";
     public override string Name => "Pixelate";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Grid2X2";
+    public override string IconKey => LucideIcons.grid_2x2;
     public override string Description => "Pixelates the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

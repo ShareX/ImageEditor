@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class SolarizeImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "solarize";
     public override string Name => "Solarize";
-    public override string IconKey => "Sun";
+    public override string IconKey => LucideIcons.sun;
     public override string Description => "Applies a solarize effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

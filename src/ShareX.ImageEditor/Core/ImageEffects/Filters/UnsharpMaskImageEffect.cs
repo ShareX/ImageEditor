@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class UnsharpMaskImageEffect : ImageEffectBase
     public override string Id => "unsharp_mask";
     public override string Name => "Unsharp mask";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Wand2";
+    public override string IconKey => LucideIcons.wand_sparkles;
     public override string Description => "Sharpens the image using an unsharp mask technique.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

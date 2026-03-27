@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class StarFilterImageEffect : ImageEffectBase
     public override string Id => "star_filter";
     public override string Name => "Star filter";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Sparkles";
+    public override string IconKey => LucideIcons.star;
     public override string Description => "Adds star-shaped light streaks to bright areas.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

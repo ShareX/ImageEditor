@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -8,7 +9,7 @@ public sealed class Rotate3DBoxImageEffect : ImageEffectBase
     public override string Id => "rotate_3d_box";
     public override string Name => "3D Box / Extrude";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Box";
+    public override string IconKey => LucideIcons.box;
     public override string Description => "Creates a 3D box extrusion effect with rotation.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

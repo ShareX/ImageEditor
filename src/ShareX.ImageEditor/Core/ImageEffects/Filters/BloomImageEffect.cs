@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class BloomImageEffect : ImageEffectBase
     public override string Id => "bloom";
     public override string Name => "Bloom";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Sparkle";
+    public override string IconKey => LucideIcons.sparkle;
     public override string Description => "Adds a soft glow bloom effect to bright areas.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

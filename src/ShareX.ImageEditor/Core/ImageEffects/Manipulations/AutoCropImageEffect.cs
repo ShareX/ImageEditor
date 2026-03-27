@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -9,7 +10,7 @@ public sealed class AutoCropImageEffect : ImageEffectBase
     public override string Id => "auto_crop_image";
     public override string Name => "Auto crop image";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Scan";
+    public override string IconKey => LucideIcons.scan;
     public override string Description => "Automatically crops the image using tolerance on edge pixels.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

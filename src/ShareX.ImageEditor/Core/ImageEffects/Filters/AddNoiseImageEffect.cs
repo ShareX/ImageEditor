@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class AddNoiseImageEffect : ImageEffectBase
     public override string Id => "add_noise";
     public override string Name => "Add noise";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "SprayCan";
+    public override string IconKey => LucideIcons.spray_can;
     public override string Description => "Adds random noise to the image.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

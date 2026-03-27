@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class NeonEdgeGlowImageEffect : ImageEffectBase
     public override string Id => "neon_edge_glow";
     public override string Name => "Neon edge glow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Zap";
+    public override string IconKey => LucideIcons.zap;
     public override string Description => "Detects edges and applies a neon glow effect.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -1,4 +1,5 @@
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -6,7 +7,7 @@ public sealed class BlackAndWhiteImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "black_and_white";
     public override string Name => "Black & White";
-    public override string IconKey => "ShieldHalf";
+    public override string IconKey => LucideIcons.contrast;
     public override string Description => "Converts the image to black and white.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

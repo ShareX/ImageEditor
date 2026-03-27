@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -8,7 +9,7 @@ public sealed class ReplaceColorImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "replace_color";
     public override string Name => "Replace Color";
-    public override string IconKey => "Replace";
+    public override string IconKey => LucideIcons.replace;
     public override string Description => "Replaces a specific color.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

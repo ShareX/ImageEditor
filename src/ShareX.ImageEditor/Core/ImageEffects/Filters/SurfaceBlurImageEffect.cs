@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class SurfaceBlurImageEffect : ImageEffectBase
     public override string Id => "surface_blur";
     public override string Name => "Surface blur";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Waves";
+    public override string IconKey => LucideIcons.waves;
     public override string Description => "Blurs while preserving edges based on color similarity.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

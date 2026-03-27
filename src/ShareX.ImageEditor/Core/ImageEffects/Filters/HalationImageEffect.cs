@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class HalationImageEffect : ImageEffectBase
     public override string Id => "halation";
     public override string Name => "Halation";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Sunset";
+    public override string IconKey => LucideIcons.sunrise;
     public override string Description => "Simulates film halation where bright areas bleed warm light into surrounding regions.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

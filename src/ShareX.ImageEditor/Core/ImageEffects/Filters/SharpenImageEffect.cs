@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class SharpenImageEffect : ImageEffectBase
     public override string Id => "sharpen";
     public override string Name => "Sharpen";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Crosshair";
+    public override string IconKey => LucideIcons.crosshair;
     public override string Description => "Sharpens the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

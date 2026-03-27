@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -9,7 +10,7 @@ public sealed class MirrorTilesImageEffect : ImageEffectBase
     public override string Id => "mirror_tiles";
     public override string Name => "Mirror tiles";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "FlipHorizontal2";
+    public override string IconKey => LucideIcons.flip_horizontal_2;
     public override string Description => "Tiles the image with alternating mirrored reflections.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

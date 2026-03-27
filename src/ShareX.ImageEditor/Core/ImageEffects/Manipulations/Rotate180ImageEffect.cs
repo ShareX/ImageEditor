@@ -1,4 +1,5 @@
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -7,7 +8,7 @@ public sealed class Rotate180ImageEffect : ImageEffectBase
     public override string Id => "rotate_180";
     public override string Name => "Rotate 180\u00b0";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "RotateCwSquare";
+    public override string IconKey => LucideIcons.rotate_cw;
     public override string Description => "Rotates the image by 180 degrees.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

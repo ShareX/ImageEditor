@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -12,7 +13,7 @@ public sealed class RemoveBackgroundImageEffect : ImageEffectBase
     public override string Id => "remove_background";
     public override string Name => "Remove background";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Scissors";
+    public override string IconKey => LucideIcons.scissors;
     public override string Description => "Removes border-connected background colors and turns them transparent.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

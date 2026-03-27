@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class MedianFilterImageEffect : ImageEffectBase
     public override string Id => "median_filter";
     public override string Name => "Median filter";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Filter";
+    public override string IconKey => LucideIcons.filter;
     public override string Description => "Applies a median filter to reduce noise while preserving edges.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

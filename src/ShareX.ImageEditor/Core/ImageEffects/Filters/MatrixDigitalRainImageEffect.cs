@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class MatrixDigitalRainImageEffect : ImageEffectBase
     public override string Id => "matrix_digital_rain";
     public override string Name => "Matrix digital rain";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Terminal";
+    public override string IconKey => LucideIcons.terminal;
     public override string Description => "Overlays a Matrix-style digital rain effect using source luminance.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

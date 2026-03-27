@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -8,7 +9,7 @@ public sealed class CropImageEffect : ImageEffectBase
     public override string Id => "crop_image";
     public override string Name => "Crop image";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Crop";
+    public override string IconKey => LucideIcons.crop;
     public override string Description => "Crops the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

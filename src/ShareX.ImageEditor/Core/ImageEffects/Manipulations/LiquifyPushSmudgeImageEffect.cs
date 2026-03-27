@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -9,7 +10,7 @@ public sealed class LiquifyPushSmudgeImageEffect : ImageEffectBase
     public override string Id => "liquify_push_smudge";
     public override string Name => "Liquify push / smudge";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Droplet";
+    public override string IconKey => LucideIcons.droplet;
     public override string Description => "Pushes and smudges pixels in a direction.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

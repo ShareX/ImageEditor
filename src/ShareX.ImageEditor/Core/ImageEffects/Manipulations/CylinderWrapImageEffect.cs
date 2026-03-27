@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -15,7 +16,7 @@ public sealed class CylinderWrapImageEffect : ImageEffectBase
     public override string Id => "cylinder_wrap";
     public override string Name => "Cylinder wrap";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Orbit";
+    public override string IconKey => LucideIcons.cylinder;
     public override string Description => "Wraps the image around a cylindrical surface.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

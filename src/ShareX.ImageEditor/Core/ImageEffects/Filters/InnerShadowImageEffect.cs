@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class InnerShadowImageEffect : ImageEffectBase
     public override string Id => "inner_shadow";
     public override string Name => "Inner shadow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "CloudMoon";
+    public override string IconKey => LucideIcons.square_dashed;
     public override string Description => "Adds an inner shadow along the edges of opaque regions.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

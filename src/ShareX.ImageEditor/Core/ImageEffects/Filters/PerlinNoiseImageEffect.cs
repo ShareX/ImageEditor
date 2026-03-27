@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class PerlinNoiseImageEffect : ImageEffectBase
     public override string Id => "perlin_noise";
     public override string Name => "Perlin noise";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Waves";
+    public override string IconKey => LucideIcons.waves;
     public override string Description => "Generates a Perlin noise pattern and blends it with the image.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

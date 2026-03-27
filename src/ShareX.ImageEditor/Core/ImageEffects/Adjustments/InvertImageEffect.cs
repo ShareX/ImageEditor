@@ -1,4 +1,5 @@
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -6,7 +7,7 @@ public sealed class InvertImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "invert";
     public override string Name => "Invert";
-    public override string IconKey => "RefreshCcwDot";
+    public override string IconKey => LucideIcons.refresh_ccw_dot;
     public override string Description => "Inverts image colors.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

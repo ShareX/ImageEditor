@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class PlasmaEnergyArcsImageEffect : ImageEffectBase
     public override string Id => "plasma_energy_arcs";
     public override string Name => "Plasma energy arcs";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Zap";
+    public override string IconKey => LucideIcons.zap;
     public override string Description => "Generates plasma-like energy arcs overlaid on the image.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

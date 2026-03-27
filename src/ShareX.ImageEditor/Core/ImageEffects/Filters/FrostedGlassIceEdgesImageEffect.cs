@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class FrostedGlassIceEdgesImageEffect : ImageEffectBase
     public override string Id => "frosted_glass_ice_edges";
     public override string Name => "Frosted glass + ice edges";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "CloudSnow";
+    public override string IconKey => LucideIcons.snowflake;
     public override string Description => "Combines frosted glass distortion with icy edge highlights and cool tinting.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

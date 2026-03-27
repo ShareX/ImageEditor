@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class SaturationImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "saturation";
     public override string Name => "Saturation";
-    public override string IconKey => "Droplets";
+    public override string IconKey => LucideIcons.droplets;
     public override string Description => "Adjusts the color saturation.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class WaveEdgeImageEffect : ImageEffectBase
     public override string Id => "wave_edge";
     public override string Name => "Wave edge";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "WavesLadder";
+    public override string IconKey => LucideIcons.waves_ladder;
     public override string Description => "Adds a wavy edge to the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

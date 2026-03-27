@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class BlockGlitchImageEffect : ImageEffectBase
     public override string Id => "block_glitch";
     public override string Name => "Block glitch / Databending";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Cpu";
+    public override string IconKey => LucideIcons.cpu;
     public override string Description => "Simulates digital glitch artifacts with displaced color blocks.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

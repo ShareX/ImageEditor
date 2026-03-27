@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -8,7 +9,7 @@ public sealed class DrawBackgroundEffect : ImageEffectBase
     public override string Id => "draw_background";
     public override string Name => "Background";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
-    public override string IconKey => "PaintBucket";
+    public override string IconKey => LucideIcons.paint_bucket;
     public override string Description => "Draws a solid color background behind the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class LuminanceContourLinesImageEffect : ImageEffectBase
     public override string Id => "luminance_contour_lines";
     public override string Name => "Luminance contour lines";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Waypoints";
+    public override string IconKey => LucideIcons.waypoints;
     public override string Description => "Draws contour lines based on luminance quantization levels.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

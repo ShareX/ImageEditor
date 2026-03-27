@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class PosterizeImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "posterize";
     public override string Name => "Posterize";
-    public override string IconKey => "Layers3";
+    public override string IconKey => LucideIcons.layers_3;
     public override string Description => "Reduces the number of colors to create a poster-like effect.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,4 +1,5 @@
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -6,7 +7,7 @@ public sealed class PolaroidImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "polaroid";
     public override string Name => "Polaroid";
-    public override string IconKey => "Camera";
+    public override string IconKey => LucideIcons.camera;
     public override string Description => "Applies a Polaroid effect.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

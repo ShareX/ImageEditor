@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class RisoPrintImageEffect : ImageEffectBase
     public override string Id => "riso_print";
     public override string Name => "Riso print";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Newspaper";
+    public override string IconKey => LucideIcons.printer;
     public override string Description => "Simulates a risograph print with halftone dots and ink colors.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

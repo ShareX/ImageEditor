@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class SobelEdgeImageEffect : ImageEffectBase
     public override string Id => "sobel_edge";
     public override string Name => "Sobel edge";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Scan";
+    public override string IconKey => LucideIcons.scan;
     public override string Description => "Detects edges using the Sobel operator.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

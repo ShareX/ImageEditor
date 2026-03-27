@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -8,7 +9,7 @@ public sealed class CRTImageEffect : ImageEffectBase
     public override string Id => "crt";
     public override string Name => "CRT";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Monitor";
+    public override string IconKey => LucideIcons.monitor;
     public override string Description => "Simulates a CRT monitor with scanlines, RGB shift, noise, and vignette.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

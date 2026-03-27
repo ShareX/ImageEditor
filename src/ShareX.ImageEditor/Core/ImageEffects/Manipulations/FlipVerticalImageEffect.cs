@@ -1,4 +1,5 @@
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -7,7 +8,7 @@ public sealed class FlipVerticalImageEffect : ImageEffectBase
     public override string Id => "flip_vertical";
     public override string Name => "Flip vertical";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "FlipVertical";
+    public override string IconKey => LucideIcons.flip_vertical;
     public override string Description => "Flips the image vertically.";
     public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
 

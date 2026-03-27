@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class CrystalizeShardsImageEffect : ImageEffectBase
     public override string Id => "crystalize_shards";
     public override string Name => "Crystalize shards";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Diamond";
+    public override string IconKey => LucideIcons.diamond;
     public override string Description => "Breaks the image into crystalline Voronoi shards with edge highlights.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

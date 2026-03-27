@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -9,7 +10,7 @@ public sealed class ASCIIArtImageEffect : ImageEffectBase
     public override string Id => "ascii_art";
     public override string Name => "ASCII art";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "SquareTerminal";
+    public override string IconKey => LucideIcons.square_terminal;
     public override string Description => "Converts the image into ASCII character art.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

@@ -2,6 +2,7 @@ using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
 using System.Collections.Concurrent;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -13,7 +14,7 @@ public sealed class LensBlurImageEffect : ImageEffectBase
     public override string Id => "lens_blur";
     public override string Name => "Lens blur (bokeh)";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Circle";
+    public override string IconKey => LucideIcons.aperture;
     public override string Description => "Applies a disc-shaped lens blur with highlight boost.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

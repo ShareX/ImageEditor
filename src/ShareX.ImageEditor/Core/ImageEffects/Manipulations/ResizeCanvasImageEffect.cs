@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -8,7 +9,7 @@ public sealed class ResizeCanvasImageEffect : ImageEffectBase
     public override string Id => "resize_canvas";
     public override string Name => "Resize canvas";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
-    public override string IconKey => "Maximize";
+    public override string IconKey => LucideIcons.expand;
     public override string Description => "Resizes the canvas.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

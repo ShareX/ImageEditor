@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -21,7 +22,7 @@ public sealed class PixelSortingImageEffect : ImageEffectBase
     public override string Id => "pixel_sorting";
     public override string Name => "Pixel sorting";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "ArrowDownWideNarrow";
+    public override string IconKey => LucideIcons.arrow_down_wide_narrow;
     public override string Description => "Sorts pixels along rows or columns based on brightness or hue thresholds.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

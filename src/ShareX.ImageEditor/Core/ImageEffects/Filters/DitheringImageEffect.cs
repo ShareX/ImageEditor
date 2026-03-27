@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -23,7 +24,7 @@ public sealed class DitheringImageEffect : ImageEffectBase
     public override string Id => "dithering";
     public override string Name => "Dithering";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Grid2X2Check";
+    public override string IconKey => LucideIcons.grid_2x2_check;
     public override string Description => "Applies dithering to reduce color depth with various methods and palettes.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

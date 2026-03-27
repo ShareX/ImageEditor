@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class ColorMatrixImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "color_matrix";
     public override string Name => "Color matrix";
-    public override string IconKey => "TableProperties";
+    public override string IconKey => LucideIcons.grid_3x3;
     public override string Description => "Applies a color matrix transformation.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -1,6 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
@@ -16,7 +17,7 @@ public sealed class Anaglyph3DImageEffect : ImageEffectBase
     public override string Id => "anaglyph_3d";
     public override string Name => "Anaglyph 3D";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-    public override string IconKey => "Glasses";
+    public override string IconKey => LucideIcons.glasses;
     public override string Description => "Simulates a retro anaglyph 3D stereoscopic effect.";
 
     public override IReadOnlyList<EffectParameter> Parameters =>

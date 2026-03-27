@@ -1,5 +1,6 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using SkiaSharp;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
@@ -7,7 +8,7 @@ public sealed class GammaImageEffect : AdjustmentImageEffectBase
 {
     public override string Id => "gamma";
     public override string Name => "Gamma";
-    public override string IconKey => "Gauge";
+    public override string IconKey => LucideIcons.gauge;
     public override string Description => "Adjusts the gamma level.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [

@@ -14,7 +14,6 @@ public sealed class AutoCropImageEffect : ImageEffectBase
     public override string Description => "Automatically crops the image using tolerance on edge pixels.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
-        EffectParameters.Color<AutoCropImageEffect>("color", "Color", SKColors.Transparent, (e, v) => e.Color = v),
         EffectParameters.IntSlider<AutoCropImageEffect>("tolerance", "Tolerance", 0, 255, 0, (e, v) => e.Tolerance = v)
     ];
 

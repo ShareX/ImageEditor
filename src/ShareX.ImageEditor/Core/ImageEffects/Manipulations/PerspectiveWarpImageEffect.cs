@@ -10,6 +10,17 @@ public sealed class PerspectiveWarpImageEffect : ImageEffectBase
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
     public override string IconKey => "MoveDiagonal";
     public override string Description => "Applies a perspective warp transformation.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("top_left_x", "Top left X", -500, 500, 0, (e, v) => e.TopLeftX = v),
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("top_left_y", "Top left Y", -500, 500, 0, (e, v) => e.TopLeftY = v),
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("top_right_x", "Top right X", -500, 500, 0, (e, v) => e.TopRightX = v),
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("top_right_y", "Top right Y", -500, 500, 0, (e, v) => e.TopRightY = v),
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("bottom_right_x", "Bottom right X", -500, 500, 0, (e, v) => e.BottomRightX = v),
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("bottom_right_y", "Bottom right Y", -500, 500, 0, (e, v) => e.BottomRightY = v),
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("bottom_left_x", "Bottom left X", -500, 500, 0, (e, v) => e.BottomLeftX = v),
+        EffectParameters.IntNumeric<PerspectiveWarpImageEffect>("bottom_left_y", "Bottom left Y", -500, 500, 0, (e, v) => e.BottomLeftY = v)
+    ];
 
     public float TopLeftX { get; set; }
     public float TopLeftY { get; set; }

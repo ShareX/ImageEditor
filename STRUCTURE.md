@@ -17,7 +17,7 @@ namespace ShareX.ImageEditor.X.Y.Z
 Examples:
 - `ShareX.ImageEditor.Hosting.ImageEditorOptions` -> `Hosting/ImageEditorOptions.cs`
 - `ShareX.ImageEditor.Core.ImageEffects.Filters.BlurImageEffect` -> `Core/ImageEffects/Filters/BlurImageEffect.cs`
-- `ShareX.ImageEditor.Presentation.Views.Dialogs.BlurDialog` -> `Presentation/Views/Dialogs/Filters/BlurDialog.axaml.cs`
+- `ShareX.ImageEditor.Presentation.Views.Dialogs.SchemaDrivenEffectDialog` -> `Presentation/Views/Dialogs/SchemaDrivenEffectDialog.axaml.cs`
 - `ShareX.ImageEditor.Presentation.Controllers.EditorInputController` -> `Presentation/Controllers/EditorInputController.cs`
 
 Rules:
@@ -25,7 +25,7 @@ Rules:
 - Resource dictionaries and style includes use `.axaml` only.
 
 Known exceptions:
-- Effect dialog files stay in the `ShareX.ImageEditor.Presentation.Views.Dialogs` namespace while their files are grouped under `Presentation/Views/Dialogs/<Category>/`.
+- Effect dialogs are schema-driven from `Presentation/Effects/` metadata while bespoke dialog files stay under `Presentation/Views/Dialogs/`.
 - Annotation visual partials live in `Presentation/Rendering/AnnotationVisuals/` while extending annotation types in the `ShareX.ImageEditor.Core.Annotations` namespace.
 
 Use direct path computation first, then fall back to search only when one of the exceptions applies.
@@ -107,12 +107,15 @@ All effect categories are enumerated in `Core/ImageEffects/ImageEffectCategory.c
 Core/ImageEffects/
 |-- ImageEffect.cs           Root abstraction
 |-- ImageEffectBase.cs       Self-describing base (Id, Name, Category, Parameters, Apply)
+|-- ImageEffectContext.cs    Execution context passed to effect application
+|-- EffectExecutionMode.cs   Immediate vs dialog-driven execution mode
 |-- ImageEffectCategory.cs
-|-- Adjustments/             AdjustmentImageEffectBase.cs + 28 concrete effects
-|-- Drawings/                10 drawing effects plus drawing helpers/enums
-|-- Filters/                 87 concrete filter effects
+|-- Adjustments/             AdjustmentImageEffectBase.cs + concrete effects
+|-- Drawings/                Drawing effects (line/text/shape/watermark/background/etc.)
+|-- Filters/                 Filter effects
 |-- Helpers/                 ConvolutionHelper, ImageHelpers, ProceduralEffectHelper, TypeExtensions
-`-- Manipulations/           22 concrete effects
+|-- Manipulations/           Geometric/transform effects
+`-- Parameters/              Reusable parameter models (number, color, enum, bool, etc.)
 ```
 
 Base class note:
@@ -149,7 +152,9 @@ Read them before inspecting individual implementations.
 |------|----------------------------|
 | `Core/Annotations/Base/Annotation.cs` | All serializable annotation types |
 | `Presentation/Rendering/AnnotationVisuals/AnnotationVisualFactory.cs` | Persisted/preview annotation visual creation and synchronization |
-| `Presentation/Views/Dialogs/EffectDialogRegistry.cs` | Registry-backed effect dialog factories (currently 104 entries) |
+| `Presentation/Effects/ImageEffectCatalog.cs` | Unified effect catalog used by browser, dialog routing, and metadata display |
+| `Presentation/Effects/DiscoveredEffectRegistry.cs` | Reflection-based effect discovery and catalog seeding |
+| `Presentation/Views/Dialogs/EffectDialogRegistry.cs` | Bespoke editor routing for effects that need custom UI |
 | `Presentation/Controls/EffectBrowserPanel.axaml.cs` | Effect browser categories, menu items, and dialog/immediate-action wiring |
 
 ### Folder Map
@@ -162,6 +167,7 @@ Presentation/
 |   |-- EffectSlider.cs
 |   `-- ColorPickerDropdown, StrengthSlider, ZoomPickerDropdown, etc.
 |-- Converters/       XAML value converters
+|-- Effects/          Effect metadata/catalog models and discovery adapters
 |-- Rendering/        Bitmap/cursor helpers plus annotation visual support
 |   `-- AnnotationVisuals/
 |       |-- AnnotationVisualFactory.cs
@@ -170,11 +176,9 @@ Presentation/
 |-- ViewModels/       MainViewModel, its partial companions, adapter/viewmodel base types
 `-- Views/
     |-- Dialogs/
-    |   |-- Adjustments/    23 dialogs
-    |   |-- Drawings/       9 dialogs
-    |   |-- Filters/        60 dialogs
-    |   |-- Manipulations/  14 dialogs
+    |   |-- SchemaDrivenEffectDialog.axaml(.cs)
     |   |-- EffectDialogRegistry.cs
+    |   |-- EffectEventArgs.cs
     |   `-- IEffectDialog.cs
     |-- ConfirmationDialogView.axaml(.cs)
     |-- EditorView.axaml(.cs)
@@ -186,8 +190,9 @@ Presentation/
 ```
 
 Notes:
-- `Views/Dialogs/` contains 106 dialogs in total. `EffectDialogRegistry.cs` currently covers 104 of them; `CropImageDialog` and `RotateCustomAngleDialog` are opened directly from `EditorView.EffectsHost.cs`.
-- `BorderDialog` is grouped under `Views/Dialogs/Drawings/`, even though its underlying effect class lives in `Core/ImageEffects/Filters/`.
+- Dialog UI is now primarily schema-driven via `SchemaDrivenEffectDialog`; most effects do not require dedicated dialog classes.
+- `EffectDialogRegistry.cs` only maps bespoke editors for effects with custom interaction requirements (for example perspective warp, resize, crop, and selected drawing effects).
+- `EditorView.EffectsHost.cs` still contains host-side operation handling for editor operations that are not plain `ImageEffect` rows.
 - `EffectSlider.axaml` is a style/template resource paired with the `EffectSlider.cs` control class.
 
 ### Partial Class Conventions
@@ -213,6 +218,7 @@ Use `EditorView.*.cs` or `MainViewModel.*.cs` globs to find all companions.
 
 `src/ShareX.ImageEditor/Assets/` currently contains:
 - `lucide.ttf` for the icon font used by the UI
+- `lucide-unicode.html` as icon glyph reference
 - `closedhand.cur`
 - `Crosshair.cur`
 - `openhand.cur`

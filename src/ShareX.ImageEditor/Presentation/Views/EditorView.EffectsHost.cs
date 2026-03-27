@@ -37,30 +37,6 @@ namespace ShareX.ImageEditor.Presentation.Views
     {
         // --- Edit Menu Event Handlers ---
 
-        private void OnCropImageRequested(object? sender, EventArgs e)
-        {
-            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
-            {
-                var dialog = new CropImageDialog();
-                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-
-                dialog.ApplyRequested += (s, args) =>
-                {
-                    // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
-                    _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                dialog.CancelRequested += (s, args) =>
-                {
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
-            }
-        }
-
         private void OnAutoCropImageRequested(object? sender, EventArgs e)
         {
             if (DataContext is MainViewModel vm)
@@ -94,17 +70,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 vm.Rotate180Command.Execute(null);
                 vm.CloseEffectsPanelCommand.Execute(null);
-            }
-        }
-
-        private void OnRotateCustomAngleRequested(object? sender, EventArgs e)
-        {
-            if (DataContext is MainViewModel vm)
-            {
-                vm.OpenRotateCustomAngleDialogCommand.Execute(null);
-                var dialog = new RotateCustomAngleDialog();
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
             }
         }
 
@@ -213,17 +178,9 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
 
-            switch (dialog)
+            if (dialog is IEffectDialog effectDialog)
             {
-                case IEffectDialog effectDialog:
-                    ShowEffectDialog(dialog, effectDialog);
-                    break;
-                case ResizeImageDialog resizeImageDialog:
-                    ShowResizeImageDialog(resizeImageDialog);
-                    break;
-                case ResizeCanvasDialog resizeCanvasDialog:
-                    ShowResizeCanvasDialog(resizeCanvasDialog);
-                    break;
+                ShowEffectDialog(dialog, effectDialog);
             }
         }
 
@@ -264,17 +221,6 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             switch (operation.Kind)
             {
-                case EditorOperationKind.AutoCropImage:
-                    return false;
-                case EditorOperationKind.CropImage:
-                    OnCropImageRequested(this, EventArgs.Empty);
-                    return true;
-                case EditorOperationKind.ResizeImage:
-                    ShowResizeImageDialog(new ResizeImageDialog());
-                    return true;
-                case EditorOperationKind.ResizeCanvas:
-                    ShowResizeCanvasDialog(new ResizeCanvasDialog());
-                    return true;
                 case EditorOperationKind.Rotate90Clockwise:
                     OnRotate90CWRequested(this, EventArgs.Empty);
                     return true;
@@ -283,9 +229,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                     return true;
                 case EditorOperationKind.Rotate180:
                     OnRotate180Requested(this, EventArgs.Empty);
-                    return true;
-                case EditorOperationKind.RotateCustomAngle:
-                    OnRotateCustomAngleRequested(this, EventArgs.Empty);
                     return true;
                 case EditorOperationKind.FlipHorizontal:
                     OnFlipHorizontalRequested(this, EventArgs.Empty);
@@ -306,6 +249,28 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             SchemaDrivenEffectDialog dialog = new(operation.SchemaDefinition);
+
+            // Inject runtime defaults for operations that depend on current image dimensions
+            if (vm.PreviewImage != null)
+            {
+                int imgW = (int)vm.ImageWidth;
+                int imgH = (int)vm.ImageHeight;
+
+                if (operation.Kind is EditorOperationKind.CropImage or EditorOperationKind.ResizeImage)
+                {
+                    foreach (EffectParameterState state in dialog.ParameterStates)
+                    {
+                        if (state is NumericParameterState n)
+                        {
+                            if (string.Equals(state.Key, "width", StringComparison.OrdinalIgnoreCase))
+                                n.Value = imgW;
+                            else if (string.Equals(state.Key, "height", StringComparison.OrdinalIgnoreCase))
+                                n.Value = imgH;
+                        }
+                    }
+                }
+            }
+
             vm.StartEffectPreview();
 
             dialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
@@ -314,6 +279,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 switch (operation.Kind)
                 {
                     case EditorOperationKind.AutoCropImage:
+                    {
                         int tolerance = 0;
                         foreach (EffectParameterState state in dialog.ParameterStates)
                         {
@@ -326,14 +292,100 @@ namespace ShareX.ImageEditor.Presentation.Views
                         }
 
                         _editorCore.AutoCrop(tolerance);
-                        vm.EndEffectPreview();
-                        vm.CloseEffectsPanelCommand.Execute(null);
                         break;
+                    }
+                    case EditorOperationKind.CropImage:
+                    {
+                        int x = 0, y = 0, w = 0, h = 0;
+                        foreach (EffectParameterState state in dialog.ParameterStates)
+                        {
+                            if (state is NumericParameterState n)
+                            {
+                                switch (state.Key)
+                                {
+                                    case "x": x = (int)(n.Value ?? 0); break;
+                                    case "y": y = (int)(n.Value ?? 0); break;
+                                    case "width": w = (int)(n.Value ?? 0); break;
+                                    case "height": h = (int)(n.Value ?? 0); break;
+                                }
+                            }
+                        }
+
+                        _editorCore.Crop(new SKRect(x, y, x + w, y + h));
+                        break;
+                    }
+                    case EditorOperationKind.ResizeImage:
+                    {
+                        int rw = 0, rh = 0;
+                        foreach (EffectParameterState state in dialog.ParameterStates)
+                        {
+                            if (state is NumericParameterState n)
+                            {
+                                switch (state.Key)
+                                {
+                                    case "width": rw = (int)(n.Value ?? 0); break;
+                                    case "height": rh = (int)(n.Value ?? 0); break;
+                                }
+                            }
+                        }
+
+                        _editorCore.ResizeImage(rw, rh);
+                        break;
+                    }
+                    case EditorOperationKind.ResizeCanvas:
+                    {
+                        int top = 0, right = 0, bottom = 0, left = 0;
+                        SKColor bgColor = SKColors.Transparent;
+                        foreach (EffectParameterState state in dialog.ParameterStates)
+                        {
+                            if (state is NumericParameterState n)
+                            {
+                                switch (state.Key)
+                                {
+                                    case "top": top = (int)(n.Value ?? 0); break;
+                                    case "right": right = (int)(n.Value ?? 0); break;
+                                    case "bottom": bottom = (int)(n.Value ?? 0); break;
+                                    case "left": left = (int)(n.Value ?? 0); break;
+                                }
+                            }
+                            else if (state is ColorParameterState c &&
+                                     string.Equals(state.Key, "background_color", StringComparison.OrdinalIgnoreCase))
+                            {
+                                bgColor = new SKColor(c.Value.R, c.Value.G, c.Value.B, c.Value.A);
+                            }
+                        }
+
+                        _editorCore.ResizeCanvas(top, right, bottom, left, bgColor);
+                        break;
+                    }
+                    case EditorOperationKind.RotateCustomAngle:
+                    {
+                        float angle = 0;
+                        bool autoResize = true;
+                        foreach (EffectParameterState state in dialog.ParameterStates)
+                        {
+                            if (string.Equals(state.Key, "angle", StringComparison.OrdinalIgnoreCase) &&
+                                state is SliderParameterState slider)
+                            {
+                                angle = (float)slider.Value;
+                            }
+                            else if (string.Equals(state.Key, "auto_resize", StringComparison.OrdinalIgnoreCase) &&
+                                     state is CheckboxParameterState cb)
+                            {
+                                autoResize = cb.Value;
+                            }
+                        }
+
+                        _editorCore.RotateCustomAngle(angle, autoResize);
+                        break;
+                    }
                     default:
-                        vm.CancelEffectPreview();
-                        vm.CloseEffectsPanelCommand.Execute(null);
+                        vm.ApplyEffect(e.EffectOperation, $"Applied {operation.SchemaDefinition!.Name}");
                         break;
                 }
+
+                vm.EndEffectPreview();
+                vm.CloseEffectsPanelCommand.Execute(null);
             };
             dialog.CancelRequested += (s, e) =>
             {
@@ -364,45 +416,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             effectDialog.CancelRequested += (s, e) =>
             {
                 vm.CancelEffectPreview();
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-
-            vm.EffectsPanelContent = dialog;
-            vm.IsEffectsPanelOpen = true;
-        }
-
-        private void ShowResizeImageDialog(ResizeImageDialog dialog)
-        {
-            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
-                return;
-
-            dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-            dialog.ApplyRequested += (s, args) =>
-            {
-                vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-            dialog.CancelRequested += (s, args) =>
-            {
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-
-            vm.EffectsPanelContent = dialog;
-            vm.IsEffectsPanelOpen = true;
-        }
-
-        private void ShowResizeCanvasDialog(ResizeCanvasDialog dialog)
-        {
-            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
-                return;
-
-            dialog.ApplyRequested += (s, args) =>
-            {
-                vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
-                vm.CloseEffectsPanelCommand.Execute(null);
-            };
-            dialog.CancelRequested += (s, args) =>
-            {
                 vm.CloseEffectsPanelCommand.Execute(null);
             };
 

@@ -36,7 +36,6 @@ public sealed class SelectiveColorImageEffect : AdjustmentImageEffectBase
     public override string Name => "Selective Color";
     public override string IconKey => "Highlighter";
     public override string Description => "Adjusts hue, saturation, and lightness for individual color ranges.";
-    public override string? EditorKey => "selective_color";
 
     public Dictionary<SelectiveColorRange, SelectiveColorAdjustment> Adjustments { get; set; } = new();
 

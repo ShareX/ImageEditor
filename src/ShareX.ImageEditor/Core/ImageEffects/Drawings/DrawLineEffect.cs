@@ -10,7 +10,6 @@ public sealed class DrawLineEffect : ImageEffectBase
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
     public override string IconKey => "Minus";
     public override string Description => "Draws a line on the image.";
-    public override string? EditorKey => "draw_line";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
         EffectParameters.IntNumeric<DrawLineEffect>("start_x", "Start X", -10000, 10000, 0, (e, v) => e.StartPoint = new SKPointI(v, e.StartPoint.Y)),

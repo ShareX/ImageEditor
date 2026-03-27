@@ -10,7 +10,6 @@ public sealed class PerspectiveWarpImageEffect : ImageEffectBase
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
     public override string IconKey => "MoveDiagonal";
     public override string Description => "Applies a perspective warp transformation.";
-    public override string? EditorKey => "perspective_warp";
 
     public float TopLeftX { get; set; }
     public float TopLeftY { get; set; }

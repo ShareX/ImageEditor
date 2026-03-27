@@ -44,25 +44,8 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 return false;
             }
 
-            dialog = !string.IsNullOrWhiteSpace(definition.CustomEditorKey)
-                ? CreateBespokeEditor(definition.CustomEditorKey!)
-                : new SchemaDrivenEffectDialog(definition);
-            return dialog != null;
-        }
-
-        private static UserControl? CreateBespokeEditor(string key)
-        {
-            return key.ToLowerInvariant() switch
-            {
-                "perspective_warp" => new PerspectiveWarpDialog(),
-                "draw_line" => new DrawLineDialog(),
-                "draw_particles" => new DrawParticlesDialog(),
-                "draw_shape" => new DrawShapeDialog(),
-                "draw_text" => new DrawTextDialog(),
-                "text_watermark" => new TextWatermarkDialog(),
-                "selective_color" => new SelectiveColorDialog(),
-                _ => null
-            };
+            dialog = new SchemaDrivenEffectDialog(definition);
+            return true;
         }
     }
 }

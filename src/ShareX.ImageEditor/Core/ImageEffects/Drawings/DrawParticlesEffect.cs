@@ -14,7 +14,6 @@ public sealed class DrawParticlesEffect : ImageEffectBase
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
     public override string IconKey => "Sparkles";
     public override string Description => "Draws particle images on the source image.";
-    public override string? EditorKey => "draw_particles";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
         EffectParameters.FilePath<DrawParticlesEffect>("image_folder", "Image folder", string.Empty, (e, v) => e.ImageFolder = v),

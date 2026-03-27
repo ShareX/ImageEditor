@@ -10,7 +10,6 @@ public sealed class DrawShapeEffect : ImageEffectBase
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
     public override string IconKey => "Square";
     public override string Description => "Draws a shape on the image.";
-    public override string? EditorKey => "draw_shape";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
         EffectParameters.Enum<DrawShapeEffect, DrawingShapeType>(

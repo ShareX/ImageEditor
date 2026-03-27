@@ -13,7 +13,6 @@ public sealed class TextWatermarkEffect : ImageEffectBase
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
     public override string IconKey => "TextCursor";
     public override string Description => "Draws a text watermark with background on the image.";
-    public override string? EditorKey => "text_watermark";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
         EffectParameters.Text<TextWatermarkEffect>("text", "Text", "Text watermark", (e, v) => e.Text = v),

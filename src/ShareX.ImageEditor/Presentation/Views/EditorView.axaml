@@ -579,12 +579,12 @@
                     <TextBlock Text="{x:Static theming:EditorIcons.ActionSaveAs}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 
-                <Button Classes="editor-button" Command="{Binding PinToScreenCommand}" Width="40" Padding="0"
+                <Button Classes="editor-button" Command="{Binding PinToScreenCommand}" IsEnabled="{Binding HasPreviewImage}" Width="40" Padding="0"
                         ToolTip.Tip="Pin image to screen (Ctrl+P)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{x:Static theming:EditorIcons.ActionPinToScreen}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 
-                <Button Classes="editor-button" Command="{Binding UploadCommand}" Width="40" Padding="0"
+                <Button Classes="editor-button" Command="{Binding UploadCommand}" IsEnabled="{Binding HasPreviewImage}" Width="40" Padding="0"
                         ToolTip.Tip="Upload image (Ctrl+U)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{x:Static theming:EditorIcons.ActionUpload}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>

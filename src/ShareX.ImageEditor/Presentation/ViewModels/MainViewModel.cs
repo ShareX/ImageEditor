@@ -195,7 +195,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _pinRequested += value; PinToScreenCommand.NotifyCanExecuteChanged(); }
             remove { _pinRequested -= value; PinToScreenCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanPinToScreen() => _pinRequested != null;
+        public bool CanPinToScreen() => _pinRequested != null && HasPreviewImage;
 
         private Action? _uploadRequested;
         public event Action? UploadRequested
@@ -203,7 +203,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _uploadRequested += value; UploadCommand.NotifyCanExecuteChanged(); }
             remove { _uploadRequested -= value; UploadCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanUpload() => _uploadRequested != null;
+        public bool CanUpload() => _uploadRequested != null && HasPreviewImage;
 
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage
@@ -230,6 +230,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     CopyCommand.NotifyCanExecuteChanged();
                     SaveCommand.NotifyCanExecuteChanged();
                     SaveAsCommand.NotifyCanExecuteChanged();
+                    PinToScreenCommand.NotifyCanExecuteChanged();
+                    UploadCommand.NotifyCanExecuteChanged();
                     ZoomInCommand.NotifyCanExecuteChanged();
                     ZoomOutCommand.NotifyCanExecuteChanged();
                     ResetZoomCommand.NotifyCanExecuteChanged();

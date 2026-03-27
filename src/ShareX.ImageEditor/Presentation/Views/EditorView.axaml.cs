@@ -1036,8 +1036,20 @@ namespace ShareX.ImageEditor.Presentation.Views
                         case Key.V: vm.PasteCommand.Execute(null); e.Handled = true; break;
                         case Key.D: DuplicateSelectedAnnotation(); e.Handled = true; break;
                         case Key.S: vm.SaveCommand.Execute(null); e.Handled = true; break;
-                        case Key.P: vm.PinToScreenCommand.Execute(null); e.Handled = true; break;
-                        case Key.U: vm.UploadCommand.Execute(null); e.Handled = true; break;
+                        case Key.P:
+                            if (vm.PinToScreenCommand.CanExecute(null))
+                            {
+                                vm.PinToScreenCommand.Execute(null);
+                                e.Handled = true;
+                            }
+                            break;
+                        case Key.U:
+                            if (vm.UploadCommand.CanExecute(null))
+                            {
+                                vm.UploadCommand.Execute(null);
+                                e.Handled = true;
+                            }
+                            break;
                     }
                 }
                 else if (e.KeyModifiers == KeyModifiers.None || e.KeyModifiers == KeyModifiers.Shift)

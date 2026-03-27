@@ -10,7 +10,7 @@ public abstract class ImageEffect
 
     public virtual bool HasParameters => false;
 
-    public virtual string? IconKey => null;
+    public abstract string IconKey { get; }
 
     public abstract SKBitmap Apply(SKBitmap source);
 }

@@ -12,7 +12,7 @@ internal static class DiscoveredEffectPresentationAdapter
             effect.Id,
             effect.Name,
             effect.BrowserLabel,
-            EffectIconResolver.Resolve(effect.IconKey),
+            effect.IconKey,
             effect.Description,
             effect.Category,
             () => (ImageEffect)Activator.CreateInstance(effectType)!,

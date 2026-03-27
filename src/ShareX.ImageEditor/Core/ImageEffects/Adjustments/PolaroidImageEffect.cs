@@ -1,5 +1,5 @@
-using SkiaSharp;
 using ShareX.ImageEditor.Presentation.Theming;
+using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 

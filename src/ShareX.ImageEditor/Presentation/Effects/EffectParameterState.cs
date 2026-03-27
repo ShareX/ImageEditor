@@ -26,16 +26,15 @@
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ShareX.ImageEditor.Core.ImageEffects;
+using SkiaSharp;
 using CoreCheckboxParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.CheckboxEffectParameter;
 using CoreColorParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.ColorEffectParameter;
-using CoreEffectOption = ShareX.ImageEditor.Core.ImageEffects.Parameters.EffectOption;
 using CoreEffectParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.EffectParameter;
 using CoreEnumParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.EnumEffectParameter;
 using CoreFilePathParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.FilePathEffectParameter;
 using CoreNumericParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.NumericEffectParameter;
 using CoreSliderParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.SliderEffectParameter;
 using CoreTextParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.TextEffectParameter;
-using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Effects;
 

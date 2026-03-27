@@ -23,8 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using System.Diagnostics;
 using ShareX.ImageEditor.Hosting.Diagnostics;
+using System.Diagnostics;
 
 namespace ShareX.ImageEditor.Hosting;
 

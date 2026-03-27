@@ -49,12 +49,6 @@ public sealed class EffectDefinition
     public IReadOnlyList<CoreEffectParameter> CoreParameters { get; }
 
     /// <summary>
-    /// When set, indicates this effect requires a bespoke editor rather than the generic schema-driven dialog.
-    /// The value is a key used to resolve the bespoke editor control.
-    /// </summary>
-    public string? CustomEditorKey { get; }
-
-    /// <summary>
     /// When true, the effect is applied immediately from the browser without opening a dialog.
     /// Used for parameterless effects like Invert, Black &amp; White, Polaroid, etc.
     /// </summary>
@@ -81,7 +75,6 @@ public sealed class EffectDefinition
             createEffect,
             parameters,
             coreParameters,
-            customEditorKey,
             applyImmediately)
     {
     }
@@ -96,7 +89,6 @@ public sealed class EffectDefinition
         Func<ImageEffect> createEffect,
         IReadOnlyList<EffectParameterDefinition> parameters,
         IReadOnlyList<CoreEffectParameter>? coreParameters = null,
-        string? customEditorKey = null,
         bool applyImmediately = false)
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
@@ -108,7 +100,6 @@ public sealed class EffectDefinition
         CreateEffect = createEffect ?? throw new ArgumentNullException(nameof(createEffect));
         Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
         CoreParameters = coreParameters ?? [];
-        CustomEditorKey = customEditorKey;
         ApplyImmediately = applyImmediately;
     }
 

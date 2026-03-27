@@ -18,7 +18,6 @@ internal static class DiscoveredEffectPresentationAdapter
             () => (ImageEffect)Activator.CreateInstance(effectType)!,
             [],
             effect.Parameters,
-            customEditorKey: effect.EditorKey,
             applyImmediately: effect.ExecutionMode == EffectExecutionMode.Immediate);
     }
 }

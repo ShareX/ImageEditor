@@ -15,8 +15,6 @@ public abstract class ImageEffectBase : ImageEffect
 
     public virtual EffectExecutionMode ExecutionMode => EffectExecutionMode.Previewable;
 
-    public virtual string? EditorKey => null;
-
     public sealed override bool HasParameters => Parameters.Count > 0;
 
     public virtual SKBitmap Apply(SKBitmap source, ImageEffectContext context) => Apply(source);

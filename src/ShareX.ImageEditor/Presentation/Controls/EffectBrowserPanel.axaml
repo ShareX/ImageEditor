@@ -30,7 +30,7 @@
                                         Grid.Column="1"
                                         IsVisible="{Binding HasHeaderHint}"
                                         ToolTip.Tip="{Binding HeaderHint}">
-                                    <TextBlock Text="{x:Static theming:LucideIcons.Lightbulb}"
+                                    <TextBlock Text="{x:Static theming:LucideIcons.lightbulb}"
                                                Classes="category-tip-icon"/>
                                 </Border>
                             </Grid>

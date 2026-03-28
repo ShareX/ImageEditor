@@ -647,4 +647,27 @@
     <Style Selector="ContextMenu Separator">
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
     </Style>
+
+    <Style Selector="MenuFlyoutPresenter MenuItem">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+
+    <Style Selector="MenuFlyoutPresenter MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+    </Style>
+
+    <Style Selector="MenuFlyoutPresenter MenuItem:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="MenuFlyoutPresenter MenuItem:pointerover TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="MenuFlyoutPresenter Separator">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
+    </Style>
 </Styles>

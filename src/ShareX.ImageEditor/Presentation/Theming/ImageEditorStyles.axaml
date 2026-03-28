@@ -652,6 +652,7 @@
         <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="Margin" Value="6,2"/>
         <Setter Property="CornerRadius" Value="4"/>
     </Style>
 
@@ -669,5 +670,6 @@
 
     <Style Selector="MenuFlyoutPresenter Separator">
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
+        <Setter Property="Margin" Value="6,4"/>
     </Style>
 </Styles>

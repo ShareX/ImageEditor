@@ -128,6 +128,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         public void RequestClose()
         {
+            if (IsModalOpen)
+            {
+                return;
+            }
+
             TaskResult = EditorTaskResult.Cancel;
 
             if (Options.ShowExitConfirmation && IsDirty)
@@ -156,21 +161,26 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private void ShowConfirmationDialog()
         {
+            if (IsModalOpen)
+            {
+                return;
+            }
+
             var dialog = new ConfirmationDialogViewModel(
                 onYes: () =>
                 {
                     Save();
-                    IsModalOpen = false;
+                    CloseModal();
                     CloseRequested?.Invoke(this, EventArgs.Empty);
                 },
                 onNo: () =>
                 {
-                    IsModalOpen = false;
+                    CloseModal();
                     CloseRequested?.Invoke(this, EventArgs.Empty);
                 },
                 onCancel: () =>
                 {
-                    IsModalOpen = false;
+                    CloseModal();
                 }
             );
 

@@ -536,12 +536,18 @@
                                 </MenuFlyout>
                             </Button.Flyout>
                         </Button>
+                        <Border Width="1"
+                                Margin="4,0"
+                                Background="{DynamicResource ShareX.Brush.Separator}"/>
                     </StackPanel>
                 </controls:AnnotationToolbar.TopRowLeadingContent>
                 <controls:AnnotationToolbar.TopRowTrailingContent>
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4"
                                 x:DataType="vm:EditorToolbarAdapter">
+                        <Border Width="1"
+                                Margin="4,0"
+                                Background="{DynamicResource ShareX.Brush.Separator}"/>
                         <Button Classes="editor-button toolbar-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"

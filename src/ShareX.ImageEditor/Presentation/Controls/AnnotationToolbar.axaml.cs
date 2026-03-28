@@ -81,11 +81,33 @@ public partial class AnnotationToolbar : UserControl
     {
         TopRowTrailingContentProperty.Changed.AddClassHandler<AnnotationToolbar>((toolbar, args) =>
         {
-            toolbar.HasTopRowTrailingContent = args.NewValue != null;
+            if (args.OldValue is Visual oldVisual)
+                oldVisual.PropertyChanged -= toolbar.OnTrailingContentPropertyChanged;
+
+            if (args.NewValue is Visual newVisual)
+            {
+                newVisual.PropertyChanged += toolbar.OnTrailingContentPropertyChanged;
+                toolbar.HasTopRowTrailingContent = newVisual.IsVisible;
+            }
+            else
+            {
+                toolbar.HasTopRowTrailingContent = args.NewValue != null;
+            }
         });
         TopRowLeadingContentProperty.Changed.AddClassHandler<AnnotationToolbar>((toolbar, args) =>
         {
-            toolbar.HasTopRowLeadingContent = args.NewValue != null;
+            if (args.OldValue is Visual oldVisual)
+                oldVisual.PropertyChanged -= toolbar.OnLeadingContentPropertyChanged;
+
+            if (args.NewValue is Visual newVisual)
+            {
+                newVisual.PropertyChanged += toolbar.OnLeadingContentPropertyChanged;
+                toolbar.HasTopRowLeadingContent = newVisual.IsVisible;
+            }
+            else
+            {
+                toolbar.HasTopRowLeadingContent = args.NewValue != null;
+            }
         });
     }
 
@@ -127,6 +149,18 @@ public partial class AnnotationToolbar : UserControl
     {
         get => _hasTopRowLeadingContent;
         private set => SetAndRaise(HasTopRowLeadingContentProperty, ref _hasTopRowLeadingContent, value);
+    }
+
+    private void OnLeadingContentPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == IsVisibleProperty && sender is Visual visual)
+            HasTopRowLeadingContent = visual.IsVisible;
+    }
+
+    private void OnTrailingContentPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == IsVisibleProperty && sender is Visual visual)
+            HasTopRowTrailingContent = visual.IsVisible;
     }
 
     private void InitializeComponent()

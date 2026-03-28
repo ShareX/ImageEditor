@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: ShareX.ImageEditor Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/ShareX.ImageEditor.Loader/ShareX.ImageEditor.Loader.csproj"
+        }
+    ]
+}

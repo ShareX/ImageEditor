@@ -78,6 +78,13 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string LayerFlatten = LucideIcons.layers_2;
         public const string ChevronDown = LucideIcons.chevron_down;
 
+        public const string FileMenu = LucideIcons.file;
+        public const string FileNew = LucideIcons.file_plus;
+        public const string FileOpen = LucideIcons.folder_open;
+        public const string FileSave = LucideIcons.save;
+        public const string FileSaveAs = LucideIcons.save_all;
+        public const string FileExit = LucideIcons.log_out;
+
         public static string ForTool(EditorTool tool) => tool switch
         {
             EditorTool.Select => ToolSelect,

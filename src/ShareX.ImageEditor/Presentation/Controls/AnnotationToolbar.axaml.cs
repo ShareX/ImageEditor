@@ -46,15 +46,24 @@ public partial class AnnotationToolbar : UserControl
     public static readonly StyledProperty<object?> TopRowTrailingContentProperty =
         AvaloniaProperty.Register<AnnotationToolbar, object?>(nameof(TopRowTrailingContent));
 
+    public static readonly StyledProperty<object?> TopRowLeadingContentProperty =
+        AvaloniaProperty.Register<AnnotationToolbar, object?>(nameof(TopRowLeadingContent));
+
     public static readonly DirectProperty<AnnotationToolbar, bool> HasTopRowTrailingContentProperty =
         AvaloniaProperty.RegisterDirect<AnnotationToolbar, bool>(
             nameof(HasTopRowTrailingContent),
             toolbar => toolbar.HasTopRowTrailingContent);
 
+    public static readonly DirectProperty<AnnotationToolbar, bool> HasTopRowLeadingContentProperty =
+        AvaloniaProperty.RegisterDirect<AnnotationToolbar, bool>(
+            nameof(HasTopRowLeadingContent),
+            toolbar => toolbar.HasTopRowLeadingContent);
+
     private readonly SolidColorBrush? _activeBrush;
     private readonly SolidColorBrush? _activeForegroundBrush;
     private IPlatformSettings? _platformSettings;
     private bool _hasTopRowTrailingContent;
+    private bool _hasTopRowLeadingContent;
 
     public event EventHandler<IBrush>? ColorChanged;
     public event EventHandler<IBrush>? FillColorChanged;
@@ -74,6 +83,10 @@ public partial class AnnotationToolbar : UserControl
         {
             toolbar.HasTopRowTrailingContent = args.NewValue != null;
         });
+        TopRowLeadingContentProperty.Changed.AddClassHandler<AnnotationToolbar>((toolbar, args) =>
+        {
+            toolbar.HasTopRowLeadingContent = args.NewValue != null;
+        });
     }
 
     public AnnotationToolbar()
@@ -92,6 +105,12 @@ public partial class AnnotationToolbar : UserControl
         set => SetValue(TopRowTrailingContentProperty, value);
     }
 
+    public object? TopRowLeadingContent
+    {
+        get => GetValue(TopRowLeadingContentProperty);
+        set => SetValue(TopRowLeadingContentProperty, value);
+    }
+
     public bool ShowEditingActions
     {
         get => GetValue(ShowEditingActionsProperty);
@@ -102,6 +121,12 @@ public partial class AnnotationToolbar : UserControl
     {
         get => _hasTopRowTrailingContent;
         private set => SetAndRaise(HasTopRowTrailingContentProperty, ref _hasTopRowTrailingContent, value);
+    }
+
+    public bool HasTopRowLeadingContent
+    {
+        get => _hasTopRowLeadingContent;
+        private set => SetAndRaise(HasTopRowLeadingContentProperty, ref _hasTopRowLeadingContent, value);
     }
 
     private void InitializeComponent()

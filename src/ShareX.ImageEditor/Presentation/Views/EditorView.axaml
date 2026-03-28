@@ -22,6 +22,9 @@
         <DataTemplate DataType="{x:Type vm:ConfirmationDialogViewModel}" x:DataType="vm:ConfirmationDialogViewModel">
             <views:ConfirmationDialogView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NewImageDialogViewModel}" x:DataType="vm:NewImageDialogViewModel">
+            <views:NewImageDialogView />
+        </DataTemplate>
     </UserControl.DataTemplates>
 
     <UserControl.Resources>
@@ -484,6 +487,57 @@
                                         DataContext="{Binding ToolbarAdapter}"
                                         ShowEditingActions="False"
                                         MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <controls:AnnotationToolbar.TopRowLeadingContent>
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{ReflectionBinding DataContext.ImageEditorMode, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <Button Classes="editor-button toolbar-button"
+                                ToolTip.Tip="File"
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18"
+                                Content="{x:Static theming:EditorIcons.FileMenu}">
+                            <Button.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                    <MenuItem Header="New..."
+                                              Command="{ReflectionBinding DataContext.NewImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              InputGesture="Ctrl+N">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileNew}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Open..."
+                                              Command="{ReflectionBinding DataContext.OpenImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              InputGesture="Ctrl+O">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileOpen}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator/>
+                                    <MenuItem Header="Save"
+                                              Command="{ReflectionBinding DataContext.SaveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              InputGesture="Ctrl+S">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSave}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Save as..."
+                                              Command="{ReflectionBinding DataContext.SaveAsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              InputGesture="Ctrl+Shift+S">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSaveAs}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator/>
+                                    <MenuItem Header="Exit"
+                                              Command="{ReflectionBinding DataContext.ExitEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileExit}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                </controls:AnnotationToolbar.TopRowLeadingContent>
                 <controls:AnnotationToolbar.TopRowTrailingContent>
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4"
@@ -517,7 +571,8 @@
         <Border Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,0"
                 Padding="4" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1" CornerRadius="4,4,0,0"
                 MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                ClipToBounds="False">
+                ClipToBounds="False"
+                IsVisible="{Binding ShowBottomToolbar}">
             <StackPanel Orientation="Horizontal" Spacing="4" ClipToBounds="False">
                 <!-- Zoom Picker -->
                 <controls:ZoomPickerDropdown

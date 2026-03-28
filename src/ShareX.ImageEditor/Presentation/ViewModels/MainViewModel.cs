@@ -72,6 +72,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private bool _showTaskModeButtons = true;
 
+        [ObservableProperty]
+        private bool _imageEditorMode;
+
+        public bool ShowBottomToolbar => !ImageEditorMode;
+
+        partial void OnImageEditorModeChanged(bool value)
+        {
+            OnPropertyChanged(nameof(ShowBottomToolbar));
+        }
+
         // Events to signal View to perform canvas operations
         public event EventHandler? UndoRequested;
         public event EventHandler? RedoRequested;
@@ -85,6 +95,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
         public event EventHandler? CloseRequested;
+
+        // File menu events (Image Editor Mode)
+        public event EventHandler? NewImageRequested;
+        public event EventHandler? OpenImageRequested;
 
         [ObservableProperty]
         private bool _taskMode;
@@ -1056,6 +1070,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             _uploadRequested?.Invoke();
             CloseAfterTaskActionIfEnabled();
+        }
+
+        [RelayCommand]
+        private void NewImage()
+        {
+            NewImageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand]
+        private void OpenImage()
+        {
+            OpenImageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand]
+        private void ExitEditor()
+        {
+            RequestClose();
         }
     }
 }

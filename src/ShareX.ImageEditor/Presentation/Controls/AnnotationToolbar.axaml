@@ -26,6 +26,15 @@
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Disabled">
                 <StackPanel Orientation="Horizontal" Spacing="4">
+                    <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            IsVisible="{Binding HasTopRowLeadingContent, ElementName=AnnotationToolbarRoot}">
+                        <ContentPresenter Content="{Binding TopRowLeadingContent, ElementName=AnnotationToolbarRoot}"/>
+                        <Border Width="1"
+                                Margin="4,0"
+                                Background="{DynamicResource ShareX.Brush.Separator}"/>
+                    </StackPanel>
                     <Button Classes="editor-button toolbar-button"
                             Tag="{x:Static models:EditorTool.Select}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"

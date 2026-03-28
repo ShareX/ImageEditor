@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:ShareX.ImageEditor.Presentation.ViewModels"
+             xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="280"
+             x:Class="ShareX.ImageEditor.Presentation.Views.NewImageDialogView"
+             x:DataType="vm:NewImageDialogViewModel">
+
+    <Border Background="{DynamicResource ShareX.Brush.Background.Popup}"
+            BorderBrush="{DynamicResource ShareX.Brush.Border}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="0"
+            Width="340"
+            BoxShadow="0 4 10 0 #40000000">
+        <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Popup}">
+            <!-- Title Bar -->
+            <Border Grid.Row="0" Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="0,0,0,1"
+                    Padding="10,6">
+                <TextBlock Text="New Image" FontWeight="Normal"/>
+            </Border>
+
+            <!-- Content -->
+            <StackPanel Grid.Row="1" Margin="20" Spacing="12">
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="8" ColumnSpacing="8">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Width:" VerticalAlignment="Center" FontWeight="Normal"/>
+                    <NumericUpDown Grid.Row="0" Grid.Column="1"
+                                   Value="{Binding Width}"
+                                   Minimum="1" Maximum="10000"
+                                   Increment="1"
+                                   FormatString="0"
+                                   HorizontalAlignment="Stretch"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="pixels" VerticalAlignment="Center" FontWeight="Normal"
+                               Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Height:" VerticalAlignment="Center" FontWeight="Normal"/>
+                    <NumericUpDown Grid.Row="1" Grid.Column="1"
+                                   Value="{Binding Height}"
+                                   Minimum="1" Maximum="10000"
+                                   Increment="1"
+                                   FormatString="0"
+                                   HorizontalAlignment="Stretch"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="pixels" VerticalAlignment="Center" FontWeight="Normal"
+                               Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                </Grid>
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Background color:" FontWeight="Normal"/>
+                    <CheckBox IsChecked="{Binding Transparent}" Content="Transparent" FontWeight="Normal"/>
+                    <controls:ColorPickerDropdown x:Name="BackgroundColorPicker"
+                                                  SelectedColorValue="{Binding BackgroundColor, Mode=TwoWay}"
+                                                  IsEnabled="{Binding !Transparent}"
+                                                  Height="40"
+                                                  Width="72"
+                                                  HorizontalAlignment="Left"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Buttons -->
+            <Border Grid.Row="2" Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="0,1,0,0"
+                    Padding="10">
+                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
+                    <Button Classes="editor-button" Padding="20,0" Content="OK" Command="{Binding OkCommand}" HorizontalContentAlignment="Center"/>
+                    <Button Classes="editor-button" Padding="20,0" Content="Cancel" Command="{Binding CancelCommand}" HorizontalContentAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

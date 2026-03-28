@@ -339,6 +339,10 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.ZoomToFitRequested += OnZoomToFitRequested;
                 vm.FlattenRequested += OnFlattenRequested;
 
+                // File menu event handlers (Image Editor Mode)
+                vm.NewImageRequested += OnNewImageRequested;
+                vm.OpenImageRequested += OnOpenImageRequested;
+
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
 
@@ -386,6 +390,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.PropertyChanged -= OnViewModelPropertyChanged;
                 vm.DeselectRequested -= OnDeselectRequested;
                 vm.ZoomToFitRequested -= OnZoomToFitRequested;
+                vm.NewImageRequested -= OnNewImageRequested;
+                vm.OpenImageRequested -= OnOpenImageRequested;
             }
 
             UnhookAnnotationToolbarEvents();
@@ -1421,6 +1427,85 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (files.Count > 0)
             {
                 vm.SetBackgroundImagePath(files[0].Path.LocalPath);
+            }
+        }
+
+        private void OnNewImageRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            var dialog = new NewImageDialogViewModel(
+                onOk: (result) =>
+                {
+                    vm.IsModalOpen = false;
+
+                    var color = result.Transparent ? SKColors.Transparent :
+                        new SKColor(result.BackgroundColor.R, result.BackgroundColor.G, result.BackgroundColor.B, result.BackgroundColor.A);
+
+                    using var surface = SKSurface.Create(new SKImageInfo(result.Width, result.Height, SKColorType.Bgra8888, SKAlphaType.Premul));
+                    surface.Canvas.Clear(color);
+
+                    using var image = surface.Snapshot();
+                    using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+                    using var stream = new MemoryStream(data.ToArray());
+                    var bitmap = new Avalonia.Media.Imaging.Bitmap(stream);
+
+                    // Clear existing annotations
+                    ClearAllAnnotations();
+
+                    // Reset file path for new image
+                    vm.ImageFilePath = null;
+                    vm.LastSavedPath = null;
+                    vm.IsDirty = false;
+
+                    vm.PreviewImage = bitmap;
+                },
+                onCancel: () =>
+                {
+                    vm.IsModalOpen = false;
+                }
+            );
+
+            vm.ModalContent = dialog;
+            vm.IsModalOpen = true;
+        }
+
+        private async void OnOpenImageRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            TopLevel? topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel?.StorageProvider == null)
+            {
+                return;
+            }
+
+            IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Open image",
+                AllowMultiple = false,
+                FileTypeFilter = [FilePickerFileTypes.ImageAll]
+            });
+
+            if (files.Count > 0)
+            {
+                using var stream = await files[0].OpenReadAsync();
+                var bitmap = new Avalonia.Media.Imaging.Bitmap(stream);
+
+                // Clear existing annotations
+                ClearAllAnnotations();
+
+                vm.ImageFilePath = files[0].Path.LocalPath;
+                vm.LastSavedPath = files[0].Path.LocalPath;
+                vm.IsDirty = false;
+
+                vm.PreviewImage = bitmap;
             }
         }
 

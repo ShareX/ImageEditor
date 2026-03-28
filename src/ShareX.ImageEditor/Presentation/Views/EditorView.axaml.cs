@@ -342,6 +342,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 // File menu event handlers (Image Editor Mode)
                 vm.NewImageRequested += OnNewImageRequested;
                 vm.OpenImageRequested += OnOpenImageRequested;
+                vm.SaveRequested += OnSaveRequested;
+                vm.SaveAsRequested += OnSaveAsRequested;
 
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
@@ -392,6 +394,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.ZoomToFitRequested -= OnZoomToFitRequested;
                 vm.NewImageRequested -= OnNewImageRequested;
                 vm.OpenImageRequested -= OnOpenImageRequested;
+                vm.SaveRequested -= OnSaveRequested;
+                vm.SaveAsRequested -= OnSaveAsRequested;
             }
 
             UnhookAnnotationToolbarEvents();
@@ -1555,6 +1559,78 @@ namespace ShareX.ImageEditor.Presentation.Views
                     _isSyncingToVM = false;
                 }
             }
+        }
+
+        private async void OnSaveRequested()
+        {
+            if (DataContext is not MainViewModel vm) return;
+
+            if (!string.IsNullOrEmpty(vm.LastSavedPath))
+            {
+                SaveSnapshotToFile(vm.LastSavedPath!);
+                vm.IsDirty = false;
+            }
+            else
+            {
+                await SaveAsAsync();
+            }
+        }
+
+        private async void OnSaveAsRequested()
+        {
+            await SaveAsAsync();
+        }
+
+        private async Task SaveAsAsync()
+        {
+            if (DataContext is not MainViewModel vm) return;
+
+            TopLevel? topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel?.StorageProvider == null) return;
+
+            IStorageFile? file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Save image as",
+                SuggestedFileName = !string.IsNullOrEmpty(vm.ImageFilePath)
+                    ? System.IO.Path.GetFileName(vm.ImageFilePath)
+                    : "image.png",
+                FileTypeChoices =
+                [
+                    new FilePickerFileType("PNG") { Patterns = ["*.png"] },
+                    new FilePickerFileType("JPEG") { Patterns = ["*.jpg", "*.jpeg"] },
+                    new FilePickerFileType("BMP") { Patterns = ["*.bmp"] },
+                    new FilePickerFileType("WebP") { Patterns = ["*.webp"] },
+                ]
+            });
+
+            if (file != null)
+            {
+                var path = file.Path.LocalPath;
+                SaveSnapshotToFile(path);
+                vm.ImageFilePath = path;
+                vm.LastSavedPath = path;
+                vm.IsDirty = false;
+            }
+        }
+
+        private void SaveSnapshotToFile(string path)
+        {
+            using var bitmap = GetSnapshot();
+            if (bitmap == null) return;
+
+            var ext = System.IO.Path.GetExtension(path)?.ToLowerInvariant();
+            var format = ext switch
+            {
+                ".jpg" or ".jpeg" => SKEncodedImageFormat.Jpeg,
+                ".bmp" => SKEncodedImageFormat.Bmp,
+                ".webp" => SKEncodedImageFormat.Webp,
+                _ => SKEncodedImageFormat.Png,
+            };
+
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(format, format == SKEncodedImageFormat.Jpeg ? 95 : 100);
+            using var stream = System.IO.File.OpenWrite(path);
+            data.SaveTo(stream);
         }
 
         private void OnZoomToFitRequested(object? sender, EventArgs e)

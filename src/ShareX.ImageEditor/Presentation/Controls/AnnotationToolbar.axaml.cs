@@ -43,27 +43,12 @@ public partial class AnnotationToolbar : UserControl
     public static readonly StyledProperty<bool> ShowEditingActionsProperty =
         AvaloniaProperty.Register<AnnotationToolbar, bool>(nameof(ShowEditingActions), true);
 
-    public static readonly StyledProperty<object?> TopRowTrailingContentProperty =
-        AvaloniaProperty.Register<AnnotationToolbar, object?>(nameof(TopRowTrailingContent));
-
-    public static readonly StyledProperty<object?> TopRowLeadingContentProperty =
-        AvaloniaProperty.Register<AnnotationToolbar, object?>(nameof(TopRowLeadingContent));
-
-    public static readonly DirectProperty<AnnotationToolbar, bool> HasTopRowTrailingContentProperty =
-        AvaloniaProperty.RegisterDirect<AnnotationToolbar, bool>(
-            nameof(HasTopRowTrailingContent),
-            toolbar => toolbar.HasTopRowTrailingContent);
-
-    public static readonly DirectProperty<AnnotationToolbar, bool> HasTopRowLeadingContentProperty =
-        AvaloniaProperty.RegisterDirect<AnnotationToolbar, bool>(
-            nameof(HasTopRowLeadingContent),
-            toolbar => toolbar.HasTopRowLeadingContent);
+    public static readonly StyledProperty<bool> ShowTrailingActionsProperty =
+        AvaloniaProperty.Register<AnnotationToolbar, bool>(nameof(ShowTrailingActions), true);
 
     private readonly SolidColorBrush? _activeBrush;
     private readonly SolidColorBrush? _activeForegroundBrush;
     private IPlatformSettings? _platformSettings;
-    private bool _hasTopRowTrailingContent;
-    private bool _hasTopRowLeadingContent;
 
     public event EventHandler<IBrush>? ColorChanged;
     public event EventHandler<IBrush>? FillColorChanged;
@@ -77,40 +62,6 @@ public partial class AnnotationToolbar : UserControl
     public event EventHandler<bool>? TextUnderlineChanged;
     public event EventHandler<bool>? ShadowChanged;
 
-    static AnnotationToolbar()
-    {
-        TopRowTrailingContentProperty.Changed.AddClassHandler<AnnotationToolbar>((toolbar, args) =>
-        {
-            if (args.OldValue is Visual oldVisual)
-                oldVisual.PropertyChanged -= toolbar.OnTrailingContentPropertyChanged;
-
-            if (args.NewValue is Visual newVisual)
-            {
-                newVisual.PropertyChanged += toolbar.OnTrailingContentPropertyChanged;
-                toolbar.HasTopRowTrailingContent = newVisual.IsVisible;
-            }
-            else
-            {
-                toolbar.HasTopRowTrailingContent = args.NewValue != null;
-            }
-        });
-        TopRowLeadingContentProperty.Changed.AddClassHandler<AnnotationToolbar>((toolbar, args) =>
-        {
-            if (args.OldValue is Visual oldVisual)
-                oldVisual.PropertyChanged -= toolbar.OnLeadingContentPropertyChanged;
-
-            if (args.NewValue is Visual newVisual)
-            {
-                newVisual.PropertyChanged += toolbar.OnLeadingContentPropertyChanged;
-                toolbar.HasTopRowLeadingContent = newVisual.IsVisible;
-            }
-            else
-            {
-                toolbar.HasTopRowLeadingContent = args.NewValue != null;
-            }
-        });
-    }
-
     public AnnotationToolbar()
     {
         InitializeComponent();
@@ -121,46 +72,16 @@ public partial class AnnotationToolbar : UserControl
         Unloaded += OnUnloaded;
     }
 
-    public object? TopRowTrailingContent
-    {
-        get => GetValue(TopRowTrailingContentProperty);
-        set => SetValue(TopRowTrailingContentProperty, value);
-    }
-
-    public object? TopRowLeadingContent
-    {
-        get => GetValue(TopRowLeadingContentProperty);
-        set => SetValue(TopRowLeadingContentProperty, value);
-    }
-
     public bool ShowEditingActions
     {
         get => GetValue(ShowEditingActionsProperty);
         set => SetValue(ShowEditingActionsProperty, value);
     }
 
-    public bool HasTopRowTrailingContent
+    public bool ShowTrailingActions
     {
-        get => _hasTopRowTrailingContent;
-        private set => SetAndRaise(HasTopRowTrailingContentProperty, ref _hasTopRowTrailingContent, value);
-    }
-
-    public bool HasTopRowLeadingContent
-    {
-        get => _hasTopRowLeadingContent;
-        private set => SetAndRaise(HasTopRowLeadingContentProperty, ref _hasTopRowLeadingContent, value);
-    }
-
-    private void OnLeadingContentPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Property == IsVisibleProperty && sender is Visual visual)
-            HasTopRowLeadingContent = visual.IsVisible;
-    }
-
-    private void OnTrailingContentPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Property == IsVisibleProperty && sender is Visual visual)
-            HasTopRowTrailingContent = visual.IsVisible;
+        get => GetValue(ShowTrailingActionsProperty);
+        set => SetValue(ShowTrailingActionsProperty, value);
     }
 
     private void InitializeComponent()

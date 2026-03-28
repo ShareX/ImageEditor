@@ -61,6 +61,8 @@ namespace ShareX.ImageEditor.Loader
 
                 if (window.DataContext is MainViewModel vm)
                 {
+                    vm.ImageEditorMode = true;
+
                     LoadExampleImage(vm);
                     //GenerateSampleImage(vm, 4000, 2000);
 

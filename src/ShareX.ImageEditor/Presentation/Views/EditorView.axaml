@@ -490,7 +490,7 @@
                 <controls:AnnotationToolbar.TopRowLeadingContent>
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4"
-                                IsVisible="{ReflectionBinding DataContext.ImageEditorMode, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                IsVisible="{ReflectionBinding ImageEditorMode}">
                         <Button Classes="editor-button toolbar-button"
                                 ToolTip.Tip="File"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18"
@@ -498,14 +498,14 @@
                             <Button.Flyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedLeft">
                                     <MenuItem Header="New..."
-                                              Command="{ReflectionBinding DataContext.NewImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Command="{ReflectionBinding NewImageCommand}"
                                               InputGesture="Ctrl+N">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileNew}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Open..."
-                                              Command="{ReflectionBinding DataContext.OpenImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Command="{ReflectionBinding OpenImageCommand}"
                                               InputGesture="Ctrl+O">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileOpen}"/>
@@ -513,14 +513,14 @@
                                     </MenuItem>
                                     <Separator/>
                                     <MenuItem Header="Save"
-                                              Command="{ReflectionBinding DataContext.SaveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Command="{ReflectionBinding SaveCommand}"
                                               InputGesture="Ctrl+S">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSave}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Save as..."
-                                              Command="{ReflectionBinding DataContext.SaveAsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Command="{ReflectionBinding SaveAsCommand}"
                                               InputGesture="Ctrl+Shift+S">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSaveAs}"/>
@@ -528,7 +528,7 @@
                                     </MenuItem>
                                     <Separator/>
                                     <MenuItem Header="Exit"
-                                              Command="{ReflectionBinding DataContext.ExitEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                              Command="{ReflectionBinding ExitEditorCommand}">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileExit}"/>
                                         </MenuItem.Icon>

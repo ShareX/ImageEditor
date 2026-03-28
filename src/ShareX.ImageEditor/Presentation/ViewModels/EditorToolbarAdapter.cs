@@ -205,6 +205,18 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
 
     public ICommand ToggleEffectsPanelCommand => _viewModel.ToggleEffectsPanelCommand;
 
+    public bool ImageEditorMode => _viewModel.ImageEditorMode;
+
+    public ICommand NewImageCommand => _viewModel.NewImageCommand;
+
+    public ICommand OpenImageCommand => _viewModel.OpenImageCommand;
+
+    public ICommand SaveCommand => _viewModel.SaveCommand;
+
+    public ICommand SaveAsCommand => _viewModel.SaveAsCommand;
+
+    public ICommand ExitEditorCommand => _viewModel.ExitEditorCommand;
+
     public void SelectTool(EditorTool tool) => _viewModel.SelectToolCommand.Execute(tool);
 
     public void Undo() => _viewModel.UndoCommand.Execute(null);
@@ -257,6 +269,9 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
                 break;
             case nameof(MainViewModel.IsSettingsPanelOpen):
                 OnPropertyChanged(nameof(IsSettingsPanelOpen));
+                break;
+            case nameof(MainViewModel.ImageEditorMode):
+                OnPropertyChanged(nameof(ImageEditorMode));
                 break;
         }
     }

@@ -1445,23 +1445,42 @@ namespace ShareX.ImageEditor.Presentation.Views
                     var color = result.Transparent ? SKColors.Transparent :
                         new SKColor(result.BackgroundColor.R, result.BackgroundColor.G, result.BackgroundColor.B, result.BackgroundColor.A);
 
-                    using var surface = SKSurface.Create(new SKImageInfo(result.Width, result.Height, SKColorType.Bgra8888, SKAlphaType.Premul));
-                    surface.Canvas.Clear(color);
+                    var skBitmap = new SKBitmap(new SKImageInfo(result.Width, result.Height, SKColorType.Bgra8888, SKAlphaType.Premul));
+                    using var canvas = new SKCanvas(skBitmap);
+                    canvas.Clear(color);
 
-                    using var image = surface.Snapshot();
-                    using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-                    using var stream = new MemoryStream(data.ToArray());
-                    var bitmap = new Avalonia.Media.Imaging.Bitmap(stream);
+                    // Clear annotation visuals
+                    var annotationCanvas = this.FindControl<Canvas>("AnnotationCanvas");
+                    annotationCanvas?.Children.Clear();
+                    _selectionController.ClearSelection();
 
-                    // Clear existing annotations
-                    ClearAllAnnotations();
+                    // Load fresh image into core (clears history and annotations)
+                    _skipNextCoreImageChanged = true;
+                    _editorCore.LoadImage(skBitmap);
 
-                    // Reset file path for new image
-                    vm.ImageFilePath = null;
-                    vm.LastSavedPath = null;
-                    vm.IsDirty = false;
+                    // Initialize canvas control
+                    _canvasControl?.Initialize(skBitmap.Width, skBitmap.Height);
+                    RenderCore();
 
-                    vm.PreviewImage = bitmap;
+                    // Sync to VM
+                    try
+                    {
+                        _isSyncingToVM = true;
+                        vm.ImageFilePath = null;
+                        vm.LastSavedPath = null;
+                        vm.IsDirty = false;
+                        vm.HasAnnotations = false;
+                        vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
+
+                        using var image = SKImage.FromBitmap(skBitmap);
+                        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+                        using var stream = new MemoryStream(data.ToArray());
+                        vm.PreviewImage = new Avalonia.Media.Imaging.Bitmap(stream);
+                    }
+                    finally
+                    {
+                        _isSyncingToVM = false;
+                    }
                 },
                 onCancel: () =>
                 {
@@ -1496,16 +1515,45 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (files.Count > 0)
             {
                 using var stream = await files[0].OpenReadAsync();
-                var bitmap = new Avalonia.Media.Imaging.Bitmap(stream);
+                using var memStream = new MemoryStream();
+                await stream.CopyToAsync(memStream);
+                memStream.Position = 0;
 
-                // Clear existing annotations
-                ClearAllAnnotations();
+                var skBitmap = SKBitmap.Decode(memStream);
+                if (skBitmap == null) return;
 
-                vm.ImageFilePath = files[0].Path.LocalPath;
-                vm.LastSavedPath = files[0].Path.LocalPath;
-                vm.IsDirty = false;
+                // Clear annotation visuals
+                var annotationCanvas = this.FindControl<Canvas>("AnnotationCanvas");
+                annotationCanvas?.Children.Clear();
+                _selectionController.ClearSelection();
 
-                vm.PreviewImage = bitmap;
+                // Load fresh image into core (clears history and annotations)
+                _skipNextCoreImageChanged = true;
+                _editorCore.LoadImage(skBitmap);
+
+                // Initialize canvas control
+                _canvasControl?.Initialize(skBitmap.Width, skBitmap.Height);
+                RenderCore();
+
+                // Sync to VM
+                try
+                {
+                    _isSyncingToVM = true;
+                    vm.ImageFilePath = files[0].Path.LocalPath;
+                    vm.LastSavedPath = files[0].Path.LocalPath;
+                    vm.IsDirty = false;
+                    vm.HasAnnotations = false;
+                    vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
+
+                    using var image = SKImage.FromBitmap(skBitmap);
+                    using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+                    using var pngStream = new MemoryStream(data.ToArray());
+                    vm.PreviewImage = new Avalonia.Media.Imaging.Bitmap(pngStream);
+                }
+                finally
+                {
+                    _isSyncingToVM = false;
+                }
             }
         }
 

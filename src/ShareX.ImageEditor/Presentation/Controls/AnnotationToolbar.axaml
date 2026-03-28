@@ -77,6 +77,7 @@
                                 Margin="4,0"
                                 Background="{DynamicResource ShareX.Brush.Separator}"/>
                     </StackPanel>
+                    
                     <Button Classes="editor-button toolbar-button"
                             Tag="{x:Static models:EditorTool.Select}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
@@ -170,32 +171,6 @@
 
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4"
-                                IsVisible="{Binding ShowEditingActions, ElementName=AnnotationToolbarRoot}">
-                        <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
-                        <Button Classes="editor-button toolbar-button"
-                                IsEnabled="{Binding CanUndo}"
-                                Click="OnUndoClick"
-                                ToolTip.Tip="Undo (Ctrl+Z)"
-                                Content="{x:Static theming:EditorIcons.ActionUndo}"/>
-                        <Button Classes="editor-button toolbar-button"
-                                IsEnabled="{Binding CanRedo}"
-                                Click="OnRedoClick"
-                                ToolTip.Tip="Redo (Ctrl+Y)"
-                                Content="{x:Static theming:EditorIcons.ActionRedo}"/>
-                        <Button Classes="editor-button toolbar-button"
-                                IsEnabled="{Binding HasSelection}"
-                                Click="OnDeleteClick"
-                                ToolTip.Tip="Delete selected"
-                                Content="{x:Static theming:EditorIcons.ActionDelete}"/>
-                        <Button Classes="editor-button toolbar-button"
-                                IsEnabled="{Binding HasAnnotations}"
-                                Click="OnClearClick"
-                                ToolTip.Tip="Clear all"
-                                Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="4"
                                 IsVisible="{Binding ShowTrailingActions, ElementName=AnnotationToolbarRoot}">
                         <Border Width="1"
                                 Margin="4,0"
@@ -218,8 +193,34 @@
                         <Button Classes="editor-button toolbar-button"
                                 Classes.active="{ReflectionBinding IsEffectsPanelOpen}"
                                 Command="{ReflectionBinding ToggleEffectsPanelCommand}"
-                                ToolTip.Tip="Effects"
+                                ToolTip.Tip="Image Effects"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelEffects}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{Binding ShowEditingActions, ElementName=AnnotationToolbarRoot}">
+                        <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding CanUndo}"
+                                Click="OnUndoClick"
+                                ToolTip.Tip="Undo (Ctrl+Z)"
+                                Content="{x:Static theming:EditorIcons.ActionUndo}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding CanRedo}"
+                                Click="OnRedoClick"
+                                ToolTip.Tip="Redo (Ctrl+Y)"
+                                Content="{x:Static theming:EditorIcons.ActionRedo}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding HasSelection}"
+                                Click="OnDeleteClick"
+                                ToolTip.Tip="Delete (Delete)"
+                                Content="{x:Static theming:EditorIcons.ActionDelete}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding HasAnnotations}"
+                                Click="OnClearClick"
+                                ToolTip.Tip="Delete all (Shift+Delete)"
+                                Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

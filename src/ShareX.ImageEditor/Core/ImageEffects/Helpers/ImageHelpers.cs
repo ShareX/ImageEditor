@@ -164,9 +164,10 @@ public static class ImageHelpers
         return extension switch
         {
             "jpg" or "jpeg" => SKEncodedImageFormat.Jpeg,
-            "bmp" => SKEncodedImageFormat.Bmp,
-            "gif" => SKEncodedImageFormat.Gif,
             "webp" => SKEncodedImageFormat.Webp,
+            "avif" => SKEncodedImageFormat.Avif,
+            "gif" => SKEncodedImageFormat.Gif,
+            "bmp" => SKEncodedImageFormat.Bmp,
             _ => SKEncodedImageFormat.Png
         };
     }

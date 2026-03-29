@@ -32,7 +32,6 @@ using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
@@ -1605,8 +1604,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 [
                     new FilePickerFileType("PNG") { Patterns = ["*.png"] },
                     new FilePickerFileType("JPEG") { Patterns = ["*.jpg", "*.jpeg"] },
-                    new FilePickerFileType("BMP") { Patterns = ["*.bmp"] },
-                    new FilePickerFileType("WebP") { Patterns = ["*.webp"] },
+                    new FilePickerFileType("WebP") { Patterns = ["*.webp"] }
                 ]
             });
 
@@ -1629,9 +1627,8 @@ namespace ShareX.ImageEditor.Presentation.Views
             var format = ext switch
             {
                 ".jpg" or ".jpeg" => SKEncodedImageFormat.Jpeg,
-                ".bmp" => SKEncodedImageFormat.Bmp,
                 ".webp" => SKEncodedImageFormat.Webp,
-                _ => SKEncodedImageFormat.Png,
+                _ => SKEncodedImageFormat.Png
             };
 
             using var image = SKImage.FromBitmap(bitmap);

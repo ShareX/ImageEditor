@@ -80,6 +80,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         partial void OnImageEditorModeChanged(bool value)
         {
             OnPropertyChanged(nameof(ShowBottomToolbar));
+
+            ShowTaskModeButtons = !value;
         }
 
         // Events to signal View to perform canvas operations

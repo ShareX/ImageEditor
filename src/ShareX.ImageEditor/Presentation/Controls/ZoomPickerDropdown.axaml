@@ -15,18 +15,27 @@
                 Height="40"
                 MinWidth="80"
                 HorizontalContentAlignment="Stretch">
-            <Grid ColumnDefinitions="*,Auto">
-                <!-- Zoom Display -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Zoom Icon -->
                 <TextBlock Grid.Column="0"
+                           Text="{x:Static theming:EditorIcons.Zoom}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                           FontWeight="Normal"
+                           FontSize="16"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,6,0"/>
+
+                <!-- Zoom Display -->
+                <TextBlock Grid.Column="1"
                            Text="{Binding SelectedZoom, ElementName=ZoomPickerDropdownRoot, StringFormat='{}{0:P0}'}"
                            FontSize="12"
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Margin="4,0,0,0"/>
+                           HorizontalAlignment="Center"/>
 
                 <!-- Chevron Icon (Lucide ChevronDown) -->
-                <TextBlock Grid.Column="1"
+                <TextBlock Grid.Column="2"
                            Classes="dropdown-chevron"
                            Classes.open="{Binding #ZoomPopup.IsOpen}"
                            Text="{x:Static theming:EditorIcons.ChevronDown}"

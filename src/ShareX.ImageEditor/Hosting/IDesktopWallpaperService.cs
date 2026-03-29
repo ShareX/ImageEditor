@@ -36,7 +36,17 @@ public interface IDesktopWallpaperService
     bool IsSupported { get; }
 
     /// <summary>
+    /// Gets whether the current host/platform benefits from prewarming wallpaper access.
+    /// </summary>
+    bool RequiresDesktopWallpaperPrewarm { get; }
+
+    /// <summary>
     /// Tries to resolve the current desktop wallpaper metadata.
     /// </summary>
     bool TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper);
+
+    /// <summary>
+    /// Performs any platform-specific wallpaper prewarm work required before the first lookup.
+    /// </summary>
+    void PrewarmDesktopWallpaper();
 }

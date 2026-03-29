@@ -78,9 +78,22 @@ public static class EditorServices
     /// </summary>
     public static void EnsureDefaultDesktopWallpaperService()
     {
-        if (DesktopWallpaper == null && OperatingSystem.IsWindows())
+        if (DesktopWallpaper != null)
+        {
+            return;
+        }
+
+        if (OperatingSystem.IsWindows())
         {
             DesktopWallpaper = new WindowsDesktopWallpaperService();
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            DesktopWallpaper = new LinuxDesktopWallpaperService();
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            DesktopWallpaper = new MacOSDesktopWallpaperService();
         }
     }
 
@@ -90,7 +103,8 @@ public static class EditorServices
     public static void StartDesktopWallpaperPrewarm(string source)
     {
         IDesktopWallpaperService? desktopWallpaperService = DesktopWallpaper;
-        if (desktopWallpaperService?.IsSupported != true)
+        if (desktopWallpaperService?.IsSupported != true ||
+            !desktopWallpaperService.RequiresDesktopWallpaperPrewarm)
         {
             return;
         }
@@ -107,14 +121,8 @@ public static class EditorServices
                 try
                 {
                     ReportInformation(source, "Starting wallpaper background prewarm.");
-
-                    if (desktopWallpaperService.TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper) &&
-                        wallpaper != null)
-                    {
-                        ReportInformation(
-                            source,
-                            $"Wallpaper background prewarm completed for '{wallpaper.Path}'.");
-                    }
+                    desktopWallpaperService.PrewarmDesktopWallpaper();
+                    ReportInformation(source, "Wallpaper background prewarm completed.");
                 }
                 catch (Exception ex)
                 {

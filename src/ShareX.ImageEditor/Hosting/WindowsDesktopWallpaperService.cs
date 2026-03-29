@@ -37,6 +37,7 @@ internal sealed class WindowsDesktopWallpaperService : IDesktopWallpaperService
     private const int MaxWallpaperPath = 260;
 
     public bool IsSupported => OperatingSystem.IsWindows();
+    public bool RequiresDesktopWallpaperPrewarm => false;
 
     public bool TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper)
     {
@@ -66,6 +67,11 @@ internal sealed class WindowsDesktopWallpaperService : IDesktopWallpaperService
         };
 
         return true;
+    }
+
+    public void PrewarmDesktopWallpaper()
+    {
+        // Windows exposes the original wallpaper file directly, so there is no conversion cache to prewarm.
     }
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]

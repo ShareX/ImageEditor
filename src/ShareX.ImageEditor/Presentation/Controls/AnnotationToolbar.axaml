@@ -33,7 +33,7 @@
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18"
                                 Content="{x:Static theming:EditorIcons.FileMenu}">
                             <Button.Flyout>
-                                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft" VerticalOffset="4">
                                     <MenuItem Header="New..."
                                               Command="{ReflectionBinding NewImageCommand}"
                                               InputGesture="Ctrl+N">

@@ -1140,6 +1140,11 @@ namespace ShareX.ImageEditor.Presentation.Views
                             _selectionController.ClearSelection();
                             e.Handled = true;
                         }
+                        else if (vm.ImageEditorMode)
+                        {
+                            vm.ExitEditorCommand.Execute(null);
+                            e.Handled = true;
+                        }
                         else
                         {
                             vm.CancelCommand.Execute(null);

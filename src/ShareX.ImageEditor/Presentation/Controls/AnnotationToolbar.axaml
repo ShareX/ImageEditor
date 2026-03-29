@@ -65,7 +65,8 @@
                                     </MenuItem>
                                     <Separator/>
                                     <MenuItem Header="Exit"
-                                              Command="{ReflectionBinding ExitEditorCommand}">
+                                              Command="{ReflectionBinding ExitEditorCommand}"
+                                              InputGesture="Escape">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileExit}"/>
                                         </MenuItem.Icon>

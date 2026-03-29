@@ -519,11 +519,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnIsSettingsPanelOpenChanged(bool value)
         {
-            if (value)
-            {
-                StartWallpaperBackgroundPreload();
-            }
-
             // Toggle background effects visibility
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             OnPropertyChanged(nameof(EffectiveCanvasBackground));
@@ -761,6 +756,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             BackgroundModeOptions = BuildBackgroundModeOptions();
             InitializeBackgroundSettingsFromOptions();
             _canvasBackground = Brushes.Transparent;
+            EditorServices.StartDesktopWallpaperPrewarm(nameof(MainViewModel));
 
             // Initialize values from options
             _textColor = $"#{_options.TextTextColor.A:X2}{_options.TextTextColor.R:X2}{_options.TextTextColor.G:X2}{_options.TextTextColor.B:X2}";

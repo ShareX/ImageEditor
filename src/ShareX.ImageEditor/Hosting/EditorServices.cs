@@ -25,6 +25,7 @@
 
 using ShareX.ImageEditor.Hosting.Diagnostics;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ShareX.ImageEditor.Hosting;
 
@@ -33,6 +34,10 @@ namespace ShareX.ImageEditor.Hosting;
 /// </summary>
 public static class EditorServices
 {
+    private static readonly object DesktopWallpaperPrewarmLock = new();
+    private static IDesktopWallpaperService? _desktopWallpaper;
+    private static Task? _desktopWallpaperPrewarmTask;
+
     /// <summary>
     /// Clipboard service for copy/paste operations.
     /// Host applications should set this before using clipboard functionality.
@@ -49,7 +54,75 @@ public static class EditorServices
     /// Hosts should set this before creating editor view models when wallpaper
     /// background support is desired.
     /// </summary>
-    public static IDesktopWallpaperService? DesktopWallpaper { get; set; }
+    public static IDesktopWallpaperService? DesktopWallpaper
+    {
+        get => _desktopWallpaper;
+        set
+        {
+            if (ReferenceEquals(_desktopWallpaper, value))
+            {
+                return;
+            }
+
+            _desktopWallpaper = value;
+
+            lock (DesktopWallpaperPrewarmLock)
+            {
+                _desktopWallpaperPrewarmTask = null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Installs the built-in wallpaper service when the host has not provided one.
+    /// </summary>
+    public static void EnsureDefaultDesktopWallpaperService()
+    {
+        if (DesktopWallpaper == null && OperatingSystem.IsWindows())
+        {
+            DesktopWallpaper = new WindowsDesktopWallpaperService();
+        }
+    }
+
+    /// <summary>
+    /// Starts an asynchronous wallpaper lookup so hosts do not need to prewarm it manually.
+    /// </summary>
+    public static void StartDesktopWallpaperPrewarm(string source)
+    {
+        IDesktopWallpaperService? desktopWallpaperService = DesktopWallpaper;
+        if (desktopWallpaperService?.IsSupported != true)
+        {
+            return;
+        }
+
+        lock (DesktopWallpaperPrewarmLock)
+        {
+            if (_desktopWallpaperPrewarmTask != null)
+            {
+                return;
+            }
+
+            _desktopWallpaperPrewarmTask = Task.Run(() =>
+            {
+                try
+                {
+                    ReportInformation(source, "Starting wallpaper background prewarm.");
+
+                    if (desktopWallpaperService.TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper) &&
+                        wallpaper != null)
+                    {
+                        ReportInformation(
+                            source,
+                            $"Wallpaper background prewarm completed for '{wallpaper.Path}'.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ReportWarning(source, $"Wallpaper background prewarm failed: {ex.Message}", ex);
+                }
+            });
+        }
+    }
 
     public static void ReportInformation(string source, string message)
     {

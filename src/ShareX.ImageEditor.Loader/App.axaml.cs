@@ -51,7 +51,7 @@ namespace ShareX.ImageEditor.Loader
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                EditorServices.DesktopWallpaper = new DesktopWallpaperService();
+                EditorServices.EnsureDefaultDesktopWallpaperService();
 
                 ImageEditorOptions options = new ImageEditorOptions();
                 options.ShowExitConfirmation = false;

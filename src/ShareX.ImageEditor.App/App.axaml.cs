@@ -1,7 +1,7 @@
 #region License Information (GPL v3)
 
 /*
-    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    ShareX - A program that allows you to take screenshots and share any file type
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -26,7 +26,9 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views;
@@ -34,17 +36,13 @@ using SkiaSharp;
 using System;
 using System.IO;
 
-namespace ShareX.ImageEditor.Loader
+namespace ShareX.ImageEditor.App
 {
     public partial class App : Application
     {
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
-
-#if DEBUG
-            this.AttachDeveloperTools();
-#endif
         }
 
         public override void OnFrameworkInitializationCompleted()
@@ -53,8 +51,10 @@ namespace ShareX.ImageEditor.Loader
             {
                 EditorServices.EnsureDefaultDesktopWallpaperService();
 
-                ImageEditorOptions options = new ImageEditorOptions();
-                options.ShowExitConfirmation = false;
+                ImageEditorOptions options = new ImageEditorOptions()
+                {
+                    ShowExitConfirmation = false
+                };
 
                 EditorWindow window = new EditorWindow(options);
                 desktop.MainWindow = window;
@@ -63,26 +63,28 @@ namespace ShareX.ImageEditor.Loader
                 {
                     vm.ImageEditorMode = true;
 
+#if DEBUG
                     LoadExampleImage(vm);
-                    //GenerateSampleImage(vm, 4000, 2000);
+#endif
 
                     vm.CopyRequested += async () =>
                     {
-                        var clipboard = desktop.MainWindow?.Clipboard;
+                        IClipboard? clipboard = desktop.MainWindow?.Clipboard;
 
                         if (clipboard != null)
                         {
-                            var bytes = window.GetResultBytes();
+                            byte[]? bytes = window.GetResultBytes();
 
                             if (bytes != null)
                             {
-                                using (var stream = new MemoryStream(bytes))
+                                using (MemoryStream stream = new MemoryStream(bytes))
                                 {
-                                    var bitmap = new Avalonia.Media.Imaging.Bitmap(stream);
-                                    var data = new DataTransfer();
-                                    var item = new DataTransferItem();
+                                    Bitmap bitmap = new Bitmap(stream);
+                                    DataTransfer data = new DataTransfer();
+                                    DataTransferItem item = new DataTransferItem();
                                     item.SetBitmap(bitmap);
                                     data.Add(item);
+
                                     await clipboard.SetDataAsync(data);
                                 }
                             }
@@ -108,24 +110,6 @@ namespace ShareX.ImageEditor.Loader
                     vm.UpdatePreview(skBitmap);
                 }
             }
-        }
-
-        private void GenerateSampleImage(MainViewModel vm, int width, int height)
-        {
-            SKImageInfo info = new SKImageInfo(width, height);
-            SKBitmap skBitmap = new SKBitmap(info);
-
-            using (SKCanvas canvas = new SKCanvas(skBitmap))
-            {
-                canvas.Clear(SKColors.Transparent);
-
-                using (SKPaint paint = new SKPaint { Color = SKColors.LightBlue, IsAntialias = true })
-                {
-                    canvas.DrawCircle(width / 2, height / 2, width / 3, paint);
-                }
-            }
-
-            vm.UpdatePreview(skBitmap);
         }
     }
 }

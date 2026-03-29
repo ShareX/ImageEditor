@@ -1109,7 +1109,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                                 {
                                     e.Handled = true;
                                 }
-                                else
+                                else if (!vm.ImageEditorMode)
                                 {
                                     vm.ContinueCommand.Execute(null);
                                     e.Handled = true;

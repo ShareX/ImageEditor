@@ -51,10 +51,11 @@ namespace ShareX.ImageEditor.App
             {
                 EditorServices.EnsureDefaultDesktopWallpaperService();
 
-                ImageEditorOptions options = new ImageEditorOptions()
-                {
-                    ShowExitConfirmation = false
-                };
+                ImageEditorOptions options = new ImageEditorOptions();
+
+#if DEBUG
+                options.ShowExitConfirmation = false;
+#endif
 
                 EditorWindow window = new EditorWindow(options);
                 desktop.MainWindow = window;

@@ -14,7 +14,7 @@ public sealed class CandyCaneBorderImageEffect : ImageEffectBase
     public override string Description => "Adds a candy cane striped border around the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
-        EffectParameters.IntNumeric<CandyCaneBorderImageEffect>("border_width", "Border Width", 4, 200, 32, (e, v) => e.BorderWidth = v),
+        EffectParameters.IntSlider<CandyCaneBorderImageEffect>("border_width", "Border Width", 1, 200, 10, (e, v) => e.BorderWidth = v),
         EffectParameters.FloatSlider<CandyCaneBorderImageEffect>("stripe_width", "Stripe Width", 2, 60, 12, (e, v) => e.StripeWidth = v),
         EffectParameters.Color<CandyCaneBorderImageEffect>("color_a", "Color A", new SKColor(220, 20, 20, 255), (e, v) => e.ColorA = v),
         EffectParameters.Color<CandyCaneBorderImageEffect>("color_b", "Color B", new SKColor(255, 255, 255, 255), (e, v) => e.ColorB = v),

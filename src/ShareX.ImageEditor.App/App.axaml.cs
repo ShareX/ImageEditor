@@ -64,9 +64,18 @@ namespace ShareX.ImageEditor.App
                 {
                     vm.ImageEditorMode = true;
 
+                    string? imagePath = GetImagePathFromArgs(desktop.Args);
+
+                    if (imagePath != null)
+                    {
+                        window.LoadImage(imagePath);
+                    }
+                    else
+                    {
 #if DEBUG
-                    LoadExampleImage(vm);
+                        LoadExampleImage(vm);
 #endif
+                    }
 
                     vm.CopyRequested += async () =>
                     {
@@ -95,6 +104,30 @@ namespace ShareX.ImageEditor.App
             }
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico"];
+
+        private string? GetImagePathFromArgs(string[]? args)
+        {
+            if (args == null || args.Length == 0)
+            {
+                return null;
+            }
+
+            string filePath = args[0];
+
+            if (File.Exists(filePath))
+            {
+                string extension = Path.GetExtension(filePath);
+
+                if (Array.Exists(ImageExtensions, ext => ext.Equals(extension, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return filePath;
+                }
+            }
+
+            return null;
         }
 
         private void LoadExampleImage(MainViewModel vm)

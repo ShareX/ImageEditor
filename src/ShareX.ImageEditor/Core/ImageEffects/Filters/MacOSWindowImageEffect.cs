@@ -7,7 +7,7 @@ namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 public sealed class MacOSWindowImageEffect : ImageEffectBase
 {
     public override string Id => "macos_window";
-    public override string Name => "macOS window";
+    public override string Name => "macOS";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => LucideIcons.monitor;
     public override string Description => "Wraps the image in a macOS-style window frame with a title bar and traffic light buttons.";

@@ -10,24 +10,21 @@ public sealed class GoldenBorderImageEffect : ImageEffectBase
     public override string Name => "Golden border";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
     public override string IconKey => LucideIcons.crown;
-    public override string Description => "Adds a luxurious golden picture frame border to the image.";
+    public override string Description => "Adds a luxurious picture frame border to the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
         EffectParameters.IntSlider<GoldenBorderImageEffect>("size", "Size", 5, 80, 25, (e, v) => e.Size = v),
         EffectParameters.FloatSlider<GoldenBorderImageEffect>("bevel_strength", "Bevel strength", 0, 100, 60, (e, v) => e.BevelStrength = v),
+        EffectParameters.Color<GoldenBorderImageEffect>("color", "Color", new SKColor(212, 175, 55), (e, v) => e.Color = v),
         EffectParameters.Bool<GoldenBorderImageEffect>("inner_border", "Inner border", true, (e, v) => e.InnerBorder = v),
         EffectParameters.Bool<GoldenBorderImageEffect>("outer_border", "Outer border", true, (e, v) => e.OuterBorder = v)
     ];
 
     public int Size { get; set; } = 25;
     public float BevelStrength { get; set; } = 60f;
+    public SKColor Color { get; set; } = new SKColor(212, 175, 55);
     public bool InnerBorder { get; set; } = true;
     public bool OuterBorder { get; set; } = true;
-
-    private static readonly SKColor GoldDark = new(160, 120, 40);
-    private static readonly SKColor GoldBase = new(212, 175, 55);
-    private static readonly SKColor GoldLight = new(255, 223, 100);
-    private static readonly SKColor GoldHighlight = new(255, 240, 160);
 
     public override SKBitmap Apply(SKBitmap source)
     {
@@ -36,6 +33,12 @@ public sealed class GoldenBorderImageEffect : ImageEffectBase
         int size = Math.Clamp(Size, 5, 80);
         float bevel = Math.Clamp(BevelStrength, 0f, 100f) / 100f;
 
+        // Derive color palette from the user-chosen base color
+        SKColor baseColor = Color;
+        SKColor darkColor = DarkenColor(baseColor, 0.55f);
+        SKColor lightColor = LightenColor(baseColor, 0.35f);
+        SKColor highlightColor = LightenColor(baseColor, 0.60f);
+
         int newWidth = source.Width + size * 2;
         int newHeight = source.Height + size * 2;
 
@@ -43,8 +46,8 @@ public sealed class GoldenBorderImageEffect : ImageEffectBase
         using SKCanvas canvas = new(result);
         canvas.Clear(SKColors.Transparent);
 
-        // Draw the golden frame
-        DrawGoldenFrame(canvas, newWidth, newHeight, size, bevel);
+        // Draw the frame
+        DrawFrame(canvas, newWidth, newHeight, size, bevel, baseColor, darkColor, lightColor, highlightColor);
 
         // Draw the image centered
         canvas.DrawBitmap(source, size, size);
@@ -57,7 +60,7 @@ public sealed class GoldenBorderImageEffect : ImageEffectBase
                 IsAntialias = true,
                 Style = SKPaintStyle.Stroke,
                 StrokeWidth = 1.5f,
-                Color = GoldDark
+                Color = darkColor
             };
             canvas.DrawRect(size - 1, size - 1, source.Width + 2, source.Height + 2, innerPaint);
         }
@@ -70,7 +73,7 @@ public sealed class GoldenBorderImageEffect : ImageEffectBase
                 IsAntialias = true,
                 Style = SKPaintStyle.Stroke,
                 StrokeWidth = 1.5f,
-                Color = GoldDark
+                Color = darkColor
             };
             canvas.DrawRect(0.5f, 0.5f, newWidth - 1, newHeight - 1, outerPaint);
         }
@@ -78,185 +81,126 @@ public sealed class GoldenBorderImageEffect : ImageEffectBase
         return result;
     }
 
-    private static void DrawGoldenFrame(SKCanvas canvas, int width, int height, int size, float bevel)
+    private static void DrawFrame(SKCanvas canvas, int width, int height, int size, float bevel,
+        SKColor baseColor, SKColor darkColor, SKColor lightColor, SKColor highlightColor)
     {
-        // Base gold fill
-        using (SKPaint basePaint = new()
+        // Base fill
+        using (SKPaint basePaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill, Color = baseColor })
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Color = GoldBase
-        })
-        {
-            // Top strip
             canvas.DrawRect(0, 0, width, size, basePaint);
-            // Bottom strip
             canvas.DrawRect(0, height - size, width, size, basePaint);
-            // Left strip
             canvas.DrawRect(0, 0, size, height, basePaint);
-            // Right strip
             canvas.DrawRect(width - size, 0, size, height, basePaint);
         }
 
         if (bevel <= 0f) return;
 
-        // Outer bevel: light on top-left edges, dark on bottom-right
         float bevelWidth = size * 0.35f * bevel;
 
-        // Top highlight (light from top-left)
-        using (SKPaint highlightPaint = new()
+        // Top highlight
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(0, 0),
-                new SKPoint(0, bevelWidth),
-                [GoldHighlight.WithAlpha((byte)(200 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(0, bevelWidth),
+                [highlightColor.WithAlpha((byte)(200 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(0, 0, width, bevelWidth, highlightPaint);
-        }
+        { canvas.DrawRect(0, 0, width, bevelWidth, p); }
 
         // Left highlight
-        using (SKPaint leftHighPaint = new()
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(0, 0),
-                new SKPoint(bevelWidth, 0),
-                [GoldHighlight.WithAlpha((byte)(180 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(bevelWidth, 0),
+                [highlightColor.WithAlpha((byte)(180 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(0, 0, bevelWidth, height, leftHighPaint);
-        }
+        { canvas.DrawRect(0, 0, bevelWidth, height, p); }
 
         // Bottom shadow
-        using (SKPaint bottomShadow = new()
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(0, height),
-                new SKPoint(0, height - bevelWidth),
-                [GoldDark.WithAlpha((byte)(200 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(0, height), new SKPoint(0, height - bevelWidth),
+                [darkColor.WithAlpha((byte)(200 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(0, height - bevelWidth, width, bevelWidth, bottomShadow);
-        }
+        { canvas.DrawRect(0, height - bevelWidth, width, bevelWidth, p); }
 
         // Right shadow
-        using (SKPaint rightShadow = new()
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(width, 0),
-                new SKPoint(width - bevelWidth, 0),
-                [GoldDark.WithAlpha((byte)(200 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(width, 0), new SKPoint(width - bevelWidth, 0),
+                [darkColor.WithAlpha((byte)(200 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(width - bevelWidth, 0, bevelWidth, height, rightShadow);
-        }
+        { canvas.DrawRect(width - bevelWidth, 0, bevelWidth, height, p); }
 
-        // Inner bevel (opposite: dark on top-left, light on bottom-right, near the image)
+        // Inner bevel
         float innerBevelWidth = size * 0.25f * bevel;
-        float innerOffset = size - innerBevelWidth;
 
-        // Inner top (shadow)
-        using (SKPaint innerTopPaint = new()
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(0, size),
-                new SKPoint(0, size - innerBevelWidth),
-                [GoldDark.WithAlpha((byte)(160 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(0, size), new SKPoint(0, size - innerBevelWidth),
+                [darkColor.WithAlpha((byte)(160 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(size, size - innerBevelWidth, width - size * 2, innerBevelWidth, innerTopPaint);
-        }
+        { canvas.DrawRect(size, size - innerBevelWidth, width - size * 2, innerBevelWidth, p); }
 
-        // Inner left (shadow)
-        using (SKPaint innerLeftPaint = new()
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(size, 0),
-                new SKPoint(size - innerBevelWidth, 0),
-                [GoldDark.WithAlpha((byte)(140 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(size, 0), new SKPoint(size - innerBevelWidth, 0),
+                [darkColor.WithAlpha((byte)(140 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(size - innerBevelWidth, size, innerBevelWidth, height - size * 2, innerLeftPaint);
-        }
+        { canvas.DrawRect(size - innerBevelWidth, size, innerBevelWidth, height - size * 2, p); }
 
-        // Inner bottom (highlight)
-        using (SKPaint innerBottomPaint = new()
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(0, height - size),
-                new SKPoint(0, height - size + innerBevelWidth),
-                [GoldLight.WithAlpha((byte)(140 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(0, height - size), new SKPoint(0, height - size + innerBevelWidth),
+                [lightColor.WithAlpha((byte)(140 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(size, height - size, width - size * 2, innerBevelWidth, innerBottomPaint);
-        }
+        { canvas.DrawRect(size, height - size, width - size * 2, innerBevelWidth, p); }
 
-        // Inner right (highlight)
-        using (SKPaint innerRightPaint = new()
+        using (SKPaint p = new()
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Shader = SKShader.CreateLinearGradient(
-                new SKPoint(width - size, 0),
-                new SKPoint(width - size + innerBevelWidth, 0),
-                [GoldLight.WithAlpha((byte)(140 * bevel)), GoldBase.WithAlpha(0)],
-                SKShaderTileMode.Clamp)
+            IsAntialias = true, Style = SKPaintStyle.Fill,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(width - size, 0), new SKPoint(width - size + innerBevelWidth, 0),
+                [lightColor.WithAlpha((byte)(140 * bevel)), baseColor.WithAlpha(0)], SKShaderTileMode.Clamp)
         })
-        {
-            canvas.DrawRect(width - size, size, innerBevelWidth, height - size * 2, innerRightPaint);
-        }
+        { canvas.DrawRect(width - size, size, innerBevelWidth, height - size * 2, p); }
 
-        // Center groove line
+        // Center groove lines
         float grooveY = size * 0.5f;
-        using (SKPaint grooveDark = new()
+        using (SKPaint gd = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = darkColor.WithAlpha((byte)(120 * bevel)) })
         {
-            IsAntialias = true,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 1,
-            Color = GoldDark.WithAlpha((byte)(120 * bevel))
-        })
-        {
-            // Horizontal grooves
-            canvas.DrawLine(0, grooveY, width, grooveY, grooveDark);
-            canvas.DrawLine(0, height - grooveY, width, height - grooveY, grooveDark);
-            // Vertical grooves
-            canvas.DrawLine(grooveY, 0, grooveY, height, grooveDark);
-            canvas.DrawLine(width - grooveY, 0, width - grooveY, height, grooveDark);
+            canvas.DrawLine(0, grooveY, width, grooveY, gd);
+            canvas.DrawLine(0, height - grooveY, width, height - grooveY, gd);
+            canvas.DrawLine(grooveY, 0, grooveY, height, gd);
+            canvas.DrawLine(width - grooveY, 0, width - grooveY, height, gd);
         }
+        using (SKPaint gl = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1, Color = highlightColor.WithAlpha((byte)(80 * bevel)) })
+        {
+            canvas.DrawLine(0, grooveY + 1, width, grooveY + 1, gl);
+            canvas.DrawLine(0, height - grooveY + 1, width, height - grooveY + 1, gl);
+            canvas.DrawLine(grooveY + 1, 0, grooveY + 1, height, gl);
+            canvas.DrawLine(width - grooveY + 1, 0, width - grooveY + 1, height, gl);
+        }
+    }
 
-        using (SKPaint grooveLight = new()
-        {
-            IsAntialias = true,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 1,
-            Color = GoldHighlight.WithAlpha((byte)(80 * bevel))
-        })
-        {
-            canvas.DrawLine(0, grooveY + 1, width, grooveY + 1, grooveLight);
-            canvas.DrawLine(0, height - grooveY + 1, width, height - grooveY + 1, grooveLight);
-            canvas.DrawLine(grooveY + 1, 0, grooveY + 1, height, grooveLight);
-            canvas.DrawLine(width - grooveY + 1, 0, width - grooveY + 1, height, grooveLight);
-        }
+    private static SKColor DarkenColor(SKColor c, float factor)
+    {
+        return new SKColor(
+            (byte)(c.Red * (1f - factor)),
+            (byte)(c.Green * (1f - factor)),
+            (byte)(c.Blue * (1f - factor)),
+            c.Alpha);
+    }
+
+    private static SKColor LightenColor(SKColor c, float factor)
+    {
+        return new SKColor(
+            (byte)Math.Min(255, c.Red + (255 - c.Red) * factor),
+            (byte)Math.Min(255, c.Green + (255 - c.Green) * factor),
+            (byte)Math.Min(255, c.Blue + (255 - c.Blue) * factor),
+            c.Alpha);
     }
 }

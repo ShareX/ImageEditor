@@ -17,6 +17,7 @@ public sealed class SnowflakesImageEffect : ImageEffectBase
         EffectParameters.IntSlider<SnowflakesImageEffect>("min_size", "Min size", 2, 20, 3, (e, v) => e.MinSize = v),
         EffectParameters.IntSlider<SnowflakesImageEffect>("max_size", "Max size", 4, 60, 14, (e, v) => e.MaxSize = v),
         EffectParameters.FloatSlider<SnowflakesImageEffect>("opacity", "Opacity", 0, 100, 85, (e, v) => e.Opacity = v),
+        EffectParameters.Bool<SnowflakesImageEffect>("random_angle", "Random angle", true, (e, v) => e.RandomAngle = v),
         EffectParameters.Bool<SnowflakesImageEffect>("background", "Background", false, (e, v) => e.Background = v)
     ];
 
@@ -24,6 +25,7 @@ public sealed class SnowflakesImageEffect : ImageEffectBase
     public int MinSize { get; set; } = 3;
     public int MaxSize { get; set; } = 14;
     public float Opacity { get; set; } = 85f;
+    public bool RandomAngle { get; set; } = true;
     public bool Background { get; set; }
 
     public override SKBitmap Apply(SKBitmap source)
@@ -51,8 +53,9 @@ public sealed class SnowflakesImageEffect : ImageEffectBase
             float y = Random.Shared.Next(0, source.Height);
             float size = Random.Shared.Next(minSize, maxSize + 1);
             float flakeAlpha = alpha * (0.5f + Random.Shared.NextSingle() * 0.5f);
+            float angle = RandomAngle ? Random.Shared.NextSingle() * 360f : 0f;
 
-            DrawSnowflake(canvas, x, y, size, flakeAlpha);
+            DrawSnowflake(canvas, x, y, size, flakeAlpha, angle);
         }
 
         if (Background)
@@ -63,9 +66,14 @@ public sealed class SnowflakesImageEffect : ImageEffectBase
         return result;
     }
 
-    private static void DrawSnowflake(SKCanvas canvas, float cx, float cy, float size, float alpha)
+    private static void DrawSnowflake(SKCanvas canvas, float cx, float cy, float size, float alpha, float rotation)
     {
         byte a = (byte)(255 * alpha);
+
+        canvas.Save();
+        canvas.Translate(cx, cy);
+        canvas.RotateDegrees(rotation);
+        canvas.Translate(-cx, -cy);
 
         // Draw a glow behind the snowflake
         using (SKPaint glowPaint = new()
@@ -125,5 +133,7 @@ public sealed class SnowflakesImageEffect : ImageEffectBase
             Color = new SKColor(255, 255, 255, a)
         };
         canvas.DrawCircle(cx, cy, Math.Max(1f, size * 0.08f), dotPaint);
+
+        canvas.Restore();
     }
 }

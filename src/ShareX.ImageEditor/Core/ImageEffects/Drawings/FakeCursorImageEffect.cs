@@ -1,9 +1,8 @@
-using ShareX.ImageEditor.Core.ImageEffects.Drawings;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
+namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
 public sealed class FakeCursorImageEffect : ImageEffectBase
 {
@@ -11,33 +10,29 @@ public sealed class FakeCursorImageEffect : ImageEffectBase
     public override string Name => "Fake cursor";
     public override ImageEffectCategory Category => ImageEffectCategory.Drawings;
     public override string IconKey => LucideIcons.mouse_pointer;
-    public override string Description => "Draws a fake mouse cursor on the image.";
+    public override string Description => "Draws fake mouse cursors at random positions on the image.";
     public override IReadOnlyList<EffectParameter> Parameters =>
     [
-        EffectParameters.Enum<FakeCursorImageEffect, DrawingPlacement>(
-            "placement", "Placement", DrawingPlacement.MiddleCenter, (e, v) => e.Placement = v,
-            new (string Label, DrawingPlacement Value)[]
-            {
-                ("Top left", DrawingPlacement.TopLeft),
-                ("Top center", DrawingPlacement.TopCenter),
-                ("Top right", DrawingPlacement.TopRight),
-                ("Middle left", DrawingPlacement.MiddleLeft),
-                ("Middle center", DrawingPlacement.MiddleCenter),
-                ("Middle right", DrawingPlacement.MiddleRight),
-                ("Bottom left", DrawingPlacement.BottomLeft),
-                ("Bottom center", DrawingPlacement.BottomCenter),
-                ("Bottom right", DrawingPlacement.BottomRight)
-            }),
-        EffectParameters.IntNumeric<FakeCursorImageEffect>("offset_x", "Offset X", -10000, 10000, 0, (e, v) => e.Offset = new SKPointI(v, e.Offset.Y)),
-        EffectParameters.IntNumeric<FakeCursorImageEffect>("offset_y", "Offset Y", -10000, 10000, 0, (e, v) => e.Offset = new SKPointI(e.Offset.X, v)),
-        EffectParameters.FloatSlider<FakeCursorImageEffect>("scale", "Scale", 0.5, 5, 1, (e, v) => e.Scale = v),
+        EffectParameters.IntSlider<FakeCursorImageEffect>("count", "Count", 1, 200, 1, (e, v) => e.Count = v),
+        EffectParameters.FloatSlider<FakeCursorImageEffect>("scale", "Scale", 0.5, 5, 1, (e, v) => e.Scale = v, tickFrequency: 0.5),
+        EffectParameters.Bool<FakeCursorImageEffect>("random_size", "Random size", false, (e, v) => e.RandomSize = v),
+        EffectParameters.FloatSlider<FakeCursorImageEffect>("random_size_min", "Random size min", 0.5, 5, 0.5, (e, v) => e.RandomSizeMin = v, tickFrequency: 0.5),
+        EffectParameters.FloatSlider<FakeCursorImageEffect>("random_size_max", "Random size max", 0.5, 5, 2, (e, v) => e.RandomSizeMax = v, tickFrequency: 0.5),
+        EffectParameters.Bool<FakeCursorImageEffect>("random_angle", "Random angle", false, (e, v) => e.RandomAngle = v),
+        EffectParameters.IntNumeric<FakeCursorImageEffect>("random_angle_min", "Random angle min", 0, 360, 0, (e, v) => e.RandomAngleMin = v),
+        EffectParameters.IntNumeric<FakeCursorImageEffect>("random_angle_max", "Random angle max", 0, 360, 360, (e, v) => e.RandomAngleMax = v),
         EffectParameters.Color<FakeCursorImageEffect>("fill_color", "Fill color", SKColors.White, (e, v) => e.FillColor = v),
         EffectParameters.Color<FakeCursorImageEffect>("border_color", "Border color", SKColors.Black, (e, v) => e.BorderColor = v)
     ];
 
-    public DrawingPlacement Placement { get; set; } = DrawingPlacement.MiddleCenter;
-    public SKPointI Offset { get; set; } = new(0, 0);
+    public int Count { get; set; } = 1;
     public float Scale { get; set; } = 1f;
+    public bool RandomSize { get; set; }
+    public float RandomSizeMin { get; set; } = 0.5f;
+    public float RandomSizeMax { get; set; } = 2f;
+    public bool RandomAngle { get; set; }
+    public int RandomAngleMin { get; set; }
+    public int RandomAngleMax { get; set; } = 360;
     public SKColor FillColor { get; set; } = SKColors.White;
     public SKColor BorderColor { get; set; } = SKColors.Black;
 
@@ -57,59 +52,76 @@ public sealed class FakeCursorImageEffect : ImageEffectBase
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        float scale = Math.Clamp(Scale, 0.5f, 5f);
-
-        // Compute cursor size for placement
-        float cursorWidth = 15.3f * scale;
-        float cursorHeight = 23.4f * scale;
-        SKSizeI cursorSize = new((int)MathF.Ceiling(cursorWidth), (int)MathF.Ceiling(cursorHeight));
-
-        SKPointI position = DrawingEffectHelpers.GetPosition(
-            Placement,
-            Offset,
-            new SKSizeI(source.Width, source.Height),
-            cursorSize);
+        int count = Math.Clamp(Count, 1, 200);
 
         SKBitmap result = source.Copy();
         using SKCanvas canvas = new(result);
 
-        canvas.Save();
-        canvas.Translate(position.X, position.Y);
-        canvas.Scale(scale);
-
-        using SKPath cursorPath = new();
-        cursorPath.MoveTo(CursorOutline[0]);
-        for (int i = 1; i < CursorOutline.Length; i++)
+        for (int i = 0; i < count; i++)
         {
-            cursorPath.LineTo(CursorOutline[i]);
+            float scale = RandomSize
+                ? RandomSizeMin + Random.Shared.NextSingle() * (Math.Max(RandomSizeMin, RandomSizeMax) - RandomSizeMin)
+                : Scale;
+            scale = Math.Clamp(scale, 0.5f, 5f);
+
+            float cursorWidth = 15.3f * scale;
+            float cursorHeight = 23.4f * scale;
+
+            float x = Random.Shared.Next(0, Math.Max(1, source.Width - (int)cursorWidth));
+            float y = Random.Shared.Next(0, Math.Max(1, source.Height - (int)cursorHeight));
+
+            canvas.Save();
+            canvas.Translate(x, y);
+
+            if (RandomAngle)
+            {
+                int minA = Math.Min(RandomAngleMin, RandomAngleMax);
+                int maxA = Math.Max(RandomAngleMin, RandomAngleMax);
+                int angle = minA == maxA ? minA : Random.Shared.Next(minA, maxA);
+                float pivotX = cursorWidth / 2f;
+                float pivotY = cursorHeight / 2f;
+                canvas.Translate(pivotX, pivotY);
+                canvas.RotateDegrees(angle);
+                canvas.Translate(-pivotX, -pivotY);
+            }
+
+            canvas.Scale(scale);
+
+            using SKPath cursorPath = new();
+            cursorPath.MoveTo(CursorOutline[0]);
+            for (int j = 1; j < CursorOutline.Length; j++)
+            {
+                cursorPath.LineTo(CursorOutline[j]);
+            }
+            cursorPath.Close();
+
+            // Draw border/outline
+            using (SKPaint borderPaint = new()
+            {
+                IsAntialias = true,
+                Style = SKPaintStyle.Stroke,
+                Color = BorderColor,
+                StrokeWidth = 1.5f,
+                StrokeJoin = SKStrokeJoin.Round
+            })
+            {
+                canvas.DrawPath(cursorPath, borderPaint);
+            }
+
+            // Draw fill
+            using (SKPaint fillPaint = new()
+            {
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                Color = FillColor
+            })
+            {
+                canvas.DrawPath(cursorPath, fillPaint);
+            }
+
+            canvas.Restore();
         }
-        cursorPath.Close();
 
-        // Draw border/outline
-        using (SKPaint borderPaint = new()
-        {
-            IsAntialias = true,
-            Style = SKPaintStyle.Stroke,
-            Color = BorderColor,
-            StrokeWidth = 1.5f,
-            StrokeJoin = SKStrokeJoin.Round
-        })
-        {
-            canvas.DrawPath(cursorPath, borderPaint);
-        }
-
-        // Draw fill
-        using (SKPaint fillPaint = new()
-        {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Color = FillColor
-        })
-        {
-            canvas.DrawPath(cursorPath, fillPaint);
-        }
-
-        canvas.Restore();
         return result;
     }
 }

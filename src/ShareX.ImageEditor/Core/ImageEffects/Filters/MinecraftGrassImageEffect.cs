@@ -18,6 +18,7 @@ public sealed class MinecraftGrassImageEffect : ImageEffectBase
         EffectParameters.IntSlider<MinecraftGrassImageEffect>("grass_rows", "Grass rows", 1, 8, 2, (e, v) => e.GrassRows = v),
         EffectParameters.IntSlider<MinecraftGrassImageEffect>("dirt_rows", "Dirt rows", 1, 16, 4, (e, v) => e.DirtRows = v),
         EffectParameters.Bool<MinecraftGrassImageEffect>("top_edge", "Top edge", false, (e, v) => e.TopEdge = v),
+        EffectParameters.IntSlider<MinecraftGrassImageEffect>("overlap", "Overlap", 0, 8, 1, (e, v) => e.Overlap = v),
         EffectParameters.Color<MinecraftGrassImageEffect>("grass_color", "Grass color", new SKColor(89, 176, 48), (e, v) => e.GrassColor = v),
         EffectParameters.Color<MinecraftGrassImageEffect>("dirt_color", "Dirt color", new SKColor(134, 96, 67), (e, v) => e.DirtColor = v)
     ];
@@ -26,6 +27,7 @@ public sealed class MinecraftGrassImageEffect : ImageEffectBase
     public int GrassRows { get; set; } = 2;
     public int DirtRows { get; set; } = 4;
     public bool TopEdge { get; set; }
+    public int Overlap { get; set; } = 1;
     public SKColor GrassColor { get; set; } = new SKColor(89, 176, 48);
     public SKColor DirtColor { get; set; } = new SKColor(134, 96, 67);
 
@@ -38,16 +40,17 @@ public sealed class MinecraftGrassImageEffect : ImageEffectBase
         int dirtRows = Math.Clamp(DirtRows, 1, 16);
         int totalRows = grassRows + dirtRows;
         int borderHeight = totalRows * blockSize;
+        int overlapPx = Math.Clamp(Overlap, 0, 8) * blockSize;
 
-        int newHeight = source.Height + borderHeight;
+        int newHeight = source.Height + borderHeight - overlapPx;
         SKBitmap result = new(source.Width, newHeight);
         using SKCanvas canvas = new(result);
         canvas.Clear(SKColors.Transparent);
 
-        int imageY = TopEdge ? borderHeight : 0;
+        int imageY = TopEdge ? borderHeight - overlapPx : 0;
         canvas.DrawBitmap(source, 0, imageY);
 
-        int borderY = TopEdge ? 0 : source.Height;
+        int borderY = TopEdge ? 0 : source.Height - overlapPx;
         int cols = (source.Width + blockSize - 1) / blockSize;
 
         using SKPaint paint = new() { IsAntialias = false, Style = SKPaintStyle.Fill };

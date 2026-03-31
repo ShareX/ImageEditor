@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
@@ -977,7 +978,7 @@ public class EditorInputController
         _draggedCropHandleTag = null;
     }
 
-    private const double CropConfirmButtonMargin = 8;
+    private const double CropConfirmButtonMargin = 10;
     private const int CropConfirmButtonZIndex = 8000;
 
     private void ShowCropConfirmButton(Canvas overlay, Rect cropRect)
@@ -988,7 +989,11 @@ public class EditorInputController
         {
             Content = "Crop",
             Padding = new Thickness(16, 6),
-            Cursor = new Cursor(StandardCursorType.Arrow),
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Width = 80,
+            Height = 40,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center
         };
         button.Classes.Add("editor-button");
         button.SetValue(Panel.ZIndexProperty, CropConfirmButtonZIndex);

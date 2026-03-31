@@ -25,13 +25,15 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Spotlight annotation - darkens entire image except highlighted area
 /// </summary>
 public partial class SpotlightAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Effects;
+
     /// <summary>
     /// Darkening overlay opacity (0-255)
     /// </summary>

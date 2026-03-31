@@ -23,11 +23,11 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.ImageEffects.Filters;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Core.ImageEffects.Filters;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Helpers;
+namespace ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 /// <summary>
 /// Image manipulation utilities for the Editor library.
@@ -164,9 +164,10 @@ public static class ImageHelpers
         return extension switch
         {
             "jpg" or "jpeg" => SKEncodedImageFormat.Jpeg,
-            "bmp" => SKEncodedImageFormat.Bmp,
-            "gif" => SKEncodedImageFormat.Gif,
             "webp" => SKEncodedImageFormat.Webp,
+            "avif" => SKEncodedImageFormat.Avif,
+            "gif" => SKEncodedImageFormat.Gif,
+            "bmp" => SKEncodedImageFormat.Bmp,
             _ => SKEncodedImageFormat.Png
         };
     }
@@ -183,7 +184,7 @@ public static class ImageHelpers
     public static SKBitmap Resize(SKBitmap source, int width, int height, bool maintainAspectRatio = false, SKFilterQuality quality = SKFilterQuality.High)
     {
         // Quality ignored in Effect currently or hardcoded to High
-        return new ResizeImageEffect(width, height, maintainAspectRatio).Apply(source);
+        return new ResizeImageEffect { Width = width, Height = height, MaintainAspectRatio = maintainAspectRatio }.Apply(source);
     }
 
     /// <summary>
@@ -295,6 +296,24 @@ public static class ImageHelpers
         return new BorderImageEffect(type, size, dashStyle, color).Apply(source);
     }
 
+    public static SKBitmap ApplyBevel(
+        SKBitmap source,
+        int size,
+        float strength,
+        float lightAngle,
+        SKColor highlightColor,
+        SKColor shadowColor)
+    {
+        return new BevelImageEffect
+        {
+            Size = size,
+            Strength = strength,
+            LightAngle = lightAngle,
+            HighlightColor = highlightColor,
+            ShadowColor = shadowColor
+        }.Apply(source);
+    }
+
     public static SKBitmap ApplyOutline(SKBitmap source, int size, int padding, bool outlineOnly, SKColor color)
     {
         return new OutlineImageEffect(size, padding, outlineOnly, color).Apply(source);
@@ -310,6 +329,70 @@ public static class ImageHelpers
         return new GlowImageEffect(size, strength, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
+    public static SKBitmap ApplyBloom(SKBitmap source, float threshold, float softKnee, float radius, float intensity)
+    {
+        return new BloomImageEffect
+        {
+            Threshold = threshold,
+            SoftKnee = softKnee,
+            Radius = radius,
+            Intensity = intensity
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyHalation(SKBitmap source, float threshold, float radius, float strength, float warmth)
+    {
+        return new HalationImageEffect
+        {
+            Threshold = threshold,
+            Radius = radius,
+            Strength = strength,
+            Warmth = warmth
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyChromaticAberration(SKBitmap source, float amount, float edgeStart, float strength)
+    {
+        return new ChromaticAberrationImageEffect
+        {
+            Amount = amount,
+            EdgeStart = edgeStart,
+            Strength = strength
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyLiquidGlass(SKBitmap source, float distortion, float refraction, int chromaShift, float gloss, float flowScale)
+    {
+        return new LiquidGlassImageEffect
+        {
+            Distortion = distortion,
+            Refraction = refraction,
+            ChromaShift = chromaShift,
+            Gloss = gloss,
+            FlowScale = flowScale
+        }.Apply(source);
+    }
+
+    public static SKBitmap ApplyNeonEdgeGlow(
+        SKBitmap source,
+        float edgeStrength,
+        int threshold,
+        float glowRadius,
+        float glowIntensity,
+        float baseDim,
+        SKColor neonColor)
+    {
+        return new NeonEdgeGlowImageEffect
+        {
+            EdgeStrength = edgeStrength,
+            Threshold = threshold,
+            GlowRadius = glowRadius,
+            GlowIntensity = glowIntensity,
+            BaseDim = baseDim,
+            NeonColor = neonColor
+        }.Apply(source);
+    }
+
     public static SKBitmap ApplyReflection(SKBitmap source, int percentage, int maxAlpha, int minAlpha, int offset, bool skew, int skewSize)
     {
         return new ReflectionImageEffect(percentage, maxAlpha, minAlpha, offset, skew, skewSize).Apply(source);
@@ -318,6 +401,11 @@ public static class ImageHelpers
     public static SKBitmap ApplyTornEdge(SKBitmap source, int depth, int range, bool top, bool right, bool bottom, bool left, bool curved)
     {
         return new TornEdgeImageEffect(depth, range, top, right, bottom, left, curved).Apply(source);
+    }
+
+    public static SKBitmap ApplyWaveEdge(SKBitmap source, int depth, int range, bool top, bool right, bool bottom, bool left)
+    {
+        return new WaveEdgeImageEffect(depth, range, top, right, bottom, left).Apply(source);
     }
 
     public static SKBitmap ApplySlice(SKBitmap source, int minHeight, int maxHeight, int minShift, int maxShift)

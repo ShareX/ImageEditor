@@ -23,10 +23,11 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.Editor;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor;
+namespace ShareX.ImageEditor.Core.History;
 
 /// <summary>
 /// Manages undo/redo history for the editor using the Memento pattern.
@@ -169,17 +170,16 @@ internal class EditorHistory : IDisposable
 
     /// <summary>
     /// Create an annotations-only memento for non-destructive operations.
-    /// Excludes region tools (crop, cutout, spotlight) from memento creation.
+    /// Excludes crop while its region is still being drawn.
     /// </summary>
     /// <param name="excludeAnnotation">Optional annotation to exclude from the memento (to capture state before it was added)</param>
     /// <param name="force">Force memento creation regardless of active tool</param>
     public void CreateAnnotationsMemento(Annotation? excludeAnnotation = null, bool force = false)
     {
-        // Skip memento creation for region tools (crop, cutout, spotlight)
-        // These tools execute immediately and don't need annotation history
+        // Skip memento creation for crop while its region is being drawn.
+        // Crop commits through canvas history when confirmed.
         if (!force &&
-            (_editorCore.ActiveTool == EditorTool.Crop ||
-             _editorCore.ActiveTool == EditorTool.Spotlight))
+            _editorCore.ActiveTool == EditorTool.Crop)
         {
             return;
         }

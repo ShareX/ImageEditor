@@ -1,13 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
+namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-namespace ShareX.ImageEditor.ImageEffects.Adjustments;
-
-public class GrayscaleImageEffect : ImageEffect
+public sealed class GrayscaleImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "grayscale";
     public override string Name => "Grayscale";
-    public override string IconKey => "IconCloud";
-    public override bool HasParameters => true;
+    public override string IconKey => LucideIcons.eclipse;
+    public override string Description => "Converts the image to grayscale.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<GrayscaleImageEffect>("strength", "Strength", 0, 100, 100, (effect, value) => effect.Strength = value)
+    ];
+
     public float Strength { get; set; } = 100f;
 
     public override SKBitmap Apply(SKBitmap source)

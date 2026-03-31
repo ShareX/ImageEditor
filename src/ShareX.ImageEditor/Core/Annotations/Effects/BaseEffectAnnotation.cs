@@ -1,12 +1,14 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Base class for effect annotations (Blur, Pixelate, Highlight)
 /// </summary>
 public abstract class BaseEffectAnnotation : Annotation, IDisposable
 {
+    public override AnnotationCategory Category => AnnotationCategory.Effects;
+
     /// <summary>
     /// Effect radius / strength
     /// </summary>

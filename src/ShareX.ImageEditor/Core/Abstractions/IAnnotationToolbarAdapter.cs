@@ -23,10 +23,11 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Annotations;
+using Avalonia.Media;
+using ShareX.ImageEditor.Core.Annotations;
 using System.ComponentModel;
 
-namespace ShareX.ImageEditor.Abstractions;
+namespace ShareX.ImageEditor.Core.Abstractions;
 
 /// <summary>
 /// Core-facing contract for annotation toolbar state and actions.
@@ -37,25 +38,36 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     string StrokeColor { get; set; }
     string FillColor { get; set; }
     string TextColor { get; set; }
+    IBrush SelectedColorBrush { get; set; }
+    IBrush FillColorBrush { get; set; }
+    IBrush TextColorBrush { get; set; }
     int StrokeWidth { get; set; }
+    int CornerRadius { get; set; }
     float FontSize { get; set; }
     float EffectStrength { get; set; }
+    float EffectStrengthMaximum { get; }
     bool ShadowEnabled { get; set; }
     bool TextBold { get; set; }
     bool TextItalic { get; set; }
     bool TextUnderline { get; set; }
+    string ActiveToolIcon { get; }
+    string ActiveToolName { get; }
     bool CanUndo { get; }
     bool CanRedo { get; }
     bool HasSelection { get; }
+    bool HasAnnotations { get; }
     bool ShowBorderColor { get; }
     bool ShowFillColor { get; }
     bool ShowTextColor { get; }
     bool ShowThickness { get; }
     bool ShowFontSize { get; }
+    bool ShowCornerRadius { get; }
     bool ShowStrength { get; }
     bool ShowTextStyle { get; }
     bool ShowShadow { get; }
     bool ShowToolOptions { get; }
+    bool ShowToolOptionsSeparator { get; }
+    void SelectTool(EditorTool tool);
     void Undo();
     void Redo();
     void DeleteSelection();

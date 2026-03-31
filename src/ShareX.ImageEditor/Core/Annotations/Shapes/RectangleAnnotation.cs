@@ -25,13 +25,17 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Rectangle annotation
 /// </summary>
 public partial class RectangleAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
+
+    public int CornerRadius { get; set; }
+
     public RectangleAnnotation()
     {
         ToolType = EditorTool.Rectangle;

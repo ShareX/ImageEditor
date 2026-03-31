@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Filters;
+namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class BlurImageEffect : ImageEffect
+public sealed class BlurImageEffect : ImageEffectBase
 {
+    public override string Id => "blur";
     public override string Name => "Blur";
-    public override string IconKey => "IconCloud";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => LucideIcons.focus;
+    public override string Description => "Applies a blur effect.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<BlurImageEffect>("radius", "Radius", 1, 200, 10, (effect, value) => effect.Radius = value)
+    ];
+
     public int Radius { get; set; } = 5;
 
     public override SKBitmap Apply(SKBitmap source)

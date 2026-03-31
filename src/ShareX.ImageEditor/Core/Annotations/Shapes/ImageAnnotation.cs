@@ -1,12 +1,13 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Image annotation - stickers or inserted images
 /// </summary>
 public class ImageAnnotation : Annotation, IDisposable
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     private SKBitmap? _imageBitmap;
 
     /// <summary>

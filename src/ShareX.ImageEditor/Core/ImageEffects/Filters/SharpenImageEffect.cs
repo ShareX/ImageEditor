@@ -1,12 +1,21 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Filters;
+namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
-public class SharpenImageEffect : ImageEffect
+public sealed class SharpenImageEffect : ImageEffectBase
 {
+    public override string Id => "sharpen";
     public override string Name => "Sharpen";
-    public override string IconKey => "IconMagic";
-    public override bool HasParameters => true;
+    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
+    public override string IconKey => LucideIcons.crosshair;
+    public override string Description => "Sharpens the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.IntSlider<SharpenImageEffect>("strength", "Strength", 0, 100, 50, (effect, value) => effect.Strength = value)
+    ];
+
     public int Strength { get; set; } = 50;
 
     public override SKBitmap Apply(SKBitmap source)

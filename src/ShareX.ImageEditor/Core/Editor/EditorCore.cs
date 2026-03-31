@@ -23,12 +23,14 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.History;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Hosting;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor;
+namespace ShareX.ImageEditor.Core.Editor;
 
 /// <summary>
 /// Platform-agnostic image editor core. Handles all editing logic including:
@@ -238,9 +240,10 @@ public class EditorCore : IDisposable
                 result = copy;
             }
         }
-        catch
+        catch (Exception ex)
         {
             result?.Dispose();
+            EditorServices.ReportError(nameof(EditorCore), "Image operation failed.", ex);
             return false;
         }
 
@@ -307,7 +310,7 @@ public class EditorCore : IDisposable
         int oldW = SourceImage?.Width ?? 0;
         int oldH = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.Rotate90Clockwise, 
+            ImageHelpers.Rotate90Clockwise,
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsOrthogonal(90, oldW, oldH));
     }
@@ -317,7 +320,7 @@ public class EditorCore : IDisposable
         int oldW = SourceImage?.Width ?? 0;
         int oldH = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.Rotate90CounterClockwise, 
+            ImageHelpers.Rotate90CounterClockwise,
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsOrthogonal(270, oldW, oldH));
     }
@@ -327,7 +330,7 @@ public class EditorCore : IDisposable
         int oldW = SourceImage?.Width ?? 0;
         int oldH = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.Rotate180, 
+            ImageHelpers.Rotate180,
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsOrthogonal(180, oldW, oldH));
     }
@@ -340,13 +343,14 @@ public class EditorCore : IDisposable
         int newH = -1;
 
         return ApplyImageOperation(
-            img => {
+            img =>
+            {
                 var effect = RotateImageEffect.Custom(angle, autoResize);
                 var result = effect.Apply(img);
                 newW = result.Width;
                 newH = result.Height;
                 return result;
-            }, 
+            },
             clearAnnotations: false,
             transformAnnotations: () => RotateAnnotationsArbitrary(angle, oldW, oldH, newW, newH, autoResize));
     }
@@ -355,7 +359,7 @@ public class EditorCore : IDisposable
     {
         int w = SourceImage?.Width ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.FlipHorizontal, 
+            ImageHelpers.FlipHorizontal,
             clearAnnotations: false,
             transformAnnotations: () => FlipAnnotations(true, false, w, 0));
     }
@@ -364,7 +368,7 @@ public class EditorCore : IDisposable
     {
         int h = SourceImage?.Height ?? 0;
         return ApplyImageOperation(
-            ImageHelpers.FlipVertical, 
+            ImageHelpers.FlipVertical,
             clearAnnotations: false,
             transformAnnotations: () => FlipAnnotations(false, true, 0, h));
     }
@@ -417,7 +421,7 @@ public class EditorCore : IDisposable
         if (!hasContent) minX = minY = 0;
 
         return ApplyImageOperation(
-            img => ImageHelpers.AutoCrop(img, topLeft, tolerance), 
+            img => ImageHelpers.AutoCrop(img, topLeft, tolerance),
             clearAnnotations: false,
             transformAnnotations: () => TranslateAnnotations(-minX, -minY));
     }
@@ -436,14 +440,13 @@ public class EditorCore : IDisposable
                 for (int i = 0; i < freehand.Points.Count; i++)
                     freehand.Points[i] = transformPoint(freehand.Points[i]);
             }
-            else if (ann is SmartEraserAnnotation eraser)
+            else if (ann is NumberAnnotation number && number.HasTailPoint)
             {
-                for (int i = 0; i < eraser.Points.Count; i++)
-                    eraser.Points[i] = transformPoint(eraser.Points[i]);
+                number.SetTailPoint(transformPoint(number.TailPoint));
             }
             else if (ann is SpeechBalloonAnnotation balloon)
             {
-                balloon.TailPoint = transformPoint(balloon.TailPoint);
+                balloon.SetTailPoint(transformPoint(balloon.GetEffectiveTailPoint()));
             }
         }
     }
@@ -797,25 +800,23 @@ public class EditorCore : IDisposable
             _currentAnnotation.StrokeWidth = StrokeWidth;
 
             // Handle special tools
-            if (_currentAnnotation is FreehandAnnotation freehand)
+            if (_currentAnnotation is SmartEraserAnnotation smartEraser)
             {
-                freehand.Points.Add(point);
-            }
-            else if (_currentAnnotation is SmartEraserAnnotation smartEraser)
-            {
-                // Match Avalonia: always use thicker stroke and sampled color if available
-                smartEraser.StrokeWidth = 10;
+                smartEraser.StrokeWidth = 0;
                 if (!string.IsNullOrEmpty(sampledSmartEraserColor))
                 {
                     smartEraser.StrokeColor = sampledSmartEraserColor;
+                    smartEraser.FillColor = sampledSmartEraserColor;
                 }
                 else
                 {
                     smartEraser.StrokeColor = "#80FF0000";
+                    smartEraser.FillColor = "#80FF0000";
                 }
-
-                // Also seed the freehand point list
-                smartEraser.Points.Add(point);
+            }
+            else if (_currentAnnotation is FreehandAnnotation freehand)
+            {
+                freehand.Points.Add(point);
             }
             else if (_currentAnnotation is TextAnnotation textAnn)
             {
@@ -985,8 +986,8 @@ public class EditorCore : IDisposable
             EditAnnotationRequested?.Invoke(_currentAnnotation);
         }
 
-        // Auto-select the created annotation (skip freehand/eraser which are not resizable)
-        if (_currentAnnotation is not FreehandAnnotation && _currentAnnotation is not SmartEraserAnnotation)
+        // Auto-select the created annotation (skip only freehand which is not resizable)
+        if (_currentAnnotation is not FreehandAnnotation)
         {
             _selectedAnnotation = _currentAnnotation;
         }
@@ -1055,8 +1056,8 @@ public class EditorCore : IDisposable
             return;
         }
 
-        // Freehand/SmartEraser are not resizable in the Avalonia editor
-        if (_selectedAnnotation is FreehandAnnotation || _selectedAnnotation is SmartEraserAnnotation)
+        // Freehand is not resizable in the Avalonia editor
+        if (_selectedAnnotation is FreehandAnnotation)
         {
             return;
         }
@@ -1429,7 +1430,7 @@ public class EditorCore : IDisposable
 
     private IEnumerable<(HandleType Type, SKPoint Position)> GetAnnotationHandles(Annotation annotation)
     {
-        if (annotation is FreehandAnnotation || annotation is SmartEraserAnnotation)
+        if (annotation is FreehandAnnotation)
         {
             yield break;
         }
@@ -1601,9 +1602,16 @@ public class EditorCore : IDisposable
             // anchored to the same visual position relative to the new canvas origin.
             if (annotation is SpeechBalloonAnnotation balloon)
             {
-                balloon.TailPoint = new SKPoint(
-                    balloon.TailPoint.X + offsetX,
-                    balloon.TailPoint.Y + offsetY);
+                var tailPoint = balloon.GetEffectiveTailPoint();
+                balloon.SetTailPoint(new SKPoint(
+                    tailPoint.X + offsetX,
+                    tailPoint.Y + offsetY));
+            }
+            else if (annotation is NumberAnnotation number && number.HasTailPoint)
+            {
+                number.SetTailPoint(new SKPoint(
+                    number.TailPoint.X + offsetX,
+                    number.TailPoint.Y + offsetY));
             }
 
             // Update effect annotations with new bounds
@@ -1825,12 +1833,22 @@ public class EditorCore : IDisposable
                 // XIP0039 Guardrail 2: Adjust SpeechBalloon tail for vertical cut
                 if (annotation is SpeechBalloonAnnotation balloon)
                 {
-                    float tailX = balloon.TailPoint.X;
+                    var tailPoint = balloon.GetEffectiveTailPoint();
+                    float tailX = tailPoint.X;
                     if (tailX >= cutEnd)
                         tailX -= cutWidth;
                     else if (tailX > cutX)
                         tailX = cutX;
-                    balloon.TailPoint = new SKPoint(tailX, balloon.TailPoint.Y);
+                    balloon.SetTailPoint(new SKPoint(tailX, tailPoint.Y));
+                }
+                else if (annotation is NumberAnnotation number && number.HasTailPoint)
+                {
+                    float tailX = number.TailPoint.X;
+                    if (tailX >= cutEnd)
+                        tailX -= cutWidth;
+                    else if (tailX > cutX)
+                        tailX = cutX;
+                    number.SetTailPoint(new SKPoint(tailX, number.TailPoint.Y));
                 }
 
                 // Update effect annotations
@@ -1910,12 +1928,22 @@ public class EditorCore : IDisposable
                 // XIP0039 Guardrail 2: Adjust SpeechBalloon tail for horizontal cut
                 if (annotation is SpeechBalloonAnnotation balloon)
                 {
-                    float tailY = balloon.TailPoint.Y;
+                    var tailPoint = balloon.GetEffectiveTailPoint();
+                    float tailY = tailPoint.Y;
                     if (tailY >= cutEnd)
                         tailY -= cutHeight;
                     else if (tailY > cutY)
                         tailY = cutY;
-                    balloon.TailPoint = new SKPoint(balloon.TailPoint.X, tailY);
+                    balloon.SetTailPoint(new SKPoint(tailPoint.X, tailY));
+                }
+                else if (annotation is NumberAnnotation number && number.HasTailPoint)
+                {
+                    float tailY = number.TailPoint.Y;
+                    if (tailY >= cutEnd)
+                        tailY -= cutHeight;
+                    else if (tailY > cutY)
+                        tailY = cutY;
+                    number.SetTailPoint(new SKPoint(number.TailPoint.X, tailY));
                 }
 
                 // Update effect annotations

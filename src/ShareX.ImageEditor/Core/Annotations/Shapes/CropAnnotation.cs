@@ -25,7 +25,7 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Crop annotation - modifies the image dimensions
@@ -33,6 +33,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// </summary>
 public class CropAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public CropAnnotation()
     {
         ToolType = EditorTool.Crop;

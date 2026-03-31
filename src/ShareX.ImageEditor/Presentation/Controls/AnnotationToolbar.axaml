@@ -1,0 +1,349 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:ShareX.ImageEditor.Core.Annotations;assembly=ShareX.ImageEditor"
+             xmlns:abstractions="clr-namespace:ShareX.ImageEditor.Core.Abstractions;assembly=ShareX.ImageEditor"
+             xmlns:converters="clr-namespace:ShareX.ImageEditor.Presentation.Converters;assembly=ShareX.ImageEditor"
+             xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
+             xmlns:theming="clr-namespace:ShareX.ImageEditor.Presentation.Theming;assembly=ShareX.ImageEditor"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.AnnotationToolbar"
+             x:Name="AnnotationToolbarRoot"
+             x:DataType="abstractions:IAnnotationToolbarAdapter">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:EqualsConverter x:Key="EqualsConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Vertical" Spacing="0">
+        <Border Padding="4"
+                Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+                BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="0,0,4,4"
+                HorizontalAlignment="Center">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{ReflectionBinding ImageEditorMode}">
+                        <Button Classes="editor-button toolbar-button"
+                                ToolTip.Tip="File"
+                                x:Name="FileMenuButton"
+                                MinWidth="54"
+                                HorizontalContentAlignment="Stretch">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0"
+                                           Text="{x:Static theming:EditorIcons.FileMenu}"
+                                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18"
+                                           VerticalAlignment="Center"/>
+                                <Border Grid.Column="1"/>
+                                <TextBlock Grid.Column="2"
+                                           Classes="dropdown-chevron"
+                                           Classes.open="{Binding #FileMenuButton.Flyout.IsOpen}"
+                                           Text="{x:Static theming:EditorIcons.ChevronDown}"
+                                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                           FontWeight="Normal"
+                                           FontSize="10"
+                                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <Button.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft" VerticalOffset="4">
+                                    <MenuItem Header="New..."
+                                              Command="{ReflectionBinding NewImageCommand}"
+                                              InputGesture="Ctrl+N">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileNew}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Open..."
+                                              Command="{ReflectionBinding OpenImageCommand}"
+                                              InputGesture="Ctrl+O">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileOpen}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator/>
+                                    <MenuItem Header="Save"
+                                              Command="{ReflectionBinding SaveCommand}"
+                                              InputGesture="Ctrl+S">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSave}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Save as..."
+                                              Command="{ReflectionBinding SaveAsCommand}"
+                                              InputGesture="Ctrl+Shift+S">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSaveAs}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator/>
+                                    <MenuItem Header="Exit"
+                                              Command="{ReflectionBinding ExitEditorCommand}"
+                                              InputGesture="Escape">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileExit}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Border Width="1"
+                                Margin="4,0"
+                                Background="{DynamicResource ShareX.Brush.Separator}"/>
+                    </StackPanel>
+                    
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Select}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Select (V)"
+                            Content="{x:Static theming:EditorIcons.ToolSelect}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Rectangle}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Rectangle (R)"
+                            Content="{x:Static theming:EditorIcons.ToolRectangle}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Ellipse}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Ellipse (E)"
+                            Content="{x:Static theming:EditorIcons.ToolEllipse}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Line}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Line (L)"
+                            Content="{x:Static theming:EditorIcons.ToolLine}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Arrow}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Arrow (A)"
+                            Content="{x:Static theming:EditorIcons.ToolArrow}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Freehand}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Freehand}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Freehand (F)"
+                            Content="{x:Static theming:EditorIcons.ToolFreehand}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Text}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Text (T)"
+                            Content="{x:Static theming:EditorIcons.ToolText}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.SpeechBalloon}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Speech Balloon (O)"
+                            Content="{x:Static theming:EditorIcons.ToolSpeechBalloon}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Step}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Step}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Step (N)"
+                            Content="{x:Static theming:EditorIcons.ToolStep}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Highlight}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Highlight (H)"
+                            Content="{x:Static theming:EditorIcons.ToolHighlight}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.SmartEraser}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Smart Eraser (W)"
+                            Content="{x:Static theming:EditorIcons.ToolSmartEraser}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Blur}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Blur (B)"
+                            Content="{x:Static theming:EditorIcons.ToolBlur}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Pixelate}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Pixelate (P)"
+                            Content="{x:Static theming:EditorIcons.ToolPixelate}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Magnify}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Magnify (M)"
+                            Content="{x:Static theming:EditorIcons.ToolMagnify}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Spotlight}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Spotlight (S)"
+                            Content="{x:Static theming:EditorIcons.ToolSpotlight}"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{Binding ShowTrailingActions, ElementName=AnnotationToolbarRoot}">
+                        <Border Width="1"
+                                Margin="4,0"
+                                Background="{DynamicResource ShareX.Brush.Separator}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
+                                Command="{ReflectionBinding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
+                                ToolTip.Tip="Crop (C)"
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.ToolCrop}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=CutOut}"
+                                Command="{ReflectionBinding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
+                                ToolTip.Tip="Cut Out (U)"
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.ToolCutOut}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                Classes.active="{ReflectionBinding IsSettingsPanelOpen}"
+                                Command="{ReflectionBinding ToggleSettingsPanelCommand}"
+                                ToolTip.Tip="Background"
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelBackground}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                Classes.active="{ReflectionBinding IsEffectsPanelOpen}"
+                                Command="{ReflectionBinding ToggleEffectsPanelCommand}"
+                                ToolTip.Tip="Image Effects"
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelEffects}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{Binding ShowEditingActions, ElementName=AnnotationToolbarRoot}">
+                        <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding CanUndo}"
+                                Click="OnUndoClick"
+                                ToolTip.Tip="Undo (Ctrl+Z)"
+                                Content="{x:Static theming:EditorIcons.ActionUndo}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding CanRedo}"
+                                Click="OnRedoClick"
+                                ToolTip.Tip="Redo (Ctrl+Y)"
+                                Content="{x:Static theming:EditorIcons.ActionRedo}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding HasSelection}"
+                                Click="OnDeleteClick"
+                                ToolTip.Tip="Delete (Delete)"
+                                Content="{x:Static theming:EditorIcons.ActionDelete}"/>
+                        <Button Classes="editor-button toolbar-button"
+                                IsEnabled="{Binding HasAnnotations}"
+                                Click="OnClearClick"
+                                ToolTip.Tip="Delete all (Shift+Delete)"
+                                Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <Border Padding="4,0,4,4"
+                Margin="0,-1,0,0"
+                Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+                BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                BorderThickness="1,0,1,1"
+                CornerRadius="0,0,4,4"
+                HorizontalAlignment="Center"
+                IsVisible="{Binding ShowToolOptionsSeparator}">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                <Border Background="Transparent"
+                        Width="40"
+                        Height="40"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        ToolTip.Tip="{Binding ActiveToolName}">
+                    <TextBlock Text="{Binding ActiveToolIcon}"
+                               FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                               FontSize="18"
+                               FontWeight="Normal"
+                               Foreground="{DynamicResource ShareX.Brush.Separator}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Width="24"/>
+                </Border>
+
+                <controls:ColorPickerDropdown x:Name="StrokeColorPicker"
+                                              SelectedColor="{Binding SelectedColorBrush, Mode=TwoWay}"
+                                              Height="40"
+                                              IsVisible="{Binding ShowBorderColor}"
+                                              ShowBorderHole="True"
+                                              ToolTip.Tip="Border color"/>
+
+                <controls:ColorPickerDropdown x:Name="FillColorPicker"
+                                              SelectedColor="{Binding FillColorBrush, Mode=TwoWay}"
+                                              Height="40"
+                                              IsVisible="{Binding ShowFillColor}"
+                                              ToolTip.Tip="Fill color"/>
+
+                <controls:ColorPickerDropdown x:Name="TextColorPicker"
+                                              SelectedColor="{Binding TextColorBrush, Mode=TwoWay}"
+                                              Height="40"
+                                              IsVisible="{Binding ShowTextColor}"
+                                              ShowTextLabel="True"
+                                              ToolTip.Tip="Text color"/>
+
+                <controls:WidthPickerDropdown x:Name="StrokeWidthPicker"
+                                              SelectedWidth="{Binding StrokeWidth, Mode=TwoWay}"
+                                              Height="40"
+                                              IsVisible="{Binding ShowThickness}"
+                                              ToolTip.Tip="Thickness"/>
+
+                <controls:CornerRadiusPickerDropdown x:Name="CornerRadiusPicker"
+                                                     SelectedCornerRadius="{Binding CornerRadius, Mode=TwoWay}"
+                                                     Height="40"
+                                                     IsVisible="{Binding ShowCornerRadius}"
+                                                     ToolTip.Tip="Corner radius"/>
+
+                <controls:FontSizePickerDropdown x:Name="FontSizePicker"
+                                                 SelectedFontSize="{Binding FontSize, Mode=TwoWay}"
+                                                 Height="40"
+                                                 IsVisible="{Binding ShowFontSize}"
+                                                 ToolTip.Tip="Font size"/>
+
+                <controls:StrengthSlider x:Name="EffectStrengthSlider"
+                                         SelectedStrength="{Binding EffectStrength, Mode=TwoWay}"
+                                         Maximum="{Binding EffectStrengthMaximum}"
+                                         IsVisible="{Binding ShowStrength}"
+                                         ToolTip.Tip="Effect strength"/>
+
+                <Button Classes="editor-button toolbar-button"
+                        Classes.active="{Binding TextBold}"
+                        Click="OnTextBoldClick"
+                        IsVisible="{Binding ShowTextStyle}"
+                        ToolTip.Tip="Toggle bold"
+                        Content="{x:Static theming:EditorIcons.FormatBold}"/>
+                <Button Classes="editor-button toolbar-button"
+                        Classes.active="{Binding TextItalic}"
+                        Click="OnTextItalicClick"
+                        IsVisible="{Binding ShowTextStyle}"
+                        ToolTip.Tip="Toggle italic"
+                        Content="{x:Static theming:EditorIcons.FormatItalic}"/>
+                <Button Classes="editor-button toolbar-button"
+                        Classes.active="{Binding TextUnderline}"
+                        Click="OnTextUnderlineClick"
+                        IsVisible="{Binding ShowTextStyle}"
+                        ToolTip.Tip="Toggle underline"
+                        Content="{x:Static theming:EditorIcons.FormatUnderline}"/>
+                <Button x:Name="ShadowToggleButton"
+                        Classes="editor-button toolbar-button"
+                        Classes.active="{Binding ShadowEnabled}"
+                        Click="OnShadowClick"
+                        IsVisible="{Binding ShowShadow}"
+                        ToolTip.Tip="Toggle shadow"
+                        Content="{x:Static theming:EditorIcons.MenuTheme}"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </StackPanel>
+</UserControl>

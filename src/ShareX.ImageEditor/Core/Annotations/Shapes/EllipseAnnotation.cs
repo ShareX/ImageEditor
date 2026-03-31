@@ -25,13 +25,14 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Ellipse/circle annotation
 /// </summary>
 public partial class EllipseAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public EllipseAnnotation()
     {
         ToolType = EditorTool.Ellipse;

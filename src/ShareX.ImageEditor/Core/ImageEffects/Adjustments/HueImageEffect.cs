@@ -1,12 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
+namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-namespace ShareX.ImageEditor.ImageEffects.Adjustments;
-
-public class HueImageEffect : ImageEffect
+public sealed class HueImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "hue";
     public override string Name => "Hue";
-    public override string IconKey => "IconPalette";
+    public override string IconKey => LucideIcons.pipette;
+    public override string Description => "Adjusts the hue of the image.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<HueImageEffect>("amount", "Amount", -180, 180, 0, (effect, value) => effect.Amount = value)
+    ];
+
     public float Amount { get; set; } = 0; // -180 to 180
 
     public override SKBitmap Apply(SKBitmap source)

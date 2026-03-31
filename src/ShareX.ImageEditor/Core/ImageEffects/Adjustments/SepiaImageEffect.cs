@@ -1,13 +1,20 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
+namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-namespace ShareX.ImageEditor.ImageEffects.Adjustments;
-
-public class SepiaImageEffect : ImageEffect
+public sealed class SepiaImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "sepia";
     public override string Name => "Sepia";
-    public override string IconKey => "IconCoffee";
-    public override bool HasParameters => true;
+    public override string IconKey => LucideIcons.coffee;
+    public override string Description => "Applies a sepia tone effect.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<SepiaImageEffect>("strength", "Strength", 0, 100, 100, (effect, value) => effect.Strength = value)
+    ];
+
     public float Strength { get; set; } = 100f;
 
     public override SKBitmap Apply(SKBitmap source)

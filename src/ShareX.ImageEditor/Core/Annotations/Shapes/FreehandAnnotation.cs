@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Freehand pen/drawing annotation
@@ -8,6 +8,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// </summary>
 public partial class FreehandAnnotation : Annotation, IPointBasedAnnotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public List<SKPoint> Points { get; set; } = new List<SKPoint>();
 
     /// <summary>

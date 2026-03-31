@@ -1,12 +1,16 @@
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
+namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-namespace ShareX.ImageEditor.ImageEffects.Adjustments;
-
-public class BlackAndWhiteImageEffect : ImageEffect
+public sealed class BlackAndWhiteImageEffect : AdjustmentImageEffectBase
 {
-    public override string Name => "Black and White";
-    public override string IconKey => "IconAdjust";
+    public override string Id => "black_and_white";
+    public override string Name => "Black & White";
+    public override string IconKey => LucideIcons.contrast;
+    public override string Description => "Converts the image to black and white.";
+    public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
+
     public override SKBitmap Apply(SKBitmap source)
     {
         return ApplyPixelOperation(source, (color) =>

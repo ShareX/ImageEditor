@@ -384,6 +384,7 @@ FodyWeavers.xsd
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
+!.vscode/mcp.json
 !.vscode/extensions.json
 *.code-workspace
 
@@ -399,3 +400,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Other
+.dotnet
+.dotnet_cli

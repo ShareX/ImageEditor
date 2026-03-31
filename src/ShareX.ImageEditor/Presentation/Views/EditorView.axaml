@@ -1,0 +1,624 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ShareX.ImageEditor.Presentation.ViewModels"
+             xmlns:views="using:ShareX.ImageEditor.Presentation.Views"
+             xmlns:models="using:ShareX.ImageEditor.Core.Annotations"
+             xmlns:converters="using:ShareX.ImageEditor.Presentation.Converters"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+             xmlns:helpers="using:ShareX.ImageEditor.Presentation.Rendering"
+             xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="ShareX.ImageEditor.Presentation.Views.EditorView"
+             x:DataType="vm:MainViewModel"
+             Focusable="True">
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ImageEditorStyles.axaml"/>
+    </UserControl.Styles>
+
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:ConfirmationDialogViewModel}" x:DataType="vm:ConfirmationDialogViewModel">
+            <views:ConfirmationDialogView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NewImageDialogViewModel}" x:DataType="vm:NewImageDialogViewModel">
+            <views:NewImageDialogView />
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ImageEditorTheme.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
+        <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
+        <converters:EqualsConverter x:Key="EqualsConverter" />
+
+        <ContextMenu x:Key="EditorContextMenu"
+                     Placement="Pointer"
+                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                     BorderThickness="1"
+                     CornerRadius="6"
+                     Padding="6,2"
+                     Cursor="Arrow">
+            <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionUndo}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionRedo}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <Separator/>
+
+            <MenuItem Header="Delete" Command="{Binding DeleteSelectedCommand}" InputGesture="Delete">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionDelete}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Delete all" Command="{Binding ClearAnnotationsCommand}" InputGesture="Shift+Delete">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionClearAll}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Flatten" Command="{Binding FlattenImageCommand}" InputGesture="Ctrl+Shift+F">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.LayerFlatten}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <Separator/>
+
+            <MenuItem Header="Cut" Command="{Binding CutAnnotationCommand}" InputGesture="Ctrl+X">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ToolCutOut}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Copy" Command="{Binding CopyAnnotationCommand}" InputGesture="Ctrl+C">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionCopy}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Paste" Command="{Binding PasteCommand}" InputGesture="Ctrl+V">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionPaste}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Duplicate" Command="{Binding DuplicateSelectedCommand}" InputGesture="Ctrl+D">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionDuplicate}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <Separator/>
+
+            <MenuItem Header="Bring to front" Command="{Binding BringToFrontCommand}" InputGesture="Home">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionBringToFront}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Bring forward" Command="{Binding BringForwardCommand}" InputGesture="PageUp">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionBringForward}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Send backward" Command="{Binding SendBackwardCommand}" InputGesture="PageDown">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionSendBackward}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Send to back" Command="{Binding SendToBackCommand}" InputGesture="End">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionSendToBack}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+
+            <Separator/>
+
+            <MenuItem Header="Theme">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.MenuTheme}"/>
+                </MenuItem.Icon>
+                <MenuItem Header="Dark" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
+                <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>
+            </MenuItem>
+        </ContextMenu>
+    </UserControl.Resources>
+
+    <ThemeVariantScope x:Name="EditorThemeScope"
+                       RequestedThemeVariant="{x:Static theming:ThemeManager.ShareXDark}">
+        <Grid RowDefinitions="*">
+
+        <!-- Row 0: Main Content Area with Preview and Sidebar (Background Layer) -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Main}">
+
+            <!-- Left Sidebar (Settings Panel) -->
+            <Border Grid.Column="0"
+                    Classes="editor-sidebar left"
+                    Classes.open="{Binding IsSettingsPanelOpen}"
+                    Padding="0"
+                    Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    IsHitTestVisible="{Binding IsSettingsPanelOpen}">
+                <ScrollViewer x:Name="SidebarScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                              ScrollChanged="OnSidebarScrollChanged">
+                    <StackPanel Width="250" Spacing="0" Margin="16">
+
+                        <!-- Background Margin -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Margin"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding BackgroundMargin, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider x:Name="BackgroundMarginSlider"
+                                    Minimum="0"
+                                    Maximum="200"
+                                    Value="{Binding BackgroundMargin}"
+                                    Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+                        </StackPanel>
+
+                        <!-- Background Padding -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Padding"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding BackgroundPadding, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider x:Name="BackgroundPaddingSlider"
+                                    Minimum="0"
+                                    Maximum="200"
+                                    Value="{Binding BackgroundPadding}"
+                                    Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+                            <CheckBox x:Name="BackgroundSmartPaddingCheckBox"
+                                      IsChecked="{Binding BackgroundSmartPadding}"
+                                      Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                                      Content="Smart padding"
+                                      Margin="0,0,0,8"/>
+                        </StackPanel>
+
+                        <!-- Background Rounded Corner -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Rounded Corner"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding BackgroundRoundedCorner, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider x:Name="BackgroundRoundedCornerSlider"
+                                    Minimum="0"
+                                    Maximum="50"
+                                    Value="{Binding BackgroundRoundedCorner}"
+                                    Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+                        </StackPanel>
+
+                        <!-- Background Shadow Radius -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Shadow Radius"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding BackgroundShadowRadius, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider x:Name="BackgroundShadowRadiusSlider"
+                                    Minimum="0"
+                                    Maximum="100"
+                                    Value="{Binding BackgroundShadowRadius}"
+                                    Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+                        </StackPanel>
+
+                        <!-- Ratio -->
+                        <StackPanel Spacing="0">
+                            <TextBlock Text="Ratio" Margin="0,0,0,16"/>
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*">
+                                <!-- Row 0 -->
+                                <Button Grid.Row="0" Grid.Column="0" Content="Auto"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="Auto"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=Auto}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="1:1"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="1:1"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=1:1}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="4:3"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="4:3"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=4:3}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                                <!-- Row 1 -->
+                                <Button Grid.Row="1" Grid.Column="0" Content="3:2"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="3:2"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:2}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="1" Grid.Column="1" Content="16:9"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="16:9"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=16:9}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="5:3"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="5:3"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=5:3}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                                <!-- Row 2 -->
+                                <Button Grid.Row="2" Grid.Column="0" Content="9:16"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="9:16"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=9:16}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="2" Grid.Column="1" Content="3:4"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="3:4"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:4}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="2:3"
+                                        Classes="editor-button ratio-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="2:3"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=2:3}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Background -->
+                        <StackPanel Spacing="0">
+                            <TextBlock Text="Background" Margin="0,16"/>
+                            <ComboBox x:Name="BackgroundTypeComboBox"
+                                      ItemsSource="{Binding BackgroundModeOptions}"
+                                      SelectedItem="{Binding SelectedBackgroundModeOption, Mode=TwoWay}"
+                                      Margin="0,0,0,12"
+                                      Padding="8,6"
+                                      Background="{DynamicResource ShareX.Brush.Control.Background}"
+                                      BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                                      BorderThickness="1"
+                                      Foreground="{DynamicResource ShareX.Brush.Text}"
+                                      HorizontalAlignment="Stretch">
+                            </ComboBox>
+
+                            <StackPanel IsVisible="{Binding IsGradientBackgroundModeSelected}" Spacing="0">
+                                <ItemsControl ItemsSource="{Binding GradientPresets}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="4"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:MainViewModel+GradientPreset">
+                                            <Button Padding="0"
+                                                    BorderThickness="0"
+                                                    Background="Transparent"
+                                                    Margin="2"
+                                                    ToolTip.Tip="{Binding Name}"
+                                                    Command="{ReflectionBinding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}">
+                                                <Border Width="46"
+                                                        Height="36"
+                                                        CornerRadius="5"
+                                                        BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                                                        BorderThickness="1"
+                                                        Background="{Binding Brush}"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <StackPanel IsVisible="{Binding IsColorBackgroundModeSelected}" Spacing="6">
+                                <controls:ColorPickerDropdown x:Name="BackgroundColorPickerDropdown"
+                                                              SelectedColorValue="{Binding BackgroundColorValue, Mode=TwoWay}"
+                                                              Height="40"
+                                                              Width="72"
+                                                              HorizontalAlignment="Left"/>
+                            </StackPanel>
+
+                            <StackPanel IsVisible="{Binding IsImageBackgroundModeSelected}" Spacing="6">
+                                <Button x:Name="BrowseBackgroundImageButton"
+                                        Classes="editor-button"
+                                        Content="Browse background image..."
+                                        Click="OnBrowseBackgroundImageClick"
+                                        HorizontalAlignment="Stretch"/>
+
+                                <StackPanel IsVisible="{Binding HasBackgroundImagePath}" Spacing="2">
+                                    <TextBlock Text="Background image"
+                                               FontWeight="Normal"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding BackgroundImagePath}"
+                                               FontWeight="Normal"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Central Preview Canvas -->
+            <Grid Grid.Column="1" Margin="8">
+                <ScrollViewer Name="CanvasScrollViewer"
+                              Background="Transparent"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto"
+                              ScrollChanged="OnCanvasScrollChanged"
+                              PointerPressed="OnScrollViewerPointerPressed"
+                              PointerMoved="OnScrollViewerPointerMoved"
+                              PointerReleased="OnScrollViewerPointerReleased">
+                    <LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <LayoutTransformControl.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+                        </LayoutTransformControl.LayoutTransform>
+                        <!-- Main Canvas Container with Checkered Background and Shadow -->
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <!-- Checkered Background -->
+                            <Border BorderThickness="1"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                                    Background="{DynamicResource ShareX.Brush.Checkered}"/>
+
+                            <!-- Actual Content -->
+                            <Border x:Name="PreviewFrame"
+                                    IsVisible="{Binding HasPreviewImage}"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch"
+                                     Background="{Binding EffectiveCanvasBackground}"
+                                     Padding="{Binding CanvasPadding}">
+                                <!-- Outer Border: User-controlled Shadow effect -->
+                                <Border BoxShadow="{Binding CanvasShadow}"
+                                       CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
+                                    <!-- Padding Border: Uses top-left pixel color -->
+                                    <Border Background="{Binding SmartPaddingColor}"
+                                            Padding="{Binding SmartPaddingThickness}"
+                                            CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
+                                            ClipToBounds="False">
+                                        <Canvas Background="Transparent"
+                                                Width="{Binding SmartPaddingViewportWidth}"
+                                                Height="{Binding SmartPaddingViewportHeight}"
+                                                ClipToBounds="False">
+                                            <!-- Inner Border: Smart padding crops by clipping the viewport,
+                                                 while the source image/canvas stay at full size. -->
+                                            <Border Background="Transparent"
+                                                    Width="{Binding SmartPaddingViewportWidth}"
+                                                    Height="{Binding SmartPaddingViewportHeight}"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Top"
+                                                    ClipToBounds="True"
+                                                    Canvas.Left="0"
+                                                    Canvas.Top="0">
+                                                <Canvas Background="Transparent"
+                                                        Width="{Binding SmartPaddingViewportWidth}"
+                                                        Height="{Binding SmartPaddingViewportHeight}"
+                                                        ClipToBounds="True">
+                                                    <Grid Name="CanvasContainer"
+                                                          Background="Transparent"
+                                                          Width="{Binding ImageWidth}"
+                                                          Height="{Binding ImageHeight}"
+                                                          Canvas.Left="{Binding SmartPaddingOffsetX}"
+                                                          Canvas.Top="{Binding SmartPaddingOffsetY}">
+
+                                                        <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
+                                                        <controls:SKCanvasControl Name="CanvasControl"
+                                                                                  HorizontalAlignment="Stretch"
+                                                                                  VerticalAlignment="Stretch"/>
+
+                                                        <!-- Annotation Layer (Saved content) -->
+                                                        <Canvas Name="AnnotationCanvas"
+                                                                Background="Transparent"
+                                                                IsVisible="{Binding HasPreviewImage}"
+                                                                HorizontalAlignment="Stretch"
+                                                                VerticalAlignment="Stretch"
+                                                                Cursor="Arrow"
+                                                                PointerPressed="OnCanvasPointerPressed"
+                                                                PointerMoved="OnCanvasPointerMoved"
+                                                                PointerReleased="OnCanvasPointerReleased">
+                                                        </Canvas>
+                                                    </Grid>
+                                                </Canvas>
+                                            </Border>
+                                        </Canvas>
+                                    </Border>
+                                </Border>
+                            </Border>
+                        </Grid>
+                    </LayoutTransformControl>
+                </ScrollViewer>
+
+                <Canvas Name="OverlayHost"
+                        ClipToBounds="False"
+                        Panel.ZIndex="10">
+                    <Canvas Name="OverlayCanvas"
+                            Width="0"
+                            Height="0"
+                            Background="Transparent"
+                            ClipToBounds="False"
+                            IsHitTestVisible="True"
+                            Cursor="Arrow"
+                            PointerPressed="OnCanvasPointerPressed"
+                            PointerMoved="OnCanvasPointerMoved"
+                            PointerReleased="OnCanvasPointerReleased">
+                        <Rectangle Name="CropOverlay"
+                                   IsVisible="False"
+                                   Stroke="White"
+                                   StrokeThickness="2"
+                                   StrokeDashArray="4,2"
+                                   Fill="#80000000" />
+                    </Canvas>
+                </Canvas>
+            </Grid>
+
+            <!-- Right Sidebar (Effects Panel) -->
+            <Border Grid.Column="2"
+                    Classes="editor-sidebar right"
+                    Classes.open="{Binding IsRightEffectsSidebarVisible}"
+                    Padding="0"
+                    Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    IsHitTestVisible="{Binding IsRightEffectsSidebarVisible}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Width="250" Spacing="0" Margin="16">
+                            <ContentControl Content="{Binding EffectsPanelContent}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+        </Grid>
+
+        <!-- Row 0: Shared Annotation Toolbar - OVERLAY -->
+        <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
+            <controls:AnnotationToolbar x:Name="AnnotationToolbarControl"
+                                        DataContext="{Binding ToolbarAdapter}"
+                                        ShowEditingActions="False"
+                                        MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+        </StackPanel>
+
+        <!-- Row 0: Export Actions Toolbar (Bottom Centered, Floating) -->
+        <Border Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,0"
+                Padding="4" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1" CornerRadius="4,4,0,0"
+                MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                ClipToBounds="False">
+            <StackPanel Orientation="Horizontal" Spacing="4" ClipToBounds="False">
+                <!-- Zoom Picker -->
+                <controls:ZoomPickerDropdown
+                    SelectedZoom="{Binding Zoom}"
+                    ZoomChanged="OnZoomChanged"
+                    ZoomToFitRequested="OnZoomPickerZoomToFitRequested"
+                    Height="40"
+                    ToolTip.Tip="Zoom (Ctrl + Wheel)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"/>
+
+                <!-- Separator -->
+                <Border Width="1" Height="38" Background="{DynamicResource ShareX.Brush.Separator}" Margin="4,0"
+                        IsVisible="{Binding ShowBottomToolbar}"/>
+
+                <!-- Task Mode Buttons -->
+                <Grid Width="90" Height="40" Margin="4,0,10,0" ClipToBounds="False" VerticalAlignment="Bottom"
+                      IsVisible="{Binding ShowTaskModeButtons}">
+                    <!-- Cancel Button: Red Rectangle (Behind) -->
+                    <Button Command="{Binding CancelCommand}"
+                            Classes="task-mode-button danger"
+                            BorderThickness="1"
+                            Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                            Width="55" Margin="0,0,0,0" Padding="27,0,10,0" CornerRadius="0,4,4,0"
+                            ToolTip.Tip="Cancel (Esc)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
+                            ZIndex="0">
+                        <TextBlock Text="{x:Static theming:EditorIcons.ActionCancel}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontSize="18" FontWeight="Normal"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+
+                    <!-- Continue Button: Big Green Circle (Front) -->
+                    <Button Command="{Binding ContinueCommand}"
+                            Classes="task-mode-button success"
+                            Width="56" Height="56" CornerRadius="28"
+                            BorderThickness="1"
+                            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                            Margin="0,0,0,-8"
+                            ToolTip.Tip="{Binding ContinueButtonTooltip}" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
+                            ZIndex="20">
+                        <TextBlock Text="{x:Static theming:EditorIcons.ActionContinue}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontSize="22" FontWeight="Normal"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Margin="4,0,0,0"/>
+                    </Button>
+                </Grid>
+
+                <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
+                        IsVisible="{Binding ShowBottomToolbar}"
+                        ToolTip.Tip="Copy image to clipboard (Ctrl+Shift+C)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                    <TextBlock Text="{x:Static theming:EditorIcons.ActionCopy}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                </Button>
+
+                <Button Classes="editor-button" Command="{Binding SaveCommand}" Width="40" Padding="0"
+                        IsVisible="{Binding ShowBottomToolbar}"
+                        ToolTip.Tip="Save image (Ctrl+S)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                    <TextBlock Text="{x:Static theming:EditorIcons.ActionSave}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                </Button>
+
+                <Button Classes="editor-button" Command="{Binding SaveAsCommand}" Width="40" Padding="0"
+                        IsVisible="{Binding ShowBottomToolbar}"
+                        ToolTip.Tip="Save image as... (Ctrl+Shift+S)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                    <TextBlock Text="{x:Static theming:EditorIcons.ActionSaveAs}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                </Button>
+
+                <Button Classes="editor-button" Command="{Binding PinToScreenCommand}" IsEnabled="{Binding HasPreviewImage}" Width="40" Padding="0"
+                        IsVisible="{Binding ShowBottomToolbar}"
+                        ToolTip.Tip="Pin image to screen (Ctrl+P)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                    <TextBlock Text="{x:Static theming:EditorIcons.ActionPinToScreen}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                </Button>
+
+                <Button Classes="editor-button" Command="{Binding UploadCommand}" IsEnabled="{Binding HasPreviewImage}" Width="40" Padding="0"
+                        IsVisible="{Binding ShowBottomToolbar}"
+                        ToolTip.Tip="Upload image (Ctrl+U)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                    <TextBlock Text="{x:Static theming:EditorIcons.ActionUpload}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Effect Browser Panel Overlay -->
+        <Grid Grid.Row="0"
+              IsHitTestVisible="{Binding IsEffectBrowserVisible}"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              ZIndex="30">
+
+            <!-- Click-away background to close the panel -->
+            <Grid Classes="overlay-scrim"
+                  Classes.open="{Binding IsEffectBrowserVisible}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  PointerPressed="OnEffectBrowserOverlayPointerPressed" />
+
+            <!-- The Panel Itself -->
+            <Border Classes="floating-panel"
+                    Classes.open="{Binding IsEffectBrowserVisible}"
+                    Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="16,125,16,125"
+                    Width="800">
+
+                <ContentControl x:Name="EffectBrowserHost"/>
+            </Border>
+        </Grid>
+
+        <!-- Modal Overlay -->
+        <Border Grid.Row="0" Grid.RowSpan="1"
+                Classes="modal-scrim"
+                IsVisible="{Binding IsModalOpen}"
+                IsHitTestVisible="True">
+            <Grid>
+                <!-- Click outside to close -->
+                <Border Background="Transparent"
+                        PointerPressed="OnModalBackgroundPressed"/>
+
+                <!-- Modal Content -->
+                <ContentControl Content="{Binding ModalContent}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+        </Grid>
+    </ThemeVariantScope>
+</UserControl>

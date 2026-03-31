@@ -25,13 +25,14 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Text annotation
 /// </summary>
 public partial class TextAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Text;
     /// <summary>
     /// Text content
     /// </summary>

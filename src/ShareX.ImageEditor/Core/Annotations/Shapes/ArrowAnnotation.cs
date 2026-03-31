@@ -25,13 +25,14 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Arrow annotation (line with arrowhead)
 /// </summary>
 public partial class ArrowAnnotation : Annotation
 {
+    public override AnnotationCategory Category => AnnotationCategory.Shapes;
     /// <summary>
     /// Arrow head width is proportional to stroke width for visual balance.
     /// ISSUE-006 fix: Centralized magic number constant.

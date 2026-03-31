@@ -1,33 +1,35 @@
+using ShareX.ImageEditor.Core.ImageEffects.Parameters;
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Manipulations;
+namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
-public class RotateImageEffect : ImageEffect
+public sealed class RotateImageEffect : ImageEffectBase
 {
-    private readonly float _angle;
-    private readonly string _name;
-    private readonly bool _autoResize;
-
-    public override string Name => _name;
+    public override string Id => "rotate_custom_angle";
+    public override string Name => "Rotate";
     public override ImageEffectCategory Category => ImageEffectCategory.Manipulations;
+    public override string IconKey => LucideIcons.rotate_cw;
+    public override string Description => "Rotates the image by a custom angle.";
+    public override IReadOnlyList<EffectParameter> Parameters =>
+    [
+        EffectParameters.FloatSlider<RotateImageEffect>("angle", "Angle", -360f, 360f, 0f, (e, v) => e.Angle = v),
+        EffectParameters.Bool<RotateImageEffect>("auto_resize", "Auto resize", true, (e, v) => e.AutoResize = v)
+    ];
 
-    public RotateImageEffect(float angle, string name, bool autoResize = true)
-    {
-        _angle = angle;
-        _name = name;
-        _autoResize = autoResize;
-    }
+    public float Angle { get; set; }
+    public bool AutoResize { get; set; } = true;
 
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        if (_angle % 90 == 0 && _autoResize)
+        if (Angle % 90 == 0 && AutoResize)
         {
-            return RotateOrthogonal(source, (int)_angle);
+            return RotateOrthogonal(source, (int)Angle);
         }
 
-        return _autoResize ? RotateArbitrary(source, _angle) : RotateClipped(source, _angle);
+        return AutoResize ? RotateArbitrary(source, Angle) : RotateClipped(source, Angle);
     }
 
     private SKBitmap RotateClipped(SKBitmap source, float angle)
@@ -104,9 +106,9 @@ public class RotateImageEffect : ImageEffect
         return result;
     }
 
-    public static RotateImageEffect Clockwise90 => new RotateImageEffect(90, "Rotate 90° clockwise");
-    public static RotateImageEffect CounterClockwise90 => new RotateImageEffect(-90, "Rotate 90° counter clockwise");
-    public static RotateImageEffect Rotate180 => new RotateImageEffect(180, "Rotate 180°");
-    public static RotateImageEffect Custom(float angle, bool autoResize = true) => new RotateImageEffect(angle, "Rotate custom angle", autoResize);
+    public static RotateImageEffect Clockwise90 => new() { Angle = 90 };
+    public static RotateImageEffect CounterClockwise90 => new() { Angle = -90 };
+    public static RotateImageEffect Rotate180 => new() { Angle = 180 };
+    public static RotateImageEffect Custom(float angle, bool autoResize = true) => new() { Angle = angle, AutoResize = autoResize };
 }
 

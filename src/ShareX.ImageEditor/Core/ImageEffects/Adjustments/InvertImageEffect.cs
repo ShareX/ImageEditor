@@ -1,12 +1,16 @@
+using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
+namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
-namespace ShareX.ImageEditor.ImageEffects.Adjustments;
-
-public class InvertImageEffect : ImageEffect
+public sealed class InvertImageEffect : AdjustmentImageEffectBase
 {
+    public override string Id => "invert";
     public override string Name => "Invert";
-    public override string IconKey => "IconExchangeAlt";
+    public override string IconKey => LucideIcons.refresh_ccw_dot;
+    public override string Description => "Inverts image colors.";
+    public override EffectExecutionMode ExecutionMode => EffectExecutionMode.Immediate;
+
     public override SKBitmap Apply(SKBitmap source)
     {
         float[] matrix = {

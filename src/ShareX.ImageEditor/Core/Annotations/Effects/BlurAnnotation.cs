@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Blur annotation - applies blur to the region
@@ -14,9 +14,6 @@ public partial class BlurAnnotation : BaseEffectAnnotation
         StrokeWidth = 0;
         Amount = 10; // Default blur radius
     }
-
-
-
 
     /// <summary>
     /// Update the internal blurred bitmap based on the source image

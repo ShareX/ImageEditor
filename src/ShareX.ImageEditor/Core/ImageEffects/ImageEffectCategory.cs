@@ -1,8 +1,9 @@
-namespace ShareX.ImageEditor.ImageEffects;
+namespace ShareX.ImageEditor.Core.ImageEffects;
 
 public enum ImageEffectCategory
 {
     Manipulations,
     Adjustments,
-    Filters
+    Filters,
+    Drawings
 }

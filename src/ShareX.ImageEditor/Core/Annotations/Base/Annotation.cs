@@ -26,7 +26,7 @@
 using SkiaSharp;
 using System.Text.Json.Serialization;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Base class for all annotation types
@@ -49,6 +49,11 @@ namespace ShareX.ImageEditor.Annotations;
 [JsonDerivedType(typeof(TextAnnotation), typeDiscriminator: "Text")]
 public abstract class Annotation
 {
+    /// <summary>
+    /// Functional category of this annotation type (Shapes, Effects, or Text).
+    /// </summary>
+    public abstract AnnotationCategory Category { get; }
+
     /// <summary>
     /// Unique identifier for this annotation
     /// </summary>

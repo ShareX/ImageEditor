@@ -1578,7 +1578,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
-        private async void OnSaveRequested()
+        private void OnSaveRequested()
         {
             if (DataContext is not MainViewModel vm) return;
 
@@ -1586,10 +1586,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 SaveSnapshotToFile(vm.LastSavedPath!);
                 vm.IsDirty = false;
-            }
-            else
-            {
-                await SaveAsAsync();
             }
         }
 

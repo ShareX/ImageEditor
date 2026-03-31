@@ -206,7 +206,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
             remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanSave() => _saveRequested != null && HasPreviewImage;
+        public bool CanSave() => _saveRequested != null && HasPreviewImage && !string.IsNullOrEmpty(LastSavedPath);
 
         private Action? _saveAsRequested;
         public event Action? SaveAsRequested
@@ -734,6 +734,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private BoxShadows _canvasShadow;
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
         private string? _lastSavedPath;
 
         [ObservableProperty]

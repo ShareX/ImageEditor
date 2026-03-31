@@ -18,3 +18,11 @@ description: "Update CHANGELOG.md with entries for the upcoming release before b
 5. Do **not** commit yet — the release bump script will commit all staged changes together.
 
 If there is no `CHANGELOG.md` and the user confirms it is not needed, skip this step and pass `--assume-changelog-done` to `run-release-sequence.sh`.
+
+## Best Practices (Lessons Learnt)
+
+When building or updating the changelog, adhere to the following key principles derived from the initial changelog extraction:
+
+- **History Extraction**: Always run `git log` inside the inner submodule (`XerahS/ShareX.ImageEditor` or target) to acquire the true history of the component.
+- **Noise Reduction & Categorization**: Review all technical, vague, and duplicate commits (such as rapid iterative UI tweaks, reverted regressions, and repeated minor fix commits). Consolidate them down into clear, public-facing feature additions, changes, bugfixes, and code refactors.
+- **Format Support**: Group all completed work under the requested top-level section matching the version (e.g., `## v<VERSION>`), segmented neatly into sections like `Added`, `Changed`, `Fixed`, and `Refactored`.

@@ -91,6 +91,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public event EventHandler? ClearAnnotationsRequested;
         public event EventHandler? FlattenRequested;
         public event EventHandler? DeselectRequested;
+        public event EventHandler? CanvasFocusRequested;
         public event EventHandler? PasteRequested;
         public event EventHandler? DuplicateRequested;
         public event EventHandler? CutAnnotationRequested;
@@ -940,6 +941,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void SelectTool(EditorTool tool)
         {
+            // Re-selecting the active crop/cut-out tool should not cancel the current operation
+            if (ActiveTool == tool && tool is EditorTool.Crop or EditorTool.CutOut)
+            {
+                CanvasFocusRequested?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
             DeselectRequested?.Invoke(this, EventArgs.Empty);
 
             if (tool is EditorTool.Crop or EditorTool.CutOut)

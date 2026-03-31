@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
@@ -44,6 +45,7 @@ public class EditorInputController
     private Rect _cropDragStartRect;
     private readonly List<Rectangle> _cropShadeRects = new();
     private readonly List<Line> _cropGuideLines = new();
+    private Button? _cropConfirmButton;
 
     public EditorInputController(EditorView view, EditorSelectionController selectionController, EditorZoomController zoomController)
     {
@@ -955,6 +957,8 @@ public class EditorInputController
         _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, cropRect.Bottom, "Crop_BottomLeft"));
         _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, centerY, "Crop_LeftCenter"));
 
+        ShowCropConfirmButton(overlay, cropRect);
+
         overlay.InvalidateArrange();
         overlay.InvalidateVisual();
     }
@@ -964,12 +968,68 @@ public class EditorInputController
         foreach (var handle in _cropHandles)
             overlay.Children.Remove(handle);
         _cropHandles.Clear();
+        HideCropConfirmButton(overlay);
     }
 
     private void ResetCropDragState()
     {
         _isDraggingCropHandle = false;
         _draggedCropHandleTag = null;
+    }
+
+    private const double CropConfirmButtonMargin = 8;
+    private const int CropConfirmButtonZIndex = 8000;
+
+    private void ShowCropConfirmButton(Canvas overlay, Rect cropRect)
+    {
+        HideCropConfirmButton(overlay);
+
+        var button = new Button
+        {
+            Content = "Crop",
+            Padding = new Thickness(16, 6),
+            Cursor = new Cursor(StandardCursorType.Arrow),
+        };
+        button.Classes.Add("editor-button");
+        button.SetValue(Panel.ZIndexProperty, CropConfirmButtonZIndex);
+        button.Click += OnCropConfirmButtonClick;
+
+        // Measure to get desired size
+        button.Measure(Size.Infinity);
+        double btnWidth = button.DesiredSize.Width;
+        double btnHeight = button.DesiredSize.Height;
+
+        // Position centered below crop rect, or above if it would clip the bottom
+        double btnX = cropRect.Left + (cropRect.Width - btnWidth) / 2.0;
+
+        var annotationCanvas = _view.FindControl<Canvas>("AnnotationCanvas");
+        double canvasHeight = annotationCanvas?.Bounds.Height ?? overlay.Bounds.Height;
+
+        double belowY = cropRect.Bottom + CropConfirmButtonMargin;
+        double aboveY = cropRect.Top - CropConfirmButtonMargin - btnHeight;
+
+        double btnY = (belowY + btnHeight <= canvasHeight) ? belowY : aboveY;
+
+        Canvas.SetLeft(button, ToOverlayCoordinate(btnX));
+        Canvas.SetTop(button, ToOverlayCoordinate(btnY));
+
+        overlay.Children.Add(button);
+        _cropConfirmButton = button;
+    }
+
+    private void HideCropConfirmButton(Canvas overlay)
+    {
+        if (_cropConfirmButton != null)
+        {
+            _cropConfirmButton.Click -= OnCropConfirmButtonClick;
+            overlay.Children.Remove(_cropConfirmButton);
+            _cropConfirmButton = null;
+        }
+    }
+
+    private void OnCropConfirmButtonClick(object? sender, RoutedEventArgs e)
+    {
+        TryConfirmCrop();
     }
 
     // Crop UI layers and dimensions tuned after surveying common editor patterns.

@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
@@ -852,6 +853,7 @@ public class EditorInputController
 
     /// <summary>
     /// Shows the crop overlay at full image bounds with 8 handles so the user can drag them inwards immediately.
+    /// Uses auto-crop detection to suggest an initial crop rectangle when possible.
     /// Call when the user selects the Crop tool.
     /// </summary>
     public void ActivateCropToFullImage()
@@ -865,21 +867,74 @@ public class EditorInputController
         double h = canvas.Bounds.Height;
         if (w <= 0 || h <= 0) return;
 
-        var fullRect = new Rect(0, 0, w, h);
+        var cropRect = ComputeAutoCropRect(w, h);
         cropOverlay.Fill = Brushes.Transparent;
         cropOverlay.Stroke = Brushes.White;
         cropOverlay.StrokeThickness = 1;
         cropOverlay.StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double>();
         cropOverlay.SetValue(Panel.ZIndexProperty, CropOverlayZIndex);
         cropOverlay.IsVisible = true;
-        Canvas.SetLeft(cropOverlay, ToOverlayCoordinate(0));
-        Canvas.SetTop(cropOverlay, ToOverlayCoordinate(0));
-        cropOverlay.Width = w;
-        cropOverlay.Height = h;
+        Canvas.SetLeft(cropOverlay, ToOverlayCoordinate(cropRect.Left));
+        Canvas.SetTop(cropOverlay, ToOverlayCoordinate(cropRect.Top));
+        cropOverlay.Width = cropRect.Width;
+        cropOverlay.Height = cropRect.Height;
         _cropActive = true;
         EnsureCropAdorners(overlayCanvas);
-        UpdateCropAdorners(overlayCanvas, fullRect);
-        ShowCropHandles(overlayCanvas, fullRect);
+        UpdateCropAdorners(overlayCanvas, cropRect);
+        ShowCropHandles(overlayCanvas, cropRect);
+    }
+
+    /// <summary>
+    /// Computes the auto-crop rectangle by detecting content bounds from the source image.
+    /// Falls back to full image bounds if auto-crop finds no meaningful region.
+    /// </summary>
+    private Rect ComputeAutoCropRect(double canvasWidth, double canvasHeight)
+    {
+        const int AutoCropTolerance = 10;
+        var fullRect = new Rect(0, 0, canvasWidth, canvasHeight);
+
+        var sourceImage = _view.EditorCore?.SourceImage;
+        if (sourceImage == null || sourceImage.Width <= 0 || sourceImage.Height <= 0)
+            return fullRect;
+
+        int imgW = sourceImage.Width;
+        int imgH = sourceImage.Height;
+        SKColor topLeft = sourceImage.GetPixel(0, 0);
+
+        int minX = imgW, minY = imgH, maxX = 0, maxY = 0;
+        bool hasContent = false;
+
+        for (int y = 0; y < imgH; y++)
+        {
+            for (int x = 0; x < imgW; x++)
+            {
+                SKColor pixel = sourceImage.GetPixel(x, y);
+                if (!ImageHelpers.ColorsMatch(pixel, topLeft, AutoCropTolerance))
+                {
+                    hasContent = true;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (!hasContent)
+            return fullRect;
+
+        int cropWidth = maxX - minX + 1;
+        int cropHeight = maxY - minY + 1;
+
+        // Only suggest auto-crop if it's meaningfully smaller than the full image
+        if (cropWidth >= imgW && cropHeight >= imgH)
+            return fullRect;
+
+        // Scale pixel coordinates to canvas coordinates
+        double scaleX = canvasWidth / imgW;
+        double scaleY = canvasHeight / imgH;
+
+        return new Rect(minX * scaleX, minY * scaleY, cropWidth * scaleX, cropHeight * scaleY);
     }
 
     private void ShowCropHandles(Canvas overlay, Rect cropRect)

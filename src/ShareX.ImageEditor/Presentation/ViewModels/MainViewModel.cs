@@ -170,6 +170,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             var dialog = new ConfirmationDialogViewModel(
+                ApplicationName,
                 onYes: () =>
                 {
                     Save();
@@ -429,8 +430,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         /// <summary>
         /// ISSUE-022 fix: Recursion guard flag for smart padding event chain.
-        /// Prevents infinite loop: BackgroundSmartPadding property change → ApplySmartPaddingCrop →
-        /// UpdatePreview → PreviewImage changed → ApplySmartPaddingCrop (again).
+        /// Prevents infinite loop: BackgroundSmartPadding property change â†’ ApplySmartPaddingCrop â†’
+        /// UpdatePreview â†’ PreviewImage changed â†’ ApplySmartPaddingCrop (again).
         /// Set to true during ApplySmartPaddingCrop execution to break the cycle.
         /// </summary>
         private bool _isApplyingSmartPadding = false;

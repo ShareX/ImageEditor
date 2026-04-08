@@ -67,7 +67,7 @@ public class StepControl : Control
         context.DrawText(formattedText, new Point(textX, textY));
     }
 
-    private static StreamGeometry? CreateTailGeometry(NumberAnnotation annotation)
+    private static Geometry? CreateTailGeometry(NumberAnnotation annotation)
     {
         return annotation.TailStyle switch
         {
@@ -76,7 +76,7 @@ public class StepControl : Control
         };
     }
 
-    private static StreamGeometry? CreateTriangleTailGeometry(NumberAnnotation annotation)
+    private static Geometry? CreateTriangleTailGeometry(NumberAnnotation annotation)
     {
         if (!annotation.TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
         {
@@ -95,9 +95,9 @@ public class StepControl : Control
         return geometry;
     }
 
-    private static StreamGeometry? CreateArrowTailGeometry(NumberAnnotation annotation)
+    private static Geometry? CreateArrowTailGeometry(NumberAnnotation annotation)
     {
-        var tailPoint = annotation.HasTailPoint ? annotation.TailPoint : annotation.GetDefaultTailHandlePoint();
+        var tailPoint = annotation.GetDefaultTailHandlePoint();
 
         var geometry = new StreamGeometry();
         using (var ctx = geometry.Open())
@@ -109,7 +109,6 @@ public class StepControl : Control
 
             if (pts is { } p)
             {
-                // Shaft base (left)
                 ctx.BeginFigure(ToRenderPoint(annotation, p.ShaftEndLeft), true);
                 ctx.LineTo(ToRenderPoint(annotation, p.WingLeft));
                 ctx.LineTo(ToRenderPoint(annotation, tailPoint));

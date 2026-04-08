@@ -146,6 +146,14 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
 
     public bool ShowShadow => _viewModel.ShowShadow;
 
+    public StepTailStyle TailStyle
+    {
+        get => _viewModel.TailStyle;
+        set => _viewModel.TailStyle = value;
+    }
+
+    public bool ShowTailStyle => _viewModel.ShowTailStyle;
+
     public bool ShowToolOptions => _viewModel.ShowToolOptionsSeparator;
 
     public bool ShowToolOptionsSeparator => _viewModel.ShowToolOptionsSeparator;
@@ -259,6 +267,12 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
                 break;
             case nameof(MainViewModel.ShowTextColor):
                 OnPropertyChanged(nameof(ShowTextColor));
+                break;
+            case nameof(MainViewModel.TailStyle):
+                OnPropertyChanged(nameof(TailStyle));
+                break;
+            case nameof(MainViewModel.ShowTailStyle):
+                OnPropertyChanged(nameof(ShowTailStyle));
                 break;
             case nameof(MainViewModel.ShowToolOptionsSeparator):
                 OnPropertyChanged(nameof(ShowToolOptions));

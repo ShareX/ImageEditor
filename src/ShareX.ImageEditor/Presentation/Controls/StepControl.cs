@@ -67,7 +67,16 @@ public class StepControl : Control
         context.DrawText(formattedText, new Point(textX, textY));
     }
 
-    private static Geometry? CreateTailGeometry(NumberAnnotation annotation)
+    private static StreamGeometry? CreateTailGeometry(NumberAnnotation annotation)
+    {
+        return annotation.TailStyle switch
+        {
+            StepTailStyle.Arrow => CreateArrowTailGeometry(annotation),
+            _ => CreateTriangleTailGeometry(annotation)
+        };
+    }
+
+    private static StreamGeometry? CreateTriangleTailGeometry(NumberAnnotation annotation)
     {
         if (!annotation.TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
         {
@@ -81,6 +90,33 @@ public class StepControl : Control
             ctx.LineTo(ToRenderPoint(annotation, tailTip));
             ctx.LineTo(ToRenderPoint(annotation, tailBaseEnd));
             ctx.EndFigure(true);
+        }
+
+        return geometry;
+    }
+
+    private static StreamGeometry? CreateArrowTailGeometry(NumberAnnotation annotation)
+    {
+        var tailPoint = annotation.HasTailPoint ? annotation.TailPoint : annotation.GetDefaultTailHandlePoint();
+
+        var geometry = new StreamGeometry();
+        using (var ctx = geometry.Open())
+        {
+            var pts = ArrowAnnotation.ComputeArrowPoints(
+                annotation.StartPoint.X, annotation.StartPoint.Y,
+                tailPoint.X, tailPoint.Y,
+                annotation.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+
+            if (pts is { } p)
+            {
+                // Shaft base (left)
+                ctx.BeginFigure(ToRenderPoint(annotation, p.ShaftEndLeft), true);
+                ctx.LineTo(ToRenderPoint(annotation, p.WingLeft));
+                ctx.LineTo(ToRenderPoint(annotation, tailPoint));
+                ctx.LineTo(ToRenderPoint(annotation, p.WingRight));
+                ctx.LineTo(ToRenderPoint(annotation, p.ShaftEndRight));
+                ctx.EndFigure(true);
+            }
         }
 
         return geometry;

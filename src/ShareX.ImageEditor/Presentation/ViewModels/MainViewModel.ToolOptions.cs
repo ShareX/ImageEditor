@@ -303,6 +303,30 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
         }
 
+        [ObservableProperty]
+        private StepTailStyle _tailStyle = StepTailStyle.Triangle;
+
+        partial void OnTailStyleChanged(StepTailStyle value)
+        {
+            bool isStep = ActiveTool == EditorTool.Step;
+            bool isSpeechBalloon = ActiveTool == EditorTool.SpeechBalloon;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                if (SelectedAnnotation is NumberAnnotation) isStep = true;
+                if (SelectedAnnotation is SpeechBalloonAnnotation) isSpeechBalloon = true;
+            }
+
+            if (isStep)
+            {
+                Options.StepTailStyle = value;
+            }
+            else if (isSpeechBalloon)
+            {
+                Options.SpeechBalloonTailStyle = value;
+            }
+        }
+
         private bool _isLoadingOptions;
 
         [ObservableProperty]
@@ -458,6 +482,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _ => false
         };
 
+        public bool ShowTailStyle => ActiveTool switch
+        {
+            EditorTool.Step or EditorTool.SpeechBalloon => true,
+            EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
+            {
+                EditorTool.Step or EditorTool.SpeechBalloon => true,
+                _ => false
+            },
+            _ => false
+        };
+
         public bool ShowCornerRadius => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.SpeechBalloon => true,
@@ -580,13 +615,14 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(ShowStrength));
             OnPropertyChanged(nameof(ShowTextStyle));
             OnPropertyChanged(nameof(ShowShadow));
+            OnPropertyChanged(nameof(ShowTailStyle));
             OnPropertyChanged(nameof(ActiveToolIcon));
             OnPropertyChanged(nameof(ActiveToolName));
             OnPropertyChanged(nameof(EffectStrengthMaximum));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 
-        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowCornerRadius || ShowStrength || ShowTextStyle || ShowShadow;
+        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowCornerRadius || ShowStrength || ShowTextStyle || ShowShadow || ShowTailStyle;
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -701,6 +737,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     TextBold = Options.TextBold;
                     TextItalic = Options.TextItalic;
                     TextUnderline = Options.TextUnderline;
+                    TailStyle = Options.SpeechBalloonTailStyle;
                     break;
                 case EditorTool.Step:
                     SelectedColorValue = Options.StepBorderColor;
@@ -712,6 +749,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     TextBold = Options.TextBold;
                     TextItalic = Options.TextItalic;
                     TextUnderline = Options.TextUnderline;
+                    TailStyle = Options.StepTailStyle;
                     break;
                 case EditorTool.Highlight:
                     FillColorValue = Options.HighlightFillColor;

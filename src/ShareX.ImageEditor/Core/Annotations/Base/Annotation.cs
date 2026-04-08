@@ -29,6 +29,22 @@ using System.Text.Json.Serialization;
 namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
+/// Tail style for annotations that have a tail (Step numbers, speech balloons).
+/// </summary>
+public enum StepTailStyle
+{
+    /// <summary>
+    /// Classic triangular tail pointing toward the handle.
+    /// </summary>
+    Triangle,
+
+    /// <summary>
+    /// Arrowhead tail with a shaft connecting the body to the arrow tip.
+    /// </summary>
+    Arrow
+}
+
+/// <summary>
 /// Base class for all annotation types
 /// </summary>
 [JsonDerivedType(typeof(ArrowAnnotation), typeDiscriminator: "Arrow")]
@@ -109,7 +125,10 @@ public abstract class Annotation
     /// </summary>
     public float RotationAngle { get; set; }
 
-
+    /// <summary>
+    /// Tail style for annotations with tails (Step, SpeechBalloon).
+    /// </summary>
+    public StepTailStyle TailStyle { get; set; } = StepTailStyle.Triangle;
 
     /// <summary>
     /// Hit test to determine if a point intersects this annotation

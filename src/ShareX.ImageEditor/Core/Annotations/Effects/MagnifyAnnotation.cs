@@ -15,12 +15,31 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
         Amount = 2.0f; // Zoom level (2x)
     }
 
+    internal override string GetInteractionCacheKey()
+    {
+        return GetType().FullName ?? nameof(MagnifyAnnotation);
+    }
 
+    internal override SKBitmap? CreateInteractionCacheBitmap(SKBitmap source)
+    {
+        return source?.Copy();
+    }
 
+    internal override void UpdateEffectFromInteractionCache(SKBitmap source, SKBitmap cachedEffectBitmap)
+    {
+        UpdateEffectCore(source, cachedEffectBitmap);
+    }
 
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
+
+        UpdateEffectCore(source, source);
+    }
+
+    private void UpdateEffectCore(SKBitmap source, SKBitmap drawSource)
+    {
+        if (source == null || drawSource == null) return;
 
         var rect = GetBounds();
         int fullW = (int)rect.Width;
@@ -77,32 +96,16 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
             return;
         }
 
-        using var crop = new SKBitmap(captureRect.Width, captureRect.Height);
-        if (!source.ExtractSubset(crop, captureRect))
-        {
-            EffectBitmap?.Dispose();
-            EffectBitmap = result;
-            return;
-        }
-
-        // Scale capture to fill the VALID portion of the annotation
-        var info = new SKImageInfo(validRect.Width, validRect.Height);
-        using var scaled = crop.Resize(info, SKFilterQuality.Medium);
-
-        if (scaled == null)
-        {
-            EffectBitmap?.Dispose();
-            EffectBitmap = result;
-            return;
-        }
-
         // Draw scaled content at the correct offset within the full-size result
         int drawX = validRect.Left - annotationRect.Left;
         int drawY = validRect.Top - annotationRect.Top;
 
         using (var resultCanvas = new SKCanvas(result))
+        using (var paint = new SKPaint { FilterQuality = SKFilterQuality.Medium })
         {
-            resultCanvas.DrawBitmap(scaled, drawX, drawY);
+            var sourceRect = new SKRect(captureRect.Left, captureRect.Top, captureRect.Right, captureRect.Bottom);
+            var destinationRect = new SKRect(drawX, drawY, drawX + validRect.Width, drawY + validRect.Height);
+            resultCanvas.DrawBitmap(drawSource, sourceRect, destinationRect, paint);
         }
 
         EffectBitmap?.Dispose();

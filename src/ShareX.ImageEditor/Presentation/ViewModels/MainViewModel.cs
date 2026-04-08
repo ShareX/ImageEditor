@@ -200,6 +200,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
         }
         public bool CanCopy() => _copyRequested != null && HasPreviewImage;
+        public bool HasHostCopyHandler { get; set; }
+        public bool HasHostSaveHandler { get; set; }
+        public bool HasHostSaveAsHandler { get; set; }
 
         private Action? _saveRequested;
         public event Action? SaveRequested
@@ -207,7 +210,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
             remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanSave() => _saveRequested != null && HasPreviewImage && !string.IsNullOrEmpty(LastSavedPath);
+        public bool CanSave() => _saveRequested != null && HasPreviewImage && !string.IsNullOrEmpty(ImageFilePath);
 
         private Action? _saveAsRequested;
         public event Action? SaveAsRequested
@@ -733,10 +736,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         [ObservableProperty]
         private BoxShadows _canvasShadow;
-
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-        private string? _lastSavedPath;
 
         [ObservableProperty]
         private string? _imageFilePath;

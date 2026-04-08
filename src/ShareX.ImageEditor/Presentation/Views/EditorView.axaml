@@ -420,6 +420,13 @@
                                                                                   HorizontalAlignment="Stretch"
                                                                                   VerticalAlignment="Stretch"/>
 
+                                                        <!-- Shared spotlight overlay rendered once for all spotlight annotations -->
+                                                        <controls:SpotlightOverlayControl Name="SpotlightOverlayControl"
+                                                                         HorizontalAlignment="Stretch"
+                                                                         VerticalAlignment="Stretch"
+                                                                         IsHitTestVisible="False"
+                                                                         IsVisible="False"/>
+
                                                         <!-- Annotation Layer (Saved content) -->
                                                         <Canvas Name="AnnotationCanvas"
                                                                 Background="Transparent"

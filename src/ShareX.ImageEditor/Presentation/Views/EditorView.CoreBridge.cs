@@ -28,6 +28,7 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
 
@@ -35,6 +36,10 @@ namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {
+        private SkiaSharp.SKBitmap? _cachedEffectPreviewSource;
+        private SkiaSharp.SKBitmap? _cachedEffectPreviewBitmap;
+        private string? _cachedEffectPreviewKey;
+
         private void UpdateViewModelHistoryState(MainViewModel vm)
         {
             vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
@@ -44,6 +49,28 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             // Initial sync of metadata if needed
             UpdateViewModelHistoryState(vm);
+        }
+
+        internal void RefreshSpotlightOverlay()
+        {
+            var spotlightOverlay = this.FindControl<SpotlightOverlayControl>("SpotlightOverlayControl");
+            var annotationCanvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (spotlightOverlay == null || annotationCanvas == null)
+            {
+                return;
+            }
+
+            var spotlights = annotationCanvas.Children
+                .OfType<SpotlightControl>()
+                .Select(control => control.Annotation)
+                .Where(annotation => annotation != null)
+                .Cast<SpotlightAnnotation>()
+                .ToList();
+
+            int canvasWidth = Math.Max(1, (int)Math.Ceiling(_editorCore.CanvasSize.Width));
+            int canvasHeight = Math.Max(1, (int)Math.Ceiling(_editorCore.CanvasSize.Height));
+
+            spotlightOverlay.UpdateSpotlights(spotlights, canvasWidth, canvasHeight);
         }
 
         private void RenderCore()
@@ -132,6 +159,82 @@ namespace ShareX.ImageEditor.Presentation.Views
             return Task.FromResult<Bitmap?>(snapshot);
         }
 
+        private bool TryUpdateCachedEffectVisual(Control shape, BaseEffectAnnotation annotation, SkiaSharp.SKBitmap sourceBitmap, Rect? overrideBounds = null)
+        {
+            if (overrideBounds.HasValue)
+            {
+                var bounds = overrideBounds.Value;
+                if (bounds.Width <= 0 || bounds.Height <= 0)
+                {
+                    return false;
+                }
+
+                annotation.StartPoint = new SkiaSharp.SKPoint((float)bounds.X, (float)bounds.Y);
+                annotation.EndPoint = new SkiaSharp.SKPoint((float)(bounds.X + bounds.Width), (float)(bounds.Y + bounds.Height));
+            }
+
+            if (!EnsureEffectPreviewCache(annotation, sourceBitmap) || _cachedEffectPreviewBitmap == null)
+            {
+                return false;
+            }
+
+            annotation.UpdateEffectFromInteractionCache(sourceBitmap, _cachedEffectPreviewBitmap);
+            AnnotationEffectVisualUpdater.ApplyEffectBrush(shape, annotation);
+            return true;
+        }
+
+        private bool EnsureEffectPreviewCache(BaseEffectAnnotation annotation, SkiaSharp.SKBitmap sourceBitmap)
+        {
+            string cacheKey = annotation.GetInteractionCacheKey();
+
+            if (_cachedEffectPreviewBitmap != null
+                && ReferenceEquals(_cachedEffectPreviewSource, sourceBitmap)
+                && string.Equals(_cachedEffectPreviewKey, cacheKey, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            ClearEffectPreviewCache();
+
+            _cachedEffectPreviewBitmap = annotation.CreateInteractionCacheBitmap(sourceBitmap);
+            if (_cachedEffectPreviewBitmap == null)
+            {
+                return false;
+            }
+
+            _cachedEffectPreviewSource = sourceBitmap;
+            _cachedEffectPreviewKey = cacheKey;
+            return true;
+        }
+
+        private void ClearEffectPreviewCache()
+        {
+            _cachedEffectPreviewBitmap?.Dispose();
+            _cachedEffectPreviewBitmap = null;
+            _cachedEffectPreviewSource = null;
+            _cachedEffectPreviewKey = null;
+        }
+
+        internal void ClearInteractiveEffectPreviewCache()
+        {
+            ClearEffectPreviewCache();
+        }
+
+        internal void UpdateInteractiveEffectVisual(Control shape, SkiaSharp.SKBitmap sourceBitmap, Rect? overrideBounds = null)
+        {
+            if (shape?.Tag is not BaseEffectAnnotation effectAnnotation || sourceBitmap == null)
+            {
+                return;
+            }
+
+            if (TryUpdateCachedEffectVisual(shape, effectAnnotation, sourceBitmap, overrideBounds))
+            {
+                return;
+            }
+
+            AnnotationEffectVisualUpdater.UpdateEffectVisual(shape, sourceBitmap, overrideBounds);
+        }
+
         // This is called by SelectionController/InputController via event when an effect logic needs update
         // We replicate the UpdateEffectVisual logic here or expose it
         private void OnRequestUpdateEffect(Control shape)
@@ -139,14 +242,31 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (shape == null || shape.Tag is not BaseEffectAnnotation) return;
             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
 
+            SkiaSharp.SKBitmap? temporarySource = null;
+
             try
             {
-                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                AnnotationEffectVisualUpdater.UpdateEffectVisual(shape, skBitmap);
+                // Reuse the core source bitmap during interactive effect updates.
+                // Converting PreviewImage to a fresh SKBitmap on every drag frame is the
+                // main difference from the creation path and causes the lag seen after
+                // an effect annotation has been created.
+                var sourceBitmap = _editorCore.SourceImage;
+
+                if (sourceBitmap == null)
+                {
+                    temporarySource = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+                    sourceBitmap = temporarySource;
+                }
+
+                UpdateInteractiveEffectVisual(shape, sourceBitmap);
             }
             catch (Exception ex)
             {
                 EditorServices.ReportWarning(nameof(EditorView), "Failed to update effect annotation preview.", ex);
+            }
+            finally
+            {
+                temporarySource?.Dispose();
             }
         }
 
@@ -190,6 +310,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                     }
                 }
             }
+
+            RefreshSpotlightOverlay();
 
             RenderCore();
 

@@ -72,6 +72,11 @@
         <Style Selector="^.active TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
         </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="Opacity" Value="0.35"/>
+        </Style>
     </Style>
 
     <Style Selector="Button.picker-button">

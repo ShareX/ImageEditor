@@ -457,7 +457,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                 if (selected is SpotlightControl spotlightControl)
                 {
-                    spotlightControl.InvalidateVisual();
+                    RefreshSpotlightOverlay();
                 }
             }
         }

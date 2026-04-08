@@ -12,6 +12,7 @@
     <AvaloniaResource Include="Assets\Crosshair.cur" />
     <AvaloniaResource Include="Assets\lucide.ttf" />
     <AvaloniaResource Include="Assets\openhand.cur" />
+    <AvaloniaResource Include="Assets\Sample.png" />
   </ItemGroup>
 
   <ItemGroup>

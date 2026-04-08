@@ -101,6 +101,7 @@ namespace ShareX.ImageEditor.Hosting
 
         public int SpeechBalloonThickness { get; set; } = 4;
         public float SpeechBalloonFontSize { get; set; } = 48;
+        public StepTailStyle SpeechBalloonTailStyle { get; set; } = StepTailStyle.Triangle;
 
         // Step
         public string StepBorderColorHex { get; set; } = ColorToHex(Colors.Transparent);
@@ -117,6 +118,7 @@ namespace ShareX.ImageEditor.Hosting
 
         public int StepThickness { get; set; } = 4;
         public float StepFontSize { get; set; } = 30;
+        public StepTailStyle StepTailStyle { get; set; } = StepTailStyle.Triangle;
 
         // Highlight
         public string HighlightFillColorHex { get; set; } = ColorToHex(Colors.Yellow);

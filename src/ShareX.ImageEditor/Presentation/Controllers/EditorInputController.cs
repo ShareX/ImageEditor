@@ -326,7 +326,7 @@ public class EditorInputController
                 {
                     fillColor = IsColorLight(vm.SelectedColor) ? "#FF000000" : "#FFFFFFFF";
                 }
-                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, TailStyle = vm.TailStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
                 var balloonControl = balloonAnnotation.CreateVisual();
                 balloonControl.Width = 0;
                 balloonControl.Height = 0;
@@ -343,9 +343,10 @@ public class EditorInputController
                     TextColor = vm.TextColor,
                     FontSize = vm.FontSize,
                     ShadowEnabled = vm.ShadowEnabled,
+                    TailStyle = vm.TailStyle,
                     StartPoint = ToSKPoint(_startPoint),
                     Number = vm.NumberCounter
-                }; ;
+                };
 
                 _currentShape = numberAnnotation.CreateVisual();
 

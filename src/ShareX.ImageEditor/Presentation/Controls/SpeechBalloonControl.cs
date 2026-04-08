@@ -191,7 +191,16 @@ namespace ShareX.ImageEditor.Presentation.Controls
             return geometry;
         }
 
-        private Geometry? CreateTailGeometry(SpeechBalloonAnnotation annotation)
+        private StreamGeometry? CreateTailGeometry(SpeechBalloonAnnotation annotation)
+        {
+            return annotation.TailStyle switch
+            {
+                StepTailStyle.Arrow => CreateArrowTailGeometry(annotation),
+                _ => CreateTriangleTailGeometry(annotation)
+            };
+        }
+
+        private StreamGeometry? CreateTriangleTailGeometry(SpeechBalloonAnnotation annotation)
         {
             if (!annotation.TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
             {
@@ -205,6 +214,39 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 ctx.LineTo(ToRenderPoint(annotation, tailTip));
                 ctx.LineTo(ToRenderPoint(annotation, tailBaseEnd));
                 ctx.EndFigure(true);
+            }
+
+            return geometry;
+        }
+
+        private StreamGeometry? CreateArrowTailGeometry(SpeechBalloonAnnotation annotation)
+        {
+            if (!annotation.IsTailVisible())
+            {
+                return null;
+            }
+
+            var bounds = annotation.GetBounds();
+            var center = new SkiaSharp.SKPoint(bounds.MidX, bounds.MidY);
+            var tailPoint = annotation.GetEffectiveTailPoint();
+
+            var geometry = new StreamGeometry();
+            using (var ctx = geometry.Open())
+            {
+                var pts = ArrowAnnotation.ComputeArrowPoints(
+                    center.X, center.Y,
+                    tailPoint.X, tailPoint.Y,
+                    annotation.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+
+                if (pts is { } p)
+                {
+                    ctx.BeginFigure(ToRenderPoint(annotation, p.ShaftEndLeft), false);
+                    ctx.LineTo(ToRenderPoint(annotation, p.WingLeft));
+                    ctx.LineTo(ToRenderPoint(annotation, tailPoint));
+                    ctx.LineTo(ToRenderPoint(annotation, p.WingRight));
+                    ctx.LineTo(ToRenderPoint(annotation, p.ShaftEndRight));
+                    ctx.EndFigure(false);
+                }
             }
 
             return geometry;

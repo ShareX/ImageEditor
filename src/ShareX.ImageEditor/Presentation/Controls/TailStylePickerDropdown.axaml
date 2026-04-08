@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="using:ShareX.ImageEditor.Presentation.Converters"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+             xmlns:models="clr-namespace:ShareX.ImageEditor.Core.Annotations;assembly=ShareX.ImageEditor"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.TailStylePickerDropdown"
+             x:Name="TailStylePickerDropdownRoot">
+
+    <Grid>
+        <Button x:Name="DropdownButton"
+                Classes="editor-button"
+                Click="OnDropdownButtonClick"
+                Height="40"
+                MinWidth="60"
+                HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{x:Static theming:EditorIcons.TailStyleTriangle}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                           FontWeight="Normal"
+                           FontSize="16"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Width="24"/>
+
+                <Border Grid.Column="1"/>
+
+                <TextBlock Grid.Column="2"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #TailStylePopup.IsOpen}"
+                           Text="{x:Static theming:EditorIcons.ChevronDown}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                           FontWeight="Normal"
+                           FontSize="10"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Button>
+
+        <Popup x:Name="TailStylePopup"
+               PlacementTarget="{Binding #DropdownButton}"
+               Placement="Bottom"
+               IsLightDismissEnabled="True"
+               VerticalOffset="4">
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #TailStylePopup.IsOpen}">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Width="48"
+                            Height="36"
+                            Padding="0"
+                            Classes="picker-button"
+                            Click="OnTailStyleSelected"
+                            CommandParameter="{x:Static models:StepTailStyle.Triangle}"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            ToolTip.Tip="Triangle tail">
+                        <TextBlock Text="{x:Static theming:EditorIcons.TailStyleTriangle}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontWeight="Normal"
+                                   FontSize="18"
+                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+                    <Button Width="48"
+                            Height="36"
+                            Padding="0"
+                            Classes="picker-button"
+                            Click="OnTailStyleSelected"
+                            CommandParameter="{x:Static models:StepTailStyle.Arrow}"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            ToolTip.Tip="Arrow tail">
+                        <TextBlock Text="{x:Static theming:EditorIcons.TailStyleArrow}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontWeight="Normal"
+                                   FontSize="18"
+                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

@@ -92,7 +92,11 @@ public partial class NumberAnnotation : Annotation
     public SKPoint GetDefaultTailHandlePoint()
     {
         var bounds = GetBounds();
-        return new SKPoint(bounds.Right, bounds.Bottom);
+        // For arrow tails, the tail point needs to be outside the circle so the
+        // arrowhead geometry (which places the shaft base headHeight before the tip)
+        // doesn't end up inside the circle body. Use 2x radius offset so the default
+        // tail is well outside the circle with visible shaft length.
+        return new SKPoint(bounds.Right + Radius, bounds.Bottom + Radius);
     }
 
     public SKPoint GetTailHandlePoint() => HasTailPoint ? TailPoint : GetDefaultTailHandlePoint();

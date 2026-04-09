@@ -555,7 +555,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 .Where(category => !IsPinnedCategory(category))
                 .Sum(category => category.AllEffects.Count);
 
-            searchBox.Watermark = string.Format(SearchWatermarkFormat, totalEffectCount);
+        searchBox.PlaceholderText = string.Format(SearchWatermarkFormat, totalEffectCount);
         }
 
         private void PersistRecentToOptions()

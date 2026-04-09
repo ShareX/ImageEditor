@@ -1636,7 +1636,7 @@ public class EditorSelectionController
 
     private void AttachTextBoxEditHandlers(TextBox tb)
     {
-        EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
+        EventHandler<FocusChangedEventArgs>? lostFocusHandler = null;
         EventHandler<KeyEventArgs>? keyUpHandler = null;
 
         lostFocusHandler = (s, args) =>
@@ -1814,7 +1814,7 @@ public class EditorSelectionController
         Canvas.SetLeft(textBox, ToOverlayCoordinate(annotationBounds.Left));
         Canvas.SetTop(textBox, ToOverlayCoordinate(annotationBounds.Top));
 
-        EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
+        EventHandler<FocusChangedEventArgs>? lostFocusHandler = null;
         EventHandler<KeyEventArgs>? keyUpHandler = null;
 
         void CompleteEditing()

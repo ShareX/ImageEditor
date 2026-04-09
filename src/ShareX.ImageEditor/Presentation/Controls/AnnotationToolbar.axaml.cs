@@ -28,6 +28,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ShareX.ImageEditor.Core.Abstractions;
@@ -146,7 +147,7 @@ public partial class AnnotationToolbar : UserControl
 
     private void RefreshPlatformColorTracking()
     {
-        SetPlatformSettings(TopLevel.GetTopLevel(this)?.PlatformSettings ?? Application.Current?.PlatformSettings);
+        SetPlatformSettings(this.GetPlatformSettings() ?? Application.Current?.PlatformSettings);
         UpdateAccentBrushes(_platformSettings?.GetColorValues());
     }
 

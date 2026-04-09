@@ -1604,7 +1604,7 @@ public class EditorInputController
         Canvas.SetLeft(textBox, _startPoint.X);
         Canvas.SetTop(textBox, _startPoint.Y);
 
-        void OnCreationLostFocus(object? s, global::Avalonia.Interactivity.RoutedEventArgs args)
+        void OnCreationLostFocus(object? s, FocusChangedEventArgs args)
         {
             if (s is TextBox tb && tb.Tag is TextAnnotation annotation)
             {

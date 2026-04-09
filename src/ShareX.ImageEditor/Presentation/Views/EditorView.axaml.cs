@@ -33,6 +33,7 @@ using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
@@ -428,11 +429,11 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
             else
             {
-                SetPlatformSettings(TopLevel.GetTopLevel(this)?.PlatformSettings ?? Application.Current?.PlatformSettings);
+                SetPlatformSettings(this.GetPlatformSettings() ?? Application.Current?.PlatformSettings);
             }
 
             PlatformColorValues? colorValues = _platformSettings?.GetColorValues()
-                ?? TopLevel.GetTopLevel(this)?.PlatformSettings?.GetColorValues()
+                ?? this.GetPlatformSettings()?.GetColorValues()
                 ?? Application.Current?.PlatformSettings?.GetColorValues();
 
             UpdateTheme(colorValues);
@@ -534,7 +535,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             colorValues ??= _platformSettings?.GetColorValues()
-                ?? TopLevel.GetTopLevel(this)?.PlatformSettings?.GetColorValues()
+                ?? this.GetPlatformSettings()?.GetColorValues()
                 ?? Application.Current?.PlatformSettings?.GetColorValues();
 
             if (colorValues == null || colorValues.AccentColor1.A == 0)

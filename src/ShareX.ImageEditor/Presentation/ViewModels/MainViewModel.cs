@@ -33,6 +33,7 @@ using ShareX.ImageEditor.Core.Abstractions;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Emoji;
 using ShareX.ImageEditor.Presentation.Theming;
 using System.Collections.ObjectModel;
 
@@ -98,6 +99,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
         public event EventHandler? CloseRequested;
+        public event EventHandler<EmojiSelectionRequest>? EmojiInsertionRequested;
 
         // File menu events (Image Editor Mode)
         public event EventHandler? NewImageRequested;
@@ -129,11 +131,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             RequestClose();
         }
 
-        public void RequestClose()
+        public void RequestClose(bool ignoreModal = false)
         {
-            if (IsModalOpen)
+            if (IsModalOpen && !ignoreModal)
             {
                 return;
+            }
+
+            if (IsModalOpen && ignoreModal)
+            {
+                CloseModal();
             }
 
             TaskResult = EditorTaskResult.Cancel;
@@ -942,6 +949,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void SelectTool(EditorTool tool)
         {
+            if (tool == EditorTool.Emoji)
+            {
+                DeselectRequested?.Invoke(this, EventArgs.Empty);
+                ShowEmojiPickerDialog();
+                return;
+            }
+
             // Re-selecting the active crop/cut-out tool should not cancel the current operation
             if (ActiveTool == tool && tool is EditorTool.Crop or EditorTool.CutOut)
             {
@@ -957,6 +971,25 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             ActiveTool = tool;
+        }
+
+        private void ShowEmojiPickerDialog()
+        {
+            if (IsModalOpen)
+            {
+                return;
+            }
+
+            var dialog = new EmojiPickerDialogViewModel(
+                onSelect: entry =>
+                {
+                    CloseModal();
+                    EmojiInsertionRequested?.Invoke(this, new EmojiSelectionRequest(entry.Unicode, entry.Name));
+                },
+                onCancel: CloseModal);
+
+            ModalContent = dialog;
+            IsModalOpen = true;
         }
 
         [RelayCommand]

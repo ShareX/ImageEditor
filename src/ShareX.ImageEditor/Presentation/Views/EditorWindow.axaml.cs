@@ -1,7 +1,7 @@
-#region License Information (GPL v3)
+﻿#region License Information (GPL v3)
 
 /*
-    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    ShareX - A program that allows you to take screenshots and share any file type
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -69,7 +69,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             e.Cancel = true;
-            _viewModel.RequestClose();
+            _viewModel.RequestClose(ignoreModal: true);
         }
 
         private void InitializeComponent()
@@ -197,7 +197,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         }
 
         /// <summary>
-        /// Gets the encoded image data in the specified format. 
+        /// Gets the encoded image data in the specified format.
         /// Useful for interoperability with other frameworks (e.g. WinForms).
         /// </summary>
         public byte[]? GetResultBytes(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
@@ -210,7 +210,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         }
 
         /// <summary>
-        /// Gets the encoded image data in the specified format. 
+        /// Gets the encoded image data in the specified format.
         /// Useful for interoperability with other frameworks (e.g. WinForms).
         /// </summary>
         public byte[]? GetSourceBytes(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)

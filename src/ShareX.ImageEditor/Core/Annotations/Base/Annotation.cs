@@ -1,7 +1,7 @@
-#region License Information (GPL v3)
+﻿#region License Information (GPL v3)
 
 /*
-    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    ShareX - A program that allows you to take screenshots and share any file type
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -51,6 +51,7 @@ public enum StepTailStyle
 [JsonDerivedType(typeof(BlurAnnotation), typeDiscriminator: "Blur")]
 [JsonDerivedType(typeof(CropAnnotation), typeDiscriminator: "Crop")]
 [JsonDerivedType(typeof(EllipseAnnotation), typeDiscriminator: "Ellipse")]
+[JsonDerivedType(typeof(EmojiAnnotation), typeDiscriminator: "Emoji")]
 [JsonDerivedType(typeof(FreehandAnnotation), typeDiscriminator: "Freehand")]
 [JsonDerivedType(typeof(HighlightAnnotation), typeDiscriminator: "Highlight")]
 [JsonDerivedType(typeof(ImageAnnotation), typeDiscriminator: "Image")]
@@ -176,6 +177,4 @@ public abstract class Annotation
     {
         return SKColor.Parse(hexColor);
     }
-
-
 }

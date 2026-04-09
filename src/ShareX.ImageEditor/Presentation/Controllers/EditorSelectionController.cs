@@ -29,6 +29,7 @@ public class EditorSelectionController
     private Point _startPoint; // Used for resizing deltas
     private bool _isDraggingShape;
     private global::Avalonia.Controls.Shapes.Line? _rotationLine; // Dotted line connecting top-center to rotation handle
+    private bool _pendingEmojiExactRender;
 
     // Reactive bounds tracking for text annotations
     private Control? _observedShape;
@@ -67,6 +68,7 @@ public class EditorSelectionController
         _isDraggingHandle = false;
         _draggedHandle = null;
         _isDraggingShape = false;
+        _pendingEmojiExactRender = false;
         UpdateBoundsObserver(); // Clear observer
         ClearHoverOutline();
         UpdateSelectionHandles();
@@ -332,6 +334,7 @@ public class EditorSelectionController
     {
         if (_isDraggingHandle)
         {
+            FinalizeEmojiInteractiveRender();
             _isDraggingHandle = false;
             _draggedHandle = null;
             UpdateCanvasCursorForSelectionInteraction();
@@ -347,6 +350,7 @@ public class EditorSelectionController
 
         if (_isDraggingShape)
         {
+            _pendingEmojiExactRender = false;
             _isDraggingShape = false;
             UpdateCanvasCursorForSelectionInteraction();
             RefreshSelectionHandleCursors();
@@ -463,35 +467,19 @@ public class EditorSelectionController
             return;
         }
 
-        // Rotation handling for OutlinedTextControl (Text annotation)
-        if (_selectedShape is OutlinedTextControl rotateTextBox && handleTag == "Rotate")
+        if (handleTag == "Rotate"
+            && TryGetRotatableAnnotation(_selectedShape, out Annotation? rotatableAnnotation)
+            && rotatableAnnotation != null)
         {
-            if (rotateTextBox.Tag is TextAnnotation rotateTextAnn)
-            {
-                var textRect = GetLogicalRect(rotateTextBox);
-                var tbLeft = textRect.Left;
-                var tbTop = textRect.Top;
-                var tbWidth = textRect.Width;
-                var tbHeight = textRect.Height;
+            ApplyRotationToSelectedShape(currentPoint, rotatableAnnotation, isShiftHeld);
+            _startPoint = currentPoint;
+            UpdateSelectionHandles();
+            return;
+        }
 
-                double cx = tbLeft + tbWidth / 2;
-                double cy = tbTop + tbHeight / 2;
-
-                double dx = currentPoint.X - cx;
-                double dy = currentPoint.Y - cy;
-                double angleRad = Math.Atan2(dx, -dy); // 0 = up, clockwise positive
-                double angleDeg = angleRad * 180.0 / Math.PI;
-
-                if (isShiftHeld)
-                {
-                    angleDeg = Math.Round(angleDeg / 45.0) * 45.0;
-                }
-
-                rotateTextAnn.RotationAngle = (float)angleDeg;
-
-                rotateTextBox.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
-                rotateTextBox.RenderTransform = new RotateTransform(angleDeg);
-            }
+        if (_selectedShape.Tag is EmojiAnnotation emojiAnnotation)
+        {
+            ResizeEmojiAnnotation(emojiAnnotation, currentPoint, handleTag);
             _startPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -558,7 +546,11 @@ public class EditorSelectionController
             return;
         }
 
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Rectangle || _selectedShape is global::Avalonia.Controls.Shapes.Ellipse || _selectedShape is Grid || _selectedShape is OutlinedTextControl)
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Rectangle
+            || _selectedShape is global::Avalonia.Controls.Shapes.Ellipse
+            || _selectedShape is global::Avalonia.Controls.Image
+            || _selectedShape is Grid
+            || _selectedShape is OutlinedTextControl)
         {
             double newLeft = left;
             double newTop = top;
@@ -592,6 +584,96 @@ public class EditorSelectionController
         {
             RequestUpdateEffect?.Invoke(_selectedShape);
         }
+    }
+
+    private void ResizeEmojiAnnotation(EmojiAnnotation annotation, Point currentPoint, string handleTag)
+    {
+        if (_selectedShape is not global::Avalonia.Controls.Image imageControl)
+        {
+            return;
+        }
+
+        const double minSize = 16;
+
+        var bounds = GetLogicalRect(imageControl);
+        double left = bounds.Left;
+        double top = bounds.Top;
+        double right = bounds.Right;
+        double bottom = bounds.Bottom;
+        double centerX = bounds.Center.X;
+        double centerY = bounds.Center.Y;
+        Point workingPoint = annotation.RotationAngle != 0
+            ? UnrotatePoint(currentPoint, bounds.Center, annotation.RotationAngle)
+            : currentPoint;
+
+        double newLeft = left;
+        double newTop = top;
+        double newSize;
+
+        if (handleTag.Contains("Left") && handleTag.Contains("Top"))
+        {
+            newSize = Math.Max(minSize, Math.Max(right - workingPoint.X, bottom - workingPoint.Y));
+            newLeft = right - newSize;
+            newTop = bottom - newSize;
+        }
+        else if (handleTag.Contains("Right") && handleTag.Contains("Top"))
+        {
+            newSize = Math.Max(minSize, Math.Max(workingPoint.X - left, bottom - workingPoint.Y));
+            newLeft = left;
+            newTop = bottom - newSize;
+        }
+        else if (handleTag.Contains("Left") && handleTag.Contains("Bottom"))
+        {
+            newSize = Math.Max(minSize, Math.Max(right - workingPoint.X, workingPoint.Y - top));
+            newLeft = right - newSize;
+            newTop = top;
+        }
+        else if (handleTag.Contains("Right") && handleTag.Contains("Bottom"))
+        {
+            newSize = Math.Max(minSize, Math.Max(workingPoint.X - left, workingPoint.Y - top));
+            newLeft = left;
+            newTop = top;
+        }
+        else if (handleTag.Contains("Left"))
+        {
+            newSize = Math.Max(minSize, right - workingPoint.X);
+            newLeft = right - newSize;
+            newTop = centerY - (newSize / 2.0);
+        }
+        else if (handleTag.Contains("Right"))
+        {
+            newSize = Math.Max(minSize, workingPoint.X - left);
+            newLeft = left;
+            newTop = centerY - (newSize / 2.0);
+        }
+        else if (handleTag.Contains("Top"))
+        {
+            newSize = Math.Max(minSize, bottom - workingPoint.Y);
+            newLeft = centerX - (newSize / 2.0);
+            newTop = bottom - newSize;
+        }
+        else if (handleTag.Contains("Bottom"))
+        {
+            newSize = Math.Max(minSize, workingPoint.Y - top);
+            newLeft = centerX - (newSize / 2.0);
+            newTop = top;
+        }
+        else
+        {
+            return;
+        }
+
+        annotation.StartPoint = new SKPoint((float)newLeft, (float)newTop);
+        annotation.EndPoint = new SKPoint((float)(newLeft + newSize), (float)(newTop + newSize));
+        _pendingEmojiExactRender = true;
+
+        AnnotationVisualFactory.UpdateVisualControl(
+            imageControl,
+            annotation,
+            AnnotationVisualMode.Persisted,
+            _view.EditorCore.CanvasSize.Width,
+            _view.EditorCore.CanvasSize.Height,
+            useInteractiveEmojiRender: true);
     }
 
     public void MoveSelectedShape(double deltaX, double deltaY)
@@ -833,81 +915,8 @@ public class EditorSelectionController
             return;
         }
 
-        // OutlinedTextControl (Text annotation): resize handles + rotation handle
-        if (_selectedShape is OutlinedTextControl textBox)
+        if (TryCreateRotatableSelectionHandles(_selectedShape, overlay))
         {
-            var textRect = GetLogicalRect(textBox);
-            var tbLeft = textRect.Left;
-            var tbTop = textRect.Top;
-            var tbWidth = textRect.Width;
-            var tbHeight = textRect.Height;
-
-            if (double.IsNaN(tbWidth) || tbWidth <= 0) tbWidth = 20;
-            if (double.IsNaN(tbHeight) || tbHeight <= 0) tbHeight = 20;
-
-            // Get rotation angle from the annotation
-            double rotAngle = 0;
-            if (textBox.Tag is TextAnnotation textAnn)
-            {
-                rotAngle = textAnn.RotationAngle;
-            }
-
-            double cx = tbLeft + tbWidth / 2;
-            double cy = tbTop + tbHeight / 2;
-
-            // Helper to rotate a point around center
-            Point RotPt(double x, double y)
-            {
-                if (rotAngle == 0) return new Point(x, y);
-                double rad = rotAngle * Math.PI / 180.0;
-                double cos = Math.Cos(rad);
-                double sin = Math.Sin(rad);
-                double dx = x - cx;
-                double dy = y - cy;
-                return new Point(cx + dx * cos - dy * sin, cy + dx * sin + dy * cos);
-            }
-
-            // 8 resize handles at rotated positions
-            var tl = RotPt(tbLeft, tbTop);
-            var tc = RotPt(tbLeft + tbWidth / 2, tbTop);
-            var tr = RotPt(tbLeft + tbWidth, tbTop);
-            var rc = RotPt(tbLeft + tbWidth, tbTop + tbHeight / 2);
-            var br = RotPt(tbLeft + tbWidth, tbTop + tbHeight);
-            var bc = RotPt(tbLeft + tbWidth / 2, tbTop + tbHeight);
-            var bl = RotPt(tbLeft, tbTop + tbHeight);
-            var lc = RotPt(tbLeft, tbTop + tbHeight / 2);
-
-            CreateHandle(tl.X, tl.Y, "TopLeft");
-            CreateHandle(tc.X, tc.Y, "TopCenter");
-            CreateHandle(tr.X, tr.Y, "TopRight");
-            CreateHandle(rc.X, rc.Y, "RightCenter");
-            CreateHandle(br.X, br.Y, "BottomRight");
-            CreateHandle(bc.X, bc.Y, "BottomCenter");
-            CreateHandle(bl.X, bl.Y, "BottomLeft");
-            CreateHandle(lc.X, lc.Y, "LeftCenter");
-
-            // Rotation handle: dotted line from top-center going up, then a rotation node
-            var rotLineStart = tc;
-            var rotHandlePos = RotPt(tbLeft + tbWidth / 2, tbTop - 30);
-
-            // Draw dotted line connector at rotated positions
-            if (overlay != null)
-            {
-                _rotationLine = new global::Avalonia.Controls.Shapes.Line
-                {
-                    StartPoint = ToOverlayPoint(rotLineStart),
-                    EndPoint = ToOverlayPoint(rotHandlePos),
-                    Stroke = new SolidColorBrush(Color.FromRgb(30, 144, 255)), // DodgerBlue
-                    StrokeThickness = 1.5,
-                    StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 4, 4 },
-                    IsHitTestVisible = false
-                };
-                overlay.Children.Add(_rotationLine);
-                _selectionHandles.Add(_rotationLine);
-            }
-
-            CreateHandle(rotHandlePos.X, rotHandlePos.Y, "Rotate");
-
             UpdateHoverOutline();
             return;
         }
@@ -952,6 +961,156 @@ public class EditorSelectionController
         CreateHandle(shapeLeft, shapeTop + height, "BottomLeft");
         CreateHandle(shapeLeft, shapeTop + height / 2, "LeftCenter");
         UpdateHoverOutline();
+    }
+
+    private void FinalizeEmojiInteractiveRender()
+    {
+        if (!_pendingEmojiExactRender)
+        {
+            return;
+        }
+
+        _pendingEmojiExactRender = false;
+
+        if (_selectedShape is not global::Avalonia.Controls.Image imageControl || imageControl.Tag is not EmojiAnnotation emojiAnnotation)
+        {
+            return;
+        }
+
+        AnnotationVisualFactory.UpdateVisualControl(
+            imageControl,
+            emojiAnnotation,
+            AnnotationVisualMode.Persisted,
+            _view.EditorCore.CanvasSize.Width,
+            _view.EditorCore.CanvasSize.Height);
+    }
+
+    private bool TryCreateRotatableSelectionHandles(Control shape, Canvas overlay)
+    {
+        if (!TryGetRotatableAnnotation(shape, out Annotation? annotation))
+        {
+            return false;
+        }
+
+        if (annotation == null)
+        {
+            return false;
+        }
+
+        var bounds = GetLogicalRect(shape);
+        double left = bounds.Left;
+        double top = bounds.Top;
+        double width = bounds.Width;
+        double height = bounds.Height;
+
+        if (double.IsNaN(width) || width <= 0) width = 20;
+        if (double.IsNaN(height) || height <= 0) height = 20;
+
+        Point center = new(left + width / 2, top + height / 2);
+        double rotationAngle = annotation.RotationAngle;
+
+        var topLeft = RotatePoint(new Point(left, top), center, rotationAngle);
+        var topCenter = RotatePoint(new Point(left + width / 2, top), center, rotationAngle);
+        var topRight = RotatePoint(new Point(left + width, top), center, rotationAngle);
+        var rightCenter = RotatePoint(new Point(left + width, top + height / 2), center, rotationAngle);
+        var bottomRight = RotatePoint(new Point(left + width, top + height), center, rotationAngle);
+        var bottomCenter = RotatePoint(new Point(left + width / 2, top + height), center, rotationAngle);
+        var bottomLeft = RotatePoint(new Point(left, top + height), center, rotationAngle);
+        var leftCenter = RotatePoint(new Point(left, top + height / 2), center, rotationAngle);
+
+        CreateHandle(topLeft.X, topLeft.Y, "TopLeft");
+        CreateHandle(topCenter.X, topCenter.Y, "TopCenter");
+        CreateHandle(topRight.X, topRight.Y, "TopRight");
+        CreateHandle(rightCenter.X, rightCenter.Y, "RightCenter");
+        CreateHandle(bottomRight.X, bottomRight.Y, "BottomRight");
+        CreateHandle(bottomCenter.X, bottomCenter.Y, "BottomCenter");
+        CreateHandle(bottomLeft.X, bottomLeft.Y, "BottomLeft");
+        CreateHandle(leftCenter.X, leftCenter.Y, "LeftCenter");
+
+        var rotateHandlePoint = RotatePoint(new Point(left + width / 2, top - 30), center, rotationAngle);
+        _rotationLine = new global::Avalonia.Controls.Shapes.Line
+        {
+            StartPoint = ToOverlayPoint(topCenter),
+            EndPoint = ToOverlayPoint(rotateHandlePoint),
+            Stroke = new SolidColorBrush(Color.FromRgb(30, 144, 255)),
+            StrokeThickness = 1.5,
+            StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 4, 4 },
+            IsHitTestVisible = false
+        };
+        overlay.Children.Add(_rotationLine);
+        _selectionHandles.Add(_rotationLine);
+
+        CreateHandle(rotateHandlePoint.X, rotateHandlePoint.Y, "Rotate");
+        UpdateHoverOutline();
+        return true;
+    }
+
+    private static bool TryGetRotatableAnnotation(Control? control, out Annotation? annotation)
+    {
+        switch (control)
+        {
+            case OutlinedTextControl { Tag: TextAnnotation textAnnotation }:
+                annotation = textAnnotation;
+                return true;
+            case global::Avalonia.Controls.Image { Tag: EmojiAnnotation emojiAnnotation }:
+                annotation = emojiAnnotation;
+                return true;
+            default:
+                annotation = null;
+                return false;
+        }
+    }
+
+    private void ApplyRotationToSelectedShape(Point currentPoint, Annotation annotation, bool isShiftHeld)
+    {
+        if (_selectedShape == null)
+        {
+            return;
+        }
+
+        var bounds = GetLogicalRect(_selectedShape);
+        double centerX = bounds.Left + bounds.Width / 2;
+        double centerY = bounds.Top + bounds.Height / 2;
+        double dx = currentPoint.X - centerX;
+        double dy = currentPoint.Y - centerY;
+        double angleRad = Math.Atan2(dx, -dy);
+        double angleDeg = angleRad * 180.0 / Math.PI;
+
+        if (isShiftHeld)
+        {
+            angleDeg = Math.Round(angleDeg / 45.0) * 45.0;
+        }
+
+        annotation.RotationAngle = (float)angleDeg;
+
+        AnnotationVisualFactory.UpdateVisualControl(
+            _selectedShape,
+            annotation,
+            AnnotationVisualMode.Persisted,
+            _view.EditorCore.CanvasSize.Width,
+            _view.EditorCore.CanvasSize.Height);
+    }
+
+    private static Point RotatePoint(Point point, Point center, double angleDeg)
+    {
+        if (angleDeg == 0)
+        {
+            return point;
+        }
+
+        double rad = angleDeg * Math.PI / 180.0;
+        double cos = Math.Cos(rad);
+        double sin = Math.Sin(rad);
+        double dx = point.X - center.X;
+        double dy = point.Y - center.Y;
+        return new Point(
+            center.X + dx * cos - dy * sin,
+            center.Y + dx * sin + dy * cos);
+    }
+
+    private static Point UnrotatePoint(Point point, Point center, double angleDeg)
+    {
+        return RotatePoint(point, center, -angleDeg);
     }
 
     private void CreateHandle(double x, double y, string tag)
@@ -1611,12 +1770,11 @@ public class EditorSelectionController
         _hoverOutlineWhite.Width = width + 4;
         _hoverOutlineWhite.Height = height + 4;
 
-        // Apply rotation to hover/selection outline for rotated text shapes.
-        if (_hoveredShape is OutlinedTextControl outlinedTextControl
-            && outlinedTextControl.Tag is TextAnnotation hoveredTextAnn
-            && hoveredTextAnn.RotationAngle != 0)
+        if (TryGetRotatableAnnotation(_hoveredShape, out Annotation? rotatedAnnotation)
+            && rotatedAnnotation != null
+            && rotatedAnnotation.RotationAngle != 0)
         {
-            var rotTransform = new RotateTransform(hoveredTextAnn.RotationAngle);
+            var rotTransform = new RotateTransform(rotatedAnnotation.RotationAngle);
             // Rotate around the center of the outline (which matches the shape center)
             var originX = (width + 4) > 0 ? ((left + width / 2) - (left - 2)) / (width + 4) : 0.5;
             var originY = (height + 4) > 0 ? ((top + height / 2) - (top - 2)) / (height + 4) : 0.5;
@@ -1794,7 +1952,10 @@ public class EditorSelectionController
             FontStyle = annotation.IsItalic ? FontStyle.Italic : FontStyle.Normal,
             Padding = new Thickness(4),
             AcceptsReturn = false,
-            TextWrapping = TextWrapping.NoWrap,
+            TextAlignment = TextAlignment.Center,
+            HorizontalContentAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalContentAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
+            TextWrapping = TextWrapping.Wrap,
             MinWidth = 20
         };
 
@@ -1813,6 +1974,8 @@ public class EditorSelectionController
         var annotationBounds = annotation.GetBounds();
         Canvas.SetLeft(textBox, ToOverlayCoordinate(annotationBounds.Left));
         Canvas.SetTop(textBox, ToOverlayCoordinate(annotationBounds.Top));
+        textBox.Width = Math.Max(20, annotationBounds.Width);
+        textBox.Height = Math.Max(20, annotationBounds.Height);
 
         EventHandler<FocusChangedEventArgs>? lostFocusHandler = null;
         EventHandler<KeyEventArgs>? keyUpHandler = null;
@@ -1827,22 +1990,13 @@ public class EditorSelectionController
             // Remove from overlay
             overlay.Children.Remove(textBox);
 
-            // Unhide the original control and measure it to compute correct sizes
+            // Keep the existing annotation rectangle so wrapped text stays inside the resized bounds.
             textControl.IsVisible = true;
-            textControl.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            textControl.InvalidateMeasure();
             textControl.InvalidateVisual();
 
             // Fire RequestUpdateEffect to save new state if needed
             RequestUpdateEffect?.Invoke(textControl);
-
-            // Sync Bounds based on new measured dimension
-            var newWidth = textControl.DesiredSize.Width > 0 ? textControl.DesiredSize.Width : 20;
-            var newHeight = textControl.DesiredSize.Height > 0 ? textControl.DesiredSize.Height : 20;
-
-            annotation.EndPoint = new SKPoint(
-                (float)(Canvas.GetLeft(textControl) + newWidth),
-                (float)(Canvas.GetTop(textControl) + newHeight)
-            );
 
             UpdateSelectionHandles();
             UpdateHoverOutline();

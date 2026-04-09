@@ -139,6 +139,12 @@
                             ToolTip.Tip="Text (T)"
                             Content="{x:Static theming:EditorIcons.ToolText}"/>
                     <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Emoji}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Emoji}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Emoji (J)"
+                            Content="{x:Static theming:EditorIcons.ToolEmoji}"/>
+                    <Button Classes="editor-button toolbar-button"
                             Tag="{x:Static models:EditorTool.SpeechBalloon}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
                             Click="OnSelectToolClick"
@@ -310,12 +316,6 @@
                                                  Height="40"
                                                  IsVisible="{Binding ShowFontSize}"
                                                  ToolTip.Tip="Font size"/>
-
-                <controls:TailStylePickerDropdown x:Name="TailStylePicker"
-                                                  SelectedTailStyle="{Binding TailStyle, Mode=TwoWay}"
-                                                  Height="40"
-                                                  IsVisible="{Binding ShowTailStyle}"
-                                                  ToolTip.Tip="Tail style"/>
 
                 <controls:StrengthSlider x:Name="EffectStrengthSlider"
                                          SelectedStrength="{Binding EffectStrength, Mode=TwoWay}"

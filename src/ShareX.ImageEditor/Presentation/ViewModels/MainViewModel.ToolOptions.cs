@@ -575,6 +575,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     EditorTool.Arrow => "Arrow",
                     EditorTool.Freehand => "Freehand",
                     EditorTool.Text => "Text",
+                    EditorTool.Emoji => "Emoji",
                     EditorTool.SpeechBalloon => "Speech Balloon",
                     EditorTool.Step => "Step",
                     EditorTool.Blur => "Blur",
@@ -585,6 +586,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     EditorTool.Highlight => "Highlight",
                     EditorTool.Crop => "Crop",
                     EditorTool.CutOut => "Cut Out",
+                    EditorTool.Image => "Image",
                     _ => "Select"
                 };
             }

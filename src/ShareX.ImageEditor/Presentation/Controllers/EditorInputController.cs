@@ -1,3 +1,28 @@
+﻿#region License Information (GPL v3)
+
+/*
+    ShareX - A program that allows you to take screenshots and share any file type
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -326,7 +351,7 @@ public class EditorInputController
                 {
                     fillColor = IsColorLight(vm.SelectedColor) ? "#FF000000" : "#FFFFFFFF";
                 }
-                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, TailStyle = vm.TailStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
                 var balloonControl = balloonAnnotation.CreateVisual();
                 balloonControl.Width = 0;
                 balloonControl.Height = 0;
@@ -343,10 +368,9 @@ public class EditorInputController
                     TextColor = vm.TextColor,
                     FontSize = vm.FontSize,
                     ShadowEnabled = vm.ShadowEnabled,
-                    TailStyle = vm.TailStyle,
                     StartPoint = ToSKPoint(_startPoint),
                     Number = vm.NumberCounter
-                };
+                }; ;
 
                 _currentShape = numberAnnotation.CreateVisual();
 
@@ -738,6 +762,7 @@ public class EditorInputController
                             {
                                 _view.RefreshSpotlightOverlay();
                             }
+                            _view.ClearInteractiveEffectPreviewCache();
                             return;
                         }
                     }
@@ -779,6 +804,7 @@ public class EditorInputController
             _cachedSkBitmap?.Dispose();
             _cachedSkBitmap = null;
             _isCreatingEffect = false;
+            _view.ClearInteractiveEffectPreviewCache();
         }
     }
 
@@ -806,6 +832,11 @@ public class EditorInputController
         var vm = ViewModel;
         if (!_isCreatingEffect || vm == null) return;
         if (vm.PreviewImage == null || shape.Tag is not BaseEffectAnnotation) return;
+
+        if (_cachedSkBitmap == null)
+        {
+            _cachedSkBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+        }
 
         if (width <= 0 || height <= 0) return;
 
@@ -1604,7 +1635,7 @@ public class EditorInputController
         Canvas.SetLeft(textBox, _startPoint.X);
         Canvas.SetTop(textBox, _startPoint.Y);
 
-        void OnCreationLostFocus(object? s, FocusChangedEventArgs args)
+        void OnCreationLostFocus(object? s, global::Avalonia.Interactivity.RoutedEventArgs args)
         {
             if (s is TextBox tb && tb.Tag is TextAnnotation annotation)
             {
@@ -1622,9 +1653,12 @@ public class EditorInputController
                 {
                     // Update annotation with final text and bounds
                     annotation.Text = tb.Text ?? string.Empty;
+                    Size naturalSize = OutlinedTextControl.MeasureNaturalSize(annotation);
+                    double initialWidth = naturalSize.Width > 0 ? naturalSize.Width : tb.Bounds.Width;
+                    double initialHeight = naturalSize.Height > 0 ? naturalSize.Height : tb.Bounds.Height;
                     annotation.EndPoint = new SKPoint(
-                        (float)(Canvas.GetLeft(tb) + tb.Bounds.Width),
-                        (float)(Canvas.GetTop(tb) + tb.Bounds.Height));
+                        (float)(Canvas.GetLeft(tb) + initialWidth),
+                        (float)(Canvas.GetTop(tb) + initialHeight));
 
                     // Add to EditorCore to enable undo/redo
                     // ISSUE-012 fix: Null check for EditorCore in closure
@@ -1645,6 +1679,13 @@ public class EditorInputController
                             var panel = tb.Parent as Panel;
                             panel?.Children.Remove(tb);
                             panel?.Children.Add(control);
+
+                            AnnotationVisualFactory.UpdateVisualControl(
+                                control,
+                                annotation,
+                                AnnotationVisualMode.Persisted,
+                                _view!.EditorCore!.CanvasSize.Width,
+                                _view!.EditorCore!.CanvasSize.Height);
 
                             control.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                             var desiredWidth = control.DesiredSize.Width > 0 ? control.DesiredSize.Width : tb.Bounds.Width;

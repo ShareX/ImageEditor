@@ -1,7 +1,7 @@
-#region License Information (GPL v3)
+﻿#region License Information (GPL v3)
 
 /*
-    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    ShareX - A program that allows you to take screenshots and share any file type
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -37,6 +37,8 @@ namespace ShareX.ImageEditor.Presentation.Controls
     /// </summary>
     public class OutlinedTextControl : Control
     {
+        private const double TextPadding = 8;
+
         public static readonly StyledProperty<TextAnnotation?> AnnotationProperty =
             AvaloniaProperty.Register<OutlinedTextControl, TextAnnotation?>(nameof(Annotation));
 
@@ -54,7 +56,38 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
         public OutlinedTextControl()
         {
-            ClipToBounds = false;
+            ClipToBounds = true;
+        }
+
+        internal static Size MeasureNaturalSize(TextAnnotation annotation)
+        {
+            if (annotation == null || string.IsNullOrEmpty(annotation.Text))
+            {
+                return new Size(0, 0);
+            }
+
+            var typeface = new Typeface(
+                annotation.FontFamily,
+                annotation.IsItalic ? FontStyle.Italic : FontStyle.Normal,
+                annotation.IsBold ? FontWeight.Bold : FontWeight.Normal);
+
+            var formattedText = new FormattedText(
+                annotation.Text,
+                CultureInfo.CurrentUICulture,
+                FlowDirection.LeftToRight,
+                typeface,
+                annotation.FontSize,
+                Brushes.Black);
+
+            double strokePadding = annotation.StrokeWidth;
+            double padding = TextPadding * 2;
+            double width = formattedText.Width + padding + (strokePadding * 2);
+            double height = formattedText.Height + padding + (strokePadding * 2);
+
+            if (double.IsNaN(width) || width < 0) width = 0;
+            if (double.IsNaN(height) || height < 0) height = 0;
+
+            return new Size(width, height);
         }
 
         public override void Render(DrawingContext context)
@@ -68,6 +101,11 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 Annotation.IsItalic ? FontStyle.Italic : FontStyle.Normal,
                 Annotation.IsBold ? FontWeight.Bold : FontWeight.Normal);
 
+            double strokePadding = Annotation.StrokeWidth;
+            double horizontalPadding = TextPadding + strokePadding;
+            double verticalPadding = TextPadding + strokePadding;
+            double maxTextWidth = Math.Max(0, Bounds.Width - (horizontalPadding * 2));
+
             var formattedText = new FormattedText(
                 Annotation.Text,
                 CultureInfo.CurrentUICulture,
@@ -76,11 +114,18 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 Annotation.FontSize,
                 Brushes.Black); // Avalonia requires a brush to properly construct text extents in some backends
 
-            // Create geometry from formatted text, centered within the control bounds
+            if (maxTextWidth > 0)
+            {
+                formattedText.MaxTextWidth = maxTextWidth;
+            }
+
             double textWidth = formattedText.Width;
             double textHeight = formattedText.Height;
-            double originX = (Bounds.Width - textWidth) / 2.0;
-            double originY = (Bounds.Height - textHeight) / 2.0;
+            double originX = Math.Max(horizontalPadding, (Bounds.Width - textWidth) / 2.0);
+            double originY = Math.Max(verticalPadding, (Bounds.Height - textHeight) / 2.0);
+
+            originX = Math.Min(originX, Math.Max(horizontalPadding, Bounds.Width - textWidth - horizontalPadding));
+            originY = Math.Min(originY, Math.Max(verticalPadding, Bounds.Height - textHeight - verticalPadding));
 
             var textGeometry = formattedText.BuildGeometry(new Point(originX, originY));
             if (textGeometry == null) return;
@@ -127,10 +172,11 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 var underlineBrush = fillBrush ?? (strokePen?.Brush) ?? Brushes.Black;
                 var underlineThickness = Math.Max(1.0, Annotation.FontSize / 14.0);
                 var underlineY = originY + textHeight * 0.95;
+                var underlineWidth = Math.Min(textWidth, Math.Max(0, Bounds.Width - (horizontalPadding * 2)));
                 var underlinePen = new Pen(underlineBrush, underlineThickness);
                 context.DrawLine(underlinePen,
                     new Point(originX, underlineY),
-                    new Point(originX + textWidth, underlineY));
+                    new Point(originX + underlineWidth, underlineY));
             }
         }
 
@@ -154,12 +200,18 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 Annotation.FontSize,
                 Brushes.Black);
 
-            // Add padding (4px all sides) + stroke width padding to avoid clipping
             double strokePadding = Annotation.StrokeWidth;
-            double padding = 8; // 4 * 2
+            double padding = TextPadding * 2;
+            var annotationBounds = Annotation.GetBounds();
+            double boundedWidth = Math.Max(0, annotationBounds.Width - padding - (strokePadding * 2));
 
-            double width = formattedText.Width + padding + strokePadding;
-            double height = formattedText.Height + padding + strokePadding;
+            if (boundedWidth > 0)
+            {
+                formattedText.MaxTextWidth = boundedWidth;
+            }
+
+            double width = Math.Max(annotationBounds.Width, formattedText.Width + padding + (strokePadding * 2));
+            double height = Math.Max(annotationBounds.Height, formattedText.Height + padding + (strokePadding * 2));
 
             if (double.IsNaN(width) || width < 0) width = 0;
             if (double.IsNaN(height) || height < 0) height = 0;

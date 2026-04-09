@@ -1,0 +1,101 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ShareX.ImageEditor.Presentation.ViewModels"
+             xmlns:emoji="using:ShareX.ImageEditor.Presentation.Emoji"
+             xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="760"
+             d:DesignHeight="640"
+             x:Class="ShareX.ImageEditor.Presentation.Views.EmojiPickerDialogView"
+             x:Name="Root"
+             x:DataType="vm:EmojiPickerDialogViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Button.effect-item.emoji-tile">
+            <Setter Property="Width" Value="52"/>
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+            BorderBrush="{DynamicResource ShareX.Brush.Border}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Width="760"
+            Height="640"
+            BoxShadow="0 6 18 0 #40000000">
+        <Grid RowDefinitions="Auto,*">
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,220"
+                  ColumnSpacing="12"
+                  Margin="12,12,12,0">
+                <TextBox x:Name="SearchBox"
+                         Grid.Column="0"
+                         Classes="effect-search"
+                         Text="{Binding SearchText, Mode=TwoWay}"
+                         PlaceholderText="{Binding SearchWatermark}"/>
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding GroupOptions}"
+                          SelectedItem="{Binding SelectedGroup, Mode=TwoWay}"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"/>
+            </Grid>
+
+            <ScrollViewer Grid.Row="1"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
+                <Grid Margin="12,8,12,12">
+                    <ItemsControl IsVisible="{Binding HasResults}"
+                                  ItemsSource="{Binding VisibleEmojis}"
+                                  Margin="0,0,0,8">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="emoji:EmojiCatalogEntry">
+                                <Button Classes="effect-item emoji-tile"
+                                        Command="{Binding #Root.DataContext.SelectEmojiCommand}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip.Tip="{Binding Name}">
+                                    <controls:EmojiPreviewImage UnicodeSequence="{Binding Unicode}"
+                                                                PreviewSize="48"
+                                                                Width="48"
+                                                                Height="48"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel IsVisible="{Binding !HasResults}"
+                                Spacing="8"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="No emojis match this search."
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Try a different keyword."
+                                   HorizontalAlignment="Center"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                        <Button Classes="editor-button"
+                                Content="Cancel"
+                                Command="{Binding CancelCommand}"
+                                Padding="20,0"
+                                HorizontalAlignment="Center"
+                                HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

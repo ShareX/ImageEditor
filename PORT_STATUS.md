@@ -1,11 +1,52 @@
 # ShareX.ImageEditor Port Status
 
-Last updated: 2026-04-08
+Last updated: 2026-04-09
 
 ## Port Source
-- ShareX.ImageEditor commit: `9bad8ddd9` (HEAD as of 2026-04-08)
-- XerahS submodule last synced to: `9bad8ddd9`
+- ShareX.ImageEditor commit: `c6e3c5260` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-04-08)
+- XerahS submodule last synced to: `c6e3c5260` (pending submodule commit)
 - XerahS submodule current HEAD: `6aac31b` (submodule's own commit history after porting)
+
+## Port Activity (2026-04-09)
+
+- Previous recorded ShareX sync: `9bad8ddd9`
+- Latest upstream ShareX commit touching ShareX.ImageEditor: `c6e3c5260`
+- Result: caught up through `c6e3c5260` in the working tree
+- Method: semantic port from the local `C:\Users\liveu\source\repos\ShareX Team\ShareX\ShareX.ImageEditor` checkout, not a blind cherry-pick
+
+### Commits reviewed and ported
+
+- `53e28977a` Improve text annotation wrapping, sizing and layout
+- `eccbb2602` Use measured text size when finalizing annotation
+- `87dd609b3` Add emoji picker, catalog and renderer
+- `02bc3434e` Add EmojiAnnotation and editor/visual support
+- `9374f0c46` Add rotation support and interactive emoji render
+- `d00234b84` Update emoji catalog and picker ViewModel
+- `0fc3865c9` Refactor Emoji picker layout and styles
+- `c6e3c5260` Improve emoji picker UI and modal close behavior
+
+### Files added
+
+- `src/ShareX.ImageEditor/Assets/emoji-catalog.json`
+- `src/ShareX.ImageEditor/Core/Annotations/Shapes/EmojiAnnotation.cs`
+- `src/ShareX.ImageEditor/Presentation/Controls/EmojiPreviewImage.cs`
+- `src/ShareX.ImageEditor/Presentation/Emoji/EmojiCatalogEntry.cs`
+- `src/ShareX.ImageEditor/Presentation/Emoji/WindowsEmojiBitmapRenderer.cs`
+- `src/ShareX.ImageEditor/Presentation/ViewModels/EmojiPickerDialogViewModel.cs`
+- `src/ShareX.ImageEditor/Presentation/Views/EmojiPickerDialogView.axaml`
+- `src/ShareX.ImageEditor/Presentation/Views/EmojiPickerDialogView.axaml.cs`
+
+### Adaptations kept for XerahS
+
+- Preserved the submodule `src/ShareX.ImageEditor` layout instead of mirroring the ShareX repo root.
+- Kept XerahS-specific annotation model members such as `StepTailStyle` while adding the upstream emoji discriminator.
+- Ported controller and view behavior into existing Avalonia files instead of replacing them wholesale.
+- Updated text editing, emoji insertion, emoji rotation, and interactive emoji resize behavior without discarding local host integration.
+
+### Verification
+
+- `dotnet build ShareX.ImageEditor\src\ShareX.ImageEditor\ShareX.ImageEditor.csproj -m:1` passed with 0 errors on 2026-04-09. Existing SkiaSharp deprecation warnings remain in the project.
+- `dotnet build src\desktop\XerahS.sln -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-04-09.
 
 ## Port Activity (2026-04-08)
 The following ShareX commits were ported in this session:
@@ -89,8 +130,7 @@ The following ShareX commits were ported in this session:
 | EditorSelectionController.cs | adb34c82b | Presentation/Controllers/ | Medium | ✅ Ported | Hover outline fix: TextBox → OutlinedTextControl cast |
 
 ## Remaining ShareX Commits (not yet reviewed)
-The following ShareX commits after 8a51a9a may still need review:
-- (List any commits not covered in the table above)
+No remaining ShareX.ImageEditor commits were pending beyond `c6e3c5260` at the time of this catch-up.
 
 ## Notes
 - All ShareX.ImageEditor code uses WPF; XerahS uses Avalonia + SkiaSharp

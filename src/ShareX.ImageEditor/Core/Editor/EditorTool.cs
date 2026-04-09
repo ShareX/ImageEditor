@@ -1,7 +1,7 @@
-#region License Information (GPL v3)
+﻿#region License Information (GPL v3)
 
 /*
-    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    ShareX - A program that allows you to take screenshots and share any file type
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -118,5 +118,10 @@ public enum EditorTool
     /// <summary>
     /// Insert image/sticker
     /// </summary>
-    Image
+    Image,
+
+    /// <summary>
+    /// Insert emoji sticker
+    /// </summary>
+    Emoji
 }

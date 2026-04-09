@@ -25,6 +25,9 @@
         <DataTemplate DataType="{x:Type vm:NewImageDialogViewModel}" x:DataType="vm:NewImageDialogViewModel">
             <views:NewImageDialogView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EmojiPickerDialogViewModel}" x:DataType="vm:EmojiPickerDialogViewModel">
+            <views:EmojiPickerDialogView />
+        </DataTemplate>
     </UserControl.DataTemplates>
 
     <UserControl.Resources>

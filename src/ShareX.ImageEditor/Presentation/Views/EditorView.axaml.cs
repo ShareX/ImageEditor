@@ -39,6 +39,7 @@ using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Controllers;
 using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Emoji;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.Theming;
 using ShareX.ImageEditor.Presentation.ViewModels;
@@ -339,6 +340,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.DuplicateRequested += OnDuplicateRequested;
                 vm.ZoomToFitRequested += OnZoomToFitRequested;
                 vm.FlattenRequested += OnFlattenRequested;
+                vm.EmojiInsertionRequested += OnEmojiInsertionRequested;
 
                 // File menu event handlers (Image Editor Mode)
                 vm.NewImageRequested += OnNewImageRequested;
@@ -399,6 +401,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.OpenImageRequested -= OnOpenImageRequested;
                 vm.SaveRequested -= OnSaveRequested;
                 vm.SaveAsRequested -= OnSaveAsRequested;
+                vm.EmojiInsertionRequested -= OnEmojiInsertionRequested;
             }
 
             UnhookAnnotationToolbarEvents();
@@ -429,12 +432,11 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
             else
             {
-                SetPlatformSettings(this.GetPlatformSettings() ?? Application.Current?.PlatformSettings);
+                SetPlatformSettings(this.GetPlatformSettings());
             }
 
             PlatformColorValues? colorValues = _platformSettings?.GetColorValues()
-                ?? this.GetPlatformSettings()?.GetColorValues()
-                ?? Application.Current?.PlatformSettings?.GetColorValues();
+                ?? this.GetPlatformSettings()?.GetColorValues();
 
             UpdateTheme(colorValues);
             UpdateAccentColor(colorValues);
@@ -535,8 +537,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             colorValues ??= _platformSettings?.GetColorValues()
-                ?? this.GetPlatformSettings()?.GetColorValues()
-                ?? Application.Current?.PlatformSettings?.GetColorValues();
+                ?? this.GetPlatformSettings()?.GetColorValues();
 
             if (colorValues == null || colorValues.AccentColor1.A == 0)
             {
@@ -1107,6 +1108,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                             case Key.B: vm.SelectToolCommand.Execute(EditorTool.Blur); e.Handled = true; break;
                             case Key.P: vm.SelectToolCommand.Execute(EditorTool.Pixelate); e.Handled = true; break;
                             case Key.I: vm.SelectToolCommand.Execute(EditorTool.Image); e.Handled = true; break;
+                            case Key.J: vm.SelectToolCommand.Execute(EditorTool.Emoji); e.Handled = true; break;
                             case Key.H: vm.SelectToolCommand.Execute(EditorTool.Highlight); e.Handled = true; break;
                             case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
                             case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
@@ -1345,6 +1347,51 @@ namespace ShareX.ImageEditor.Presentation.Views
             _editorCore.AddAnnotation(annotation);
             vm.HasAnnotations = true;
             vm.ActiveTool = EditorTool.Select; // Auto-switch to Select tool
+            _selectionController.SetSelectedShape(imageControl);
+        }
+
+        private void InsertEmojiAnnotation(string unicodeSequence, string displayName, Point? dropPosition = null)
+        {
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null || DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            const double defaultSize = 96;
+            var posX = dropPosition?.X ?? (_editorCore.CanvasSize.Width / 2 - defaultSize / 2.0);
+            var posY = dropPosition?.Y ?? (_editorCore.CanvasSize.Height / 2 - defaultSize / 2.0);
+
+            var annotation = new EmojiAnnotation
+            {
+                UnicodeSequence = unicodeSequence,
+                DisplayName = displayName,
+                StartPoint = new SKPoint((float)posX, (float)posY),
+                EndPoint = new SKPoint((float)(posX + defaultSize), (float)(posY + defaultSize))
+            };
+
+            var imageControl = new Image
+            {
+                Width = defaultSize,
+                Height = defaultSize,
+                Tag = annotation,
+                Stretch = Stretch.Uniform
+            };
+
+            AnnotationVisualFactory.UpdateVisualControl(
+                imageControl,
+                annotation,
+                AnnotationVisualMode.Persisted,
+                _editorCore.CanvasSize.Width,
+                _editorCore.CanvasSize.Height);
+
+            Canvas.SetLeft(imageControl, posX);
+            Canvas.SetTop(imageControl, posY);
+
+            canvas.Children.Add(imageControl);
+            _editorCore.AddAnnotation(annotation);
+            vm.HasAnnotations = true;
+            vm.ActiveTool = EditorTool.Select;
             _selectionController.SetSelectedShape(imageControl);
         }
 
@@ -1699,6 +1746,18 @@ namespace ShareX.ImageEditor.Presentation.Views
                 {
                     vm.HasAnnotations = false;
                 }
+            }
+        }
+
+        private void OnEmojiInsertionRequested(object? sender, EmojiSelectionRequest e)
+        {
+            try
+            {
+                InsertEmojiAnnotation(e.UnicodeSequence, e.DisplayName);
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportWarning(nameof(EditorView), $"Failed to render emoji '{e.DisplayName}'.", ex);
             }
         }
 

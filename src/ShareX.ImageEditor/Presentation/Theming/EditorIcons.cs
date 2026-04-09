@@ -1,7 +1,7 @@
-#region License Information (GPL v3)
+﻿#region License Information (GPL v3)
 
 /*
-    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    ShareX - A program that allows you to take screenshots and share any file type
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -46,6 +46,8 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string ToolSmartEraser = LucideIcons.eraser;
         public const string ToolCrop = LucideIcons.crop;
         public const string ToolCutOut = LucideIcons.scissors;
+        public const string ToolImage = LucideIcons.image;
+        public const string ToolEmoji = LucideIcons.sticker;
 
         public const string ActionUndo = LucideIcons.undo_2;
         public const string ActionRedo = LucideIcons.redo_2;
@@ -73,13 +75,13 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string FormatItalic = LucideIcons.italic;
         public const string FormatUnderline = LucideIcons.underline;
         public const string MenuTheme = LucideIcons.moon_star;
-        public const string TailStyleTriangle = LucideIcons.triangle;
-        public const string TailStyleArrow = LucideIcons.arrow_right;
         public const string PanelBackground = LucideIcons.image;
         public const string PanelEffects = LucideIcons.sparkles;
         public const string LayerFlatten = LucideIcons.layers_2;
         public const string ChevronDown = LucideIcons.chevron_down;
         public const string Zoom = LucideIcons.zoom_in;
+        public const string TailStyleTriangle = LucideIcons.triangle;
+        public const string TailStyleArrow = LucideIcons.arrow_right;
 
         public const string FileMenu = LucideIcons.file;
         public const string FileNew = LucideIcons.file_plus;
@@ -107,6 +109,8 @@ namespace ShareX.ImageEditor.Presentation.Theming
             EditorTool.Highlight => ToolHighlight,
             EditorTool.Crop => ToolCrop,
             EditorTool.CutOut => ToolCutOut,
+            EditorTool.Image => ToolImage,
+            EditorTool.Emoji => ToolEmoji,
             _ => ToolSelect
         };
     }

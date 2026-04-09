@@ -457,7 +457,7 @@ public class EditorSelectionController
         if (_selectedShape is StepControl stepControl && stepControl.Annotation is NumberAnnotation number && handleTag == "StepTail")
         {
             number.SetTailPoint(new SKPoint((float)currentPoint.X, (float)currentPoint.Y));
-            stepControl.InvalidateVisual();
+            AnnotationVisualFactory.UpdateVisualControl(stepControl, number);
             _startPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -1913,6 +1913,11 @@ public class EditorSelectionController
         if (control is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloonAnnotation)
         {
             return ToRect(balloonAnnotation.GetBounds());
+        }
+
+        if (control is StepControl stepControl && stepControl.Annotation is NumberAnnotation numberAnnotation)
+        {
+            return ToRect(numberAnnotation.GetInteractionBounds());
         }
 
         if (control.Tag is Annotation annotation)

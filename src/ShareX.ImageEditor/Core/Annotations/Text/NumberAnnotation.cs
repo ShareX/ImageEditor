@@ -296,6 +296,11 @@ public partial class NumberAnnotation : Annotation
         shaftEndRight = default;
         shaftStartRight = default;
 
+        if (!HasTailPoint)
+        {
+            return false;
+        }
+
         float radius = Radius;
         if (radius <= GeometryEpsilon)
         {

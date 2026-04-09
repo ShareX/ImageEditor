@@ -15,6 +15,75 @@ public partial class BlurAnnotation : BaseEffectAnnotation
         Amount = 10; // Default blur radius
     }
 
+    internal static SKBitmap? CreateBlurredSourceCache(SKBitmap source, float blurAmount)
+    {
+        if (source == null) return null;
+
+        float blurSigma = Math.Max(0, blurAmount);
+        if (blurSigma <= 0)
+        {
+            return source.Copy();
+        }
+
+        int padding = (int)Math.Ceiling(blurSigma * 3);
+        int extendedWidth = source.Width + (padding * 2);
+        int extendedHeight = source.Height + (padding * 2);
+
+        using var extendedSurface = SKSurface.Create(new SKImageInfo(extendedWidth, extendedHeight));
+        if (extendedSurface == null)
+        {
+            return null;
+        }
+
+        var extendedCanvas = extendedSurface.Canvas;
+
+        using (var clampShader = source.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp))
+        using (var fillPaint = new SKPaint { Shader = clampShader })
+        {
+            extendedCanvas.Save();
+            extendedCanvas.Translate(padding, padding);
+            extendedCanvas.DrawRect(new SKRect(-padding, -padding, source.Width + padding, source.Height + padding), fillPaint);
+            extendedCanvas.Restore();
+        }
+
+        using var blurSurface = SKSurface.Create(new SKImageInfo(extendedWidth, extendedHeight));
+        if (blurSurface == null)
+        {
+            return null;
+        }
+
+        using (var extendedImage = extendedSurface.Snapshot())
+        using (var extendedBitmap = SKBitmap.FromImage(extendedImage))
+        using (var blurPaint = new SKPaint { ImageFilter = SKImageFilter.CreateBlur(blurSigma, blurSigma) })
+        {
+            blurSurface.Canvas.DrawBitmap(extendedBitmap, 0, 0, blurPaint);
+        }
+
+        using var blurredImage = blurSurface.Snapshot();
+        using var blurredBitmap = SKBitmap.FromImage(blurredImage);
+
+        var fullSourceRect = new SKRectI(padding, padding, padding + source.Width, padding + source.Height);
+        var cachedBlurredSource = new SKBitmap(source.Width, source.Height);
+
+        if (!blurredBitmap.ExtractSubset(cachedBlurredSource, fullSourceRect))
+        {
+            cachedBlurredSource.Dispose();
+            return null;
+        }
+
+        return cachedBlurredSource;
+    }
+
+    internal override SKBitmap? CreateInteractionCacheBitmap(SKBitmap source)
+    {
+        return CreateBlurredSourceCache(source, Amount);
+    }
+
+    internal override void UpdateEffectFromInteractionCache(SKBitmap source, SKBitmap cachedEffectBitmap)
+    {
+        UpdateEffectFromAlignedCache(source, cachedEffectBitmap);
+    }
+
     /// <summary>
     /// Update the internal blurred bitmap based on the source image
     /// </summary>

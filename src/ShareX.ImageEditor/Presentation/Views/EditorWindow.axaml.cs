@@ -123,7 +123,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                 }
 
                 _viewModel.UpdatePreview(bitmap);
-                _viewModel.LastSavedPath = filePath;
                 _viewModel.ImageFilePath = filePath;
                 _viewModel.IsDirty = false;
             }

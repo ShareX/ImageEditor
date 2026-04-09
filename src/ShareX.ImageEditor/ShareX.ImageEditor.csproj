@@ -4,7 +4,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Platforms>x64;ARM64</Platforms>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
@@ -13,6 +12,7 @@
     <AvaloniaResource Include="Assets\Crosshair.cur" />
     <AvaloniaResource Include="Assets\lucide.ttf" />
     <AvaloniaResource Include="Assets\openhand.cur" />
+    <AvaloniaResource Include="Assets\Sample.png" />
   </ItemGroup>
 
   <ItemGroup>

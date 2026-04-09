@@ -15,6 +15,84 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
         StrokeWidth = 0; // No border by default
     }
 
+    internal override string GetInteractionCacheKey()
+    {
+        return $"{base.GetInteractionCacheKey()}:{FillColor}";
+    }
+
+    internal static SKBitmap? CreateHighlightedSourceCache(SKBitmap source, string? fillColor)
+    {
+        if (source == null) return null;
+
+        var highlightedSource = source.Copy();
+        ApplyHighlightToBitmap(highlightedSource, fillColor);
+        return highlightedSource;
+    }
+
+    internal override SKBitmap? CreateInteractionCacheBitmap(SKBitmap source)
+    {
+        return CreateHighlightedSourceCache(source, FillColor);
+    }
+
+    internal override void UpdateEffectFromInteractionCache(SKBitmap source, SKBitmap cachedEffectBitmap)
+    {
+        UpdateEffectFromAlignedCache(source, cachedEffectBitmap);
+    }
+
+    private static unsafe void ApplyHighlightToBitmap(SKBitmap bitmap, string? fillColor)
+    {
+        if (bitmap == null) return;
+
+        var highlightColor = SKColor.Parse(fillColor ?? "#FFFF00");
+        byte r = highlightColor.Red;
+        byte g = highlightColor.Green;
+        byte b = highlightColor.Blue;
+
+        var pixels = (byte*)bitmap.GetPixels();
+        int count = bitmap.Width * bitmap.Height;
+        var colorType = bitmap.ColorType;
+
+        if (colorType == SKColorType.Bgra8888 || colorType == SKColorType.Rgba8888)
+        {
+            if (colorType == SKColorType.Bgra8888)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    int offset = i * 4;
+                    pixels[offset] = Math.Min(pixels[offset], b);
+                    pixels[offset + 1] = Math.Min(pixels[offset + 1], g);
+                    pixels[offset + 2] = Math.Min(pixels[offset + 2], r);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    int offset = i * 4;
+                    pixels[offset] = Math.Min(pixels[offset], r);
+                    pixels[offset + 1] = Math.Min(pixels[offset + 1], g);
+                    pixels[offset + 2] = Math.Min(pixels[offset + 2], b);
+                }
+            }
+
+            return;
+        }
+
+        for (int x = 0; x < bitmap.Width; x++)
+        {
+            for (int y = 0; y < bitmap.Height; y++)
+            {
+                var color = bitmap.GetPixel(x, y);
+                var newColor = new SKColor(
+                    Math.Min(color.Red, r),
+                    Math.Min(color.Green, g),
+                    Math.Min(color.Blue, b),
+                    color.Alpha);
+                bitmap.SetPixel(x, y, newColor);
+            }
+        }
+    }
+
 
 
 

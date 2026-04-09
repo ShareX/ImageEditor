@@ -149,7 +149,15 @@
                 <ScrollViewer x:Name="SidebarScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               ScrollChanged="OnSidebarScrollChanged">
                     <StackPanel Width="250" Spacing="0" Margin="16">
-
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                            <TextBlock Text="{x:Static theming:EditorIcons.PanelBackground}"
+                                       FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,2,0,0"/>
+                            <TextBlock Text="Background"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
                         <!-- Background Margin -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
@@ -411,6 +419,13 @@
                                                         <controls:SKCanvasControl Name="CanvasControl"
                                                                                   HorizontalAlignment="Stretch"
                                                                                   VerticalAlignment="Stretch"/>
+
+                                                        <!-- Shared spotlight overlay rendered once for all spotlight annotations -->
+                                                        <controls:SpotlightOverlayControl Name="SpotlightOverlayControl"
+                                                                         HorizontalAlignment="Stretch"
+                                                                         VerticalAlignment="Stretch"
+                                                                         IsHitTestVisible="False"
+                                                                         IsVisible="False"/>
 
                                                         <!-- Annotation Layer (Saved content) -->
                                                         <Canvas Name="AnnotationCanvas"

@@ -26,6 +26,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform;
@@ -341,6 +342,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 // File menu event handlers (Image Editor Mode)
                 vm.NewImageRequested += OnNewImageRequested;
                 vm.OpenImageRequested += OnOpenImageRequested;
+                vm.CopyRequested += OnCopyImageRequested;
                 vm.SaveRequested += OnSaveRequested;
                 vm.SaveAsRequested += OnSaveAsRequested;
 
@@ -353,6 +355,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                 // Wire up View interactions
                 vm.DeselectRequested += OnDeselectRequested;
+                vm.CanvasFocusRequested += OnCanvasFocusRequested;
 
                 // Initial load
                 if (vm.PreviewImage != null)
@@ -763,9 +766,14 @@ namespace ShareX.ImageEditor.Presentation.Views
                     _editorCore.ActiveTool = vm.ActiveTool;
 
                     if (vm.ActiveTool == EditorTool.Crop)
+                    {
                         _inputController.ActivateCropToFullImage();
+                        this.Focus();
+                    }
                     else
+                    {
                         _inputController.CancelCrop();
+                    }
                     _selectionController.ClearSelection();
                     UpdateCursorForTool(); // ISSUE-018 fix: Update cursor feedback for active tool
                 }
@@ -1179,6 +1187,11 @@ namespace ShareX.ImageEditor.Presentation.Views
             _selectionController.ClearSelection();
         }
 
+        private void OnCanvasFocusRequested(object? sender, EventArgs e)
+        {
+            this.Focus();
+        }
+
         private Color SKColorToAvalonia(SKColor color)
         {
             return Color.FromUInt32((uint)color);
@@ -1228,6 +1241,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                     (selected.Tag as IDisposable)?.Dispose();
 
                     canvas.Children.Remove(selected);
+                    RefreshSpotlightOverlay();
 
                     _selectionController.ClearSelection();
 
@@ -1243,6 +1257,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (canvas != null)
             {
                 canvas.Children.Clear();
+                RefreshSpotlightOverlay();
                 _selectionController.ClearSelection();
                 _editorCore.ClearAll(resetHistory: false);
                 RenderCore();
@@ -1477,7 +1492,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                     {
                         _isSyncingToVM = true;
                         vm.ImageFilePath = null;
-                        vm.LastSavedPath = null;
                         vm.IsDirty = false;
                         vm.HasAnnotations = false;
                         vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
@@ -1500,6 +1514,31 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             vm.ModalContent = dialog;
             vm.IsModalOpen = true;
+        }
+
+        private async void OnCopyImageRequested()
+        {
+            if (DataContext is not MainViewModel vm) return;
+            if (vm.HasHostCopyHandler) return;
+
+            TopLevel? topLevel = TopLevel.GetTopLevel(this);
+            IClipboard? clipboard = topLevel?.Clipboard;
+            if (clipboard == null) return;
+
+            using var skBitmap = GetSnapshot();
+            if (skBitmap == null) return;
+
+            using var image = SKImage.FromBitmap(skBitmap);
+            using var encoded = image.Encode(SKEncodedImageFormat.Png, 100);
+            using var memStream = new System.IO.MemoryStream(encoded.ToArray());
+            var bitmap = new Avalonia.Media.Imaging.Bitmap(memStream);
+
+            DataTransfer data = new DataTransfer();
+            DataTransferItem item = new DataTransferItem();
+            item.SetBitmap(bitmap);
+            data.Add(item);
+
+            await clipboard.SetDataAsync(data);
         }
 
         private async void OnOpenImageRequested(object? sender, EventArgs e)
@@ -1550,7 +1589,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                 {
                     _isSyncingToVM = true;
                     vm.ImageFilePath = files[0].Path.LocalPath;
-                    vm.LastSavedPath = files[0].Path.LocalPath;
                     vm.IsDirty = false;
                     vm.HasAnnotations = false;
                     vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
@@ -1567,23 +1605,23 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
-        private async void OnSaveRequested()
+        private void OnSaveRequested()
         {
             if (DataContext is not MainViewModel vm) return;
+            if (vm.HasHostSaveHandler) return;
 
-            if (!string.IsNullOrEmpty(vm.LastSavedPath))
+            if (!string.IsNullOrEmpty(vm.ImageFilePath))
             {
-                SaveSnapshotToFile(vm.LastSavedPath!);
+                SaveSnapshotToFile(vm.ImageFilePath!);
                 vm.IsDirty = false;
-            }
-            else
-            {
-                await SaveAsAsync();
             }
         }
 
         private async void OnSaveAsRequested()
         {
+            if (DataContext is not MainViewModel vm) return;
+            if (vm.HasHostSaveAsHandler) return;
+
             await SaveAsAsync();
         }
 
@@ -1613,7 +1651,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                 var path = file.Path.LocalPath;
                 SaveSnapshotToFile(path);
                 vm.ImageFilePath = path;
-                vm.LastSavedPath = path;
                 vm.IsDirty = false;
             }
         }

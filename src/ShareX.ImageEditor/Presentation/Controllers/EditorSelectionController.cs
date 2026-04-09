@@ -139,9 +139,9 @@ public class EditorSelectionController
 
         if (_view.DataContext is MainViewModel vm)
         {
-            // Allow dragging selected shapes even when not in Select tool mode
-            // This enables immediate repositioning after creating an annotation
-            if (_selectedShape != null && vm.ActiveTool != EditorTool.Select)
+            // When a drawing tool is active, allow selecting and dragging any existing shape
+            // that belongs to the same tool type, without switching to the Select tool.
+            if (vm.ActiveTool != EditorTool.Select && vm.ActiveTool != EditorTool.Spotlight)
             {
                 // Hit test - find the direct child of the canvas
                 var hitSource = e.Source as global::Avalonia.Visual;
@@ -157,17 +157,21 @@ public class EditorSelectionController
                     hitSource = hitSource.GetVisualParent();
                 }
 
-                // Fallback: Use manual hit test if strict visual hit test failed (e.g. thin lines)
-                if (hitTarget != _selectedShape)
+                // Fallback: manual hit test for thin shapes (e.g. lines, arrows)
+                var manualHit = HitTestShape(canvas, point);
+                if (hitTarget == null || GetControlToolType(hitTarget) != vm.ActiveTool)
                 {
-                    var manualHit = HitTestShape(canvas, point);
-                    if (manualHit == _selectedShape)
+                    if (manualHit != null && GetControlToolType(manualHit) == vm.ActiveTool)
                     {
                         hitTarget = manualHit;
                     }
+                    else if (hitTarget != null && GetControlToolType(hitTarget) != vm.ActiveTool)
+                    {
+                        hitTarget = null;
+                    }
                 }
 
-                if (hitTarget == _selectedShape)
+                if (hitTarget != null && GetControlToolType(hitTarget) == vm.ActiveTool)
                 {
                     if (hitTarget is OutlinedTextControl otc && e.ClickCount == 2)
                     {
@@ -183,9 +187,12 @@ public class EditorSelectionController
                         return true;
                     }
 
+                    _selectedShape = hitTarget;
+                    UpdateBoundsObserver();
                     _isDraggingShape = true;
                     _lastDragPoint = point;
                     UpdateSelectionHandles();
+                    SelectionChanged?.Invoke(true);
                     e.Pointer.Capture(hitTarget);
                     e.Handled = true;
                     return true;
@@ -450,7 +457,7 @@ public class EditorSelectionController
         if (_selectedShape is StepControl stepControl && stepControl.Annotation is NumberAnnotation number && handleTag == "StepTail")
         {
             number.SetTailPoint(new SKPoint((float)currentPoint.X, (float)currentPoint.Y));
-            stepControl.InvalidateVisual();
+            AnnotationVisualFactory.UpdateVisualControl(stepControl, number);
             _startPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -474,6 +481,11 @@ public class EditorSelectionController
                 double dy = currentPoint.Y - cy;
                 double angleRad = Math.Atan2(dx, -dy); // 0 = up, clockwise positive
                 double angleDeg = angleRad * 180.0 / Math.PI;
+
+                if (isShiftHeld)
+                {
+                    angleDeg = Math.Round(angleDeg / 45.0) * 45.0;
+                }
 
                 rotateTextAnn.RotationAngle = (float)angleDeg;
 
@@ -539,7 +551,7 @@ public class EditorSelectionController
 
             sa.StartPoint = ToSKPoint(new Point(newLeft, newTop));
             sa.EndPoint = ToSKPoint(new Point(newLeft + newWidth, newTop + newHeight));
-            spotlight.InvalidateVisual();
+            _view.RefreshSpotlightOverlay();
 
             _startPoint = currentPoint;
             UpdateSelectionHandles();
@@ -714,7 +726,7 @@ public class EditorSelectionController
             var currentEnd = sa.EndPoint;
             sa.StartPoint = new SKPoint(currentStart.X + (float)deltaX, currentStart.Y + (float)deltaY);
             sa.EndPoint = new SKPoint(currentEnd.X + (float)deltaX, currentEnd.Y + (float)deltaY);
-            spotlight.InvalidateVisual();
+            _view.RefreshSpotlightOverlay();
 
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
@@ -1178,7 +1190,7 @@ public class EditorSelectionController
             }
         };
 
-        textBox.KeyDown += (s, args) =>
+        textBox.KeyUp += (s, args) =>
         {
             if (args.Key == Key.Enter || args.Key == Key.Escape)
             {
@@ -1233,19 +1245,13 @@ public class EditorSelectionController
 
     private void UpdateHoverState(Canvas canvas, Point currentPoint)
     {
-        // Only show hover outlines when Select tool is active
+        // Crop/CutOut tools never show hover outlines
         if (_view.DataContext is MainViewModel vm)
         {
-            // If Select/Spotlight tool inactive, we generally clear hover.
-            // BUT: If there is an active selection (e.g. just created shape), we KEEP it highlighted.
-            if (vm.ActiveTool != EditorTool.Select && vm.ActiveTool != EditorTool.Spotlight)
+            if (vm.ActiveTool == EditorTool.Crop || vm.ActiveTool == EditorTool.CutOut)
             {
-                if (_selectedShape == null)
-                {
-                    ClearHoverOutline();
-                    return;
-                }
-                // Fall through to hit testing to check if we are hovering the selected shape
+                ClearHoverOutline();
+                return;
             }
         }
 
@@ -1258,12 +1264,12 @@ public class EditorSelectionController
             if (!(hitShape is SpotlightControl)) hitShape = null;
         }
 
-        // Filter: If using other tools (Rect, etc), only allow hovering the ACTIVE selection
+        // Filter: If using other tools (Rect, etc), only allow hovering shapes of the same tool type
         if (_view.DataContext is MainViewModel vm3 &&
             vm3.ActiveTool != EditorTool.Select &&
             vm3.ActiveTool != EditorTool.Spotlight)
         {
-            if (hitShape != _selectedShape) hitShape = null;
+            if (hitShape != null && GetControlToolType(hitShape) != vm3.ActiveTool) hitShape = null;
         }
 
         // If we're hovering over the selected shape, keep showing ant lines on it
@@ -1605,8 +1611,10 @@ public class EditorSelectionController
         _hoverOutlineWhite.Width = width + 4;
         _hoverOutlineWhite.Height = height + 4;
 
-        // Apply rotation to hover outline for rotated shapes (e.g. TextBox)
-        if (_hoveredShape is TextBox hoveredTb && hoveredTb.Tag is TextAnnotation hoveredTextAnn && hoveredTextAnn.RotationAngle != 0)
+        // Apply rotation to hover/selection outline for rotated text shapes.
+        if (_hoveredShape is OutlinedTextControl outlinedTextControl
+            && outlinedTextControl.Tag is TextAnnotation hoveredTextAnn
+            && hoveredTextAnn.RotationAngle != 0)
         {
             var rotTransform = new RotateTransform(hoveredTextAnn.RotationAngle);
             // Rotate around the center of the outline (which matches the shape center)
@@ -1629,12 +1637,12 @@ public class EditorSelectionController
     private void AttachTextBoxEditHandlers(TextBox tb)
     {
         EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
-        EventHandler<KeyEventArgs>? keyDownHandler = null;
+        EventHandler<KeyEventArgs>? keyUpHandler = null;
 
         lostFocusHandler = (s, args) =>
         {
             if (lostFocusHandler != null) tb.LostFocus -= lostFocusHandler;
-            if (keyDownHandler != null) tb.KeyDown -= keyDownHandler;
+            if (keyUpHandler != null) tb.KeyUp -= keyUpHandler;
 
             tb.IsHitTestVisible = false;
 
@@ -1658,9 +1666,9 @@ public class EditorSelectionController
             }
         };
 
-        keyDownHandler = (s, args) =>
+        keyUpHandler = (s, args) =>
         {
-            if (args.Key == Key.Enter)
+            if (args.Key == Key.Enter || args.Key == Key.Escape)
             {
                 args.Handled = true;
                 _view.Focus();
@@ -1668,10 +1676,23 @@ public class EditorSelectionController
         };
 
         tb.LostFocus += lostFocusHandler;
-        tb.KeyDown += keyDownHandler;
+        tb.KeyUp += keyUpHandler;
     }
 
     private static SKPoint ToSKPoint(Point point) => new((float)point.X, (float)point.Y);
+
+    /// <summary>
+    /// Returns the EditorTool that created the given control, or null if not determinable.
+    /// </summary>
+    private static EditorTool? GetControlToolType(Control control)
+    {
+        if (control is OutlinedTextControl otc) return otc.Annotation?.ToolType;
+        if (control is SpeechBalloonControl sbc) return sbc.Annotation?.ToolType;
+        if (control is SpotlightControl sc) return sc.Annotation?.ToolType;
+        if (control is StepControl stc) return stc.Annotation?.ToolType;
+        if (control.Tag is Annotation ann) return ann.ToolType;
+        return null;
+    }
     public void UpdateActiveTextEditorProperties()
     {
         if (_balloonTextEditor == null || !(_selectedShape is SpeechBalloonControl balloonControl)) return;
@@ -1794,12 +1815,12 @@ public class EditorSelectionController
         Canvas.SetTop(textBox, ToOverlayCoordinate(annotationBounds.Top));
 
         EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
-        EventHandler<KeyEventArgs>? keyDownHandler = null;
+        EventHandler<KeyEventArgs>? keyUpHandler = null;
 
         void CompleteEditing()
         {
             if (lostFocusHandler != null) textBox.LostFocus -= lostFocusHandler;
-            if (keyDownHandler != null) textBox.KeyDown -= keyDownHandler;
+            if (keyUpHandler != null) textBox.KeyUp -= keyUpHandler;
 
             annotation.Text = textBox.Text ?? string.Empty;
 
@@ -1829,9 +1850,9 @@ public class EditorSelectionController
 
         lostFocusHandler = (s, args) => CompleteEditing();
 
-        keyDownHandler = (s, args) =>
+        keyUpHandler = (s, args) =>
         {
-            if (args.Key == Key.Enter)
+            if (args.Key == Key.Enter || args.Key == Key.Escape)
             {
                 args.Handled = true;
                 _view.Focus();
@@ -1839,7 +1860,7 @@ public class EditorSelectionController
         };
 
         textBox.LostFocus += lostFocusHandler;
-        textBox.KeyDown += keyDownHandler;
+        textBox.KeyUp += keyUpHandler;
 
         overlay.Children.Add(textBox);
         textBox.Focus();
@@ -1892,6 +1913,11 @@ public class EditorSelectionController
         if (control is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloonAnnotation)
         {
             return ToRect(balloonAnnotation.GetBounds());
+        }
+
+        if (control is StepControl stepControl && stepControl.Annotation is NumberAnnotation numberAnnotation)
+        {
+            return ToRect(numberAnnotation.GetInteractionBounds());
         }
 
         if (control.Tag is Annotation annotation)

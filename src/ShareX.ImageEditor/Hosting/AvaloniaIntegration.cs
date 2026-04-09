@@ -224,6 +224,7 @@ namespace ShareX.ImageEditor.Hosting
 
             if (events.CopyImageRequested != null)
             {
+                vm.HasHostCopyHandler = true;
                 vm.CopyRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
@@ -236,6 +237,7 @@ namespace ShareX.ImageEditor.Hosting
 
             if (events.SaveImageRequested != null)
             {
+                vm.HasHostSaveHandler = true;
                 vm.SaveRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
@@ -245,6 +247,7 @@ namespace ShareX.ImageEditor.Hosting
                         if (!string.IsNullOrEmpty(savedPath))
                         {
                             vm.ImageFilePath = savedPath;
+                            vm.IsDirty = false;
                         }
                     }
                 };
@@ -252,6 +255,7 @@ namespace ShareX.ImageEditor.Hosting
 
             if (events.SaveImageAsRequested != null)
             {
+                vm.HasHostSaveAsHandler = true;
                 vm.SaveAsRequested += () =>
                 {
                     byte[]? bytes = window.GetResultBytes();
@@ -261,6 +265,7 @@ namespace ShareX.ImageEditor.Hosting
                         if (!string.IsNullOrEmpty(savedPath))
                         {
                             vm.ImageFilePath = savedPath;
+                            vm.IsDirty = false;
                         }
                     }
                 };

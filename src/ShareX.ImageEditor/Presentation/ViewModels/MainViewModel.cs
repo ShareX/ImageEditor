@@ -91,6 +91,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public event EventHandler? ClearAnnotationsRequested;
         public event EventHandler? FlattenRequested;
         public event EventHandler? DeselectRequested;
+        public event EventHandler? CanvasFocusRequested;
         public event EventHandler? PasteRequested;
         public event EventHandler? DuplicateRequested;
         public event EventHandler? CutAnnotationRequested;
@@ -169,6 +170,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             var dialog = new ConfirmationDialogViewModel(
+                ApplicationName,
                 onYes: () =>
                 {
                     Save();
@@ -198,6 +200,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
         }
         public bool CanCopy() => _copyRequested != null && HasPreviewImage;
+        public bool HasHostCopyHandler { get; set; }
+        public bool HasHostSaveHandler { get; set; }
+        public bool HasHostSaveAsHandler { get; set; }
 
         private Action? _saveRequested;
         public event Action? SaveRequested
@@ -205,7 +210,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
             remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanSave() => _saveRequested != null && HasPreviewImage;
+        public bool CanSave() => _saveRequested != null && HasPreviewImage && !string.IsNullOrEmpty(ImageFilePath);
 
         private Action? _saveAsRequested;
         public event Action? SaveAsRequested
@@ -428,8 +433,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         /// <summary>
         /// ISSUE-022 fix: Recursion guard flag for smart padding event chain.
-        /// Prevents infinite loop: BackgroundSmartPadding property change → ApplySmartPaddingCrop →
-        /// UpdatePreview → PreviewImage changed → ApplySmartPaddingCrop (again).
+        /// Prevents infinite loop: BackgroundSmartPadding property change â†’ ApplySmartPaddingCrop â†’
+        /// UpdatePreview â†’ PreviewImage changed â†’ ApplySmartPaddingCrop (again).
         /// Set to true during ApplySmartPaddingCrop execution to break the cycle.
         /// </summary>
         private bool _isApplyingSmartPadding = false;
@@ -733,9 +738,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private BoxShadows _canvasShadow;
 
         [ObservableProperty]
-        private string? _lastSavedPath;
-
-        [ObservableProperty]
         private string? _imageFilePath;
 
         [ObservableProperty]
@@ -940,6 +942,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void SelectTool(EditorTool tool)
         {
+            // Re-selecting the active crop/cut-out tool should not cancel the current operation
+            if (ActiveTool == tool && tool is EditorTool.Crop or EditorTool.CutOut)
+            {
+                CanvasFocusRequested?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
             DeselectRequested?.Invoke(this, EventArgs.Empty);
 
             if (tool is EditorTool.Crop or EditorTool.CutOut)

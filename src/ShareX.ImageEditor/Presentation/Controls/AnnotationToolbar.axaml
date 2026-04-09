@@ -311,6 +311,12 @@
                                                  IsVisible="{Binding ShowFontSize}"
                                                  ToolTip.Tip="Font size"/>
 
+                <controls:TailStylePickerDropdown x:Name="TailStylePicker"
+                                                  SelectedTailStyle="{Binding TailStyle, Mode=TwoWay}"
+                                                  Height="40"
+                                                  IsVisible="{Binding ShowTailStyle}"
+                                                  ToolTip.Tip="Tail style"/>
+
                 <controls:StrengthSlider x:Name="EffectStrengthSlider"
                                          SelectedStrength="{Binding EffectStrength, Mode=TwoWay}"
                                          Maximum="{Binding EffectStrengthMaximum}"

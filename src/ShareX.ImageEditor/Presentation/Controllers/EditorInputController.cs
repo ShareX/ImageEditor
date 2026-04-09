@@ -2,10 +2,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
@@ -43,6 +47,7 @@ public class EditorInputController
     private Rect _cropDragStartRect;
     private readonly List<Rectangle> _cropShadeRects = new();
     private readonly List<Line> _cropGuideLines = new();
+    private Button? _cropConfirmButton;
 
     public EditorInputController(EditorView view, EditorSelectionController selectionController, EditorZoomController zoomController)
     {
@@ -321,7 +326,7 @@ public class EditorInputController
                 {
                     fillColor = IsColorLight(vm.SelectedColor) ? "#FF000000" : "#FFFFFFFF";
                 }
-                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, TailStyle = vm.TailStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
                 var balloonControl = balloonAnnotation.CreateVisual();
                 balloonControl.Width = 0;
                 balloonControl.Height = 0;
@@ -338,9 +343,10 @@ public class EditorInputController
                     TextColor = vm.TextColor,
                     FontSize = vm.FontSize,
                     ShadowEnabled = vm.ShadowEnabled,
+                    TailStyle = vm.TailStyle,
                     StartPoint = ToSKPoint(_startPoint),
                     Number = vm.NumberCounter
-                }; ;
+                };
 
                 _currentShape = numberAnnotation.CreateVisual();
 
@@ -437,6 +443,11 @@ public class EditorInputController
             else
             {
                 canvas.Children.Add(_currentShape);
+            }
+
+            if (_currentShape.Tag is SpotlightAnnotation)
+            {
+                _view.RefreshSpotlightOverlay();
             }
             // ISSUE-019 fix: Dead code removed - undo handled by EditorCore
         }
@@ -617,7 +628,7 @@ public class EditorInputController
             {
                 spotAnn.StartPoint = ToSKPoint(new Point(left, top));
                 spotAnn.EndPoint = ToSKPoint(new Point(left + width, top + height));
-                spotlight.InvalidateVisual();
+                _view.RefreshSpotlightOverlay();
             }
         }
         else if (_currentShape is SpeechBalloonControl balloon)
@@ -714,11 +725,19 @@ public class EditorInputController
                         // Discard shape if too small (prevents accidental clicks creating tiny shapes)
                         if (shapeWidth < MinShapeSize && shapeHeight < MinShapeSize)
                         {
-                            canvas.Children.Remove(_currentShape);
+                            bool wasSpotlight = _currentShape?.Tag is SpotlightAnnotation;
+                            if (_currentShape != null)
+                            {
+                                canvas.Children.Remove(_currentShape);
+                            }
                             _currentShape = null;
                             _cachedSkBitmap?.Dispose();
                             _cachedSkBitmap = null;
                             _isCreatingEffect = false;
+                            if (wasSpotlight)
+                            {
+                                _view.RefreshSpotlightOverlay();
+                            }
                             return;
                         }
                     }
@@ -788,21 +807,13 @@ public class EditorInputController
         if (!_isCreatingEffect || vm == null) return;
         if (vm.PreviewImage == null || shape.Tag is not BaseEffectAnnotation) return;
 
-        if (_cachedSkBitmap == null)
-        {
-            _cachedSkBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-        }
-
         if (width <= 0 || height <= 0) return;
 
         try
         {
             if (_cachedSkBitmap != null)
             {
-                AnnotationEffectVisualUpdater.UpdateEffectVisual(
-                    shape,
-                    _cachedSkBitmap,
-                    new Rect(x, y, width, height));
+                _view.UpdateInteractiveEffectVisual(shape, _cachedSkBitmap, new Rect(x, y, width, height));
             }
         }
         catch { }
@@ -852,6 +863,7 @@ public class EditorInputController
 
     /// <summary>
     /// Shows the crop overlay at full image bounds with 8 handles so the user can drag them inwards immediately.
+    /// Uses auto-crop detection to suggest an initial crop rectangle when possible.
     /// Call when the user selects the Crop tool.
     /// </summary>
     public void ActivateCropToFullImage()
@@ -865,21 +877,74 @@ public class EditorInputController
         double h = canvas.Bounds.Height;
         if (w <= 0 || h <= 0) return;
 
-        var fullRect = new Rect(0, 0, w, h);
+        var cropRect = ComputeAutoCropRect(w, h);
         cropOverlay.Fill = Brushes.Transparent;
         cropOverlay.Stroke = Brushes.White;
         cropOverlay.StrokeThickness = 1;
         cropOverlay.StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double>();
         cropOverlay.SetValue(Panel.ZIndexProperty, CropOverlayZIndex);
         cropOverlay.IsVisible = true;
-        Canvas.SetLeft(cropOverlay, ToOverlayCoordinate(0));
-        Canvas.SetTop(cropOverlay, ToOverlayCoordinate(0));
-        cropOverlay.Width = w;
-        cropOverlay.Height = h;
+        Canvas.SetLeft(cropOverlay, ToOverlayCoordinate(cropRect.Left));
+        Canvas.SetTop(cropOverlay, ToOverlayCoordinate(cropRect.Top));
+        cropOverlay.Width = cropRect.Width;
+        cropOverlay.Height = cropRect.Height;
         _cropActive = true;
         EnsureCropAdorners(overlayCanvas);
-        UpdateCropAdorners(overlayCanvas, fullRect);
-        ShowCropHandles(overlayCanvas, fullRect);
+        UpdateCropAdorners(overlayCanvas, cropRect);
+        ShowCropHandles(overlayCanvas, cropRect);
+    }
+
+    /// <summary>
+    /// Computes the auto-crop rectangle by detecting content bounds from the source image.
+    /// Falls back to full image bounds if auto-crop finds no meaningful region.
+    /// </summary>
+    private Rect ComputeAutoCropRect(double canvasWidth, double canvasHeight)
+    {
+        const int AutoCropTolerance = 10;
+        var fullRect = new Rect(0, 0, canvasWidth, canvasHeight);
+
+        var sourceImage = _view.EditorCore?.SourceImage;
+        if (sourceImage == null || sourceImage.Width <= 0 || sourceImage.Height <= 0)
+            return fullRect;
+
+        int imgW = sourceImage.Width;
+        int imgH = sourceImage.Height;
+        SKColor topLeft = sourceImage.GetPixel(0, 0);
+
+        int minX = imgW, minY = imgH, maxX = 0, maxY = 0;
+        bool hasContent = false;
+
+        for (int y = 0; y < imgH; y++)
+        {
+            for (int x = 0; x < imgW; x++)
+            {
+                SKColor pixel = sourceImage.GetPixel(x, y);
+                if (!ImageHelpers.ColorsMatch(pixel, topLeft, AutoCropTolerance))
+                {
+                    hasContent = true;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (!hasContent)
+            return fullRect;
+
+        int cropWidth = maxX - minX + 1;
+        int cropHeight = maxY - minY + 1;
+
+        // Only suggest auto-crop if it's meaningfully smaller than the full image
+        if (cropWidth >= imgW && cropHeight >= imgH)
+            return fullRect;
+
+        // Scale pixel coordinates to canvas coordinates
+        double scaleX = canvasWidth / imgW;
+        double scaleY = canvasHeight / imgH;
+
+        return new Rect(minX * scaleX, minY * scaleY, cropWidth * scaleX, cropHeight * scaleY);
     }
 
     private void ShowCropHandles(Canvas overlay, Rect cropRect)
@@ -900,6 +965,8 @@ public class EditorInputController
         _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, cropRect.Bottom, "Crop_BottomLeft"));
         _cropHandles.Add(CreateCropHandle(overlay, cropRect.Left, centerY, "Crop_LeftCenter"));
 
+        ShowCropConfirmButton(overlay, cropRect);
+
         overlay.InvalidateArrange();
         overlay.InvalidateVisual();
     }
@@ -909,12 +976,72 @@ public class EditorInputController
         foreach (var handle in _cropHandles)
             overlay.Children.Remove(handle);
         _cropHandles.Clear();
+        HideCropConfirmButton(overlay);
     }
 
     private void ResetCropDragState()
     {
         _isDraggingCropHandle = false;
         _draggedCropHandleTag = null;
+    }
+
+    private const double CropConfirmButtonMargin = 10;
+    private const int CropConfirmButtonZIndex = 8000;
+
+    private void ShowCropConfirmButton(Canvas overlay, Rect cropRect)
+    {
+        HideCropConfirmButton(overlay);
+
+        var button = new Button
+        {
+            Content = "Crop",
+            Padding = new Thickness(16, 6),
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Width = 80,
+            Height = 40,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center
+        };
+        button.Classes.Add("editor-button");
+        button.SetValue(Panel.ZIndexProperty, CropConfirmButtonZIndex);
+        button.Click += OnCropConfirmButtonClick;
+
+        // Measure to get desired size
+        button.Measure(Size.Infinity);
+        double btnWidth = button.DesiredSize.Width;
+        double btnHeight = button.DesiredSize.Height;
+
+        // Position centered below crop rect, or above if it would clip the bottom
+        double btnX = cropRect.Left + (cropRect.Width - btnWidth) / 2.0;
+
+        var annotationCanvas = _view.FindControl<Canvas>("AnnotationCanvas");
+        double canvasHeight = annotationCanvas?.Bounds.Height ?? overlay.Bounds.Height;
+
+        double belowY = cropRect.Bottom + CropConfirmButtonMargin;
+        double aboveY = cropRect.Top - CropConfirmButtonMargin - btnHeight;
+
+        double btnY = (belowY + btnHeight <= canvasHeight) ? belowY : aboveY;
+
+        Canvas.SetLeft(button, ToOverlayCoordinate(btnX));
+        Canvas.SetTop(button, ToOverlayCoordinate(btnY));
+
+        overlay.Children.Add(button);
+        _cropConfirmButton = button;
+    }
+
+    private void HideCropConfirmButton(Canvas overlay)
+    {
+        if (_cropConfirmButton != null)
+        {
+            _cropConfirmButton.Click -= OnCropConfirmButtonClick;
+            overlay.Children.Remove(_cropConfirmButton);
+            _cropConfirmButton = null;
+        }
+    }
+
+    private void OnCropConfirmButtonClick(object? sender, RoutedEventArgs e)
+    {
+        TryConfirmCrop();
     }
 
     // Crop UI layers and dimensions tuned after surveying common editor patterns.
@@ -1519,6 +1646,14 @@ public class EditorInputController
                             panel?.Children.Remove(tb);
                             panel?.Children.Add(control);
 
+                            control.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                            var desiredWidth = control.DesiredSize.Width > 0 ? control.DesiredSize.Width : tb.Bounds.Width;
+                            var desiredHeight = control.DesiredSize.Height > 0 ? control.DesiredSize.Height : tb.Bounds.Height;
+
+                            annotation.EndPoint = new SKPoint(
+                                (float)(Canvas.GetLeft(control) + desiredWidth),
+                                (float)(Canvas.GetTop(control) + desiredHeight));
+
                             AnnotationVisualFactory.UpdateVisualControl(
                                 control,
                                 annotation,
@@ -1526,7 +1661,6 @@ public class EditorInputController
                                 _view!.EditorCore!.CanvasSize.Width,
                                 _view!.EditorCore!.CanvasSize.Height);
 
-                            control.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                             control.InvalidateVisual();
 
                             // Auto-select the newly created text
@@ -1539,9 +1673,9 @@ public class EditorInputController
 
         textBox.LostFocus += OnCreationLostFocus;
 
-        textBox.KeyDown += (s, args) =>
+        textBox.KeyUp += (s, args) =>
         {
-            if (args.Key == Key.Enter)
+            if (args.Key == Key.Enter || args.Key == Key.Escape)
             {
                 args.Handled = true;
                 _view.Focus();
@@ -1549,7 +1683,21 @@ public class EditorInputController
         };
 
         canvas.Children.Add(textBox);
-        textBox.Focus();
+
+        var canvasScrollViewer = _view.FindControl<ScrollViewer>("CanvasScrollViewer");
+        var preservedOffset = canvasScrollViewer?.Offset ?? default;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            textBox.Focus();
+            textBox.CaretIndex = 0;
+
+            if (canvasScrollViewer != null)
+            {
+                canvasScrollViewer.Offset = preservedOffset;
+            }
+        }, DispatcherPriority.Render);
+
         _isDrawing = false;
     }
 

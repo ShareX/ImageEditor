@@ -50,6 +50,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool TextBold { get; set; }
     bool TextItalic { get; set; }
     bool TextUnderline { get; set; }
+    StepTailStyle TailStyle { get; set; }
     string ActiveToolIcon { get; }
     string ActiveToolName { get; }
     bool CanUndo { get; }
@@ -65,6 +66,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowStrength { get; }
     bool ShowTextStyle { get; }
     bool ShowShadow { get; }
+    bool ShowTailStyle { get; }
     bool ShowToolOptions { get; }
     bool ShowToolOptionsSeparator { get; }
     void SelectTool(EditorTool tool);

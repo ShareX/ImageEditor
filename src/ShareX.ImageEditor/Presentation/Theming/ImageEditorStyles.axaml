@@ -28,7 +28,16 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 
+        <!-- Explicitly override ContentPresenter backgrounds for all states so the Fluent
+             ControlTheme's own ContentPresenter state setters don't bleed through. -->
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
@@ -38,6 +47,7 @@
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
@@ -47,8 +57,25 @@
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
         </Style>
 
+        <Style Selector="^.active /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
+        <Style Selector="^.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
+        <Style Selector="^.active:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
         <Style Selector="^.active TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="Opacity" Value="0.35"/>
         </Style>
     </Style>
 
@@ -254,13 +281,13 @@
             <Setter Property="RenderTransform" Value="translateX(18px)"/>
         </Style>
 
-        <Style Selector="^.left > ScrollViewer > StackPanel > TextBlock:nth-child(1)">
+        <Style Selector="^.left > ScrollViewer > StackPanel > StackPanel:nth-child(1) > TextBlock">
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="Foreground">
                 <SolidColorBrush Color="{DynamicResource ShareX.Color.Accent.Start}"/>
             </Setter>
-            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="Padding" Value="0,0,0,16"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
 
@@ -417,13 +444,32 @@
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="MinHeight" Value="40"/>
 
-        <Style Selector="^:pointerover">
+        <!-- Target the Fluent template's background border directly so Fluent's own
+             pseudo-class overrides on Border#Background don't bleed through. -->
+        <Style Selector="^ /template/ Border#Background">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#Background">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#Background">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
         </Style>
 
         <Style Selector="^:disabled">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#Background">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
         </Style>
 
         <Style Selector="^ /template/ TextBox">

@@ -99,25 +99,29 @@ public class StepControl : Control
 
     private static Geometry? CreateArrowTailGeometry(NumberAnnotation annotation)
     {
-        var tailPoint = annotation.GetDefaultTailHandlePoint();
+        if (!annotation.TryGetArrowTailOutline(
+            out var shaftStartLeft,
+            out var shaftEndLeft,
+            out var wingLeft,
+            out var tailTip,
+            out var wingRight,
+            out var shaftEndRight,
+            out var shaftStartRight))
+        {
+            return null;
+        }
 
         var geometry = new StreamGeometry();
         using (var ctx = geometry.Open())
         {
-            var pts = ArrowAnnotation.ComputeArrowPoints(
-                annotation.StartPoint.X, annotation.StartPoint.Y,
-                tailPoint.X, tailPoint.Y,
-                annotation.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
-
-            if (pts is { } p)
-            {
-                ctx.BeginFigure(ToRenderPoint(annotation, p.ShaftEndLeft), true);
-                ctx.LineTo(ToRenderPoint(annotation, p.WingLeft));
-                ctx.LineTo(ToRenderPoint(annotation, tailPoint));
-                ctx.LineTo(ToRenderPoint(annotation, p.WingRight));
-                ctx.LineTo(ToRenderPoint(annotation, p.ShaftEndRight));
-                ctx.EndFigure(true);
-            }
+            ctx.BeginFigure(ToRenderPoint(annotation, shaftStartLeft), true);
+            ctx.LineTo(ToRenderPoint(annotation, shaftEndLeft));
+            ctx.LineTo(ToRenderPoint(annotation, wingLeft));
+            ctx.LineTo(ToRenderPoint(annotation, tailTip));
+            ctx.LineTo(ToRenderPoint(annotation, wingRight));
+            ctx.LineTo(ToRenderPoint(annotation, shaftEndRight));
+            ctx.LineTo(ToRenderPoint(annotation, shaftStartRight));
+            ctx.EndFigure(true);
         }
 
         return geometry;

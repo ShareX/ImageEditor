@@ -109,21 +109,42 @@ public partial class NumberAnnotation : Annotation
 
     public bool IsTailVisible()
     {
-        return TryGetTailPolygon(out _, out _, out _);
+        return TailStyle switch
+        {
+            StepTailStyle.Arrow => TryGetArrowTailOutline(out _, out _, out _, out _, out _, out _, out _),
+            _ => TryGetTailPolygon(out _, out _, out _)
+        };
     }
 
     public SKRect GetInteractionBounds(float tolerance = 0)
     {
         var interactionBounds = GetBounds();
 
-        if (TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
+        if (TailStyle == StepTailStyle.Arrow)
         {
-            var tailBounds = new SKRect(
-                MathF.Min(tailBaseStart.X, MathF.Min(tailTip.X, tailBaseEnd.X)),
-                MathF.Min(tailBaseStart.Y, MathF.Min(tailTip.Y, tailBaseEnd.Y)),
-                MathF.Max(tailBaseStart.X, MathF.Max(tailTip.X, tailBaseEnd.X)),
-                MathF.Max(tailBaseStart.Y, MathF.Max(tailTip.Y, tailBaseEnd.Y)));
-            interactionBounds = SKRect.Union(interactionBounds, tailBounds);
+            if (TryGetArrowTailOutline(
+                out var shaftStartLeft,
+                out var shaftEndLeft,
+                out var wingLeft,
+                out var tailTip,
+                out var wingRight,
+                out var shaftEndRight,
+                out var shaftStartRight))
+            {
+                interactionBounds = UnionPoints(
+                    interactionBounds,
+                    shaftStartLeft,
+                    shaftEndLeft,
+                    wingLeft,
+                    tailTip,
+                    wingRight,
+                    shaftEndRight,
+                    shaftStartRight);
+            }
+        }
+        else if (TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
+        {
+            interactionBounds = UnionPoints(interactionBounds, tailBaseStart, tailTip, tailBaseEnd);
         }
 
         if (tolerance > 0)
@@ -191,19 +212,64 @@ public partial class NumberAnnotation : Annotation
             return true;
         }
 
-        if (!TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
+        if (TailStyle == StepTailStyle.Arrow)
         {
+            if (!TryGetArrowTailOutline(
+                out var shaftStartLeft,
+                out var shaftEndLeft,
+                out var wingLeft,
+                out var tailTip,
+                out var wingRight,
+                out var shaftEndRight,
+                out var shaftStartRight))
+            {
+                return false;
+            }
+
+            SKPoint[] polygon =
+            [
+                shaftStartLeft,
+                shaftEndLeft,
+                wingLeft,
+                tailTip,
+                wingRight,
+                shaftEndRight,
+                shaftStartRight
+            ];
+
+            if (PointInPolygon(point, polygon))
+            {
+                return true;
+            }
+
+            for (int i = 0; i < polygon.Length; i++)
+            {
+                var segmentStart = polygon[i];
+                var segmentEnd = polygon[(i + 1) % polygon.Length];
+                if (DistanceToSegment(point, segmentStart, segmentEnd) <= tolerance)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
-
-        if (PointInTriangle(point, tailBaseStart, tailTip, tailBaseEnd))
+        else
         {
-            return true;
-        }
+            if (!TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
+            {
+                return false;
+            }
 
-        return DistanceToSegment(point, tailBaseStart, tailTip) <= tolerance ||
-               DistanceToSegment(point, tailTip, tailBaseEnd) <= tolerance ||
-               DistanceToSegment(point, tailBaseEnd, tailBaseStart) <= tolerance;
+            if (PointInTriangle(point, tailBaseStart, tailTip, tailBaseEnd))
+            {
+                return true;
+            }
+
+            return DistanceToSegment(point, tailBaseStart, tailTip) <= tolerance ||
+                   DistanceToSegment(point, tailTip, tailBaseEnd) <= tolerance ||
+                   DistanceToSegment(point, tailBaseEnd, tailBaseStart) <= tolerance;
+        }
     }
 
     public override SKRect GetBounds()
@@ -213,6 +279,72 @@ public partial class NumberAnnotation : Annotation
             StartPoint.Y - Radius,
             StartPoint.X + Radius,
             StartPoint.Y + Radius);
+    }
+
+    public bool TryGetArrowTailOutline(
+        out SKPoint shaftStartLeft,
+        out SKPoint shaftEndLeft,
+        out SKPoint wingLeft,
+        out SKPoint tailTip,
+        out SKPoint wingRight,
+        out SKPoint shaftEndRight,
+        out SKPoint shaftStartRight)
+    {
+        shaftStartLeft = default;
+        shaftEndLeft = default;
+        wingLeft = default;
+        tailTip = default;
+        wingRight = default;
+        shaftEndRight = default;
+        shaftStartRight = default;
+
+        var center = StartPoint;
+        float radius = Radius;
+        if (radius <= GeometryEpsilon)
+        {
+            return false;
+        }
+
+        tailTip = GetTailHandlePoint();
+
+        float directionX = tailTip.X - center.X;
+        float directionY = tailTip.Y - center.Y;
+        float directionLength = MathF.Sqrt(directionX * directionX + directionY * directionY);
+        if (directionLength <= radius + GeometryEpsilon)
+        {
+            return false;
+        }
+
+        var arrowPoints = ArrowAnnotation.ComputeArrowPoints(
+            center.X,
+            center.Y,
+            tailTip.X,
+            tailTip.Y,
+            StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+        if (arrowPoints is not { } points)
+        {
+            return false;
+        }
+
+        shaftEndLeft = points.ShaftEndLeft;
+        shaftEndRight = points.ShaftEndRight;
+        wingLeft = points.WingLeft;
+        wingRight = points.WingRight;
+
+        float shaftHalfWidth = Distance(shaftEndLeft, shaftEndRight) / 2f;
+        float normalizedDirectionX = directionX / directionLength;
+        float normalizedDirectionY = directionY / directionLength;
+        var perpendicular = new SKPoint(-normalizedDirectionY, normalizedDirectionX);
+
+        var shaftBaseLeft = new SKPoint(
+            center.X + perpendicular.X * shaftHalfWidth,
+            center.Y + perpendicular.Y * shaftHalfWidth);
+        var shaftBaseRight = new SKPoint(
+            center.X - perpendicular.X * shaftHalfWidth,
+            center.Y - perpendicular.Y * shaftHalfWidth);
+
+        return TryGetCircleSegmentExitPoint(center, radius, shaftBaseLeft, tailTip, out shaftStartLeft) &&
+               TryGetCircleSegmentExitPoint(center, radius, shaftBaseRight, tailTip, out shaftStartRight);
     }
 
     private static bool TryGetCircleSegmentExitPoint(SKPoint center, float radius, SKPoint start, SKPoint end, out SKPoint intersection)
@@ -262,10 +394,37 @@ public partial class NumberAnnotation : Annotation
         return !(hasNegative && hasPositive);
     }
 
+    private static bool PointInPolygon(SKPoint point, IReadOnlyList<SKPoint> polygon)
+    {
+        bool inside = false;
+
+        for (int i = 0, j = polygon.Count - 1; i < polygon.Count; j = i++)
+        {
+            var current = polygon[i];
+            var previous = polygon[j];
+            bool intersects = ((current.Y > point.Y) != (previous.Y > point.Y)) &&
+                              (point.X < ((previous.X - current.X) * (point.Y - current.Y) / ((previous.Y - current.Y) + GeometryEpsilon)) + current.X);
+
+            if (intersects)
+            {
+                inside = !inside;
+            }
+        }
+
+        return inside;
+    }
+
     private static float Sign(SKPoint p1, SKPoint p2, SKPoint p3)
     {
         return (p1.X - p3.X) * (p2.Y - p3.Y) -
                (p2.X - p3.X) * (p1.Y - p3.Y);
+    }
+
+    private static float Distance(SKPoint a, SKPoint b)
+    {
+        float dx = a.X - b.X;
+        float dy = a.Y - b.Y;
+        return MathF.Sqrt(dx * dx + dy * dy);
     }
 
     private static float DistanceToSegment(SKPoint point, SKPoint start, SKPoint end)
@@ -288,5 +447,18 @@ public partial class NumberAnnotation : Annotation
         float deltaY = point.Y - projectionY;
 
         return MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
+    }
+
+    private static SKRect UnionPoints(SKRect initialBounds, params SKPoint[] points)
+    {
+        var result = initialBounds;
+
+        foreach (var point in points)
+        {
+            var pointBounds = new SKRect(point.X, point.Y, point.X, point.Y);
+            result = SKRect.Union(result, pointBounds);
+        }
+
+        return result;
     }
 }

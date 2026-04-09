@@ -112,7 +112,7 @@ public static class AnnotationVisualFactory
 
             case NumberAnnotation number when control is StepControl stepControl:
                 stepControl.Annotation = number;
-                ApplyBoundsControl(stepControl, number.GetBounds(), ensureMinimumSize);
+                ApplyBoundsControl(stepControl, number.GetInteractionBounds(), ensureMinimumSize);
                 stepControl.InvalidateVisual();
                 break;
 

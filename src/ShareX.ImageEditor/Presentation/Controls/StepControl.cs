@@ -37,11 +37,13 @@ public class StepControl : Control
             return;
         }
 
-        var annotationBounds = Annotation.GetBounds();
-        var width = Math.Max(annotationBounds.Width, 2);
-        var height = Math.Max(annotationBounds.Height, 2);
-
-        var bodyGeometry = new EllipseGeometry(new Rect(0, 0, width, height));
+        var visualBounds = Annotation.GetInteractionBounds();
+        var bodyBounds = Annotation.GetBounds();
+        var bodyGeometry = new EllipseGeometry(new Rect(
+            bodyBounds.Left - visualBounds.Left,
+            bodyBounds.Top - visualBounds.Top,
+            Math.Max(bodyBounds.Width, 2),
+            Math.Max(bodyBounds.Height, 2)));
         var tailGeometry = CreateTailGeometry(Annotation);
         Geometry geometry = tailGeometry != null
             ? new CombinedGeometry(GeometryCombineMode.Union, bodyGeometry, tailGeometry)
@@ -62,8 +64,8 @@ public class StepControl : Control
             Annotation.FontSize * 0.6,
             new SolidColorBrush(Color.Parse(Annotation.TextColor)));
 
-        var textX = (width - formattedText.Width) / 2;
-        var textY = (height - formattedText.Height) / 2;
+        var textX = bodyBounds.Left - visualBounds.Left + ((bodyBounds.Width - formattedText.Width) / 2);
+        var textY = bodyBounds.Top - visualBounds.Top + ((bodyBounds.Height - formattedText.Height) / 2);
         context.DrawText(formattedText, new Point(textX, textY));
     }
 
@@ -123,7 +125,7 @@ public class StepControl : Control
 
     private static Point ToRenderPoint(NumberAnnotation annotation, SKPoint point)
     {
-        var bounds = annotation.GetBounds();
+        var bounds = annotation.GetInteractionBounds();
         return new Point(point.X - bounds.Left, point.Y - bounds.Top);
     }
 }

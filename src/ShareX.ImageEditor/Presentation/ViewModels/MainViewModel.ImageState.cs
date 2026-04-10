@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using ShareX.ImageEditor.Presentation.Rendering;
+using ShareX.ImageEditor.Core.Annotations;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
 {
@@ -87,6 +88,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             return null;
+        }
+
+        public SkiaSharp.SKBitmap? CreateSourceImageCopyForPersistence()
+        {
+            return CreateSourceImageCopyForCore();
+        }
+
+        public IReadOnlyList<Annotation> GetAnnotationSnapshotForPersistence()
+        {
+            return _editorCore?.GetAnnotationsSnapshotForPersistence() ?? (IReadOnlyList<Annotation>)Array.Empty<Annotation>();
         }
 
         /// <summary>

@@ -47,6 +47,7 @@ public enum StepTailStyle
 /// <summary>
 /// Base class for all annotation types
 /// </summary>
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
 [JsonDerivedType(typeof(ArrowAnnotation), typeDiscriminator: "Arrow")]
 [JsonDerivedType(typeof(BlurAnnotation), typeDiscriminator: "Blur")]
 [JsonDerivedType(typeof(CropAnnotation), typeDiscriminator: "Crop")]
@@ -69,6 +70,7 @@ public abstract class Annotation
     /// <summary>
     /// Functional category of this annotation type (Shapes, Effects, or Text).
     /// </summary>
+    [JsonIgnore]
     public abstract AnnotationCategory Category { get; }
 
     /// <summary>
@@ -114,6 +116,7 @@ public abstract class Annotation
     /// <summary>
     /// Whether this annotation is currently selected
     /// </summary>
+    [JsonIgnore]
     public bool IsSelected { get; set; }
 
     /// <summary>

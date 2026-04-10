@@ -1,5 +1,6 @@
 using SkiaSharp;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -23,6 +24,7 @@ public abstract class BaseEffectAnnotation : Annotation, IDisposable
     /// <summary>
     /// The generated bitmap for the effect (pre-rendered effect result)
     /// </summary>
+    [JsonIgnore]
     public SKBitmap? EffectBitmap { get; protected set; }
 
     public override SKRect GetBounds()

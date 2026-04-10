@@ -91,6 +91,22 @@ namespace ShareX.ImageEditor.Presentation.Views
             return null;
         }
 
+        public IReadOnlyList<Annotation> GetAnnotationSnapshot()
+        {
+            return _editorCore.GetAnnotationsSnapshotForPersistence();
+        }
+
+        public void RestoreAnnotations(IEnumerable<Annotation> annotations, bool resetHistory = true)
+        {
+            _editorCore.RestoreAnnotations(annotations, resetHistory);
+
+            if (DataContext is MainViewModel vm)
+            {
+                vm.RecalculateNumberCounter(_editorCore.Annotations);
+                vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
+            }
+        }
+
         public SkiaSharp.SKBitmap? GetSnapshot()
         {
             if (_editorCore.SourceImage == null) return null;

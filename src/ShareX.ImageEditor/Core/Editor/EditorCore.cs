@@ -1354,6 +1354,40 @@ public class EditorCore : IDisposable
     }
 
     /// <summary>
+    /// Get a persistence-safe snapshot of current annotations.
+    /// </summary>
+    public List<Annotation> GetAnnotationsSnapshotForPersistence()
+    {
+        return GetAnnotationsSnapshot();
+    }
+
+    /// <summary>
+    /// Replace the active annotation layer from persisted project data.
+    /// </summary>
+    public void RestoreAnnotations(IEnumerable<Annotation> annotations, bool resetHistory = true)
+    {
+        _annotations.Clear();
+        _annotations.AddRange(annotations.Select(annotation => annotation.Clone()));
+
+        _currentAnnotation = null;
+        _selectedAnnotation = null;
+        _isDrawing = false;
+        NumberCounter = _annotations.OfType<NumberAnnotation>().Select(annotation => annotation.Number).DefaultIfEmpty(0).Max() + 1;
+
+        RefreshAnnotationsForCurrentImage();
+
+        if (resetHistory)
+        {
+            _history?.Dispose();
+            _history = new EditorHistory(this);
+        }
+
+        InvalidateRequested?.Invoke();
+        AnnotationsRestored?.Invoke();
+        HistoryChanged?.Invoke();
+    }
+
+    /// <summary>
     /// Restore editor state from a memento
     /// ISSUE-010 fix: Restores selection state along with annotations
     /// </summary>

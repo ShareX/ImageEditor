@@ -28,9 +28,9 @@ using ShareX.ImageEditor.Core.Annotations;
 namespace ShareX.ImageEditor.Core.Persistence;
 
 /// <summary>
-/// Serialized `.xera` sidecar document for re-editable annotations.
+/// Serialized `.xann` sidecar document for re-editable annotations.
 /// </summary>
-public sealed class XeraProjectFile
+public sealed class XannProjectFile
 {
     public int Version { get; set; } = 1;
     public string ImagePath { get; set; } = string.Empty;
@@ -44,16 +44,16 @@ public sealed class XeraProjectFile
     public List<Annotation> Annotations { get; set; } = new();
 }
 
-public sealed class XeraProjectLoadResult
+public sealed class XannProjectLoadResult
 {
-    public XeraProjectLoadResult(XeraProjectFile project, SkiaSharp.SKBitmap sourceImage, bool imageHashMatches)
+    public XannProjectLoadResult(XannProjectFile project, SkiaSharp.SKBitmap sourceImage, bool imageHashMatches)
     {
         Project = project;
         SourceImage = sourceImage;
         ImageHashMatches = imageHashMatches;
     }
 
-    public XeraProjectFile Project { get; }
+    public XannProjectFile Project { get; }
     public SkiaSharp.SKBitmap SourceImage { get; }
     public bool ImageHashMatches { get; }
 }

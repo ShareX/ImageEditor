@@ -32,10 +32,10 @@ using System.Text.Json.Serialization;
 
 namespace ShareX.ImageEditor.Core.Persistence;
 
-public static class XeraProjectFileService
+public static class XannProjectFileService
 {
     public const int CurrentVersion = 1;
-    public const string FileExtension = ".xera";
+    public const string FileExtension = ".xann";
 
     private static readonly JsonSerializerOptions SerializerOptions = CreateSerializerOptions();
 
@@ -68,7 +68,7 @@ public static class XeraProjectFileService
             cancellationToken);
     }
 
-    public static Task<XeraProjectLoadResult> LoadAsync(
+    public static Task<XannProjectLoadResult> LoadAsync(
         string sidecarPath,
         string? expectedImagePath = null,
         CancellationToken cancellationToken = default)
@@ -106,7 +106,7 @@ public static class XeraProjectFileService
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var project = new XeraProjectFile
+        var project = new XannProjectFile
         {
             Version = CurrentVersion,
             ImagePath = Path.GetFileName(imagePath),
@@ -155,22 +155,22 @@ public static class XeraProjectFileService
         return sidecarPath;
     }
 
-    private static XeraProjectLoadResult Load(string sidecarPath, string? expectedImagePath, CancellationToken cancellationToken)
+    private static XannProjectLoadResult Load(string sidecarPath, string? expectedImagePath, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         using var fileStream = new FileStream(sidecarPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         using var gzipStream = new GZipStream(fileStream, CompressionMode.Decompress);
-        var project = JsonSerializer.Deserialize<XeraProjectFile>(gzipStream, SerializerOptions)
-            ?? throw new InvalidDataException("The .xera sidecar was empty or invalid.");
+        var project = JsonSerializer.Deserialize<XannProjectFile>(gzipStream, SerializerOptions)
+            ?? throw new InvalidDataException("The .xann sidecar was empty or invalid.");
 
         if (project.Version > CurrentVersion)
         {
-            throw new NotSupportedException($"Unsupported .xera version {project.Version}.");
+            throw new NotSupportedException($"Unsupported .xann version {project.Version}.");
         }
 
         var sourceImage = DecodeBitmapPngBase64(project.SourceImagePngBase64)
-            ?? throw new InvalidDataException("The .xera sidecar does not contain a valid source image.");
+            ?? throw new InvalidDataException("The .xann sidecar does not contain a valid source image.");
 
         foreach (var imageAnnotation in project.Annotations.OfType<ImageAnnotation>())
         {
@@ -199,7 +199,7 @@ public static class XeraProjectFileService
                 StringComparison.OrdinalIgnoreCase);
         }
 
-        return new XeraProjectLoadResult(project, sourceImage, hashMatches);
+        return new XannProjectLoadResult(project, sourceImage, hashMatches);
     }
 
     private static string EncodeBitmapPngBase64(SKBitmap bitmap)

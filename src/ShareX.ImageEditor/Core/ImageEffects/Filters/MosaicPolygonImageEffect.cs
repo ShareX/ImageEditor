@@ -61,8 +61,7 @@ public sealed class MosaicPolygonImageEffect : ImageEffectBase
         using SKPaint fillPaint = new SKPaint
         {
             IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            FilterQuality = SKFilterQuality.High
+            Style = SKPaintStyle.Fill
         };
 
         using SKPaint strokePaint = new SKPaint

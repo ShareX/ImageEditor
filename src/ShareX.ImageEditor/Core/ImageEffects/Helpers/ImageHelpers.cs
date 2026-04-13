@@ -25,6 +25,7 @@
 
 using ShareX.ImageEditor.Core.ImageEffects.Filters;
 using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Helpers;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Helpers;
@@ -179,12 +180,32 @@ public static class ImageHelpers
     /// <param name="width">Target width</param>
     /// <param name="height">Target height</param>
     /// <param name="maintainAspectRatio">If true, scales proportionally to fit within width/height</param>
-    /// <param name="quality">Filter quality for scaling</param>
+    /// <param name="sampling">Sampling options for scaling</param>
     /// <returns>New resized bitmap</returns>
-    public static SKBitmap Resize(SKBitmap source, int width, int height, bool maintainAspectRatio = false, SKFilterQuality quality = SKFilterQuality.High)
+    public static SKBitmap Resize(SKBitmap source, int width, int height, bool maintainAspectRatio = false, SKSamplingOptions? sampling = null)
     {
-        // Quality ignored in Effect currently or hardcoded to High
-        return new ResizeImageEffect { Width = width, Height = height, MaintainAspectRatio = maintainAspectRatio }.Apply(source);
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        int targetWidth = width > 0 ? width : source.Width;
+        int targetHeight = height > 0 ? height : source.Height;
+
+        if (maintainAspectRatio)
+        {
+            double sourceAspect = (double)source.Width / source.Height;
+            double targetAspect = (double)targetWidth / targetHeight;
+
+            if (sourceAspect > targetAspect)
+            {
+                targetHeight = (int)Math.Round(targetWidth / sourceAspect);
+            }
+            else
+            {
+                targetWidth = (int)Math.Round(targetHeight * sourceAspect);
+            }
+        }
+
+        SKImageInfo info = new SKImageInfo(targetWidth, targetHeight, source.ColorType, source.AlphaType, source.ColorSpace);
+        return source.Resize(info, sampling ?? SkiaCompat.HighQualitySampling) ?? source.Copy();
     }
 
     /// <summary>
@@ -414,5 +435,4 @@ public static class ImageHelpers
     }
 
 }
-
 

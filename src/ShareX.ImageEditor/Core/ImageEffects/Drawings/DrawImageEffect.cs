@@ -1,3 +1,4 @@
+using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
@@ -174,9 +175,9 @@ public sealed class DrawImageEffect : ImageEffectBase
         using SKPaint paint = new SKPaint
         {
             IsAntialias = true,
-            FilterQuality = DrawingEffectHelpers.GetFilterQuality(InterpolationMode),
             BlendMode = DrawingEffectHelpers.GetBlendMode(CompositingMode)
         };
+        SKSamplingOptions sampling = DrawingEffectHelpers.GetSamplingOptions(InterpolationMode);
 
         if (Opacity < 100)
         {
@@ -198,7 +199,7 @@ public sealed class DrawImageEffect : ImageEffectBase
         }
         else
         {
-            canvas.DrawBitmap(watermark, new SKRect(imageRect.Left, imageRect.Top, imageRect.Right, imageRect.Bottom), paint);
+            SkiaCompat.DrawBitmap(canvas, watermark, new SKRect(imageRect.Left, imageRect.Top, imageRect.Right, imageRect.Bottom), sampling, paint);
         }
 
         return result;

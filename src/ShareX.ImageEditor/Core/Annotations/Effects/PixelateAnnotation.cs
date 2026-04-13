@@ -1,3 +1,4 @@
+using ShareX.ImageEditor.Helpers;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.Annotations;
@@ -24,14 +25,14 @@ public partial class PixelateAnnotation : BaseEffectAnnotation
         int h = Math.Max(1, source.Height / pixelSize);
 
         var info = new SKImageInfo(w, h);
-        using var small = source.Resize(info, SKFilterQuality.Low);
+        using var small = source.Resize(info, SkiaCompat.LowQualitySampling);
         if (small == null)
         {
             return null;
         }
 
         info = new SKImageInfo(source.Width, source.Height);
-        return small.Resize(info, SKFilterQuality.None);
+        return small.Resize(info, SkiaCompat.NearestNeighborSampling);
     }
 
     internal override SKBitmap? CreateInteractionCacheBitmap(SKBitmap source)
@@ -88,10 +89,22 @@ public partial class PixelateAnnotation : BaseEffectAnnotation
         int h = Math.Max(1, crop.Height / pixelSize);
 
         var info = new SKImageInfo(w, h);
-        using var small = crop.Resize(info, SKFilterQuality.Low);
+        using var small = crop.Resize(info, SkiaCompat.LowQualitySampling);
+        if (small == null)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
         info = new SKImageInfo(crop.Width, crop.Height);
-        using var pixelated = small.Resize(info, SKFilterQuality.None); // Nearest neighbor upscale
+        using var pixelated = small.Resize(info, SkiaCompat.NearestNeighborSampling); // Nearest neighbor upscale
+        if (pixelated == null)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
         // Draw pixelated region into result at correct offset
         int drawX = validRect.Left - annotationRect.Left;

@@ -26,6 +26,7 @@
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace ShareX.ImageEditor.Core.Abstractions;
 
@@ -69,6 +70,17 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowTailStyle { get; }
     bool ShowToolOptions { get; }
     bool ShowToolOptionsSeparator { get; }
+    bool ImageEditorMode { get; }
+    bool IsSettingsPanelOpen { get; set; }
+    bool IsEffectsPanelOpen { get; set; }
+    ICommand SelectToolCommand { get; }
+    ICommand ToggleSettingsPanelCommand { get; }
+    ICommand ToggleEffectsPanelCommand { get; }
+    ICommand NewImageCommand { get; }
+    ICommand OpenImageCommand { get; }
+    ICommand SaveCommand { get; }
+    ICommand SaveAsCommand { get; }
+    ICommand ExitEditorCommand { get; }
     void SelectTool(EditorTool tool);
     void Undo();
     void Redo();

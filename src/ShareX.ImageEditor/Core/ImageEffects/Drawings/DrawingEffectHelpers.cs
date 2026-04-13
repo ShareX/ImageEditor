@@ -1,6 +1,6 @@
-using ShareX.ImageEditor.Helpers;
 using SkiaSharp;
 using System.Globalization;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -118,11 +118,12 @@ internal static class DrawingEffectHelpers
     {
         return interpolationMode switch
         {
-            DrawingInterpolationMode.Bicubic => SkiaCompat.MediumQualitySampling,
-            DrawingInterpolationMode.HighQualityBilinear => SkiaCompat.HighQualitySampling,
-            DrawingInterpolationMode.Bilinear => SkiaCompat.LowQualitySampling,
-            DrawingInterpolationMode.NearestNeighbor => SkiaCompat.NearestNeighborSampling,
-            _ => SkiaCompat.HighQualitySampling
+            DrawingInterpolationMode.HighQualityBicubic => SkiaImageHelper.HighQualitySampling,
+            DrawingInterpolationMode.Bicubic => SkiaImageHelper.HighQualitySampling,
+            DrawingInterpolationMode.HighQualityBilinear => SkiaImageHelper.MediumQualitySampling,
+            DrawingInterpolationMode.Bilinear => SkiaImageHelper.LinearSampling,
+            DrawingInterpolationMode.NearestNeighbor => SkiaImageHelper.NearestNeighborSampling,
+            _ => SkiaImageHelper.HighQualitySampling
         };
     }
 
@@ -231,4 +232,3 @@ internal static class DrawingEffectHelpers
         return FlipVertical(rotated);
     }
 }
-

@@ -93,7 +93,8 @@ public sealed class DrawTextEffect : ImageEffectBase
         SKFontStyleWeight weight = Bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
         SKFontStyleSlant slant = Italic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
         using SKTypeface? typeface = SKTypeface.FromFamilyName(FontFamily, weight, SKFontStyleWidth.Normal, slant);
-        using SKFont textFont = new(typeface, FontSize);
+        SKTypeface resolvedTypeface = typeface ?? SKTypeface.Default;
+        using SKFont textFont = new SKFont(resolvedTypeface, FontSize);
 
         using SKPaint textPaint = new SKPaint
         {
@@ -249,11 +250,33 @@ public sealed class DrawTextEffect : ImageEffectBase
                 continue;
             }
 
-            using SKPath linePath = textFont.GetTextPath(line, new SKPoint(0, baselineOffset + (i * lineHeight)));
+            using SKPath linePath = CreateLineTextPath(textFont, line, 0, baselineOffset + (i * lineHeight));
             result.AddPath(linePath);
         }
 
         return result;
+    }
+
+    private static SKPath CreateLineTextPath(SKFont font, string text, float x, float y)
+    {
+        SKPath linePath = new SKPath { FillType = SKPathFillType.Winding };
+        ushort[] glyphs = font.GetGlyphs(text);
+        SKPoint[] positions = font.GetGlyphPositions(text, new SKPoint(x, y));
+
+        for (int i = 0; i < glyphs.Length && i < positions.Length; i++)
+        {
+            using SKPath? glyphPath = font.GetGlyphPath(glyphs[i]);
+            if (glyphPath == null || glyphPath.IsEmpty)
+            {
+                continue;
+            }
+
+            using SKPath positionedGlyphPath = new SKPath(glyphPath);
+            positionedGlyphPath.Transform(SKMatrix.CreateTranslation(positions[i].X, positions[i].Y));
+            linePath.AddPath(positionedGlyphPath);
+        }
+
+        return linePath;
     }
 
 }

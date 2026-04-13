@@ -134,7 +134,8 @@ public sealed class TextWatermarkEffect : ImageEffectBase
         SKFontStyleSlant slant = Italic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
 
         using SKTypeface? typeface = SKTypeface.FromFamilyName(FontFamily, weight, SKFontStyleWidth.Normal, slant);
-        using SKFont textFont = new(typeface, FontSize);
+        SKTypeface resolvedTypeface = typeface ?? SKTypeface.Default;
+        using SKFont textFont = new SKFont(resolvedTypeface, FontSize);
         using SKPaint textPaint = new SKPaint
         {
             IsAntialias = true,

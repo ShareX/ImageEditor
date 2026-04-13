@@ -107,19 +107,16 @@ public sealed class Windows11ImageEffect : ImageEffectBase
         if (!string.IsNullOrWhiteSpace(Title))
         {
             SKColor textColor = DarkMode ? new SKColor(220, 220, 220) : new SKColor(50, 50, 50);
-            using SKTypeface titleTypeface =
-                SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
-                ?? SKTypeface.Default;
-            using SKFont titleFont = new(titleTypeface, 12);
-            using SKPaint textPaint = new()
-            {
-                IsAntialias = true,
-                Color = textColor
-            };
+            using SKTypeface? titleTypeface = SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+            SKTypeface resolvedTypeface = titleTypeface ?? SKTypeface.Default;
+            using SKFont textFont = new(resolvedTypeface, 12);
+            using SKPaint textPaint = new() { IsAntialias = true, Color = textColor };
+            SKFontMetrics metrics = textFont.Metrics;
 
             float textX = windowX + 12;
-            float textY = windowY + (TitleBarHeight / 2f) + (titleFont.Size / 3f);
-            canvas.DrawText(Title, textX, textY, titleFont, textPaint);
+            float textCenterY = windowY + (TitleBarHeight / 2f);
+            float textY = textCenterY - ((metrics.Ascent + metrics.Descent) / 2f);
+            canvas.DrawText(Title, textX, textY, SKTextAlign.Left, textFont, textPaint);
         }
 
         // Draw the source image below the title bar

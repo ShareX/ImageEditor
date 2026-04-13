@@ -1,4 +1,3 @@
-using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
@@ -517,8 +516,16 @@ public sealed class RemoveBackgroundImageEffect : ImageEffectBase
             return source.Copy();
         }
 
-        SKImageInfo info = new SKImageInfo(width, height, source.ColorType, source.AlphaType, source.ColorSpace);
-        return source.Resize(info, SkiaCompat.HighQualitySampling) ?? source.Copy();
+        SKBitmap resized = new SKBitmap(width, height, source.ColorType, source.AlphaType);
+
+using (SKCanvas canvas = new(resized))
+        using (SKPaint paint = new() { IsAntialias = true })
+        {
+            canvas.Clear(SKColors.Transparent);
+            SkiaImageHelper.DrawBitmap(canvas, source, new SKRect(0, 0, width, height), SkiaImageHelper.HighQualitySampling, paint);
+        }
+
+        return resized;
     }
 
     private static SKBitmap ApplyTransparentBlur(SKBitmap source, float radius)

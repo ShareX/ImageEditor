@@ -25,7 +25,6 @@
 
 using ShareX.ImageEditor.Core.ImageEffects.Filters;
 using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
-using ShareX.ImageEditor.Helpers;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Helpers;
@@ -205,7 +204,7 @@ public static class ImageHelpers
         }
 
         SKImageInfo info = new SKImageInfo(targetWidth, targetHeight, source.ColorType, source.AlphaType, source.ColorSpace);
-        return source.Resize(info, sampling ?? SkiaCompat.HighQualitySampling) ?? source.Copy();
+        return SkiaImageHelper.Resize(source, info, sampling ?? SkiaImageHelper.HighQualitySampling);
     }
 
     /// <summary>

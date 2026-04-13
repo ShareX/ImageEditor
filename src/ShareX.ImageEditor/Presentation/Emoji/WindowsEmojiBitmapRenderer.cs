@@ -24,7 +24,7 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Media.Imaging;
-using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Presentation.Rendering;
 using SkiaSharp;
 using System.Runtime.InteropServices;
@@ -184,7 +184,7 @@ public static class WindowsEmojiBitmapRenderer
         using SKTypeface? typeface = SKFontManager.Default.MatchFamily(EmojiFontFamily) ?? SKTypeface.Default;
         using var rawBitmap = new SKBitmap(new SKImageInfo(canvasSize, canvasSize, SKColorType.Bgra8888, SKAlphaType.Premul));
         using var canvas = new SKCanvas(rawBitmap);
-        using var font = new SKFont(typeface, canvasSize * 0.68f);
+        using var font = new SKFont(typeface ?? SKTypeface.Default, canvasSize * 0.68f);
         using var paint = new SKPaint
         {
             IsAntialias = true,
@@ -271,7 +271,7 @@ public static class WindowsEmojiBitmapRenderer
         float left = (size - drawWidth) / 2f;
         float top = (size - drawHeight) / 2f;
 
-        SkiaCompat.DrawBitmap(canvas, source, new SKRect(left, top, left + drawWidth, top + drawHeight), SkiaCompat.HighQualitySampling, paint);
+        SkiaImageHelper.DrawBitmap(canvas, source, new SKRect(left, top, left + drawWidth, top + drawHeight), SkiaImageHelper.HighQualitySampling, paint);
         return output;
     }
 

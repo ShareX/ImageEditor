@@ -1,7 +1,7 @@
-using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -199,7 +199,7 @@ public sealed class DrawImageEffect : ImageEffectBase
         }
         else
         {
-            SkiaCompat.DrawBitmap(canvas, watermark, new SKRect(imageRect.Left, imageRect.Top, imageRect.Right, imageRect.Bottom), sampling, paint);
+            SkiaImageHelper.DrawBitmap(canvas, watermark, new SKRect(imageRect.Left, imageRect.Top, imageRect.Right, imageRect.Bottom), sampling, paint);
         }
 
         return result;

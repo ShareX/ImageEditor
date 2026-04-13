@@ -1,7 +1,7 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
-using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -49,6 +49,6 @@ public sealed class ResizeImageEffect : ImageEffectBase
         }
 
         SKImageInfo info = new SKImageInfo(width, height, source.ColorType, source.AlphaType, source.ColorSpace);
-        return source.Resize(info, SkiaCompat.HighQualitySampling) ?? source.Copy();
+        return SkiaImageHelper.Resize(source, info, SkiaImageHelper.HighQualitySampling);
     }
 }

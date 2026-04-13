@@ -25,7 +25,6 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 using ShareX.ImageEditor.Core.ImageEffects.Filters;
 using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
@@ -75,7 +74,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         /// <summary>
-        /// Resize the image to new dimensions with specified quality.
+        /// Resize the image to new dimensions with specified sampling.
         /// </summary>
         public void ResizeImage(int newWidth, int newHeight, SkiaSharp.SKSamplingOptions? sampling = null)
         {
@@ -84,7 +83,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 return;
             }
 
-            _editorCore?.ResizeImage(newWidth, newHeight, sampling ?? SkiaCompat.HighQualitySampling);
+            _editorCore?.ResizeImage(newWidth, newHeight, sampling);
         }
 
         /// <summary>

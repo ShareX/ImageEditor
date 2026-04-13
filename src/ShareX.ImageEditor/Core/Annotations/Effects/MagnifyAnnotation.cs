@@ -1,5 +1,5 @@
-using ShareX.ImageEditor.Helpers;
 using SkiaSharp;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -102,11 +102,11 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
         int drawY = validRect.Top - annotationRect.Top;
 
         using (var resultCanvas = new SKCanvas(result))
-        using (var paint = new SKPaint())
+        using (var paint = new SKPaint { IsAntialias = true })
         {
             var sourceRect = new SKRect(captureRect.Left, captureRect.Top, captureRect.Right, captureRect.Bottom);
             var destinationRect = new SKRect(drawX, drawY, drawX + validRect.Width, drawY + validRect.Height);
-            SkiaCompat.DrawBitmap(resultCanvas, drawSource, sourceRect, destinationRect, SkiaCompat.MediumQualitySampling, paint);
+            SkiaImageHelper.DrawBitmap(resultCanvas, drawSource, sourceRect, destinationRect, SkiaImageHelper.MediumQualitySampling, paint);
         }
 
         EffectBitmap?.Dispose();

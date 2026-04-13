@@ -1,7 +1,7 @@
-using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -59,10 +59,11 @@ public sealed class DrawBackgroundImageEffect : ImageEffectBase
                 tileY = (result.Height - backgroundImage.Height) / 2 % backgroundImage.Height;
             }
 
-            using SKShader shader = SKShader.CreateBitmap(
+            using SKShader shader = SkiaImageHelper.CreateShader(
                 backgroundImage,
                 SKShaderTileMode.Repeat,
-                SKShaderTileMode.Repeat);
+                SKShaderTileMode.Repeat,
+                SkiaImageHelper.HighQualitySampling);
             using SKPaint paint = new SKPaint { Shader = shader, IsAntialias = true };
 
             if (Center)
@@ -93,7 +94,7 @@ public sealed class DrawBackgroundImageEffect : ImageEffectBase
             int y = Center ? (result.Height - height) / 2 : 0;
 
             using SKPaint paint = new SKPaint { IsAntialias = true };
-            SkiaCompat.DrawBitmap(canvas, backgroundImage, new SKRect(x, y, x + width, y + height), SkiaCompat.HighQualitySampling, paint);
+            SkiaImageHelper.DrawBitmap(canvas, backgroundImage, new SKRect(x, y, x + width, y + height), SkiaImageHelper.HighQualitySampling, paint);
         }
 
         canvas.DrawBitmap(source, 0, 0);

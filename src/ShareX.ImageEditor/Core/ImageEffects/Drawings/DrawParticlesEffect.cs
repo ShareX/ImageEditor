@@ -1,7 +1,7 @@
-using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -228,7 +228,7 @@ public sealed class DrawParticlesEffect : ImageEffectBase
             paint.ColorFilter = SKColorFilter.CreateBlendMode(new SKColor(255, 255, 255, (byte)alpha), SKBlendMode.Modulate);
         }
 
-        SkiaCompat.DrawBitmap(canvas, particle, new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom), SkiaCompat.HighQualitySampling, paint);
+        SkiaImageHelper.DrawBitmap(canvas, particle, new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom), SkiaImageHelper.HighQualitySampling, paint);
         canvas.Restore();
     }
 

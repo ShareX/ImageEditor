@@ -11,6 +11,7 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="ShareX.ImageEditor.Presentation.Views.EditorView"
+             x:Name="EditorViewRoot"
              x:DataType="vm:MainViewModel"
              Focusable="True">
 
@@ -312,7 +313,7 @@
                                                     Background="Transparent"
                                                     Margin="2"
                                                     ToolTip.Tip="{Binding Name}"
-                                                    Command="{ReflectionBinding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Command="{Binding #EditorViewRoot.DataContext.ApplyGradientPresetCommand}"
                                                     CommandParameter="{Binding}">
                                                 <Border Width="46"
                                                         Height="36"

@@ -27,7 +27,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4"
-                                IsVisible="{Binding ImageEditorMode}">
+                                IsVisible="{ReflectionBinding ImageEditorMode}">
                         <Button Classes="editor-button toolbar-button"
                                 ToolTip.Tip="File"
                                 x:Name="FileMenuButton"
@@ -50,16 +50,16 @@
                                            VerticalAlignment="Center"/>
                             </Grid>
                             <Button.Flyout>
-                                    <MenuFlyout Placement="BottomEdgeAlignedLeft" VerticalOffset="4">
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft" VerticalOffset="4">
                                     <MenuItem Header="New..."
-                                              Command="{Binding NewImageCommand}"
+                                              Command="{ReflectionBinding NewImageCommand}"
                                               InputGesture="Ctrl+N">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileNew}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Open..."
-                                              Command="{Binding OpenImageCommand}"
+                                              Command="{ReflectionBinding OpenImageCommand}"
                                               InputGesture="Ctrl+O">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileOpen}"/>
@@ -67,14 +67,14 @@
                                     </MenuItem>
                                     <Separator/>
                                     <MenuItem Header="Save"
-                                              Command="{Binding SaveCommand}"
+                                              Command="{ReflectionBinding SaveCommand}"
                                               InputGesture="Ctrl+S">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSave}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Save as..."
-                                              Command="{Binding SaveAsCommand}"
+                                              Command="{ReflectionBinding SaveAsCommand}"
                                               InputGesture="Ctrl+Shift+S">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileSaveAs}"/>
@@ -82,7 +82,7 @@
                                     </MenuItem>
                                     <Separator/>
                                     <MenuItem Header="Exit"
-                                              Command="{Binding ExitEditorCommand}"
+                                              Command="{ReflectionBinding ExitEditorCommand}"
                                               InputGesture="Escape">
                                         <MenuItem.Icon>
                                             <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileExit}"/>
@@ -201,22 +201,22 @@
                                 Background="{DynamicResource ShareX.Brush.Separator}"/>
                         <Button Classes="editor-button toolbar-button"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
-                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
+                                Command="{ReflectionBinding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
                                 ToolTip.Tip="Crop (C)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.ToolCrop}"/>
                         <Button Classes="editor-button toolbar-button"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=CutOut}"
-                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
+                                Command="{ReflectionBinding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
                                 ToolTip.Tip="Cut Out (U)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.ToolCutOut}"/>
                         <Button Classes="editor-button toolbar-button"
-                                Classes.active="{Binding IsSettingsPanelOpen}"
-                                Command="{Binding ToggleSettingsPanelCommand}"
+                                Classes.active="{ReflectionBinding IsSettingsPanelOpen}"
+                                Command="{ReflectionBinding ToggleSettingsPanelCommand}"
                                 ToolTip.Tip="Background"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelBackground}"/>
                         <Button Classes="editor-button toolbar-button"
-                                Classes.active="{Binding IsEffectsPanelOpen}"
-                                Command="{Binding ToggleEffectsPanelCommand}"
+                                Classes.active="{ReflectionBinding IsEffectsPanelOpen}"
+                                Command="{ReflectionBinding ToggleEffectsPanelCommand}"
                                 ToolTip.Tip="Image Effects"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelEffects}"/>
                     </StackPanel>

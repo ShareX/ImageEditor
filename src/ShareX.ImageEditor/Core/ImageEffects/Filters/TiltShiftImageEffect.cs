@@ -115,7 +115,6 @@ public sealed class TiltShiftImageEffect : ImageEffectBase
         using SKPaint paint = new SKPaint
         {
             IsAntialias = true,
-            FilterQuality = SKFilterQuality.High,
             ImageFilter = SKImageFilter.CreateBlur(radius, radius)
         };
         canvas.DrawBitmap(source, 0, 0, paint);

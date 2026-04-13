@@ -65,7 +65,6 @@ public sealed class PointillismImageEffect : ImageEffectBase
         using SKPaint dotPaint = new SKPaint
         {
             IsAntialias = true,
-            FilterQuality = SKFilterQuality.High,
             Style = SKPaintStyle.Fill
         };
 

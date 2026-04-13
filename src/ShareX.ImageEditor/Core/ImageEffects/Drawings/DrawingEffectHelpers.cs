@@ -1,3 +1,4 @@
+using ShareX.ImageEditor.Helpers;
 using SkiaSharp;
 using System.Globalization;
 
@@ -113,15 +114,15 @@ internal static class DrawingEffectHelpers
         return new SKSizeI(newWidth, newHeight);
     }
 
-    public static SKFilterQuality GetFilterQuality(DrawingInterpolationMode interpolationMode)
+    public static SKSamplingOptions GetSamplingOptions(DrawingInterpolationMode interpolationMode)
     {
         return interpolationMode switch
         {
-            DrawingInterpolationMode.Bicubic => SKFilterQuality.Medium,
-            DrawingInterpolationMode.HighQualityBilinear => SKFilterQuality.Medium,
-            DrawingInterpolationMode.Bilinear => SKFilterQuality.Low,
-            DrawingInterpolationMode.NearestNeighbor => SKFilterQuality.None,
-            _ => SKFilterQuality.High
+            DrawingInterpolationMode.Bicubic => SkiaCompat.MediumQualitySampling,
+            DrawingInterpolationMode.HighQualityBilinear => SkiaCompat.HighQualitySampling,
+            DrawingInterpolationMode.Bilinear => SkiaCompat.LowQualitySampling,
+            DrawingInterpolationMode.NearestNeighbor => SkiaCompat.NearestNeighborSampling,
+            _ => SkiaCompat.HighQualitySampling
         };
     }
 

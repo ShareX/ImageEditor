@@ -100,19 +100,19 @@ public sealed class MacOSWindowImageEffect : ImageEffectBase
         if (!string.IsNullOrWhiteSpace(Title))
         {
             SKColor textColor = DarkMode ? new SKColor(220, 220, 220) : new SKColor(74, 74, 74);
+            using SKTypeface titleTypeface =
+                SKTypeface.FromFamilyName("San Francisco", SKFontStyleWeight.Medium, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
+                ?? SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Medium, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
+                ?? SKTypeface.Default;
+            using SKFont titleFont = new(titleTypeface, 13);
             using SKPaint textPaint = new()
             {
                 IsAntialias = true,
-                Color = textColor,
-                TextSize = 13,
-                TextAlign = SKTextAlign.Center,
-                Typeface = SKTypeface.FromFamilyName("San Francisco", SKFontStyleWeight.Medium, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
-                           ?? SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Medium, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
-                           ?? SKTypeface.Default
+                Color = textColor
             };
 
-            float textY = windowY + (TitleBarHeight / 2f) + (textPaint.TextSize / 3f);
-            canvas.DrawText(Title, windowX + windowWidth / 2f, textY, textPaint);
+            float textY = windowY + (TitleBarHeight / 2f) + (titleFont.Size / 3f);
+            canvas.DrawText(Title, windowX + windowWidth / 2f, textY, SKTextAlign.Center, titleFont, textPaint);
         }
 
         // Draw the source image below the title bar

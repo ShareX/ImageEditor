@@ -1,3 +1,4 @@
+using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
@@ -26,21 +27,14 @@ public sealed class PixelateImageEffect : ImageEffectBase
         // Downscale then upscale to create pixelation effect
         int smallWidth = Math.Max(1, source.Width / Size);
         int smallHeight = Math.Max(1, source.Height / Size);
-
-        SKBitmap small = new SKBitmap(smallWidth, smallHeight);
-        using (SKCanvas smallCanvas = new SKCanvas(small))
+        SKImageInfo downscaleInfo = new SKImageInfo(smallWidth, smallHeight, source.ColorType, source.AlphaType, source.ColorSpace);
+        using SKBitmap? small = source.Resize(downscaleInfo, SkiaCompat.LowQualitySampling);
+        if (small == null)
         {
-            smallCanvas.DrawBitmap(source, new SKRect(0, 0, smallWidth, smallHeight));
+            return source.Copy();
         }
 
-        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
-        using (SKCanvas canvas = new SKCanvas(result))
-        {
-            using SKPaint paint = new SKPaint { FilterQuality = SKFilterQuality.None };
-            canvas.DrawBitmap(small, new SKRect(0, 0, source.Width, source.Height), paint);
-        }
-        small.Dispose();
-        return result;
+        SKImageInfo upscaleInfo = new SKImageInfo(source.Width, source.Height, source.ColorType, source.AlphaType, source.ColorSpace);
+        return small.Resize(upscaleInfo, SkiaCompat.NearestNeighborSampling) ?? source.Copy();
     }
 }
-

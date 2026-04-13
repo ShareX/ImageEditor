@@ -93,15 +93,14 @@ public sealed class DrawTextEffect : ImageEffectBase
         SKFontStyleWeight weight = Bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
         SKFontStyleSlant slant = Italic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
         using SKTypeface? typeface = SKTypeface.FromFamilyName(FontFamily, weight, SKFontStyleWidth.Normal, slant);
+        using SKFont textFont = new(typeface, FontSize);
 
         using SKPaint textPaint = new SKPaint
         {
-            IsAntialias = true,
-            Typeface = typeface,
-            TextSize = FontSize
+            IsAntialias = true
         };
 
-        using SKPath textPath = CreateTextPath(Text, textPaint);
+        using SKPath textPath = CreateTextPath(Text, textFont);
         if (textPath.IsEmpty)
         {
             return source.Copy();
@@ -229,7 +228,7 @@ public sealed class DrawTextEffect : ImageEffectBase
         canvas.DrawPath(path, paint);
     }
 
-    private static SKPath CreateTextPath(string text, SKPaint textPaint)
+    private static SKPath CreateTextPath(string text, SKFont textFont)
     {
         SKPath result = new SKPath { FillType = SKPathFillType.Winding };
         string[] lines = text.Replace("\r\n", "\n", StringComparison.Ordinal).Split('\n');
@@ -238,8 +237,8 @@ public sealed class DrawTextEffect : ImageEffectBase
             return result;
         }
 
-        SKFontMetrics metrics = textPaint.FontMetrics;
-        float lineHeight = Math.Max(metrics.Descent - metrics.Ascent + metrics.Leading, textPaint.TextSize);
+        SKFontMetrics metrics = textFont.Metrics;
+        float lineHeight = Math.Max(metrics.Descent - metrics.Ascent + metrics.Leading, textFont.Size);
         float baselineOffset = -metrics.Ascent;
 
         for (int i = 0; i < lines.Length; i++)
@@ -250,7 +249,7 @@ public sealed class DrawTextEffect : ImageEffectBase
                 continue;
             }
 
-            using SKPath linePath = textPaint.GetTextPath(line, 0, baselineOffset + (i * lineHeight));
+            using SKPath linePath = textFont.GetTextPath(line, new SKPoint(0, baselineOffset + (i * lineHeight)));
             result.AddPath(linePath);
         }
 

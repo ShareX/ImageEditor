@@ -1,4 +1,5 @@
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
+using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
 
@@ -164,10 +165,10 @@ public sealed class Rotate3DBoxImageEffect : ImageEffectBase
             // Draw Front face
             canvas.ResetMatrix();
             if (AutoResize) canvas.Translate(-minX, -minY);
-            canvas.Concat(ref frontMat);
+            canvas.Concat(in frontMat);
 
-            using SKPaint frontPaint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High };
-            canvas.DrawBitmap(source, 0, 0, frontPaint);
+            using SKPaint frontPaint = new SKPaint { IsAntialias = true };
+            SkiaCompat.DrawBitmap(canvas, source, 0, 0, SkiaCompat.HighQualitySampling, frontPaint);
         }
         return result;
     }

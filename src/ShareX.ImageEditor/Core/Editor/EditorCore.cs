@@ -26,6 +26,7 @@
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.History;
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 using ShareX.ImageEditor.Hosting;
 using SkiaSharp;
@@ -281,7 +282,7 @@ public class EditorCore : IDisposable
         return ApplyImageOperation(effectOperation, clearAnnotations: false);
     }
 
-    public bool ResizeImage(int newWidth, int newHeight, SKFilterQuality quality = SKFilterQuality.High)
+    public bool ResizeImage(int newWidth, int newHeight, SKSamplingOptions? sampling = null)
     {
         if (newWidth <= 0 || newHeight <= 0)
         {
@@ -292,7 +293,7 @@ public class EditorCore : IDisposable
         float scaleY = SourceImage == null ? 1f : (float)newHeight / SourceImage.Height;
 
         return ApplyImageOperation(
-            img => ImageHelpers.Resize(img, newWidth, newHeight, maintainAspectRatio: false, quality),
+            img => ImageHelpers.Resize(img, newWidth, newHeight, maintainAspectRatio: false, sampling ?? SkiaCompat.HighQualitySampling),
             clearAnnotations: false,
             transformAnnotations: () => ScaleAnnotations(scaleX, scaleY));
     }

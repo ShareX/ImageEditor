@@ -112,20 +112,20 @@ public sealed class PolaroidFrameImageEffect : ImageEffectBase
         if (!string.IsNullOrWhiteSpace(Caption))
         {
             float fontSize = Math.Max(12, bottom * 0.3f);
+            using SKTypeface captionTypeface =
+                SKTypeface.FromFamilyName("Segoe Script", SKFontStyle.Normal)
+                ?? SKTypeface.FromFamilyName("Comic Sans MS", SKFontStyle.Normal)
+                ?? SKTypeface.Default;
+            using SKFont captionFont = new(captionTypeface, fontSize);
             using SKPaint textPaint = new()
             {
                 IsAntialias = true,
-                Color = new SKColor(60, 55, 50),
-                TextSize = fontSize,
-                TextAlign = SKTextAlign.Center,
-                Typeface = SKTypeface.FromFamilyName("Segoe Script", SKFontStyle.Normal)
-                           ?? SKTypeface.FromFamilyName("Comic Sans MS", SKFontStyle.Normal)
-                           ?? SKTypeface.Default
+                Color = new SKColor(60, 55, 50)
             };
 
             float textX = polaroidWidth / 2f;
             float textY = source.Height + border + (bottom / 2f) + (fontSize / 3f);
-            canvas.DrawText(Caption, textX, textY, textPaint);
+            canvas.DrawText(Caption, textX, textY, SKTextAlign.Center, captionFont, textPaint);
         }
 
         canvas.Restore();

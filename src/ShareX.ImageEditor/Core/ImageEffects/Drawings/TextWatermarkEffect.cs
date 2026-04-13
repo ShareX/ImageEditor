@@ -134,11 +134,10 @@ public sealed class TextWatermarkEffect : ImageEffectBase
         SKFontStyleSlant slant = Italic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
 
         using SKTypeface? typeface = SKTypeface.FromFamilyName(FontFamily, weight, SKFontStyleWidth.Normal, slant);
+        using SKFont textFont = new(typeface, FontSize);
         using SKPaint textPaint = new SKPaint
         {
             IsAntialias = true,
-            Typeface = typeface,
-            TextSize = FontSize,
             Color = TextColor
         };
 
@@ -148,15 +147,15 @@ public sealed class TextWatermarkEffect : ImageEffectBase
             return source.Copy();
         }
 
-        SKFontMetrics metrics = textPaint.FontMetrics;
-        float rawTextHeight = Math.Max(metrics.Descent - metrics.Ascent, textPaint.TextSize);
-        float lineHeight = Math.Max(rawTextHeight + metrics.Leading, textPaint.TextSize);
+        SKFontMetrics metrics = textFont.Metrics;
+        float rawTextHeight = Math.Max(metrics.Descent - metrics.Ascent, textFont.Size);
+        float lineHeight = Math.Max(rawTextHeight + metrics.Leading, textFont.Size);
         float baselineOffset = -metrics.Ascent;
 
         float maxTextWidth = 0f;
         foreach (string line in lines)
         {
-            maxTextWidth = Math.Max(maxTextWidth, textPaint.MeasureText(line));
+            maxTextWidth = Math.Max(maxTextWidth, textFont.MeasureText(line, textPaint));
         }
 
         float totalTextHeight = rawTextHeight + Math.Max(0, lines.Length - 1) * lineHeight;
@@ -230,19 +229,17 @@ public sealed class TextWatermarkEffect : ImageEffectBase
             using SKPaint shadowPaint = new SKPaint
             {
                 IsAntialias = true,
-                Typeface = typeface,
-                TextSize = FontSize,
                 Color = TextShadowColor
             };
 
-            DrawLines(canvas, lines, textX + TextShadowOffset.X, textY + TextShadowOffset.Y, lineHeight, shadowPaint);
+            DrawLines(canvas, lines, textX + TextShadowOffset.X, textY + TextShadowOffset.Y, lineHeight, textFont, shadowPaint);
         }
 
-        DrawLines(canvas, lines, textX, textY, lineHeight, textPaint);
+        DrawLines(canvas, lines, textX, textY, lineHeight, textFont, textPaint);
         return result;
     }
 
-    private static void DrawLines(SKCanvas canvas, IReadOnlyList<string> lines, float x, float baselineY, float lineHeight, SKPaint paint)
+    private static void DrawLines(SKCanvas canvas, IReadOnlyList<string> lines, float x, float baselineY, float lineHeight, SKFont font, SKPaint paint)
     {
         for (int i = 0; i < lines.Count; i++)
         {
@@ -252,7 +249,7 @@ public sealed class TextWatermarkEffect : ImageEffectBase
                 continue;
             }
 
-            canvas.DrawText(line, x, baselineY + (i * lineHeight), paint);
+            canvas.DrawText(line, x, baselineY + (i * lineHeight), font, paint);
         }
     }
 }

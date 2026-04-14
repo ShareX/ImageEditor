@@ -2,6 +2,37 @@
 
 All notable changes to the ShareX.ImageEditor project will be documented in this file.
 
+## v0.2.0
+
+### Features
+- **Annotations**: Add editable annotation sidecar support with `.xann` extension for preserving editable annotation data alongside exported images `(45cf1de, 42f27c9)`
+- **Annotations**: Add StepTailStyle option for Step and SpeechBalloon annotations — defer tail rendering until dragged, render with shaft geometry `(db98c80, 1064b35, 9c65902, e35a1c4, 44ea622)`
+- **Crop Tool**: Add auto-crop detection — editor automatically detects and selects crop region based on content `(c6fd309)`
+- **Image Effects**: Add decorative border effects including Windows11/Crimson borders and multiple procedural border styles `(a6c31d5, f8307a7, f1b2c19, bceb4e1)`
+- **Image Effects**: Add FakeHairImageEffect, Candy Cane Border, five new effects, six new effects — all schema-driven `(dcb8162, 06b2c91, cb9e176, 5fa8e79)`
+- **UI**: Add host accent styling hooks for confirmation dialog, aligned with host application theme `(2aa9725)`
+- **Startup**: Add Sample.png asset for default editor pre-load on startup `(2cb0ca6)`
+
+### Build
+- **Platform**: Upgrade to Avalonia 12 and streamline to .NET 10.0 single target (x64/ARM64) `(197e772, fc1ae5a, 46a5dd7, a60937e)`
+- **Bindings**: Align toolbar adapter contract with Avalonia 12 compiled bindings; reduce reflection bindings `(b34c473, 0738ca9, 841e388)`
+- **SkiaSharp**: Migrate obsolete SkiaSharp APIs to current versions `(6a4192f)`
+- **Line Endings**: Reapply strict LF line ending enforcement `(c00dca5)`
+
+### Fixes
+- **Crop UI**: Improve crop confirm button layout, cursor feedback, and canvas focus `(fc228fe, fcfc4ea)`
+- **Annotations**: Fix StepControl arrow tail rendering and initialization gating `(44ea622, 9c65902)`
+- **Dialog**: Use host application name for close confirmation dialog title `(6aac31b)`
+- **Dialog**: Replace corrupted warning icon and wrap confirmation text for readability `(b7cd498)`
+- **Toolbar**: Keep shared toolbar bindings dynamic across adapters `(841e388)`
+
+### Refactor
+- **Architecture**: Remove unnecessary Platforms restriction from project file `(aeb3e98)`
+- **Port**: Catch up through ShareX@c6e3c5260 — interaction cache for image effects, shared SKCanvasControl for spotlight overlay rendering `(b168ea8, 952dc05, 098cddf)`
+
+### Changed
+- **Platform**: Drop BMP save option; add AVIF save support `(b45fc08)`
+
 ## v0.1.0
 
 *Initial release of the modernized ShareX ImageEditor built on Avalonia UI and SkiaSharp.*

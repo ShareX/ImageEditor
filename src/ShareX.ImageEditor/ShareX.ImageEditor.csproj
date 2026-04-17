@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AppendRuntimeIdentifierToOutputPath>true</AppendRuntimeIdentifierToOutputPath>
+    <_IntermediatePathSuffix></_IntermediatePathSuffix>
+    <_IntermediatePathSuffix Condition="'$(HostTargetFramework)' != ''">$(_IntermediatePathSuffix)host-$(HostTargetFramework)/</_IntermediatePathSuffix>
+    <_IntermediatePathSuffix Condition="'$(RuntimeIdentifier)' != ''">$(_IntermediatePathSuffix)rid-$(RuntimeIdentifier)/</_IntermediatePathSuffix>
+    <BaseIntermediateOutputPath Condition="'$(_IntermediatePathSuffix)' != ''">obj/$(_IntermediatePathSuffix)</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

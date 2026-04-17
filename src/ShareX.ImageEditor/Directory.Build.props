@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <_IntermediatePathSuffix></_IntermediatePathSuffix>
+    <_IntermediatePathSuffix Condition="'$(OS)' != ''">$(_IntermediatePathSuffix)os-$(OS)/</_IntermediatePathSuffix>
+    <_IntermediatePathSuffix Condition="'$(OS)' == ''">$(_IntermediatePathSuffix)os-none/</_IntermediatePathSuffix>
+    <_IntermediatePathSuffix Condition="'$(HostTargetFramework)' != ''">$(_IntermediatePathSuffix)host-$(HostTargetFramework)/</_IntermediatePathSuffix>
+    <_IntermediatePathSuffix Condition="'$(RuntimeIdentifier)' != ''">$(_IntermediatePathSuffix)rid-$(RuntimeIdentifier)/</_IntermediatePathSuffix>
+    <_IntermediatePathSuffix Condition="'$(SelfContained)' == 'true'">$(_IntermediatePathSuffix)self-contained/</_IntermediatePathSuffix>
+    <BaseIntermediateOutputPath Condition="'$(_IntermediatePathSuffix)' != ''">obj/$(_IntermediatePathSuffix)</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath Condition="'$(_IntermediatePathSuffix)' != ''">$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+</Project>

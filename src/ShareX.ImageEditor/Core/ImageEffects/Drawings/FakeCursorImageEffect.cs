@@ -60,7 +60,7 @@ public sealed class FakeCursorImageEffect : ImageEffectBase
         for (int i = 0; i < count; i++)
         {
             float scale = RandomSize
-                ? RandomSizeMin + Random.Shared.NextSingle() * (Math.Max(RandomSizeMin, RandomSizeMax) - RandomSizeMin)
+                ? NextFloat(RandomSizeMin, RandomSizeMax)
                 : Scale;
             scale = Math.Clamp(scale, 0.5f, 5f);
 
@@ -75,9 +75,7 @@ public sealed class FakeCursorImageEffect : ImageEffectBase
 
             if (RandomAngle)
             {
-                int minA = Math.Min(RandomAngleMin, RandomAngleMax);
-                int maxA = Math.Max(RandomAngleMin, RandomAngleMax);
-                int angle = minA == maxA ? minA : Random.Shared.Next(minA, maxA);
+                int angle = NextIntInclusive(RandomAngleMin, RandomAngleMax);
                 float pivotX = cursorWidth / 2f;
                 float pivotY = cursorHeight / 2f;
                 canvas.Translate(pivotX, pivotY);
@@ -123,5 +121,29 @@ public sealed class FakeCursorImageEffect : ImageEffectBase
         }
 
         return result;
+    }
+
+    private static float NextFloat(float min, float max)
+    {
+        if (min > max)
+        {
+            (min, max) = (max, min);
+        }
+
+        return min == max
+            ? min
+            : min + (Random.Shared.NextSingle() * (max - min));
+    }
+
+    private static int NextIntInclusive(int min, int max)
+    {
+        if (min > max)
+        {
+            (min, max) = (max, min);
+        }
+
+        return min == max
+            ? min
+            : Random.Shared.Next(min, max + 1);
     }
 }

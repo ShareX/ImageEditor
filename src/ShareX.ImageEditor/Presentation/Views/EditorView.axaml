@@ -41,13 +41,8 @@
         <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
         <converters:EqualsConverter x:Key="EqualsConverter" />
 
-        <ContextMenu x:Key="EditorContextMenu"
-                     Placement="Pointer"
-                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
-                     BorderThickness="1"
-                     CornerRadius="6"
-                     Padding="6,2"
-                     Cursor="Arrow">
+        <MenuFlyout x:Key="EditorContextFlyout"
+                    Placement="Pointer">
             <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionUndo}"/>
@@ -132,7 +127,7 @@
                 <MenuItem Header="Dark" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
                 <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>
             </MenuItem>
-        </ContextMenu>
+        </MenuFlyout>
     </UserControl.Resources>
 
     <ThemeVariantScope x:Name="EditorThemeScope"

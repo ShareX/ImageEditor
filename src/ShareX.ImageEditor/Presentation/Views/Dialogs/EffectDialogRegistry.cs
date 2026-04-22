@@ -38,12 +38,6 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 return false;
             }
 
-            if (definition.ApplyImmediately)
-            {
-                dialog = null;
-                return false;
-            }
-
             dialog = new SchemaDrivenEffectDialog(definition);
             return true;
         }

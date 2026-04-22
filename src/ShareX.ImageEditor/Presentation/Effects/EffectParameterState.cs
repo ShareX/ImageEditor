@@ -42,7 +42,7 @@ public abstract partial class EffectParameterState : ObservableObject
 {
     protected EffectParameterState(string key, string label)
     {
-        Key = key ?? throw new ArgumentNullException(nameof(key));
+        Key = NormalizeKey(key ?? throw new ArgumentNullException(nameof(key)));
         Label = label ?? throw new ArgumentNullException(nameof(label));
     }
 
@@ -91,6 +91,20 @@ public abstract partial class EffectParameterState : ObservableObject
     protected static Color ToAvaloniaColor(SKColor color) => Color.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
 
     protected static SKColor ToSkColor(Color color) => new(color.R, color.G, color.B, color.A);
+
+    private static string NormalizeKey(string key)
+    {
+        if (key.Length == 4
+            && key[0] == 'x'
+            && char.IsDigit(key[1])
+            && key[2] == 'y'
+            && char.IsDigit(key[3]))
+        {
+            return $"x{key[1]}_y{key[3]}";
+        }
+
+        return key;
+    }
 }
 
 public sealed partial class SliderParameterState : EffectParameterState

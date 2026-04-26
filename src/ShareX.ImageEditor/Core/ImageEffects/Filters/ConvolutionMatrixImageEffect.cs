@@ -23,7 +23,7 @@ public sealed class ConvolutionMatrixImageEffect : ImageEffectBase
         EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x0y2", "X0 Y2", -99, 99, 0, (e, v) => e.X0Y2 = v),
         EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x1y2", "X1 Y2", -99, 99, 0, (e, v) => e.X1Y2 = v),
         EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("x2y2", "X2 Y2", -99, 99, 0, (e, v) => e.X2Y2 = v),
-        EffectParameters.FloatSlider<ConvolutionMatrixImageEffect>("factor", "Factor", 0.01f, 10f, 1f, (e, v) => e.Factor = v),
+        EffectParameters.DoubleNumeric<ConvolutionMatrixImageEffect>("factor", "Factor", 0.01d, 10d, 1d, (e, v) => e.Factor = v, increment: 0.01d, formatString: "0.00"),
         EffectParameters.IntNumeric<ConvolutionMatrixImageEffect>("offset", "Offset", -255, 255, 0, (e, v) => e.Offset = v),
     ];
 

@@ -34,7 +34,7 @@ namespace ShareX.ImageEditor.Hosting;
 internal sealed class WindowsDesktopWallpaperService : IDesktopWallpaperService
 {
     private const int SpiGetDesktopWallpaper = 0x0073;
-    private const int MaxWallpaperPath = 260;
+    private const int MaxWallpaperPath = 32767;
 
     public bool IsSupported => OperatingSystem.IsWindows();
     public bool RequiresDesktopWallpaperPrewarm => false;

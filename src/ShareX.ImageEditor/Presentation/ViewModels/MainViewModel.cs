@@ -33,6 +33,7 @@ using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Emoji;
+using ShareX.ImageEditor.Presentation.Theming;
 using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
@@ -131,6 +132,15 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void Cancel()
         {
             RequestClose();
+        }
+
+        [RelayCommand]
+        private void SetTheme(string themeName)
+        {
+            ThemeManager.SetTheme(
+                string.Equals(themeName, nameof(ThemeManager.ShareXLight), StringComparison.OrdinalIgnoreCase)
+                    ? ThemeManager.ShareXLight
+                    : ThemeManager.ShareXDark);
         }
 
         public void RequestClose(bool ignoreModal = false)
